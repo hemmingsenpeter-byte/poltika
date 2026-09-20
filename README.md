@@ -4,12 +4,13 @@ Poltika is a policy-specification and implementation repository for New Zealand 
 
 This repository is intentionally scaffolded in a minimal, source-first structure so that authoritative policy sources and decisions are captured before implementation begins.
 
-## Repository layout
+## Where to start
 
-- `doctrine/`: project standards and decision-making rules
-- `adr/`: architecture decision records
-- `policy_specs/`: policy-specific source packs and schema placeholders
-- `reviews/`: review and discrepancy tracking
+- [BUILD_PLAN.md](BUILD_PLAN.md) — what's being built now, in what order, and v0.1 acceptance criteria
+- [ARCHITECTURE.md](ARCHITECTURE.md) — how Poltika works, conceptually and technically
+- [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — where every component belongs and the dependency rules between layers
+- [ROADMAP.md](ROADMAP.md) — what comes after v0.1
+- `doctrine/` — decisions that are fixed and not to be re-litigated
 
 ## Current status
 

@@ -6,6 +6,7 @@ Read:
 
 - BUILD_PLAN.md
 - ARCHITECTURE.md
+- REPOSITORY_STRUCTURE.md — before creating any new production file, module, or directory; a proposed component with no obvious location means updating that file deliberately, not creating an ad-hoc directory
 - relevant files under doctrine/
 - relevant policy specification under policy_specs/
 
