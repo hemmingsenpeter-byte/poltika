@@ -1,29 +1,32 @@
 # Review Packet: <policy/feature> — <date>
 
-## Diff
-(link or paste git diff)
+## Review inputs
 
-## Test output
-(pytest/ruff/mypy results)
+- PR/diff:
+- Primary sources and source-map paths:
+- Specification paths and clauses:
+- Test command and output:
 
-## Spec clauses implemented
-(which parts of policy_specs/<policy>/specification.md and policy.yaml this
-covers)
+## Independent review
 
-## Assumptions / unresolved questions
-(anything the implementer flagged)
-
----
-## Independent review (fresh-context — do NOT show this reviewer the
-## implementer's explanation above until after their own derivation)
+Complete this section before reading the implementer's explanation or
+proposed expected behaviour.
 
 ### Independently derived expected behaviour
-(reviewer fills this in from sources + spec alone)
+
+(reviewer derives from sources and spec)
 
 ### Discrepancies found
+
 | Discrepancy | Classification | Notes |
 |---|---|---|
 | | CODE_ERROR / TEST_ERROR / SPEC_ERROR / SOURCE_CONFLICT / INTERPRETATION_AMBIGUITY / MISSING_SOURCE / ARCHITECTURE_ISSUE / REVIEWER_ERROR | |
 
+## Author response
+
+(add assumptions and rationale only after the independent review is recorded)
+
 ## Resolution
-(what happened to each discrepancy — fixed, escalated, recorded as decision, etc.)
+
+(what happened to each discrepancy — fixed, escalated, recorded as a Pete
+decision artifact, etc.)
