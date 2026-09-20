@@ -1,5 +1,92 @@
-# Working for Families sources
-
-This file is the first source-grounded artifact for the policy slice.
-
-Add authoritative NZ sources here before implementing any logic.
+# Dated primary-source inventory supporting the completed Task 2 map.
+as_of: 2026-09-21
+status: task_2_source_map_complete
+sources:
+  - id: wff-income-tax-act
+    kind: legislation
+    title: Income Tax Act 2007, Part M
+    url: https://www.legislation.govt.nz/act/public/2007/97/en/latest/parts/DLM1518405/
+    covers: Eligibility, family scheme income, tax credits, and calculations.
+  - id: wff-tax-credit-order-2025
+    kind: amending_legislation
+    title: Income Tax (Tax Credit) Order 2025
+    url: https://www.legislation.govt.nz/regulation/public/2025/0260/latest/whole.html
+    covers: Family tax credit, minimum family tax credit, and Best Start rates from 2026-04-01.
+  - id: wff-budget-measures-2025
+    kind: amending_legislation
+    title: Taxation (Budget Measures) Act 2025
+    url: https://www.legislation.govt.nz/act/public/2025/26/en/latest/sections/LMS1441509/
+    covers: Family tax credit abatement threshold and rate from 2026-04-01.
+  - id: wff-budget-measures-2026
+    kind: future_amending_legislation
+    title: Taxation (Budget Measures) Act 2026
+    url: https://www.legislation.govt.nz/act/public/2026/25/en/latest/
+    covers: Family scheme income and residence changes from 2027-04-01.
+  - id: wff-iwtc-increase-act-2026
+    kind: amending_legislation
+    title: Taxation (Annual Rates for 2025-26, Compliance Simplification, and Remedial Measures) Act 2026
+    url: https://www.legislation.govt.nz/act/public/2026/8/en/latest/
+    covers: Temporary in-work tax credit increase and possible Order in Council reversal.
+  - id: wff-ird-interpretation-2026
+    kind: agency_interpretation
+    title: IS 26/12 - Working for Families tax credits and family scheme income
+    url: https://www.taxtechnical.ird.govt.nz/interpretation-statements/2026/is-26-12
+    covers: Current-law eligibility and family scheme income adjustments.
+    date_note: IRD says enacted changes to family income and residency take effect on 2027-04-01.
+  - id: wff-ird-family-income
+    kind: agency_guidance
+    title: Working out your family income
+    url: https://www.ird.govt.nz/working-for-families/all-about-working-for-families/working-out-your-family-income
+    covers: Partner income and common adjustments, including child support paid or received.
+  - id: wff-ird-other-income
+    kind: agency_guidance
+    title: Other income for Working for Families
+    url: https://www.ird.govt.nz/income-tax/income-tax-for-individuals/adjust-your-income/types-of-income/other-income
+    covers: Other family-support payments and exclusion of non-taxable Accommodation Supplement.
+  - id: wff-ird-rates-2026
+    kind: agency_rates
+    title: Working for Families weekly payments 2027, revised April 2026 chart
+    url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir200---ir299/ir271/ir271-2027.pdf?modified=20260330235509
+    covers: Published payment estimates for 2026-04-01 through 2027-03-31.
+    date_note: An earlier PDF revision omits the temporary in-work tax credit increase.
+  - id: wff-ird-family-tax-credit
+    kind: agency_guidance_and_examples
+    title: Family tax credit
+    url: https://www.ird.govt.nz/working-for-families/types/family-tax-credit
+    covers: Annual calculation, abatement, instalment rounding, and worked examples.
+  - id: wff-ird-in-work-tax-credit
+    kind: agency_guidance_and_examples
+    title: In-work tax credit
+    url: https://www.ird.govt.nz/working-for-families/types/in-work-tax-credit
+    covers: Eligibility, abatement interaction, and worked examples.
+  - id: wff-ird-temporary-increase
+    kind: agency_change_notice
+    title: In-work tax credit increase from 1 April
+    url: https://www.ird.govt.nz/in-work-tax-credit-increase
+    covers: Temporary increase and its possible early end condition.
+  - id: wff-ird-minimum-family-tax-credit
+    kind: agency_guidance_and_examples
+    title: Minimum family tax credit
+    url: https://www.ird.govt.nz/working-for-families/types/minimum-family-tax-credit
+    covers: Income and work requirements, calculation, and worked examples.
+  - id: wff-ird-best-start
+    kind: agency_guidance_and_examples
+    title: Best Start
+    url: https://www.ird.govt.nz/best-start
+    covers: Birth-date transition, paid parental leave interaction, and worked examples.
+  - id: wff-ird-government-payments
+    kind: agency_guidance
+    title: Government payments that affect your Working for Families
+    url: https://www.ird.govt.nz/working-for-families/types/government-payments
+    covers: Interaction with benefits and other government payments.
+  - id: wff-ird-shared-care
+    kind: agency_guidance_and_examples
+    title: Shared care of a child
+    url: https://www.ird.govt.nz/working-for-families/can-you-get-it/shared-care
+    covers: Principal care, shared-care apportionment, and component-specific treatment.
+    date_note: Some worked examples use earlier-year rates; verify dates before benchmarking.
+review_notes:
+  - Verify each rule and effective date against the applicable legislation version.
+  - Confirm the temporary in-work tax credit status for the modelled date.
+  - Treat IRD charts as estimates; derive statutory amounts and rounding independently.
+  - Keep changes effective from 2027-04-01 separate from current-law rules.

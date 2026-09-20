@@ -1,5 +1,153 @@
-# Accommodation Supplement sources
-
-This file is the first source-grounded artifact for the policy slice.
-
-Add authoritative NZ sources here before implementing any logic.
+# Dated primary-source inventory supporting the completed Task 2 map.
+as_of: 2026-09-21
+status: task_2_source_map_complete
+sources:
+  - id: as-social-security-act
+    kind: legislation
+    title: Social Security Act 2018
+    url: https://www.legislation.govt.nz/act/public/2018/32/en/latest/
+    covers: Sections 65AAA to 69 and Schedule 4 Part 7; eligibility, costs, and rates.
+  - id: as-social-security-regulations
+    kind: regulations
+    title: Social Security Regulations 2018
+    url: https://www.legislation.govt.nz/regulation/public/2018/0202/latest/
+    covers: Asset requirement, income thresholds, and income-based reductions.
+  - id: as-2025-amendment
+    kind: amending_legislation
+    title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025
+    url: https://www.legislation.govt.nz/act/public/2025/27/en/latest/sections/LMS1443018/
+    covers: Changes to accommodation costs and qualifying costs effective 2026-03-02.
+  - id: as-2026-amendment
+    kind: amending_legislation
+    title: Social Security (Jobseeker Support and Accommodation Supplement) Amendment Act 2026
+    url: https://www.legislation.govt.nz/act/public/2026/54/en/latest/
+    covers: Future homeowner entry-threshold changes and transitional provisions.
+    date_note: Check commencement and application; Schedule 1 Part 18 says the accommodation amendments apply from 2027-04-01.
+  - id: as-msd-overview
+    kind: agency_guidance
+    title: Accommodation Supplement
+    url: https://www.workandincome.govt.nz/products/a-z-benefits/accommodation-supplement
+    covers: Public-facing eligibility, assets, and maximum rates.
+  - id: as-msd-qualifications
+    kind: agency_guidance
+    title: Qualifications
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/qualifications.html
+    covers: Residence, age, student, and occupancy qualifications.
+  - id: as-msd-residence
+    kind: agency_guidance
+    title: Accommodation Supplement residence
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/residence.html
+    covers: Citizenship/visa and ordinary-residence requirements; no minimum residence duration.
+  - id: as-msd-students
+    kind: agency_guidance
+    title: Accommodation Supplement students
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/students-01.html
+    covers: Student Allowance exclusion and exceptions.
+  - id: as-msd-student-partner
+    kind: agency_guidance
+    title: Partner of a student
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/partner-of-a-student-01.html
+    covers: Non-student partner claim and Student Accommodation Benefit deduction.
+  - id: as-msd-student-partner-example
+    kind: agency_worked_example
+    title: Example - partner of a student
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/example-partner-of-a-student-01.html
+    covers: Fractional income reduction conflicting with the general income worksheet.
+  - id: as-msd-beneficiaries
+    kind: agency_guidance
+    title: Beneficiaries
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/beneficiaries-01.html
+    covers: Main-benefit income treatment and pension exceptions.
+  - id: as-msd-pensioners
+    kind: agency_guidance
+    title: New Zealand Superannuation and Veteran's Pension
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/new-zealand-superannuation-and-veterans-pension-01.html
+    covers: Pension claimant income limit, distinct from the main-beneficiary route.
+  - id: as-msd-assets
+    kind: agency_guidance
+    title: Assets - non-beneficiaries
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/assets-non-beneficiaries-01.html
+    covers: Cash asset cap and income imputation above the lower asset threshold.
+  - id: as-msd-chargeable-income
+    kind: agency_guidance
+    title: Chargeable income - non-beneficiaries
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/chargeable-income-non-beneficiaries-01.html
+    covers: Income inclusions and exclusions, including Inland Revenue WFF tax credits.
+  - id: as-msd-rate-method
+    kind: agency_guidance
+    title: Calculating rate - general formula
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/calculating-rate-general-formula-01.html
+    covers: Qualifying costs, entry threshold, subsidy, and regional cap.
+  - id: as-msd-qualifying-costs
+    kind: agency_guidance_and_example
+    title: Weekly qualifying accommodation costs
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/weekly-qualifying-accommodation-costs.html
+    covers: Property-use deductions, accommodation income, and a worked example.
+    date_note: MSD says these rules apply from 2026-03-02.
+  - id: as-msd-rates-2026
+    kind: agency_rates
+    title: Non-beneficiaries - entry thresholds and maximum rates
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/non-beneficiaries-current-01.html
+    covers: Weekly thresholds by household and tenure, and caps by area, at 2026-04-01.
+  - id: as-msd-jobseeker-rates-2026
+    kind: agency_rates
+    title: Jobseeker Support - Accommodation Supplement thresholds and maxima
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/jobseeker-support-current-01.html
+    covers: Jobseeker Support household thresholds and area caps at 2026-04-01.
+  - id: as-msd-sole-parent-rates-2026
+    kind: agency_rates
+    title: Sole Parent Support - Accommodation Supplement thresholds and maxima
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/sole-parent-support-current-01.html
+    covers: Sole Parent Support thresholds and area caps at 2026-04-01.
+  - id: as-msd-supported-living-rates-2026
+    kind: agency_rates
+    title: Supported Living Payment - Accommodation Supplement thresholds and maxima
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/supported-living-payment-current-01.html
+    covers: Supported Living Payment thresholds and area caps at 2026-04-01.
+  - id: as-msd-mixed-benefit-rates-2026
+    kind: agency_rates
+    title: Couples on different benefits - Accommodation Supplement thresholds
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/couples-on-different-benefits-current-01.html
+    covers: Half-married rates for mixed-benefit couples at 2026-04-01.
+  - id: as-msd-pension-rates-2026
+    kind: agency_rates
+    title: New Zealand Superannuation and Veterans Pension - Accommodation Supplement thresholds and maxima
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/new-zealand-superannuation-and-veterans-pension-cu-01.html
+    covers: Pension household and tenure thresholds and area caps at 2026-04-01.
+  - id: as-msd-income-2026
+    kind: agency_rates
+    title: Income cut-out points for non-beneficiaries
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/income-cut-out-points-for-non-beneficiaries-curren.html
+    covers: Income thresholds and cut-out points at 2026-04-01.
+  - id: as-msd-income-method
+    kind: agency_guidance
+    title: Income - non-beneficiaries
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/income-non-beneficiaries-01.html
+    covers: Income reduction and rounding sequence.
+  - id: as-msd-areas
+    kind: agency_geography
+    title: Definitions of areas
+    url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/definitions-of-areas.html
+    covers: Area 1 to 4 by Statistical Area Unit, effective from 2018-04-01.
+  - id: as-msd-rent-board-examples
+    kind: agency_worked_examples
+    title: Examples - calculating the rate of accommodation supplement
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/example-calculating-rate-01.html
+    covers: Rent and board examples using 2026-04-01 thresholds.
+  - id: as-msd-income-example
+    kind: agency_worked_example
+    title: Example - calculating income changes - non-beneficiaries
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/example-calculating-income-changes-non-beneficiari-01.html
+    covers: Income reduction and final rounding using 2026-04-01 thresholds.
+  - id: as-ird-other-income
+    kind: agency_guidance
+    title: Other income for Working for Families
+    url: https://www.ird.govt.nz/income-tax/income-tax-for-individuals/adjust-your-income/types-of-income/other-income
+    covers: Exclusion of non-taxable Accommodation Supplement from WFF family income.
+review_notes:
+  - Verify each rule against the legislation version effective on the modelled date.
+  - Separate the 2026-03-02 qualifying-cost change and 2027-04-01 homeowner change.
+  - Check the beneficiary and pension tables against the modelled household type; pension income limits also use Schedule 5.
+  - Resolve the fractional-income discrepancy between the general worksheet and student-partner example before implementation.
+  - MSD excludes IRD-paid WFF credits from non-beneficiary chargeable income; verify the MSD-paid route separately.
+  - Do not infer an address's area from a suburb name; MSD uses Statistical Area Units.
