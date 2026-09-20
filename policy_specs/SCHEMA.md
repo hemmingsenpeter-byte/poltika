@@ -4,7 +4,8 @@
 versioning; not an approved implementation schema or policy calculation.
 **Basis:** the Task 2 WFF and Accommodation Supplement source maps,
 the frozen doctrines in `BUILD_PLAN.md`, and the bounded Task 3 structural
-handoff. Claude Code's Task 7 repo-feasibility review is still required.
+handoff. Claude Code's Task 7 repo-feasibility review is recorded below;
+policy content remains unapproved.
 
 ## Boundary
 
@@ -45,9 +46,10 @@ rule is accepted.
 ## Version axes
 
 - `schema_version` identifies the shape of `policy.yaml`. The current design
-  is `"0.1"` and remains draft pending Task 7. A change to that shape requires
-  a new schema version and migration of both policy files; Task 25/26 is the
-  planned AS stress test and v0.2 revision. A policy rule or rate change alone
+  is `"0.1"` and remains a draft after Task 7's feasibility review. A change
+  to that shape requires a new schema version and migration of both policy
+  files; Tasks 25/26 are the planned AS stress test and v0.2 revision. A
+  policy rule or rate change alone
   does not change `schema_version`.
 - `policy_version` identifies a reviewed revision of one policy's content.
   It is `null` in the Task 5 scaffolds because neither policy has reached its
@@ -61,8 +63,8 @@ rule is accepted.
 
 A loader must recognise the declared schema version before interpreting
 policy content and must not treat a scaffold or `null` policy version as an
-approved executable specification. Task 7 determines the concrete validation
-mechanism; this document does not install one.
+approved executable specification. Task 7 recommends Pydantic validation;
+this document does not install it.
 
 ## People, units, and time
 

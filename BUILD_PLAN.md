@@ -1,7 +1,8 @@
 # Poltika v0.1 Build Plan
 
 **Date:** 20 September 2026
-**Status:** FROZEN — workflow and roadmap discussion closed. Next action is Task 1.
+**Status:** FROZEN — workflow and roadmap discussion closed. Week 0 Tasks 8
+and 9 are complete.
 
 ---
 
@@ -192,28 +193,36 @@ twin of the New Zealand policy system.
    Task 2's independent source mapping is complete. Completed 21 September
    2026; the bounded inspection and Task 4 handoff are recorded in
    docs/research/task_3_structural_glance.md. The separate broader comparative
-   review is not Task 3 or Task 16 and needs a timing decision.
+   review is not Task 3 or Task 16; ADR-0004 records its one-off timing
+   decision and does not replace the later Task 16 check.
 4. Derive minimal POLICY_SPECS v0.1 schema from both policies' actual
    requirements, including provenance fields for any external statistical
    datasets used (source organisation, dataset/series, source URL/identifier,
    retrieval date, observation/reference period, units, geography/population,
    retrieval method, raw snapshot/version, transformation/version, canonical
-   variable mapping) — see Data Acquisition Doctrine
+   variable mapping) — see Data Acquisition Doctrine. Completed 21 September
+   2026 as a design draft in policy_specs/SCHEMA.md; Task 7 reviewed
+   feasibility, not policy content approval.
 5. Establish file structure: policy.yaml, specification.md, sources.yaml,
    benchmarks.yaml, spec_cases.yaml (ADR-0005 — hand-calculated spec-test
    expected values, loaded by Task 13 tests rather than hardcoded),
-   decisions/*.md
+   decisions/*.md. Completed 21 September 2026 as unapproved scaffolds in
+   both policy directories; no statutory expected values are recorded.
 6. Version the schema itself (schema_version field), separately from policy
-   version/effective dates
+   version/effective dates. Completed 21 September 2026: both policy.yaml
+   scaffolds declare schema_version "0.1" and leave policy_version null;
+   legal effective dates remain distinct in the schema draft.
 7. Claude Code repo-feasibility review of the schema; determine the concrete
    mechanism for statutory-value CI protection. Completed 21 September 2026:
    schema reviewed feasible in policy_specs/SCHEMA.md's Task 7 response.
    Original CI mechanism decided in ADR-0005 (CODEOWNERS + branch
-   protection); found not installable on this repo's GitHub plan during
-   Task 9, and superseded by ADR-0007 (PR visibility + Pete's review before
-   merge, no CODEOWNERS or paid plan needed). ADR-0005 stays as the
+   protection); not available on the repo's plan during Task 9, and
+   superseded by ADR-0007 (PR visibility + Pete's review before merge,
+   without CODEOWNERS or required review). ADR-0005 stays as the
    historical record; ADR-0007 is current.
-8. Write IP/provenance ADR
+8. Write IP/provenance ADR. Completed 21 September 2026: Pete accepted
+   ADR-0006, linking ADR-0001/0003/0004 to the source-to-calculation
+   provenance chain.
 9. Install statutory-value visibility per ADR-0007. `.github/CODEOWNERS`
    removed (implied an enforcement the plan can't deliver — a false
    signal). `.github/workflows/statutory-value-guard.yml` kept and fixed
