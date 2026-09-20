@@ -77,7 +77,7 @@ poltika/
 │       │   ├── assurance/   — provenance, regression, change attribution (v0.1)
 │       │   ├── discovery/   — capability-driven, post-v0.2 (Roadmap Doctrine)
 │       │   └── hypothesis/  — capability-driven, post-v0.2 (Roadmap Doctrine)
-│       ├── scenarios/       — scenario definitions, runner, results
+│       ├── scenarios/       — validated definitions, runner, results; future search orchestration
 │       ├── llm/             — orchestration, prompts, guardrails (never calculates — see doctrine/llm_boundaries.md)
 │       └── common/          — types, errors, utilities
 │
@@ -99,6 +99,9 @@ poltika/
 Roadmap Doctrine puts Discovery and Hypothesis capabilities after v0.2, so
 these subdirectories should not be created, or populated, for v0.1. Listing
 them here is about naming the eventual slot, not authorizing early work.
+Future Policy Search belongs on the orchestration side of `scenarios/`, not
+inside `engines/simulator/`. No search directory is scaffolded now; its
+module layout is a later design decision.
 
 ## The dependency boundary
 
@@ -116,6 +119,13 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | `src/poltika/engines/simulator/` | `semantics/`, `policy/`, `scenarios/`, `common/` | Stats NZ (or any) API, source CSV structures, LLM output |
 | `src/poltika/engines/assurance/` | `semantics/`, `policy/`, `scenarios/`, `engines/simulator/`, `common/` | source-specific formats/APIs |
 | `src/poltika/llm/` | `scenarios/` (to build/read a `ScenarioRequest`) | `engines/simulator/` internals, raw/processed data |
+
+The arrows above describe data flow, not permission for circular imports.
+The simulator may consume a validated scenario request type, but must not
+import scenario-runner, search, or candidate-generation logic. The scenario
+runner invokes the simulator; a future search orchestrator invokes that same
+runner and evaluates results against human-supplied constraints. Scenario
+origin must not change the calculator's code path.
 
 Concretely: the simulator must never do
 

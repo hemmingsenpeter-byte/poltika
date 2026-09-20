@@ -21,6 +21,17 @@ No field may silently default a missing fact, source, date, or geographic area
 to a value that would yield entitlement. The eventual calculator must
 distinguish an in-scope zero from `unsupported`/`needs_review`.
 
+`policy.yaml` describes the reviewed baseline policy and its effective-dated
+parameters; it is not a store of scenario instances or hypothetical reform
+values. A v0.1 scenario should reference validated parameter IDs and carry
+any proposed changes as machine-readable, versioned input data outside this
+file. Resolution must preserve the baseline source/version and the override
+provenance separately, reject unknown IDs or invalid units/periods, and never
+silently mutate the statutory baseline. This keeps future programmatic
+scenario generation possible without inventing a universal policy DSL or
+implementing Policy Search in v0.1. The concrete ScenarioRequest and result
+schema belong to BUILD_PLAN.md Tasks 30/32, not this policy schema draft.
+
 ## Minimal policy record
 
 | Field | Shape and purpose | Grounding |
