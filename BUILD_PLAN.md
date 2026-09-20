@@ -1,8 +1,8 @@
 # Poltika v0.1 Build Plan
 
 **Date:** 20 September 2026
-**Status:** FROZEN — workflow and roadmap discussion closed. Week 0 Task 8 is
-drafted for Pete's acceptance; Task 9 is complete.
+**Status:** FROZEN — workflow and roadmap discussion closed. Week 0 Tasks 8
+and 9 are complete.
 
 ---
 
@@ -220,9 +220,9 @@ twin of the New Zealand policy system.
    superseded by ADR-0007 (PR visibility + Pete's review before merge,
    without CODEOWNERS or required review). ADR-0005 stays as the
    historical record; ADR-0007 is current.
-8. Write IP/provenance ADR. Drafted 21 September 2026 in ADR-0006, linking
-   ADR-0001/0003/0004 to the source-to-calculation provenance chain; Pete's
-   acceptance of the proposed ADR remains pending.
+8. Write IP/provenance ADR. Completed 21 September 2026: Pete accepted
+   ADR-0006, linking ADR-0001/0003/0004 to the source-to-calculation
+   provenance chain.
 9. Install statutory-value visibility per ADR-0007. `.github/CODEOWNERS`
    removed (implied an enforcement the plan can't deliver — a false
    signal). `.github/workflows/statutory-value-guard.yml` kept and fixed

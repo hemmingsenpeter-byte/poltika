@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-21
 
-**Status:** proposed for Pete's acceptance
+**Status:** accepted by Pete on 2026-09-21
 
 **Build-plan task:** 8 (GPT draft)
 
