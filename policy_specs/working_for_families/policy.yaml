@@ -56,7 +56,7 @@ inputs:
     period: full_tax_year
     source_rule_ids: [WFF-05]
     required_for: minimum_family_tax_credit
-    missing_outcome: unsupported
+    missing_outcome: needs_review
     note: Distinct from family_scheme_income; must follow Income Tax Act s ME 3.
   - id: paid_parental_leave_periods
     owner: person
@@ -84,7 +84,7 @@ parameters:
       - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 44900, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: draft_pending_independent_review}
   - id: family_tax_credit_abatement_rate
     value_type: fraction
-    unit: NZD_per_NZD_above_threshold
+    unit: NZD_per_complete_NZD_above_threshold
     values:
       - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.275, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: draft_pending_independent_review}
   - id: in_work_base
@@ -97,7 +97,7 @@ parameters:
         source_id: wff-iwtc-increase-act-2026
         locator: sections 2 and 105; Income Tax Act s MD 10(3)(a)
         review_status: needs_review
-        note: Check any reversal Order in Council before assigning an end date.
+        note: 2027-04-01 is the statutory latest reversal date, not a confirmed full-year duration; recheck for an earlier Order in Council for each assessment date.
   - id: in_work_additional_child
     value_type: money
     unit: NZD_per_tax_year

@@ -68,7 +68,7 @@ Annual statutory amounts and displayed weekly instalments must remain distinct.
 | Effective period | Observation | Source |
 | --- | --- | --- |
 | From 1 April 2026 | The 2025 Tax Credit Order changes annual family tax credit rates to $7,921 for the eldest child and $6,454 for each additional child; minimum family tax credit's prescribed amount to $36,604; and Best Start's annual rate to $4,041. | `wff-tax-credit-order-2025`, clauses 4-6; Income Tax Act ss MD 3, ME 1, MG 2. |
-| From 1 April 2026 | The family tax credit abatement threshold is $44,900 and the marginal rate is 27.5 cents per dollar above it. | `wff-budget-measures-2025`; Income Tax Act s MD 13; `wff-ird-family-tax-credit`. |
+| From 1 April 2026 | The family tax credit abatement threshold is $44,900 and the rate is 27.5 cents per complete dollar above it. | `wff-budget-measures-2025`; Income Tax Act s MD 13(3)(a); `wff-ird-family-tax-credit`. |
 | From 1 April 2026, subject to earlier reversal | The temporary in-work tax credit base is $7,670 annually rather than $5,070; a later Order in Council can set the reversal date. A petrol-price condition is described by IRD, but the operative legal event is the Order. | `wff-iwtc-increase-act-2026`, ss 105-106; `wff-ird-temporary-increase`. Verify the Order status for each modelled date. |
 | From 1 April 2026 | Best Start abatement is 21 cents per complete dollar of family scheme income above $79,000 for periods subject to abatement. The pre-1-April-2026 birth exception remains relevant. | Income Tax Act s MG 3; `wff-ird-best-start`; `wff-budget-measures-2025`. |
 | From 1 April 2027 | Enacted changes to family scheme income adjustments and residence are future law on this reference date. | `wff-budget-measures-2026`; `wff-ird-interpretation-2026`. Do not apply them to 2026-27 cases. |
@@ -148,15 +148,24 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
 1. Select the law and parameter interval for the assessment date; verify the
    temporary in-work base has not been reversed by an Order in Council. The
    2026 Act changed MD 10(3)(a) to $7,670 with a possible earlier reversal;
-   petrol-price guidance is not itself the operative legal instrument
+   the `policy.yaml` end date is the statutory outer bound, not confirmation
+   that the increased rate applies throughout 2026-27. On 21 September 2026,
+   the official Act page reported no secondary legislation made under s 2(43)
+   on that site; this does not establish the position on a later assessment date.
+   An early reversal needs a separately specified split-period calculation
+   before a full-year result can be claimed. Petrol-price guidance is not
+   itself the operative legal instrument
    (`wff-iwtc-increase-act-2026`, ss 2, 105-106; `wff-ird-temporary-increase`).
 2. Validate family membership, qualifying children, residence, care, and
    family-scheme income. Calculate the full-year family tax credit as $7,921
    for the eldest qualifying child plus $6,454 for each additional qualifying
-   child. For the ordinary case, abatement is 27.5% of family-scheme income
-   above $44,900; subtract up to the family-credit amount, and carry any
-   remaining abatement to in-work tax credit. Do **not** apply this ordinary
-   formula to MD 14 protected-credit or per-child government-payment cases
+   child. For the ordinary full-year case, abatement is $0.275 times the
+   number of **complete dollars** by which family-scheme income exceeds
+   $44,900: `0.275 * floor(max(0, income - 44900))`. Subtract up to the
+   family-credit amount, and carry any remaining abatement to in-work tax
+   credit, following IRD's component allocation guidance. Do **not** apply
+   this ordinary formula to MD 14 protected-credit or per-child
+   government-payment cases
    until independently specified (WFF-03/08; Income Tax Act ss MD 3, 13-15;
    `wff-tax-credit-order-2025`, cl 4;
    `wff-budget-measures-2025`, s 7;
