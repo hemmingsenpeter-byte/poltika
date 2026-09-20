@@ -187,7 +187,10 @@ twin of the New Zealand policy system.
    review gates remain prerequisites for implementation, not Task 3 blockers.
 3. Inspect OpenFisca Aotearoa's structural concepts only (not implementation) —
    the narrow pre-suite exception in IP Doctrine; schema shape only, after
-   Task 2's independent source mapping is complete
+   Task 2's independent source mapping is complete. Completed 21 September
+   2026; the bounded inspection and Task 4 handoff are recorded in
+   docs/research/task_3_structural_glance.md. The separate broader comparative
+   review is not Task 3 or Task 16 and needs a timing decision.
 4. Derive minimal POLICY_SPECS v0.1 schema from both policies' actual
    requirements, including provenance fields for any external statistical
    datasets used (source organisation, dataset/series, source URL/identifier,
