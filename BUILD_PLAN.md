@@ -219,12 +219,20 @@ twin of the New Zealand policy system.
    signal). `.github/workflows/statutory-value-guard.yml` kept and fixed
    (diffs from the actual merge-base, not a possibly-stale `base.sha`) as a
    visibility-only PR check, not a merge block. First attempt (test PR #3,
-   21 September 2026) found the workflow didn't run at all — an
-   account-level GitHub Actions hold, not a workflow bug. **Closed 21
-   September 2026** after Pete upgraded to GitHub Pro: re-tested on PR #4
-   (opened independently by GPT/Codex for the same purpose) and the
-   workflow ran, correctly detected the changed `benchmarks.yaml` path, and
-   posted the review warning. Pro also unlocked GitHub branch protection;
+   21 September 2026) found the workflow didn't run at all — likely an
+   account-level GitHub Actions hold, not a workflow bug, though GitHub
+   never confirmed the cause directly. After Pete upgraded to GitHub Pro,
+   PR #4 (opened independently by GPT/Codex) confirmed the underlying
+   detection logic works — the workflow ran and correctly identified the
+   changed `benchmarks.yaml` path — but PR #4 closed before its check run
+   started, so that only proved detection, not that the warning is visible
+   in time to inform a merge decision. Codex's review of PR #4 caught this
+   distinction. **Closed 21 September 2026** after a follow-up test (PR
+   #5) kept deliberately open until the check appeared: it went
+   pending → pass while the PR was still open, and its annotation ("This
+   PR changes protected statutory-value files...") was visible on the open
+   PR before it was closed unmerged — confirming visibility-before-merge,
+   not just detection. Pro also unlocked GitHub branch protection;
    enabled the baseline (no force-push, no branch deletion on `main`) but
    deliberately did not reinstate CODEOWNERS/required-review — Pete's
    explicit choice to stay with ADR-0007's visibility-plus-judgment model
