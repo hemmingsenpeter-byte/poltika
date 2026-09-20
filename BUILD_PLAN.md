@@ -210,10 +210,14 @@ twin of the New Zealand policy system.
    benchmarks.yaml/spec_cases.yaml/policy.yaml's parameters block, not a
    bespoke pytest-hashing tool). Task 9 installs it.
 8. Write IP/provenance ADR
-9. Install statutory-test CI protection per ADR-0005: add CODEOWNERS entries
-   for the three protected paths per policy, enable branch protection
-   requiring that review on main, add a CI check surfacing protected-path
-   diffs
+9. Install statutory-test CI protection per ADR-0005. Completed 21 September
+   2026 to the extent this GitHub plan allows: `.github/CODEOWNERS` added
+   (soft review signal on the six whole-file-protected paths) and
+   `.github/workflows/statutory-value-guard.yml` added (informational PR
+   check surfacing protected-path diffs). **Not installed:** branch
+   protection actually requiring that review before merge — GitHub Pro is
+   needed for that on a private repo (confirmed unavailable on the current
+   plan); revisit if/when the plan changes.
 
 ### Weeks 1–2 — WFF Vertical Slice
 10. Complete WFF policy.yaml + specification.md from source

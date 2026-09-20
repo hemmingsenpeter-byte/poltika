@@ -1,0 +1,41 @@
+name: Statutory Value Guard
+
+# Informational visibility check per ADR-0005 — not a merge block (this repo
+# can't yet enforce required Code Owner review on a private repo without
+# GitHub Pro). Surfaces changes to the whole-file-protected statutory-value
+# files so they can't be missed in a larger diff.
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-protected-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for statutory-value file changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- \
+            'policy_specs/*/benchmarks.yaml' \
+            'policy_specs/*/spec_cases.yaml' \
+            'policy_specs/*/policy.yaml')
+          if [ -n "$CHANGED" ]; then
+            echo "::warning title=Statutory-value files changed::This PR changes protected statutory-value files (ADR-0005). Needs Pete's explicit review before merge."
+            {
+              echo "## Statutory-value files changed"
+              echo
+              echo "Per ADR-0005, these files require Pete's explicit review before merge:"
+              echo
+              echo "$CHANGED" | sed 's/^/- /'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No protected statutory-value files changed." >> "$GITHUB_STEP_SUMMARY"
+          fi
