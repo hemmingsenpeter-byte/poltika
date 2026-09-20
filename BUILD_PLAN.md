@@ -218,16 +218,19 @@ twin of the New Zealand policy system.
    removed (implied an enforcement the plan can't deliver — a false
    signal). `.github/workflows/statutory-value-guard.yml` kept and fixed
    (diffs from the actual merge-base, not a possibly-stale `base.sha`) as a
-   visibility-only PR check, not a merge block. **Not yet closed:** tested
-   on a real PR (#3) touching a protected path on 21 September 2026 — the
-   workflow did not run at all (zero check-runs, zero statuses on the
-   commit), despite Actions showing enabled at the repo-permissions level.
-   This looks like an account-level GitHub Actions hold (common for new
-   accounts on private repos until identity/payment is verified), not a
-   workflow bug — the merge-base diff logic is unverified until Actions
-   actually runs. Until then the operating rule is fully manual: look at
-   the PR diff itself before merging; don't rely on a check that hasn't
-   been confirmed to fire.
+   visibility-only PR check, not a merge block. First attempt (test PR #3,
+   21 September 2026) found the workflow didn't run at all — an
+   account-level GitHub Actions hold, not a workflow bug. **Closed 21
+   September 2026** after Pete upgraded to GitHub Pro: re-tested on PR #4
+   (opened independently by GPT/Codex for the same purpose) and the
+   workflow ran, correctly detected the changed `benchmarks.yaml` path, and
+   posted the review warning. Pro also unlocked GitHub branch protection;
+   enabled the baseline (no force-push, no branch deletion on `main`) but
+   deliberately did not reinstate CODEOWNERS/required-review — Pete's
+   explicit choice to stay with ADR-0007's visibility-plus-judgment model
+   rather than silently reverting to ADR-0005 now that it's technically
+   possible again. The operating rule stays manual: look at the PR diff and
+   the guard workflow's result before merging.
 
 ### Weeks 1–2 — WFF Vertical Slice
 10. Complete WFF policy.yaml + specification.md from source
