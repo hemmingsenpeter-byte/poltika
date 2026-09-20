@@ -114,12 +114,14 @@ Three classes:
   worked examples. This is what prevents AI-on-AI validation from being the only
   check.
 
-Statutory expected values are protected by CI, installed *before* implementation
-starts. The mechanism protects the *intent* — statutory expected values specifically
-— not every numeric literal in a test file. Claude Code determines the cleanest
-implementation (e.g. protected benchmark/spec fixtures, or explicitly tagged
-statutory assertions) during Tasks 7/9; this is an implementation decision, not
-an architectural one.
+Statutory expected-value changes are identified in PR CI, sourced, tested, and
+reviewed before Pete merges — not changed to make a test pass. The mechanism
+protects the *intent* — statutory expected values specifically — not every
+numeric literal in a test file, and it is visibility plus independent review,
+not a GitHub-enforced merge gate (see ADR-0007, which supersedes ADR-0005).
+Claude Code determines the cleanest implementation (e.g. protected
+benchmark/spec fixtures, or explicitly tagged statutory assertions) during
+Tasks 7/9; this is an implementation decision, not an architectural one.
 
 ---
 
@@ -205,19 +207,20 @@ twin of the New Zealand policy system.
    version/effective dates
 7. Claude Code repo-feasibility review of the schema; determine the concrete
    mechanism for statutory-value CI protection. Completed 21 September 2026:
-   schema reviewed feasible in policy_specs/SCHEMA.md's Task 7 response; CI
-   mechanism decided in ADR-0005 (CODEOWNERS-gated review over
-   benchmarks.yaml/spec_cases.yaml/policy.yaml's parameters block, not a
-   bespoke pytest-hashing tool). Task 9 installs it.
+   schema reviewed feasible in policy_specs/SCHEMA.md's Task 7 response.
+   Original CI mechanism decided in ADR-0005 (CODEOWNERS + branch
+   protection); found not installable on this repo's GitHub plan during
+   Task 9, and superseded by ADR-0007 (PR visibility + Pete's review before
+   merge, no CODEOWNERS or paid plan needed). ADR-0005 stays as the
+   historical record; ADR-0007 is current.
 8. Write IP/provenance ADR
-9. Install statutory-test CI protection per ADR-0005. Completed 21 September
-   2026 to the extent this GitHub plan allows: `.github/CODEOWNERS` added
-   (soft review signal on the six whole-file-protected paths) and
-   `.github/workflows/statutory-value-guard.yml` added (informational PR
-   check surfacing protected-path diffs). **Not installed:** branch
-   protection actually requiring that review before merge — GitHub Pro is
-   needed for that on a private repo (confirmed unavailable on the current
-   plan); revisit if/when the plan changes.
+9. Install statutory-value visibility per ADR-0007. `.github/CODEOWNERS`
+   removed (implied an enforcement the plan can't deliver — a false
+   signal). `.github/workflows/statutory-value-guard.yml` kept and fixed
+   (diffs from the actual merge-base, not a possibly-stale `base.sha`) as a
+   visibility-only PR check, not a merge block. Closes once demonstrated
+   working on a real PR, not merely committed. The operating rule is
+   manual: look at the PR diff and this check's result before merging.
 
 ### Weeks 1–2 — WFF Vertical Slice
 10. Complete WFF policy.yaml + specification.md from source

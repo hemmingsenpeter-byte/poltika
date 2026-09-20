@@ -1,7 +1,11 @@
 # ADR-0005: Statutory-value CI protection mechanism
 
 **Date:** 2026-09-21
-**Status:** accepted
+**Status:** superseded by [ADR-0007](0007-pr-visibility-statutory-value-protection.md)
+(2026-09-21) — the CODEOWNERS/branch-protection mechanism below turned out to
+require GitHub Pro, unavailable on this repo's plan. Left unedited below as
+the historical record of what was originally decided and why; do not treat
+its Decision/Mechanism sections as current.
 
 ## Context
 
