@@ -214,8 +214,9 @@ twin of the New Zealand policy system.
    mechanism for statutory-value CI protection. Completed 21 September 2026:
    schema reviewed feasible in policy_specs/SCHEMA.md's Task 7 response; CI
    mechanism decided in ADR-0005 (CODEOWNERS-gated review over the whole
-   benchmarks.yaml, spec_cases.yaml, and policy.yaml files, not a
-   bespoke pytest-hashing tool). Task 9 installs it.
+   benchmarks.yaml and spec_cases.yaml files, and specifically policy.yaml's
+   parameters block — not the whole policy.yaml file, and not a bespoke
+   pytest-hashing tool). Task 9 installs it.
 8. Write IP/provenance ADR. Drafted 21 September 2026 in ADR-0006, linking
    ADR-0001/0003/0004 to the source-to-calculation provenance chain; Pete's
    acceptance of the proposed ADR remains pending.
