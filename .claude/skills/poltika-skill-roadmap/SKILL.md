@@ -32,9 +32,15 @@ about to start, per the reactive-build approach this list follows.
 Not tracked row-by-row here since they're Anthropic-maintained, not
 project-authored, but the same timing logic applies:
 
-- Low-risk to install now: `commit-commands`, `security-guidance`.
-- Hold until `src/` actually has Python in it: `pyright-lsp`, `code-review`,
-  `pr-review-toolkit`, `code-simplifier` — nothing for them to check yet.
+- Low-risk to install now: `commit-commands`.
+- Hold until there's actual attack surface — `src/` code, `data/` acquisition
+  scripts, or credentials/API keys: `pyright-lsp`, `code-review`,
+  `pr-review-toolkit`, `code-simplifier`, `security-guidance` — nothing for
+  any of them to check yet.
+- **`security-review`** is already available in every session as a built-in
+  skill, no install needed — it reviews pending changes on the current
+  branch. Fine to invoke on demand any time; just hasn't had application
+  code to review yet.
 
 ## If you're not sure a skill is needed at all
 
