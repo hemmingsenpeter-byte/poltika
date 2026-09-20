@@ -4,6 +4,8 @@ GitHub pull requests carry task artifacts between the two models. Pete remains
 the v0.1 message bus, acceptance judge, and owner of genuine interpretation
 decisions, as specified in `BUILD_PLAN.md`. This process replaces copy-pasting
 artifacts, not Pete's approval or the fresh-context review gate.
+Codex is the tool carrying out the build plan's GPT role here, not a third
+actor in the review rotation.
 
 1. The author makes one task-sized change on a branch or isolated worktree,
    commits it, and opens a PR against `main`. The PR template gives only
@@ -15,9 +17,10 @@ artifacts, not Pete's approval or the fresh-context review gate.
    and the specification, then compares the diff and tests. The reviewer
    records findings with `review_packets/TEMPLATE.md` or in PR comments before
    reading any implementer explanation.
-3. The author responds after the independent pass. Pete classifies and decides
-   genuine ambiguities, records any required decision artifact, and accepts
-   or rejects the handoff. Only then does the next gated task begin.
+3. The author responds after the independent pass. The reviewer proposes
+   discrepancy classifications; Pete confirms them, decides genuine
+   interpretation ambiguities, records any required decision artifact, and
+   accepts or rejects the handoff. Only then does the next gated task begin.
 
 Do not have both models edit the same checkout concurrently. A branch/worktree
 per active task keeps changes separate. A local unpublished diff can be read

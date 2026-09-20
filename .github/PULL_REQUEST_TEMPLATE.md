@@ -1,7 +1,7 @@
 ## Handoff
 
 - Build-plan task:
-- Author (GPT or Claude Code):
+- Author (GPT via Codex, or Claude Code):
 - Requested reviewer (the other model):
 - Pete's review request or approval:
 
