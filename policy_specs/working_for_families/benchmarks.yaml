@@ -1,3 +1,4 @@
 # Task 5 scaffold only. Task 14 adds independently verified official examples.
 status: pending_review
 benchmarks: []
+# test: verifying statutory-value-guard.yml triggers correctly (not a real content change)
