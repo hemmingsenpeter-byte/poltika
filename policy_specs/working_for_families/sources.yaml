@@ -10,7 +10,7 @@ sources:
     locator: Subparts MB-MG; especially ss MB 1-14, MC 3-11, MD 3-15, ME 1-3, MG 1-4.
     version_note: Official index showed a latest version as at 2026-09-04 on 2026-09-21.
     verification_status: full_text_review_pending
-    access_note: Official full-page retrieval returned 403 in the initial Task 10 pass; a browser-user-agent fetch later allowed direct checks of MD 13. Other provisions still need full-text review.
+    access_note: Official full-page retrieval returned 403 in the initial Task 10 pass; later browser-user-agent fetches enabled direct checks of MD 1, MD 3, MD 10, MD 13, ME 1, and ME 3 (PR #6 review comment 5753283332). Other provisions still need full-text review.
   - id: wff-tax-credit-order-2025
     kind: amending_legislation
     title: Income Tax (Tax Credit) Order 2025
