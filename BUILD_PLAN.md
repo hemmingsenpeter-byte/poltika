@@ -250,7 +250,9 @@ twin of the New Zealand policy system.
    the guard workflow's result before merging.
 
 ### Weeks 1–2 — WFF Vertical Slice
-10. Complete WFF policy.yaml + specification.md from source
+10. Complete WFF policy.yaml + specification.md from source. Source-linked
+    draft in PR #6; independent legal/content review and Pete's acceptance
+    remain open. The draft is not an executable policy specification.
 10a. Identify the minimum authoritative external statistical datasets the WFF
     vertical actually needs (beyond the legislated rates already captured in
     sources.yaml/specification.md, if any); manually acquire and freeze each
