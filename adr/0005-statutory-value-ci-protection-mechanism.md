@@ -1,7 +1,11 @@
 # ADR-0005: Statutory-value CI protection mechanism
 
 **Date:** 2026-09-21
-**Status:** accepted
+**Status:** superseded by [ADR-0007](0007-pr-visibility-statutory-value-protection.md)
+(2026-09-21) — the CODEOWNERS/branch-protection mechanism below turned out to
+require GitHub Pro, unavailable on this repo's plan. Left unedited below as
+the historical record of what was originally decided and why; do not treat
+its Decision/Mechanism sections as current.
 
 ## Context
 
@@ -31,9 +35,12 @@ Protected files, per policy (`working_for_families`, `accommodation_supplement`)
   values (**new**, small addition to Task 5's file list, symmetric with
   `benchmarks.yaml`). Spec tests (Task 13) must load expected values from
   this file, not hardcode them as Python literals.
-- `policy_specs/<policy>/policy.yaml` — specifically its `parameters` block
-  (the statutory rates/thresholds themselves, per `SCHEMA.md`'s Task 4
-  draft).
+- `policy_specs/<policy>/policy.yaml` — the whole file is the gate's actual
+  enforcement boundary, since GitHub CODEOWNERS cannot target a sub-section
+  of a YAML file. The `parameters` block (the statutory rates/thresholds
+  themselves, per `SCHEMA.md`'s Task 4 draft) is *why* the file is
+  protected, not the enforced scope — see Consequences for the accepted
+  coarseness this implies for non-statutory edits.
 
 Mechanism (to be installed in Task 9):
 

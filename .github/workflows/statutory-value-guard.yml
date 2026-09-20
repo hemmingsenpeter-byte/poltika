@@ -1,0 +1,47 @@
+name: Statutory Value Guard
+
+# Visibility only, per ADR-0007 (supersedes ADR-0005) — this does not and
+# cannot block merge; branch protection requires GitHub Pro, unavailable on
+# this repo's plan. It exists so a statutory-value file change can't be
+# missed in a larger diff. The operating rule is manual: look at the PR diff
+# and this result before merging.
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-protected-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for statutory-value file changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # Diff from the actual merge-base, not base.sha directly — base.sha
+          # is main's tip as of the PR event, which can be stale (and so
+          # under- or over-report the diff) if main has moved since the PR
+          # branched. This is what ADR-0007 fixed from the original version.
+          MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+          CHANGED=$(git diff --name-only "$MERGE_BASE" "$HEAD_SHA" -- \
+            'policy_specs/*/benchmarks.yaml' \
+            'policy_specs/*/spec_cases.yaml' \
+            'policy_specs/*/policy.yaml')
+          if [ -n "$CHANGED" ]; then
+            echo "::warning title=Statutory-value files changed::This PR changes protected statutory-value files (ADR-0007). Review before merging — this check does not block merge."
+            {
+              echo "## Statutory-value files changed"
+              echo
+              echo "Per ADR-0007, review these before merging (this check is visibility only, not a merge block):"
+              echo
+              echo "$CHANGED" | sed 's/^/- /'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No protected statutory-value files changed." >> "$GITHUB_STEP_SUMMARY"
+          fi

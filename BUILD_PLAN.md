@@ -2,7 +2,7 @@
 
 **Date:** 20 September 2026
 **Status:** FROZEN — workflow and roadmap discussion closed. Week 0 Task 8 is
-drafted for Pete's acceptance; Task 9 is not yet installed.
+drafted for Pete's acceptance; Task 9 is complete.
 
 ---
 
@@ -115,12 +115,14 @@ Three classes:
   worked examples. This is what prevents AI-on-AI validation from being the only
   check.
 
-Statutory expected values are protected by CI, installed *before* implementation
-starts. The mechanism protects the *intent* — statutory expected values specifically
-— not every numeric literal in a test file. Claude Code determines the cleanest
-implementation (e.g. protected benchmark/spec fixtures, or explicitly tagged
-statutory assertions) during Tasks 7/9; this is an implementation decision, not
-an architectural one.
+Statutory expected-value changes are identified in PR CI, sourced, tested, and
+reviewed before Pete merges — not changed to make a test pass. The mechanism
+protects the *intent* — statutory expected values specifically — not every
+numeric literal in a test file, and it is visibility plus independent review,
+not a GitHub-enforced merge gate (see ADR-0007, which supersedes ADR-0005).
+Claude Code determines the cleanest implementation (e.g. protected
+benchmark/spec fixtures, or explicitly tagged statutory assertions) during
+Tasks 7/9; this is an implementation decision, not an architectural one.
 
 ---
 
@@ -212,20 +214,40 @@ twin of the New Zealand policy system.
    legal effective dates remain distinct in the schema draft.
 7. Claude Code repo-feasibility review of the schema; determine the concrete
    mechanism for statutory-value CI protection. Completed 21 September 2026:
-   schema reviewed feasible in policy_specs/SCHEMA.md's Task 7 response; CI
-   mechanism decided in ADR-0005 (CODEOWNERS-gated review over the whole
-   benchmarks.yaml, spec_cases.yaml, and policy.yaml files — CODEOWNERS
-   can't target a YAML sub-section, so the parameters block is why
-   policy.yaml is protected, not the enforced scope; non-statutory
-   policy.yaml edits are also gated as an accepted coarseness cost per
-   ADR-0005 — not a bespoke pytest-hashing tool). Task 9 installs it.
+   schema reviewed feasible in policy_specs/SCHEMA.md's Task 7 response.
+   Original CI mechanism decided in ADR-0005 (CODEOWNERS + branch
+   protection); not available on the repo's plan during Task 9, and
+   superseded by ADR-0007 (PR visibility + Pete's review before merge,
+   without CODEOWNERS or required review). ADR-0005 stays as the
+   historical record; ADR-0007 is current.
 8. Write IP/provenance ADR. Drafted 21 September 2026 in ADR-0006, linking
    ADR-0001/0003/0004 to the source-to-calculation provenance chain; Pete's
    acceptance of the proposed ADR remains pending.
-9. Install statutory-test CI protection per ADR-0005: add CODEOWNERS entries
-   for the three protected paths per policy, enable branch protection
-   requiring that review on main, add a CI check surfacing protected-path
-   diffs
+9. Install statutory-value visibility per ADR-0007. `.github/CODEOWNERS`
+   removed (implied an enforcement the plan can't deliver — a false
+   signal). `.github/workflows/statutory-value-guard.yml` kept and fixed
+   (diffs from the actual merge-base, not a possibly-stale `base.sha`) as a
+   visibility-only PR check, not a merge block. First attempt (test PR #3,
+   21 September 2026) found the workflow didn't run at all — likely an
+   account-level GitHub Actions hold, not a workflow bug, though GitHub
+   never confirmed the cause directly. After Pete upgraded to GitHub Pro,
+   PR #4 (opened independently by GPT/Codex) confirmed the underlying
+   detection logic works — the workflow ran and correctly identified the
+   changed `benchmarks.yaml` path — but PR #4 closed before its check run
+   started, so that only proved detection, not that the warning is visible
+   in time to inform a merge decision. Codex's review of PR #4 caught this
+   distinction. **Closed 21 September 2026** after a follow-up test (PR
+   #5) kept deliberately open until the check appeared: it went
+   pending → pass while the PR was still open, and its annotation ("This
+   PR changes protected statutory-value files...") was visible on the open
+   PR before it was closed unmerged — confirming visibility-before-merge,
+   not just detection. Pro also unlocked GitHub branch protection;
+   enabled the baseline (no force-push, no branch deletion on `main`) but
+   deliberately did not reinstate CODEOWNERS/required-review — Pete's
+   explicit choice to stay with ADR-0007's visibility-plus-judgment model
+   rather than silently reverting to ADR-0005 now that it's technically
+   possible again. The operating rule stays manual: look at the PR diff and
+   the guard workflow's result before merging.
 
 ### Weeks 1–2 — WFF Vertical Slice
 10. Complete WFF policy.yaml + specification.md from source

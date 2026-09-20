@@ -30,9 +30,9 @@ external policy engines into authority.
    its source ID, locator, unit, legal effective interval, and review status.
    Hand-calculated `spec_cases.yaml` expectations derive from the reviewed
    specification; `benchmarks.yaml` expectations derive from dated official
-   worked examples and an independent recalculation. Task 9's file-level
-   CODEOWNERS gate, as decided in ADR-0005, will protect changes to those files
-   once installed.
+   worked examples and an independent recalculation. Task 9's PR visibility
+   check, as decided in ADR-0007 (superseding ADR-0005), flags changes to
+   those files for review before Pete merges; it is not a merge gate.
    A source-map observation is not an approved parameter or test value.
 3. **Statistical data.** A frozen raw snapshot has the eleven provenance
    fields listed in the Data Acquisition Doctrine: source organisation,
