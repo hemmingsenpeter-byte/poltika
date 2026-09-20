@@ -1,2 +1,5 @@
-# Working for Families policy specification placeholder
-# Populate only after source review and schema agreement.
+# Task 5 scaffold only. Task 10 supplies the reviewed policy specification.
+schema_version: "0.1"
+policy_id: working_for_families
+policy_version: null
+status: scaffold
