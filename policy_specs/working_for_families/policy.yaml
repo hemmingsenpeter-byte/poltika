@@ -1,5 +1,137 @@
-# Task 5 scaffold only. Task 10 supplies the reviewed policy specification.
+# Task 10 source-linked draft. Not executable before independent review.
 schema_version: "0.1"
 policy_id: working_for_families
 policy_version: null
-status: scaffold
+status: draft_pending_review
+reference_period:
+  from: 2026-04-01
+  to: 2027-04-01
+source_catalog: sources.yaml
+
+assessment:
+  unit: family_scheme
+  roles: [claimant, partner, dependent_child]
+  membership_period: tax_year
+  supported_domain: stable_membership_full_tax_year
+  source_rule_ids: [WFF-01, WFF-02, WFF-07]
+  unsupported: [relationship_change, shared_care, part_year_child_eligibility]
+
+inputs:
+  - id: assessment_date
+    owner: assessment_unit
+    type: date
+    period: day
+    source_rule_ids: [WFF-01, WFF-09]
+    missing_outcome: needs_review
+  - id: eligibility_facts
+    owner: person
+    type: documented_eligibility_facts
+    period: full_tax_year
+    source_rule_ids: [WFF-01]
+    missing_outcome: needs_review
+  - id: children
+    owner: person
+    type: list_of_dated_child_facts
+    period: full_tax_year
+    source_rule_ids: [WFF-01, WFF-06, WFF-07]
+    missing_outcome: needs_review
+  - id: family_scheme_income
+    owner: assessment_unit
+    type: verified_amount
+    unit: NZD_per_tax_year
+    period: full_tax_year
+    source_rule_ids: [WFF-02]
+    missing_outcome: needs_review
+    note: Includes applicable subpart MB adjustments; wages alone are insufficient.
+  - id: work_and_payment_facts
+    owner: person
+    type: dated_income_and_government_payment_facts
+    period: full_tax_year
+    source_rule_ids: [WFF-04, WFF-05, WFF-08]
+    missing_outcome: needs_review
+  - id: net_family_scheme_income
+    owner: assessment_unit
+    type: verified_amount
+    unit: NZD_per_tax_year_after_tax
+    period: full_tax_year
+    source_rule_ids: [WFF-05]
+    required_for: minimum_family_tax_credit
+    missing_outcome: unsupported
+    note: Distinct from family_scheme_income; must follow Income Tax Act s ME 3.
+  - id: paid_parental_leave_periods
+    owner: person
+    type: dated_intervals
+    period: tax_year
+    source_rule_ids: [WFF-06]
+    required_for: best_start
+    missing_outcome: needs_review
+
+parameters:
+  - id: family_tax_credit_eldest_child
+    value_type: money
+    unit: NZD_per_tax_year
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 7921, source_id: wff-tax-credit-order-2025, locator: 'clause 4; Income Tax Act s MD 3(4)(a)', review_status: draft_pending_independent_review}
+  - id: family_tax_credit_additional_child
+    value_type: money
+    unit: NZD_per_tax_year
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 6454, source_id: wff-tax-credit-order-2025, locator: 'clause 4; Income Tax Act s MD 3(4)(b)', review_status: draft_pending_independent_review}
+  - id: family_tax_credit_abatement_threshold
+    value_type: money
+    unit: NZD_per_tax_year
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 44900, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: draft_pending_independent_review}
+  - id: family_tax_credit_abatement_rate
+    value_type: fraction
+    unit: NZD_per_NZD_above_threshold
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.275, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: draft_pending_independent_review}
+  - id: in_work_base
+    value_type: money
+    unit: NZD_per_tax_year
+    values:
+      - effective_from: 2026-04-01
+        effective_to: 2027-04-01
+        value: 7670
+        source_id: wff-iwtc-increase-act-2026
+        locator: sections 2 and 105; Income Tax Act s MD 10(3)(a)
+        review_status: needs_review
+        note: Check any reversal Order in Council before assigning an end date.
+  - id: in_work_additional_child
+    value_type: money
+    unit: NZD_per_tax_year
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 780, source_id: wff-income-tax-act, locator: 'section MD 10(3)(b)', review_status: draft_pending_independent_review}
+  - id: minimum_family_prescribed_amount
+    value_type: money
+    unit: NZD_per_tax_year_after_tax
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 36604, source_id: wff-tax-credit-order-2025, locator: 'clause 5; Income Tax Act s ME 1(3)(a)', review_status: draft_pending_independent_review}
+  - id: best_start_annual_amount
+    value_type: money
+    unit: NZD_per_child_per_tax_year
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 4041, source_id: wff-tax-credit-order-2025, locator: 'clause 6; Income Tax Act s MG 2', review_status: draft_pending_independent_review}
+  - id: best_start_abatement_threshold
+    value_type: money
+    unit: NZD_per_tax_year
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 79000, source_id: wff-income-tax-act, locator: 'section MG 3', review_status: draft_pending_independent_review}
+  - id: best_start_abatement_rate
+    value_type: fraction
+    unit: NZD_per_complete_NZD_above_threshold
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.21, source_id: wff-income-tax-act, locator: 'section MG 3', review_status: draft_pending_independent_review}
+
+components:
+  - {id: family_tax_credit, source_rule_ids: [WFF-01, WFF-02, WFF-03, WFF-07, WFF-08], output_id: family_tax_credit_annual}
+  - {id: in_work_tax_credit, source_rule_ids: [WFF-01, WFF-02, WFF-04, WFF-08], output_id: in_work_tax_credit_annual}
+  - {id: minimum_family_tax_credit, source_rule_ids: [WFF-01, WFF-05, WFF-08], output_id: minimum_family_tax_credit_annual}
+  - {id: best_start, source_rule_ids: [WFF-01, WFF-06, WFF-07], output_id: best_start_annual}
+
+outputs:
+  unit: NZD_per_tax_year
+  components: [family_tax_credit_annual, in_work_tax_credit_annual, minimum_family_tax_credit_annual, best_start_annual]
+  outcome_states: [calculated, unsupported, needs_review]
+  note: Annual entitlement is not a weekly or fortnightly instalment.
