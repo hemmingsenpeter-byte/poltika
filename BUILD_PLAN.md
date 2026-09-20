@@ -198,13 +198,22 @@ twin of the New Zealand policy system.
    retrieval method, raw snapshot/version, transformation/version, canonical
    variable mapping) — see Data Acquisition Doctrine
 5. Establish file structure: policy.yaml, specification.md, sources.yaml,
-   benchmarks.yaml, decisions/*.md
+   benchmarks.yaml, spec_cases.yaml (ADR-0005 — hand-calculated spec-test
+   expected values, loaded by Task 13 tests rather than hardcoded),
+   decisions/*.md
 6. Version the schema itself (schema_version field), separately from policy
    version/effective dates
 7. Claude Code repo-feasibility review of the schema; determine the concrete
-   mechanism for statutory-value CI protection
+   mechanism for statutory-value CI protection. Completed 21 September 2026:
+   schema reviewed feasible in policy_specs/SCHEMA.md's Task 7 response; CI
+   mechanism decided in ADR-0005 (CODEOWNERS-gated review over
+   benchmarks.yaml/spec_cases.yaml/policy.yaml's parameters block, not a
+   bespoke pytest-hashing tool). Task 9 installs it.
 8. Write IP/provenance ADR
-9. Install statutory-test CI protection
+9. Install statutory-test CI protection per ADR-0005: add CODEOWNERS entries
+   for the three protected paths per policy, enable branch protection
+   requiring that review on main, add a CI check surfacing protected-path
+   diffs
 
 ### Weeks 1–2 — WFF Vertical Slice
 10. Complete WFF policy.yaml + specification.md from source
