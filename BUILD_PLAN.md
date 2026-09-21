@@ -525,8 +525,10 @@ twin of the New Zealand policy system.
     the Faraj family's Best Start example has a child born outside the
     narrow v0.1 cohort (demonstrating the Task 12 false-zero fix against a
     real example). Casey's self-employment-plus-salary eligibility was
-    initially assumed out of scope by loose analogy with in-work tax
-    credit's explicit self-employment exclusion; re-reading
+    initially assumed out of scope by loose analogy with
+    specification.md's own in-work tax credit domain paragraph (a v0.1
+    scope decision, not an IRD rule -- IRD's in-work tax credit page
+    itself says self-employment income qualifies); re-reading
     specification.md's minimum family tax credit domain paragraph directly
     showed no such exclusion exists there, so it was promoted to an
     in-scope case instead of dropped. All cases run against a synthetic
@@ -536,6 +538,19 @@ twin of the New Zealand policy system.
     (already covered by Task 13) doesn't mask whether a scope-boundary
     case is correctly excluded for its own, scenario-level reason. 108
     tests total (up from 96). `pytest`/`ruff`/`mypy --strict` all pass.
+    **GPT/Codex's fresh-context review found three further issues, fixed
+    2026-09-22:** several cases marked household-level exclusion-trigger
+    facts `verified` without the cited IRD text stating them, while the
+    header overclaimed everything uncovered was left unverified -- fixed
+    with an explicit per-case `assumed_facts` list and a renamed
+    `conditional_arithmetic_match` outcome kind, making clear these are
+    conditional arithmetic checks, not unconditional verified entitlements
+    (see specification.md's "Task 14 fresh-context review findings" for
+    full detail); the Jaimee in-work tax credit case didn't flag that its
+    own benchmarked rate is itself the live, unresolved Task 10.2 legal
+    question; and two provenance statements were corrected (the "every
+    value copied verbatim" claim, and the same self-employment
+    misattribution above).
 15. Build regression tests, including the frozen dataset-snapshot fixtures
     from Task 10b: same scenario + same snapshot must yield the same
     deterministic result

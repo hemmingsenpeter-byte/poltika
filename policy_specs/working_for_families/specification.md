@@ -616,17 +616,20 @@ this file's own text:
 
 1. IRD's minimum family tax credit page's "Casey earns self-employed
    income and a salary" example was initially assumed out of scope by
-   analogy with the in-work tax credit page's explicit self-employment
-   exclusion above ("Self-employment can legally qualify, but is outside
-   this first branch"). Re-reading this file's minimum family tax credit
-   domain paragraph directly shows that exclusion is specific to the
-   in-work component; the minimum family tax credit paragraph requires
-   only "documented full-time-earner weeks under MA 7 ... and a separately
-   verified net family-scheme-income amount under s ME 3", with no
-   self-employment exclusion of its own -- confirmed by IRD's own page,
-   which describes exactly Casey's salary-plus-self-employment combination
-   as a normal, intended minimum family tax credit pathway. Promoted as an
-   in-scope numeric benchmark rather than dropped.
+   analogy with this file's own in-work tax credit domain paragraph above
+   ("Self-employment can legally qualify, but is outside this first
+   branch") -- that sentence is this document's v0.1 scope decision, not
+   an IRD rule: IRD's in-work tax credit page itself states plainly that
+   self-employment income qualifies ("You'll qualify for an in-work tax
+   credit if you're self-employed"). Re-reading this file's minimum family
+   tax credit domain paragraph directly shows the self-employment scope
+   narrowing is specific to the in-work component; the minimum family tax
+   credit paragraph requires only "documented full-time-earner weeks under
+   MA 7 ... and a separately verified net family-scheme-income amount
+   under s ME 3", with no self-employment exclusion of its own -- and
+   IRD's own page describes exactly Casey's salary-plus-self-employment
+   combination as a normal, intended minimum family tax credit pathway.
+   Promoted as an in-scope numeric benchmark rather than dropped.
 2. IRD's family tax credit and in-work tax credit pages publish two
    partnered examples (Rahui; Claire & Laura) stating only a combined
    family income, never each partner's individually verified amount --
@@ -646,3 +649,45 @@ scope-boundary case confirming the Task 12 false-zero fix against a real
 published scenario.
 
 108 tests total (up from 96). `pytest`/`ruff`/`mypy --strict` all pass.
+
+### Task 14 fresh-context review findings (GPT/Codex, PR #16) -- resolved 2026-09-22
+
+Three findings, each independently verified before fixing:
+
+1. **What the benchmarks prove was overstated (P1).** Every numeric case
+   marks several scenario facts (household eligibility, s 80KW status,
+   MC 6(a)/(b), MD 14/15, Best Start shared-care/protected-credit status,
+   each child's whole-year qualification) `verified`, although the cited
+   IRD example states none of these -- while the file's header claimed
+   "everything the example doesn't cover [is] left genuinely unverified",
+   which was true for the numeric inputs (income, net income, hours) but
+   not for these ambient exclusion-trigger facts. Resolved by adding an
+   explicit `assumed_facts` list to every case naming exactly which
+   scenario fields are assumption, not source-stated fact, renaming
+   `outcome_kind: numeric_match` to `conditional_arithmetic_match`, and
+   rewriting `benchmarks.yaml`'s header under "What these cases prove,
+   precisely" to state plainly that a case proves conditional arithmetic
+   correctness, not an unconditional verified entitlement.
+2. **The synthetic fixture's `in_work_base` approval was presented as
+   settled (P1).** `ird_iwtc_jaimee_full_credit_beyond_three_children`
+   used the same all-approved synthetic fixture as every other case
+   without flagging that, for this one case specifically, the approval
+   status of the underlying rate is itself the live, unresolved legal
+   question Task 10.2's rate-status contract describes -- "an unchecked
+   future reversal Order" makes an unconditional full-year figure
+   `needs_review`, and IRD's own page says the rate may revert. Resolved
+   by adding this as an explicit item in that case's `assumed_facts` and a
+   dedicated header paragraph spelling out the conditionality plainly.
+3. **Two provenance statements were inaccurate (P2).** The header's "every
+   numeric expected value is copied verbatim from IRD" did not hold for
+   Jaimee's side-computed family tax credit figure ($33,737, never
+   published by IRD) or Casey's zero-entitlement case (a semantic reading
+   of "no longer qualifies", not a literal digit IRD prints) -- both now
+   named as explicit exceptions in the header. Separately, this file and
+   `benchmarks.yaml` both described "the in-work tax credit page's
+   explicit self-employment exclusion", but IRD's in-work tax credit page
+   states self-employment income qualifies; the exclusion is this
+   document's own v0.1 scope decision. Both files corrected to attribute
+   that narrow boundary to specification.md, not to IRD.
+
+`pytest`/`ruff`/`mypy --strict` all re-verified passing.

@@ -5,24 +5,67 @@
 # prevents AI-on-AI validation from being the only check." This file is one
 # of .github/workflows/statutory-value-guard.yml's protected paths.
 #
-# Every numeric `expected` value below is copied verbatim from the cited
-# IRD page's own stated worked-example result (not derived by Claude Code),
-# with the exact wording quoted in `source_note` for traceability. This is
-# the opposite discipline from spec_cases.yaml (Task 13), where every value
-# was hand-derived independently from specification.md -- here, the whole
-# point is a THIRD PARTY's number, fetched directly from ird.govt.nz (via a
-# browser-user-agent request, since a bare fetch 403'd -- the same access
-# pattern already used elsewhere in this repo) on 2026-09-22.
+# ## What these cases prove, precisely (PR #16 review correction)
+#
+# A `conditional_arithmetic_match` case does NOT prove "this household is
+# verified to receive this dollar amount under the approved spec." It
+# proves a narrower thing: IF the facts an IRD worked example actually
+# states are true, AND IF a listed set of further facts the example is
+# silent on (`assumed_facts` on each case) also hold in the ordinary way
+# IRD's own narrative implies -- no shared care, no benefit receipt, no
+# protected-credit month, a stable whole-year household -- THEN
+# `calculate_wff()` reproduces IRD's published figure exactly. Every case's
+# `assumed_facts` list names precisely which `scenario` fields are held at
+# `verified` (or otherwise asserted) without the cited IRD text actually
+# stating them, so the source-stated facts and the arithmetic-isolating
+# assumptions are never presented as the same kind of evidence. An earlier
+# revision of this file's header claimed "everything the example doesn't
+# cover [is] left genuinely unverified" -- that was not accurate for these
+# assumed household-level facts, and is corrected here.
+#
+# A case whose `benchmarked_components` includes `in_work_tax_credit` (and
+# is `conditional_arithmetic_match`, not `scope_boundary`) carries one
+# further, more important conditionality: the synthetic fixture (below)
+# marks `in_work_base` approved at $7,670 for the whole 2026-27 year, but
+# specification.md's Task 10.2 rate-status contract is explicit that an
+# unchecked future reversal Order means an unconditional full-year result
+# is `needs_review`, and "a no-future-Order projection is a separately
+# labelled scenario assumption, not verified law or a benchmark." IRD's own
+# in-work tax credit page agrees the rate "may reduce back to $97" on a
+# petrol-price condition. So `ird_iwtc_jaimee_full_credit_beyond_three_
+# children` proves only: IF the full-year $7,670 rate holds (which is not
+# yet verified law for the whole tax year -- see `spec_cases.yaml`'s own
+# cases for that live gate), THEN the formula reproduces IRD's $9,230.
+# This is listed explicitly in that case's `assumed_facts`, not left
+# implicit in the synthetic fixture's approval.
+#
+# Every `expected` numeric value for a case's *benchmarked* component(s) is
+# copied verbatim from the cited IRD page's own stated worked-example
+# result, with the exact wording quoted in `source_note` for traceability.
+# Two documented exceptions, corrected here rather than left as an
+# overclaim: `ird_iwtc_jaimee_full_credit_beyond_three_children`'s
+# family_tax_credit figure ($33,737) is a side computation from the same
+# stated income, not itself benchmarked (IRD's in-work tax credit page
+# never states a family tax credit figure for Jaimee); and
+# `ird_mftc_casey_zero_over_income_limit`'s $0 is this project's semantic
+# reading of IRD's stated "no longer qualifies" ("net income at or above
+# the prescribed amount yields no positive top-up" -- specification.md),
+# not a literal digit IRD prints on the page. This is the opposite
+# discipline from spec_cases.yaml (Task 13), where every value was
+# hand-derived independently from specification.md -- here, the whole
+# point for a case's benchmarked component(s) is a THIRD PARTY's number,
+# fetched directly from ird.govt.nz (via a browser-user-agent request,
+# since a bare fetch 403'd -- the same access pattern already used
+# elsewhere in this repo) on 2026-09-22.
 #
 # `benchmarked_components` names which component(s) each case is actually
-# checking a published number against. The other components in `expected`
-# are not benchmarked against a published figure, but every case still
-# asserts all four -- consistent with the completeness discipline PR #15's
-# review established for spec_cases.yaml -- recording whatever
-# calculate_wff() honestly produces given exactly the facts that specific
-# IRD example actually states, with everything the example doesn't cover
-# left genuinely unverified (None/UNKNOWN), never fabricated to make a
-# number line up.
+# checking a published (or, for the two exceptions above, clearly labelled
+# non-published) number against. The other components in `expected` are
+# not benchmarked against a published figure, but every case still asserts
+# all four -- consistent with the completeness discipline PR #15's review
+# established for spec_cases.yaml -- recording whatever calculate_wff()
+# honestly produces given exactly the facts that specific IRD example
+# actually states plus its listed `assumed_facts`.
 #
 # All four IRD pages this file draws from explicitly confirm 2026-27 rates
 # ($7,921/$6,454/$44,900/27.5% family tax credit; $7,670/$780 in-work;
@@ -37,26 +80,30 @@
 #
 # All cases run against a synthetic fixture carrying the same statutory
 # rates as the real approved policy.yaml (policy_version 0.1.0), but with
-# every parameter -- including in_work_base -- marked approved, exactly
-# the same design test_wff.py (Task 12) already established and documents:
-# in_work_base's live needs_review rate-status gate is a separate, already
-# protected concern (spec_cases.yaml, Task 13), and using it here would
-# mask whether a genuine arithmetic or scope-boundary bug exists behind
-# that unrelated gate. Two of these cases (Brooklyn's direct-abatement
-# exclusion, Faraj's birth-cohort exclusion) specifically need that
-# separation to prove the exclusion is a real scenario-level fact, not an
-# artifact of the live rate gate.
+# every parameter -- including in_work_base -- marked approved, the same
+# design test_wff.py (Task 12) already established: this isolates the
+# arithmetic/scope-boundary check from the separate, already-protected
+# in_work_base rate-status gate (spec_cases.yaml, Task 13). It does NOT
+# mean the full-year $7,670 rate is being treated as verified law here --
+# see the in-work tax credit conditionality note above. Two of these cases
+# (Brooklyn's direct-abatement exclusion, Faraj's birth-cohort exclusion)
+# specifically need this fixture to prove their exclusion is a real
+# scenario-level fact, not an artifact of the live rate gate.
 #
 # Two IRD-published examples were deliberately NOT promoted as in-scope
 # numeric benchmarks, each for a reason discovered by checking the
 # specification.md text directly rather than assumed by analogy:
 #   - Casey's minimum family tax credit example (self-employed income plus
 #     a qualifying salaried job) was initially assumed out of scope by
-#     loose analogy with the in-work tax credit page's explicit
-#     self-employment exclusion -- re-reading specification.md's minimum
-#     family tax credit domain paragraph directly shows no such exclusion
-#     exists for that component (only in-work tax credit's domain excludes
-#     self-employment), so Casey's example is promoted as in-scope after
+#     loose analogy with specification.md's in-work tax credit domain
+#     paragraph, which narrows that component's v0.1 branch to exclude
+#     self-employment pending further review -- note this is our own
+#     spec's scope decision, not an IRD rule: IRD's in-work tax credit page
+#     states plainly that self-employment income DOES qualify for in-work
+#     tax credit ("You'll qualify for an in-work tax credit if you're
+#     self-employed"). Re-reading specification.md's minimum family tax
+#     credit domain paragraph directly shows no analogous exclusion exists
+#     for that component, so Casey's example is promoted as in-scope after
 #     all.
 #   - Rahui's and Claire & Laura's family tax credit examples give only a
 #     combined partnered family income ($100,000), never each partner's
@@ -71,7 +118,7 @@ benchmarks:
   - id: ird_ftc_sarah_full_credit
     ird_source: wff-ird-family-tax-credit
     ird_example_name: "Sarah gets the full family tax credit"
-    outcome_kind: numeric_match
+    outcome_kind: conditional_arithmetic_match
     benchmarked_components: [family_tax_credit]
     modelled_date: 2026-06-01
     scenario:
@@ -95,6 +142,15 @@ benchmarks:
         - qualifies_whole_year: verified
           best_start_cohort: unknown
           best_start_no_disqualifying_payment: unknown
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: calculated, value: "14375"}
       in_work_tax_credit: {outcome: needs_review}
@@ -115,7 +171,7 @@ benchmarks:
   - id: ird_iwtc_jaimee_full_credit_beyond_three_children
     ird_source: wff-ird-in-work-tax-credit
     ird_example_name: "Jaimee gets the full in-work tax credit"
-    outcome_kind: numeric_match
+    outcome_kind: conditional_arithmetic_match
     benchmarked_components: [in_work_tax_credit]
     modelled_date: 2026-06-01
     scenario:
@@ -138,6 +194,17 @@ benchmarks:
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "in_work_eligibility"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
+      - "in_work_base full-year rate certainty (not yet verified law for the whole tax year -- see header note above)"
     expected:
       family_tax_credit: {outcome: calculated, value: "33737"}
       in_work_tax_credit: {outcome: calculated, value: "9230"}
@@ -160,7 +227,7 @@ benchmarks:
   - id: ird_mftc_jeremy_salary_only
     ird_source: wff-ird-minimum-family-tax-credit
     ird_example_name: "Jeremy gets a minimum family tax credit"
-    outcome_kind: numeric_match
+    outcome_kind: conditional_arithmetic_match
     benchmarked_components: [minimum_family_tax_credit]
     modelled_date: 2026-06-01
     scenario:
@@ -180,6 +247,15 @@ benchmarks:
       children:
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -202,7 +278,7 @@ benchmarks:
   - id: ird_mftc_casey_self_employed_plus_salary
     ird_source: wff-ird-minimum-family-tax-credit
     ird_example_name: "Casey earns self-employed income and a salary"
-    outcome_kind: numeric_match
+    outcome_kind: conditional_arithmetic_match
     benchmarked_components: [minimum_family_tax_credit]
     modelled_date: 2026-06-01
     scenario:
@@ -223,6 +299,15 @@ benchmarks:
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -249,7 +334,7 @@ benchmarks:
   - id: ird_mftc_casey_zero_over_income_limit
     ird_source: wff-ird-minimum-family-tax-credit
     ird_example_name: "Casey goes over the income limit"
-    outcome_kind: numeric_match
+    outcome_kind: conditional_arithmetic_match
     benchmarked_components: [minimum_family_tax_credit]
     modelled_date: 2026-06-01
     scenario:
@@ -270,6 +355,15 @@ benchmarks:
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -317,6 +411,15 @@ benchmarks:
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -361,6 +464,15 @@ benchmarks:
       children:
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -406,6 +518,15 @@ benchmarks:
       best_start_protected_credit: verified
       children:
         - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "in_work_eligibility"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: unsupported}
       in_work_tax_credit: {outcome: unsupported}
@@ -456,6 +577,15 @@ benchmarks:
         - qualifies_whole_year: verified
           best_start_cohort: other_cohort_unsupported
           best_start_no_disqualifying_payment: unknown
+    assumed_facts:
+      - "household_eligibility"
+      - "extra_instalment_status"
+      - "ftc_iwtc_protected_or_direct_abatement"
+      - "mc6a_veterans_payment"
+      - "mc6b_disqualifying_payment"
+      - "best_start_no_shared_care"
+      - "best_start_protected_credit"
+      - "children[].qualifies_whole_year"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}

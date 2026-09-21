@@ -4,15 +4,23 @@ Per doctrine/test-doctrine.md's "Benchmark tests for expected statutory
 values" class: this file is a thin loader/runner over
 `policy_specs/working_for_families/benchmarks.yaml`, exactly like Task 13's
 `test_wff_spec_cases.py` is for `spec_cases.yaml`. Expected values are not
-authored here -- see `benchmarks.yaml`'s own header for why every numeric
-value there is copied verbatim from a cited IRD page, not derived.
+authored here -- see `benchmarks.yaml`'s own header, "What these cases
+prove, precisely", for exactly what a `conditional_arithmetic_match` case
+does and does not establish: a benchmarked component's numeric value is
+copied verbatim from a cited IRD page, but every case also carries
+`assumed_facts` -- scenario facts held `verified` for arithmetic isolation
+that the cited text does not itself state -- so these are conditional
+arithmetic checks, not unconditional verified entitlements.
 
 Runs against a synthetic parameter fixture carrying the real approved WFF
 rates but with every parameter (including `in_work_base`) marked approved
 -- the same design `test_wff.py` (Task 12) already established: the live
 `in_work_base` rate-status gate is a separate, already-protected concern
 (`spec_cases.yaml`, Task 13); using it here would mask whether a genuine
-arithmetic or scope-boundary bug exists behind that unrelated gate.
+arithmetic or scope-boundary bug exists behind that unrelated gate. This
+does NOT mean the full-year $7,670 in-work rate is being treated as
+verified law -- see `benchmarks.yaml`'s header for the in-work tax credit
+case's own explicit conditionality on that unresolved Order status.
 """
 
 from __future__ import annotations
@@ -202,13 +210,23 @@ def test_wff_benchmark(benchmark: dict[str, Any], parameters) -> None:
         f"{benchmark['id']}: expected block must cover exactly {sorted(_COMPONENT_IDS)}, "
         f"got {sorted(benchmark['expected'].keys())}"
     )
-    assert benchmark["outcome_kind"] in ("numeric_match", "scope_boundary")
-    if benchmark["outcome_kind"] == "numeric_match":
+    assert benchmark["outcome_kind"] in ("conditional_arithmetic_match", "scope_boundary")
+    if benchmark["outcome_kind"] == "conditional_arithmetic_match":
         for component_id in benchmarked:
             assert benchmark["expected"][component_id]["outcome"] == "calculated", (
-                f"{benchmark['id']}.{component_id}: outcome_kind is numeric_match but "
-                f"the benchmarked component's expected outcome isn't 'calculated'"
+                f"{benchmark['id']}.{component_id}: outcome_kind is conditional_arithmetic_match "
+                f"but the benchmarked component's expected outcome isn't 'calculated'"
             )
+
+    # Every case must name precisely which scenario facts are assumed for
+    # arithmetic isolation rather than actually stated by the cited IRD
+    # text (PR #16 review finding: an earlier revision's header claimed
+    # "everything the example doesn't cover [is] left genuinely
+    # unverified", which was not true of these household-level facts).
+    assert benchmark.get("assumed_facts"), f"{benchmark['id']}: assumed_facts must be present and non-empty"
+    assert all(isinstance(fact, str) and fact for fact in benchmark["assumed_facts"]), (
+        f"{benchmark['id']}: assumed_facts must be non-empty strings"
+    )
 
     scenario = _scenario_from_yaml(benchmark["scenario"])
     result = calculate_wff(scenario, parameters)
