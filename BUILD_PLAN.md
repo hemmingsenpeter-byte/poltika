@@ -451,7 +451,31 @@ twin of the New Zealand policy system.
     combined hours) status -- fixed with a direct `partner_status` check in
     `_minimum_family_tax_credit()`. 71 tests total, up from 70.
     `pytest`/`ruff`/`mypy --strict` all pass.
-13. Build spec tests
+13. Build spec tests. **Complete 21 September 2026, PR pending review:**
+    `policy_specs/working_for_families/spec_cases.yaml` (`status:
+    pending_review`) holds 22 independently hand-calculated cases per
+    ADR-0005's design -- expected values loaded from this protected YAML
+    file (one of `.github/workflows/statutory-value-guard.yml`'s watched
+    paths), not hardcoded in Python. Each case's `source_note` records its
+    by-hand derivation, computed via a standalone script separate from
+    `wff.py` so the suite can actually catch an implementation bug rather
+    than mirror one. Coverage: the ordinary full-year branch (1/2/4
+    children, partial/floored abatement, the exact half-cent MD 13 result),
+    partnered combined income and the two partner-status gaps found during
+    Task 12 review (missing partner income, unknown partner status),
+    every household-wide gate (`eligibility_facts`, s 80KW), every
+    component-specific exclusion trigger (MC 6(a)/(b)/(c), MD 14/15, ME
+    2(2)-(4), MG 4, shared care, in-work eligibility) individually, and the
+    MFTC zero-at-threshold case. All cases run against the real approved
+    `policy.yaml` via Task 11's loader; `in_work_tax_credit` is
+    `needs_review` in most of them by design (the live `in_work_base` gate
+    is a real legal fact, not a test gap) except where a higher-precedence
+    exclusion already makes it `unsupported`.
+    `tests/unit/engines/simulator/test_wff_spec_cases.py` is a thin
+    loader/runner (no expected values in Python), parametrised one test per
+    case, plus two guard tests (non-empty file, unique IDs) against a
+    silently-truncated or duplicated fixture passing green. 95 tests total
+    (up from 71). `pytest`/`ruff`/`mypy --strict` all pass.
 14. Build benchmark tests (against independently published IRD examples)
 15. Build regression tests, including the frozen dataset-snapshot fixtures
     from Task 10b: same scenario + same snapshot must yield the same

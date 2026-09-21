@@ -520,3 +520,32 @@ named trigger is more traceable than a generic string-keyed dispatch would
 be; a data-driven mechanism could be revisited once Accommodation Supplement
 gives a second policy to generalise against, per the Architecture Doctrine's
 "minimum abstraction demanded by two real policies."
+
+## Task 13 implementation note (Claude Code, 2026-09-21)
+
+`spec_cases.yaml` (`status: pending_review`) records 22 independently
+hand-calculated spec-test cases per ADR-0005's design and
+doctrine/test-doctrine.md's "Spec tests" class -- expected values live in
+that protected YAML file, not hardcoded in
+`tests/unit/engines/simulator/test_wff_spec_cases.py`, which is a thin
+loader/runner over it. Each case's `source_note` records its by-hand
+arithmetic, computed via a standalone script kept separate from
+`wff.py` during authoring, so the suite is capable of catching an
+implementation bug rather than mirroring one. Where a spec case's expected
+value happens to match one already asserted in Task 12's
+`test_wff.py` (e.g. the ordinary $7921/$6604 case, or the half-cent
+$7920.725 result), that is expected convergent verification from two
+independently derived sources, not evidence either was copied from the
+other.
+
+All 22 cases run against the real, approved `policy.yaml`
+(`policy_version: "0.1.0"`), pinned via the loader's
+`requested_policy_version` check so a future policy-version bump without a
+matching `spec_cases.yaml` update fails loudly rather than silently
+comparing against the wrong parameters. `in_work_tax_credit` is
+`needs_review` in most cases by design -- `in_work_base`'s live
+`review_status: needs_review` (Task 10.2's rate-status contract) is a real,
+current legal fact about the approved spec, not a test gap to work around
+-- except in the one case (`in_work_eligibility_excluded_is_unsupported_
+not_needs_review`) that demonstrates a known, evidenced exclusion is
+checked, and reported, before that parameter-level gate is ever reached.
