@@ -451,9 +451,9 @@ twin of the New Zealand policy system.
     combined hours) status -- fixed with a direct `partner_status` check in
     `_minimum_family_tax_credit()`. 71 tests total, up from 70.
     `pytest`/`ruff`/`mypy --strict` all pass.
-13. Build spec tests. **Complete 21 September 2026, PR #15 pending
-    re-review:** `policy_specs/working_for_families/spec_cases.yaml`
-    (`status: pending_review`) holds 23 independently hand-calculated cases
+13. Build spec tests. **Complete, merged 22 September 2026 (PR #15):**
+    `policy_specs/working_for_families/spec_cases.yaml`
+    (`status: approved`) holds 23 independently hand-calculated cases
     per ADR-0005's design -- expected values loaded from this protected
     YAML file (one of `.github/workflows/statutory-value-guard.yml`'s
     watched paths), not hardcoded in Python. Each case's `source_note`
@@ -481,8 +481,15 @@ twin of the New Zealand policy system.
     `md14_15_protected_credit_excludes_ftc_and_iwtc_not_mftc_or_best_start`),
     and the runner only ever checked whichever component keys a case's
     `expected` block happened to include, so an incomplete block would
-    have passed silently (fixed with the completeness guard above). 96
-    tests total (up from 71). `pytest`/`ruff`/`mypy --strict` all pass.
+    have passed silently (fixed with the completeness guard above). A
+    third pass caught the coverage note above understating the
+    `in_work_tax_credit: unsupported` count as two cases when it's
+    actually six; corrected in specification.md and this file. 96 tests
+    total (up from 71). `pytest`/`ruff`/`mypy --strict` all pass. Pete
+    recommended acceptance and delegated the final accept decision to
+    Claude Code, which re-verified all of the above immediately before
+    setting `spec_cases.yaml`'s `status: approved` -- see
+    specification.md's "Task 13 acceptance" note.
 14. Build benchmark tests (against independently published IRD examples)
 15. Build regression tests, including the frozen dataset-snapshot fixtures
     from Task 10b: same scenario + same snapshot must yield the same

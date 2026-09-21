@@ -26,10 +26,20 @@
 # already makes it `unsupported`. That is correct, protected behaviour, not
 # a bug to "fix" by asserting an unconditional $7,670.
 #
-# status: pending_review until GPT/Codex's fresh-context Task 13 review and
-# Pete's acceptance, matching how policy.yaml's own status field was
-# handled through Task 10.
-status: pending_review
+# status: approved 22 September 2026, PR #15. GPT/Codex's fresh-context
+# Task 13 review found and Claude Code fixed three issues before
+# acceptance: a missing MD 14/15 case, a test-runner gap that would have
+# let a case with an incomplete `expected` block pass silently, and a
+# documentation sentence that understated how many cases return
+# in_work_tax_credit: unsupported (6, not the originally claimed 2 --
+# corrected in specification.md). Pete recommended acceptance and
+# delegated the final accept decision to Claude Code, which re-verified
+# pytest/ruff/mypy --strict and every prior finding's resolution
+# immediately before this status change -- matching how policy.yaml's own
+# status field was handled through Task 10, except Pete named Claude Code
+# as decision-maker for this specific acceptance rather than deciding it
+# personally.
+status: approved
 
 spec_cases:
   - id: single_ordinary_low_income

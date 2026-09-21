@@ -585,3 +585,18 @@ Two findings, both independently verified before fixing:
 
 23 cases total (up from 22), 96 tests (up from 95).
 `pytest`/`ruff`/`mypy --strict` all re-verified passing.
+
+## Task 13 acceptance (Pete recommended; Claude Code decided, 22 September 2026)
+
+Pete recommended accepting the reviewed PR #15 revision after the findings
+above (including the documentation-count correction below) and explicitly
+delegated the final accept decision for `spec_cases.yaml` to Claude Code,
+rather than deciding it personally as with Task 10.4. Immediately before
+setting `status: approved`, Claude Code re-verified `pytest` (96/96),
+`ruff`, and `mypy --strict` all pass and re-confirmed each of the three
+review findings above (the added MD 14/15 case, the completeness guard,
+the corrected unsupported-case count) is actually present in the merged
+state, not just claimed. This assigns `status: approved` to
+`spec_cases.yaml`'s 23 hand-calculated cases. It changes no test values or
+calculation behaviour -- per the file's own header comment, this status
+field records review acceptance, nothing else.
