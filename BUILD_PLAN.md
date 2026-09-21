@@ -308,13 +308,25 @@ twin of the New Zealand policy system.
       legislation register and specify the date-dependent treatment of the
       possible reversal Order. Done when `in_work_base` cannot silently
       produce a full-year result for an unverified interval; recheck again
-      at implementation for each modelled date.
+      at implementation for each modelled date. Author pass recorded
+      21 September 2026 in the Task 10.2 source/spec update; the official
+      s 2 page showed no Order on that date, while the future interval remains
+      unverified. Independent review remains part of 10.3.
     - **10.3 Whole-spec independent review — Claude Code.** Derive the
       expected scoped behaviour from primary sources before reading the
       author response, then review the complete source map, policy draft,
       calculation sequence, status outcomes, and 10.1/10.2 diff. Classify
       discrepancies and return them for correction or Pete's decision.
       Done when findings are resolved and the reviewed revision is identified.
+      **Done 21 September 2026** (PR #11, `docs/task10-temp-iwtc-rate`):
+      no CODE_ERROR/SPEC_ERROR/SOURCE_CONFLICT found across the whole
+      assembled document. One non-blocking finding recorded directly in
+      `specification.md` — component-level exclusion conditions (MD 14/15,
+      IWTC's direct-abatement pathway, ME 2(2)-(4), MG 4, s 80KW) are
+      correct but prose-only and scattered; recommend giving each
+      `policy.yaml` component a `validation_checks` list (per
+      `ARCHITECTURE.md`'s module contract) when Task 12 starts, not before.
+      Reviewed revision: PR #11 plus this review's own cleanup commit.
     - **10.4 Acceptance and release gate — Pete, with GPT/Codex drafting
       the approval change.** Pete accepts the supported domain, remaining
       unsupported cases, and any genuine interpretation decision after

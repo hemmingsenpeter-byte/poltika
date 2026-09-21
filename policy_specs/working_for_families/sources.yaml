@@ -48,7 +48,7 @@ sources:
     covers: Temporary in-work tax credit increase and possible Order in Council reversal.
     locator: Sections 2(43)-(45) and 105-106, amending Income Tax Act s MD 10 and inserting s MF 4L.
     verification_status: current_publication_checked_future_recheck_required
-    order_check: On 2026-09-21, the official latest Act page stated that no secondary legislation had been made under s 2(43) currently on that website; recheck before using the rate for any later assessment date.
+    order_check: On 2026-09-21, the official s 2 page's secondary-legislation link was disabled and stated that no secondary legislation made under that section was currently on the website; a targeted search found no reversal Order. This is an as-of observation, not proof that no later Order will be made. Recheck the official section and secondary-legislation record for every modelled period.
   - id: wff-ird-interpretation-2026
     kind: agency_interpretation
     title: IS 26/12 - Working for Families tax credits and family scheme income

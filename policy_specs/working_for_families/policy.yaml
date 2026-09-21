@@ -112,7 +112,7 @@ parameters:
         source_id: wff-iwtc-increase-act-2026
         locator: sections 2 and 105; Income Tax Act s MD 10(3)(a)
         review_status: needs_review
-        note: 2027-04-01 is the statutory latest reversal date, not a confirmed full-year duration; recheck for an earlier Order in Council for each assessment date.
+        note: Candidate upper-bound interval only. Section 105(1) made 7670 operative from 2026-04-01, but s 105(2) may reverse it to 5070 on an earlier Order date; otherwise reversal occurs on 2027-04-01. The 2026-09-21 no-Order check does not verify the rest of 2026-27. Do not use this row alone for an unconditional full-year result; apply the rate-status outcomes in specification.md and recheck at implementation.
   - id: in_work_additional_child
     value_type: money
     unit: NZD_per_tax_year
