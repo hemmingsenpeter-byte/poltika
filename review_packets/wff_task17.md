@@ -95,11 +95,40 @@ before reading any implementer explanation)
 
 ### Independently derived expected behaviour
 
+For the approved 2026-27 full-year branch, first establish one eligible,
+stable household and the absence of the s 80KW extra-instalment case. The
+scenario must supply documented subpart-MB family-scheme income for the whole
+relationship period; MFTC additionally requires an independently verified
+ME 3 net-family-scheme-income derivation and 52 qualifying full-time-earner
+weeks. The Act's ME 3 adjusted-income item itself starts with family-scheme
+income. A missing required amount is `needs_review`, never a zero or an
+apparently complete annual entitlement (approved specification, lines
+104-218 and 250-290; Income Tax Act 2007, ss ME 1 and ME 3, official Act
+version cited in `sources.yaml`).
+
+FTC uses the eldest/additional-child amounts and complete-dollar income
+excess; MD 2 passes any abatement remaining after FTC to IWTC. MFTC tops up
+verified net income independently of that abatement. Best Start's numeric
+branch is limited to one supported-cohort child. Annual arithmetic retains
+exact decimals, and no total is reported while a component is unresolved.
+The temporary in-work base stays `needs_review` until an official Order check
+covers the entire modelled interval. Parameter selection must cover the
+*complete assessment period*, not merely a date within it (specification,
+scoped calculation sequence, step 1).
+
+I compared those expectations with `loader.py`, `wff.py`, all three fixture
+classes, and ADR-0009. The 117 tests, Ruff, and strict mypy pass locally on
+22 September 2026. This pass did not independently re-fetch every statutory
+provision or every IRD worked example; it relies on the approved source map
+for those previously reviewed claims. No new conclusion is drawn from
+external-engine code or test logic.
+
 ### Discrepancies found
 
 | Discrepancy | Classification | Notes |
 |---|---|---|
-| | CODE_ERROR / TEST_ERROR / SPEC_ERROR / SOURCE_CONFLICT / INTERPRETATION_AMBIGUITY / MISSING_SOURCE / ARCHITECTURE_ISSUE / REVIEWER_ERROR | |
+| MFTC can calculate with `family_scheme_income=None` | Proposed CODE_ERROR / TEST_ERROR | `_minimum_family_tax_credit()` in `src/poltika/engines/simulator/wff.py` checks ME 3 attestation and the net amount, but never requires the scenario's separate family-scheme-income input. Reproduced with the real approved WFF parameter set: a verified single-parent scenario with net income 30,000 and `family_scheme_income=None` returns MFTC `calculated: 6,604` while FTC is unresolved. The approved supported-domain paragraph requires a documented family-scheme-income amount for the whole relationship period and *separately* verified net amount for MFTC. Add missing-family-scheme-income and missing-partner-amount tests for MFTC; resolve the contract discrepancy before calling a numeric MFTC result in-scope. This is a scoped-input finding, not a claim that the statutory MFTC formula directly subtracts the separate input. |
+| Full-year calculation accepts only point-date parameter resolution | Proposed ARCHITECTURE_ISSUE / CODE_ERROR | `load_policy_parameters()` resolves each row at one `modelled_date`; `calculate_wff()` has no assessment interval and does not validate `parameters.modelled_date`, policy identity/version, or complete-year parameter coverage. The approved sequence explicitly requires selecting law and parameter intervals for the complete assessment period. Current WFF approved numeric rows happen to span 2026-27 and the temporary IWTC base remains gated, so this is not evidence of a wrong current figure. But a later mid-year effective change, or a mismatched parameter set passed by Task 20 integration, could yield an unconditional annual amount from a single-date rate. Add an interval/policy binding at the integration boundary or make the calculator validate it; test a split interval and a mismatched parameter set before exposing annual API results. |
 
 ## Author response
 
