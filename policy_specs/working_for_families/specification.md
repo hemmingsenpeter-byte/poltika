@@ -411,3 +411,41 @@ Order status or an unconditional full-year $7,670 in-work result. The
 enforce the dated Order check through sourced policy state, with no live
 network request inside the deterministic calculator. The component-level
 `validation_checks` consolidation is carried to Task 12.
+
+## Task 12 implementation note (Claude Code, 2026-09-21)
+
+`calculate_wff()` (`src/poltika/engines/simulator/wff.py`) implements the
+scoped calculation sequence above as a pure function taking a `WffScenario`
+of canonical, already-resolved facts and a Task-11-produced
+`PolicyParameterSet`. Every component (`family_tax_credit`,
+`in_work_tax_credit`, `minimum_family_tax_credit`, `best_start`) resolves
+independently to `calculated`/`needs_review`/`unsupported` with a reason;
+`WffResult.total_annual_entitlement()` is the only place a total may be
+summed, and only when all four are `calculated`.
+
+`policy.yaml`'s `components[]` entries now each carry a `validation_checks`
+list naming their known exclusion triggers (MC 6(a), MD 14/15, the in-work
+direct-abatement pathway, ME 2(2)-(4), MG 4, MC 6(c), shared care, and s
+80KW), fulfilling the Task 10.3/10.4 obligation. This is additive
+documentation metadata on the already-approved `policy_version: "0.1.0"`,
+not a new eligibility rule or a change to any statutory value, so it does
+not itself require a new policy-version review cycle.
+
+One primary-source gap is flagged rather than resolved: this file states
+"MC 6(b) and (c) affect different components or children" but does not say
+which component MC 6(b) (as distinct from 6(a) and 6(c), which it does
+state) attaches to. `calculate_wff()` has no separate MC 6(b) fact for that
+reason; a known MC 6(b) payment must be surfaced through
+`in_work_eligibility` (the closest declared input, `work_and_payment_facts`,
+which already covers "benefit-status ... conditions" per WFF-04) rather than
+silently ignored. Resolving the precise mapping needs a return to primary
+sources, not an inference from this implementation.
+
+Component-level `validation_checks` are documented per-component above, but
+enforced in code as scenario-level `FactStatus` facts on `WffScenario`
+(`src/poltika/engines/simulator/wff.py`), not read back out of `policy.yaml`
+at runtime -- with one reviewed policy, hand-writing each check against its
+named trigger is more traceable than a generic string-keyed dispatch would
+be; a data-driven mechanism could be revisited once Accommodation Supplement
+gives a second policy to generalise against, per the Architecture Doctrine's
+"minimum abstraction demanded by two real policies."
