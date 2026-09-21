@@ -12,12 +12,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 from typing import Literal
 
 import yaml
 
 from poltika.common.errors import (
+    InvalidSourceCatalogError,
     PolicyNotApprovedError,
     PolicyVersionMismatchError,
     UnresolvedSourceIdError,
@@ -50,7 +52,7 @@ class ParameterResolution:
 
     parameter_id: str
     outcome: ResolutionOutcome
-    value: float | None = None
+    value: Decimal | None = None
     unit: str | None = None
     reason: str | None = None
     source_id: str | None = None
@@ -80,6 +82,33 @@ def load_policy_spec(policy_yaml_path: Path) -> PolicySpec:
     """Parse and validate policy.yaml in isolation. Raises on any structural problem."""
     raw = yaml.safe_load(policy_yaml_path.read_text())
     return PolicySpec.model_validate(raw)
+
+
+def _resolve_source_catalog_path(policy_dir: Path, source_catalog: str) -> Path:
+    """Resolve policy.yaml's declared `source_catalog` safely, honouring it
+    rather than silently assuming "sources.yaml" regardless of what's
+    declared -- a policy.yaml naming a different catalogue must actually
+    use it, or fail loudly.
+    """
+    candidate = Path(source_catalog)
+    if candidate.is_absolute() or ".." in candidate.parts:
+        raise InvalidSourceCatalogError(
+            f"source_catalog '{source_catalog}' must be a plain relative path "
+            "within the policy directory, not an absolute path or one containing '..'"
+        )
+
+    resolved_dir = policy_dir.resolve()
+    resolved = (policy_dir / candidate).resolve()
+    if resolved != resolved_dir and resolved_dir not in resolved.parents:
+        raise InvalidSourceCatalogError(
+            f"source_catalog '{source_catalog}' resolves outside the policy "
+            f"directory ({resolved} is not within {resolved_dir})"
+        )
+    if not resolved.is_file():
+        raise InvalidSourceCatalogError(
+            f"source_catalog '{source_catalog}' does not exist at {resolved}"
+        )
+    return resolved
 
 
 def _resolve_source_ids(spec: PolicySpec, sources_yaml_path: Path) -> None:
@@ -118,7 +147,6 @@ def load_policy_parameters(
     loader's job ends at reporting the resolution faithfully (Task 11.4).
     """
     policy_yaml_path = policy_dir / "policy.yaml"
-    sources_yaml_path = policy_dir / "sources.yaml"
 
     spec = load_policy_spec(policy_yaml_path)
 
@@ -151,6 +179,7 @@ def load_policy_parameters(
             f"policy.yaml holds '{spec.policy_version}'"
         )
 
+    sources_yaml_path = _resolve_source_catalog_path(policy_dir, spec.source_catalog)
     _resolve_source_ids(spec, sources_yaml_path)
 
     resolutions = {
@@ -166,8 +195,17 @@ def load_policy_parameters(
     )
 
 
+def _covers(value_effective_from: date, value_effective_to: date | None, modelled_date: date) -> bool:
+    if modelled_date < value_effective_from:
+        return False
+    # effective_to is exclusive when present; None means open-ended (no upper bound).
+    return value_effective_to is None or modelled_date < value_effective_to
+
+
 def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterResolution:
-    matching = [v for v in param.values if v.effective_from <= modelled_date < v.effective_to]
+    matching = [
+        v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)
+    ]
 
     if not matching:
         return ParameterResolution(

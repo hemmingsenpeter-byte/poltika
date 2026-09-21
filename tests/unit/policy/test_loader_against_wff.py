@@ -9,6 +9,7 @@ confirmed against primary sources.
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 
 from poltika.policy.loader import load_policy_parameters
@@ -35,21 +36,26 @@ def test_in_work_base_is_needs_review_not_a_silent_value() -> None:
 def test_approved_rates_resolve_to_the_reviewed_values() -> None:
     result = load_policy_parameters(WFF_POLICY_DIR, MODELLED_DATE)
 
+    # Decimal expected values, not float literals: Decimal("0.275") != 0.275
+    # (the float literal is itself an imprecise binary approximation) -- this
+    # is precisely the distinction Task 11.6's review caught, so the test
+    # asserting it must not quietly reintroduce the same imprecision.
     expected = {
-        "family_tax_credit_eldest_child": 7921,
-        "family_tax_credit_additional_child": 6454,
-        "family_tax_credit_abatement_threshold": 44900,
-        "family_tax_credit_abatement_rate": 0.275,
-        "in_work_additional_child": 780,
-        "minimum_family_prescribed_amount": 36604,
-        "best_start_annual_amount": 4041,
-        "best_start_abatement_threshold": 79000,
-        "best_start_abatement_rate": 0.21,
+        "family_tax_credit_eldest_child": Decimal(7921),
+        "family_tax_credit_additional_child": Decimal(6454),
+        "family_tax_credit_abatement_threshold": Decimal(44900),
+        "family_tax_credit_abatement_rate": Decimal("0.275"),
+        "in_work_additional_child": Decimal(780),
+        "minimum_family_prescribed_amount": Decimal(36604),
+        "best_start_annual_amount": Decimal(4041),
+        "best_start_abatement_threshold": Decimal(79000),
+        "best_start_abatement_rate": Decimal("0.21"),
     }
     for parameter_id, expected_value in expected.items():
         resolution = result.get(parameter_id)
         assert resolution.outcome == "resolved", parameter_id
         assert resolution.value == expected_value, parameter_id
+        assert isinstance(resolution.value, Decimal), parameter_id
 
 
 def test_date_outside_reference_period_is_unsupported() -> None:

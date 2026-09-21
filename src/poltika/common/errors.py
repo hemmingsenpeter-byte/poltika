@@ -34,4 +34,14 @@ class InvalidParameterIntervalsError(PoltikaError):
 
 
 class UnresolvedSourceIdError(PoltikaError):
-    """A parameter value's source_id does not resolve against sources.yaml."""
+    """A parameter value's source_id does not resolve against the declared
+    source_catalog."""
+
+
+class InvalidSourceCatalogError(PoltikaError):
+    """A policy's declared `source_catalog` is unsafe or doesn't exist.
+
+    Covers both an escaping/absolute path and a simply-missing file --
+    the declared value is never silently substituted with a hardcoded
+    "sources.yaml" guess.
+    """

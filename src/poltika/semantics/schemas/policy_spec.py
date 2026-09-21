@@ -15,6 +15,7 @@ this mirrors.
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 from enum import Enum
 from itertools import pairwise
 
@@ -61,15 +62,26 @@ class ParameterValue(BaseModel):
     model_config = ConfigDict(extra="allow")  # e.g. `note` is optional and free-form
 
     effective_from: date
-    effective_to: date  # exclusive, per SCHEMA.md's "Version axes"
-    value: float
+    # Exclusive, per SCHEMA.md's "Version axes" -- and explicitly *optional*
+    # there ("has effective_from, optional exclusive effective_to"), meaning
+    # an open-ended final interval is a legitimate, schema-permitted shape,
+    # not an omission to reject.
+    effective_to: date | None = None
+    # Decimal, not float: the approved WFF calculation sequence requires
+    # exact decimal arithmetic, including a possible half-cent result from
+    # the 27.5-cent abatement rate (0.275 * 3 as a float is
+    # 0.8250000000000001; Decimal("0.275") * 3 is exactly 0.825). Pydantic
+    # converts a YAML-parsed float via its str() round-trip, which is exact
+    # for the decimal literals actually used here -- confirmed empirically,
+    # not assumed.
+    value: Decimal
     source_id: str
     locator: str
     review_status: ParameterReviewStatus
 
     @model_validator(mode="after")
     def _effective_to_after_effective_from(self) -> ParameterValue:
-        if self.effective_to <= self.effective_from:
+        if self.effective_to is not None and self.effective_to <= self.effective_from:
             raise ValueError(
                 f"effective_to ({self.effective_to}) must be after "
                 f"effective_from ({self.effective_from}) -- effective_to is exclusive"
@@ -92,6 +104,15 @@ class ParameterSpec(BaseModel):
         # SCHEMA.md: "Intervals for the same key cannot overlap."
         ordered = sorted(self.values, key=lambda v: v.effective_from)
         for earlier, later in pairwise(ordered):
+            if earlier.effective_to is None:
+                # An open-ended interval covers [effective_from, infinity) --
+                # by definition it overlaps any interval starting after it,
+                # so it may only be the last (latest-starting) one.
+                raise ValueError(
+                    f"parameter '{self.id}' has an open-ended interval starting "
+                    f"{earlier.effective_from} that is not the last interval -- "
+                    f"a later interval starting {later.effective_from} also exists"
+                )
             if later.effective_from < earlier.effective_to:
                 raise ValueError(
                     f"parameter '{self.id}' has overlapping effective intervals: "
@@ -126,3 +147,19 @@ class PolicySpec(BaseModel):
 
     def parameter(self, parameter_id: str) -> ParameterSpec | None:
         return next((p for p in self.parameters if p.id == parameter_id), None)
+
+    @model_validator(mode="after")
+    def _no_duplicate_parameter_ids(self) -> PolicySpec:
+        seen: set[str] = set()
+        duplicates: set[str] = set()
+        for param in self.parameters:
+            if param.id in seen:
+                duplicates.add(param.id)
+            seen.add(param.id)
+        if duplicates:
+            raise ValueError(
+                f"duplicate parameter id(s) in policy.yaml: {sorted(duplicates)} -- "
+                "a duplicate would silently overwrite the earlier entry when the "
+                "loader indexes parameters by id"
+            )
+        return self
