@@ -23,6 +23,7 @@ poltika/
 ├── REPOSITORY_STRUCTURE.md   (this file)
 ├── ROADMAP.md
 ├── CHANGELOG.md
+├── RESEARCH.md         — external papers/prior art, structural reference only (never a policy source; see doctrine/ip-doctrine.md)
 │
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
 ├── adr/               — architecture decisions with rationale and context
