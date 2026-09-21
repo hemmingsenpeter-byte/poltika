@@ -287,13 +287,40 @@ twin of the New Zealand policy system.
     PR #8 independently reviewed (all four highest-risk new claims —
     s 80KW, the MB 14 repeal, MB 13's $5,000 exception, MC 6(c) — confirmed
     against full statute text, not just cited) and merged 21 September 2026
-    as a further reviewed draft, `e67ae56`; `status: draft_pending_review`
-    and `policy_version: null` unchanged by the merge. **Still open:** the
-    remaining relevant MB/MC full-text checks and any exception issues that
-    turns up, a fresh reversal-Order check at implementation time (none
-    found as of 21 September 2026), and Pete's final acceptance. Task 10 is
-    not complete and the policy is not executable until that final review
-    and acceptance are recorded.
+    as a further reviewed draft, `e67ae56`. PR #9 completed the MB/MC
+    source-audit draft and was independently reviewed with no discrepancies
+    in the provisions checked; Pete accepted its merge as a reviewed draft
+    on 21 September 2026 (`038abfb`). `status: draft_pending_review` and
+    `policy_version: null` remain unchanged. **Still open:** the closure
+    subtasks below. Task 10 is not complete and the policy is not executable
+    until Pete accepts the final scoped specification.
+
+    Task 10 closure subtasks (distinct from data Tasks 10a/10b):
+    - **10.1 Statutory calculation contract — GPT/Codex.** Check the
+      supported full-year MD/ME/MG/MF ordering, intermediate rounding, and
+      protected-credit boundaries against dated primary text. Record each
+      exact rule or an explicit `unsupported`/`needs_review` outcome in the
+      source-linked draft. Done when no in-scope formula relies only on
+      agency guidance or an unstated rounding/exception assumption. Author
+      pass recorded 21 September 2026 in the Task 10.1 source/spec update;
+      its interpretations await the independent review in 10.3.
+    - **10.2 Temporary in-work rate — GPT/Codex.** Recheck the secondary-
+      legislation register and specify the date-dependent treatment of the
+      possible reversal Order. Done when `in_work_base` cannot silently
+      produce a full-year result for an unverified interval; recheck again
+      at implementation for each modelled date.
+    - **10.3 Whole-spec independent review — Claude Code.** Derive the
+      expected scoped behaviour from primary sources before reading the
+      author response, then review the complete source map, policy draft,
+      calculation sequence, status outcomes, and 10.1/10.2 diff. Classify
+      discrepancies and return them for correction or Pete's decision.
+      Done when findings are resolved and the reviewed revision is identified.
+    - **10.4 Acceptance and release gate — Pete, with GPT/Codex drafting
+      the approval change.** Pete accepts the supported domain, remaining
+      unsupported cases, and any genuine interpretation decision after
+      10.3. Only then assign `policy_version`, set `status: approved`, record
+      the accepted revision and close Task 10. No calculator or statutory
+      fixtures may consume the draft before this gate.
 10a. Identify the minimum authoritative external statistical datasets the WFF
     vertical actually needs (beyond the legislated rates already captured in
     sources.yaml/specification.md, if any); manually acquire and freeze each

@@ -19,7 +19,7 @@ law currently in force, not a substitute for those provisions.
 | --- | --- | --- |
 | WFF-01 | The claimant must meet the family-scheme criteria for the relevant entitlement period: age, principal care of a dependent child, residence (or applicable emergency-benefit route), and continuing requirements. Relationships and shared care affect entitlement periods. | Income Tax Act ss MC 2-11; `wff-ird-shared-care`. Check the Act's definitions of dependent child and principal caregiver for each case. |
 | WFF-02 | Family scheme income begins with net income and requires the adjustments in subpart MB. It cannot be represented safely as wages alone; relationship periods, partner income, and child support paid or received matter. | Income Tax Act ss MB 1-14; `wff-ird-interpretation-2026`, `wff-ird-family-income`. The adjustment inventory below is a required input-domain checklist. |
-| WFF-03 | Family tax credit uses the eldest-child and additional-child annual amounts, prorated by eligible days. Abatement is based on family scheme income; any excess over family tax credit can reduce in-work tax credit. | Income Tax Act ss MD 1, MD 3, MD 13-15; `wff-ird-family-tax-credit`. Confirm ordering and protected-credit cases in the Act. |
+| WFF-03 | Family tax credit uses the eldest-child and additional-child annual amounts, prorated by eligible days. MD 2 applies family credit abatement first to family tax credit, then to in-work tax credit; protected-credit months are a separate path. | Income Tax Act ss MD 1-3, MD 13-15; `wff-ird-family-tax-credit`. |
 | WFF-04 | In-work tax credit has additional age, care, residence, benefit-status, and earner conditions. The calculation varies with qualifying children and eligible weeks. | Income Tax Act ss MD 4-10 and MA 7; `wff-ird-in-work-tax-credit`. Distinguish the earner test from the full-time-earner test used for minimum family tax credit. |
 | WFF-05 | Minimum family tax credit tops up qualifying after-tax family income for eligible full-time-earner weeks; it is separate from the abating family and in-work credits. | Income Tax Act ss MA 7 and ME 1-3; `wff-ird-minimum-family-tax-credit`. Full-time-earner hours and ME 2 employment exclusions must be checked separately from the in-work earner test. |
 | WFF-06 | Best Start is a per-child credit during the first three years. Same-child parental leave or preterm baby payments, parental tax credit, and specified veterans' payments can exclude entitlement for a period under MC 6(c). For children born before 1 April 2026, the first year is exempt from income abatement; later birth cohorts can be abated from their first year. | Income Tax Act ss MC 6(c), MG 1-4; `wff-ird-best-start`, `wff-budget-measures-2025`. Confirm partial-year, birth-date, and protected-credit cases. |
@@ -120,6 +120,14 @@ Income Tax Act ss MB 1-14, MC 3-11; `wff-ird-family-income`). This is a
 deliberately narrow input contract, not a claim that other households receive
 no WFF entitlement.
 
+For a partnered claimant, the verification must also show each person's
+family-scheme income and their combined amount. The ordinary combined-income
+abatement branch below is used only when both individual amounts are
+non-negative, so the sum cannot be less than either individual amount.
+Otherwise the statutory individual-or-sum tests in MD 13(3)(a)(ii) and
+MG 3(2)(a)(ii) need separate interpretation and the component is
+`needs_review`; an unexplained household total is never enough.
+
 For this branch, the claimant must meet MC 5(2)'s own residence pathway for
 the whole entitlement period: the prior continuous 12-month New Zealand
 residence-and-presence test, daily YD 1 residence, and the transitional-resident
@@ -187,23 +195,30 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    allocation, and family-scheme income. An MC 6(a) veterans' payment can
    disqualify abating WFF and Best Start for a relationship period, while
    MC 6(b) and (c) affect different components or children; do not collapse
-   these into one household-wide test. Calculate
-   the full-year family tax credit as $7,921
+   these into one household-wide test. The ordinary branch also excludes
+   any applicable parental or child tax credit; MD 2 has a third abatement
+   step for parental tax credit that is not modelled here. Calculate the
+   full-year family tax credit as $7,921
    for the eldest qualifying child plus $6,454 for each additional qualifying
    child. For the ordinary full-year case, abatement is $0.275 times the
    number of **complete dollars** by which family-scheme income exceeds
-   $44,900: `0.275 * floor(max(0, income - 44900))`. Subtract up to the
-   family-credit amount, and carry any remaining abatement to in-work tax
-   credit, following IRD's component allocation guidance. Do **not** apply
+   $44,900: `0.275 * floor(max(0, income - 44900))`. Under MD 2(2)(c),
+   apply the abatement first to family tax credit, then any remainder to
+   in-work tax credit. The component allocation is
+   `family_credit = max(0, family_credit_base - abatement)` and
+   `remaining_abatement = max(0, abatement - family_credit_base)`; no
+   component is reported as a negative credit. Do **not** apply
    this ordinary formula to MD 14 protected-credit or per-child
-   government-payment cases
-   until independently specified (WFF-03/08; Income Tax Act ss MD 3, 13-15;
+   government-payment cases. An established MD 14/15 protected month is
+   `unsupported` for this component; unknown applicability is `needs_review`.
+   Those monthly income and payment pathways need their own specification
+   (WFF-03/08; Income Tax Act ss MD 2-3, 13-15;
    `wff-tax-credit-order-2025`, cl 4;
    `wff-budget-measures-2025`, s 7;
    `wff-ird-family-tax-credit`).
 3. If in-work eligibility is established, the full-year maximum for one to
    three children is $7,670, plus $780 for each child beyond three. Reduce it
-   by the unused family-credit abatement, with a zero floor. If the claimant
+   by `remaining_abatement`, with a zero floor (MD 2(2)(c)(ii)). If the claimant
    cannot receive family tax credit for a child due to a different payment,
    the separate direct-abatement pathway requires review and is unsupported
    in this draft (WFF-04/08; Income Tax Act ss MD 4-10, 13-15;
@@ -213,25 +228,47 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    all-52-week draft amount is the positive
    difference between $36,604 and that net income. It does not abate with the
    family/in-work credits and must not be calculated from gross income alone.
-   Tax and part-week derivations remain unsupported (WFF-05; Income Tax Act
-   ss ME 1-3; `wff-ird-minimum-family-tax-credit`).
+   ME 3 defines the supplied net amount as adjusted income minus adjusted
+   income-tax liability plus the specified MB 1(2) amount received minus
+   the MB 1(3) amount paid; the input must attest to this derivation, not
+   merely carry an after-tax label. ME 1(2)-(3) uses `weekly periods / 52`;
+   this branch requires 52 verified full-time-earner weeks. A ME 2(2)-(4)
+   Commissioner-determined employment period or part-week case is
+   `unsupported`; an unverified tax derivation is `needs_review`. A verified
+   net income at
+   or above $36,604 yields no positive top-up, consistent with IRD's stated
+   income limit; the zero-credit treatment is an interpretation for the
+   independent reviewer to confirm (WFF-05; Income Tax Act ss ME 1-3;
+   `wff-ird-minimum-family-tax-credit`).
 5. For the single full-year Best Start branch above, the draft maximum is
    $4,041. For an abatable year, reduce it by 21 cents per **complete dollar**
    of family-scheme income over $79,000, with a zero floor. First-year
    pre-1-April-2026 births, later birth cohorts, births/third birthdays within
    the year, MC 6(c) disqualifying payments, and multiple eligible children require
    separate review; do not apply this branch to them or to months receiving
-   protected Best Start credit under MG 4 (WFF-06/08; Income Tax Act
+   protected Best Start credit under MG 4. An established MG 4 protected
+   month is `unsupported` for this component; unknown applicability is
+   `needs_review` (WFF-06/08; Income Tax Act
    ss MG 1-4; `wff-tax-credit-order-2025`, cl 6;
    `wff-ird-best-start`).
 
 All amounts above are **annual entitlement candidates**, not weekly payment
-figures. IRD's weekly/fortnightly guidance divides by 52/26 and rounds each
-instalment down to a whole dollar; instalments and annual square-up are not
-in the initial calculation output (WFF-09; Income Tax Act subpart MF;
-`wff-ird-family-tax-credit`). Use decimal arithmetic and preserve cents in
-annual results; independently verify any statutory intermediate rounding
-before implementation. Section 80KW of the Tax Administration Act can alter
+figures. MD 3(2), MD 13(2), MG 2(1), and MG 3(1) use `days / 365`; ME 1(2)
+and MD 10(2) use `weekly periods / 52`. The ordinary supported full-year
+branch must verify 365 eligible days for day-based components and, when an
+in-work or minimum-family credit is calculated, 52 qualifying whole weeks;
+neither follows solely from a tax-year label. The Act's `complete dollar` rule applies
+to income **excess** in MD 13(3)(a) and MG 3(2)(a), not to the credit amount.
+MF 3-4 concern interim instalments: MF 4(4) requires the notice to show a
+complete-dollar instalment, while IRD describes rounding each weekly or
+fortnightly instalment down. Neither is an instruction to truncate an annual
+component or an intermediate annual abatement. Instalments and annual
+square-up are not in the initial calculation output (WFF-09; Income Tax Act
+ss MD 3/10/13, ME 1, MG 2-3, MF 3-4; `wff-ird-family-tax-credit`). Preserve
+the exact decimal annual result, including a possible half-cent from
+MD 13's 27.5-cent rate; do not introduce cent or whole-dollar rounding in
+the calculation core. Any later payment or presentation rounding needs its
+own sourced rule. Section 80KW of the Tax Administration Act can alter
 annual entitlement if the person receives 27 fortnightly or may have received
 53 weekly instalments under the section's all-year payment conditions. If
 that exception applies, return
@@ -242,6 +279,12 @@ or `spec_cases.yaml` by this draft.
 
 ### Review gates and source checks
 
+- Task 10.1 checked MD 1-3/10/13-15, ME 1-3, MG 1-4, and MF 1-4/4L against
+  the official 4 September 2026 Act version on 21 September 2026. The
+  ordinary 365-day/52-week formulas and MD 2 abatement order are now linked
+  to those provisions. Independent review must still test the partnered
+  income boundary, exact-decimal/half-cent handling, non-negative component
+  handling, and MFTC zero-credit interpretation before executable approval.
 - The relevant MB 1-13 and MC 2-11 provisions were checked against the
   official 4 September 2026 Act version on 21 September 2026; MB 9 and MB 14
   are repealed. Recheck the operative version for each later modelled date.
