@@ -277,14 +277,18 @@ twin of the New Zealand policy system.
     issues pre-merge (complete-dollar abatement truncation, a missing-input
     status conflict, an interval/note contradiction on the temporary
     in-work rate); confirmed correct against full Act text, not just IRD
-    guidance, for MD 1/3/10/13 and ME 1/3. **Still open, in a follow-up
-    PR:** remaining Act provisions (MD 4-9 in-work earner test, MD 14
-    protected credit, MG 1-4 Best Start in full), Pete's explicit sign-off
-    on the proposed narrow v0.1 supported domain, and a fresh reversal-Order
-    check at actual implementation time (not fired as of 21 September 2026,
-    confirmed against the Act's own secondary-legislation register, not
-    just petrol-price news). Task 10 completes only once that follow-up is
-    reviewed and Pete accepts it as `approved`.
+    guidance, for MD 1/3/10/13 and ME 1/3. Claude's subsequent full-text
+    pass (commit `ad1a9a2`) checked MD 4-9/14 and MG 1-4. Pete accepted the
+    narrow v0.1 input domain on 21 September 2026. Follow-up PR #8 records
+    further checks of the 2025 rate Order and Budget Measures Act, Tax
+    Administration Act s 80KW's extra-instalment exception, MG 4's protected
+    Best Start boundary, and correction of the repealed MB 14 inventory row.
+    **Still open:** independent review of PR
+    #8, the remaining relevant MB/MC full-text checks and any exception
+    issues that review finds, a fresh reversal-Order
+    check at implementation time (none found on 21 September 2026), and
+    Pete's final acceptance. Task 10 is not complete and the policy is not
+    executable until that final review and acceptance are recorded.
 10a. Identify the minimum authoritative external statistical datasets the WFF
     vertical actually needs (beyond the legislated rates already captured in
     sources.yaml/specification.md, if any); manually acquire and freeze each

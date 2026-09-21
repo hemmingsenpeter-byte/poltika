@@ -41,7 +41,7 @@ otherwise a supplied `family_income` cannot be treated as derived by Poltika.
 | MB 7, 7B-8 | Settlor-attributable trust income and employment/fringe benefits (including controlling-shareholder cases) are distinct adjustments. |
 | MB 9-10 | MB 9 is repealed; specified exempt pensions and annuities have a half-inclusion rule under MB 10. |
 | MB 11-12B | Dependent-child passive income above the $500 threshold, non-resident foreign-sourced income, and non-beneficiary trust distributions each have their own tests. |
-| MB 13-14 | Other family-support payments can be included when the statutory threshold is met; remission income of a discharged bankrupt is excluded. |
+| MB 13-14 | MB 13 includes qualifying other payments subject to its exclusions and total-value exception. MB 14's former remission-income exclusion is repealed; do not apply it as a current adjustment. |
 
 IRD also requires the claimant and partner's income, child support received and
 paid, and relevant worldwide income of a non-resident partner to be handled as

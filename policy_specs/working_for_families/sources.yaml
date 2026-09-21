@@ -16,14 +16,14 @@ sources:
     title: Income Tax (Tax Credit) Order 2025
     url: https://www.legislation.govt.nz/regulation/public/2025/0260/latest/whole.html
     covers: Family tax credit, minimum family tax credit, and Best Start rates from 2026-04-01.
-    locator: Clauses 4-6 and application provision.
+    locator: Clause 2 commencement and clauses 4-6, including their 2026-27-and-later application subclauses.
     verification_status: relevant_clauses_checked_2026-09-21
   - id: wff-budget-measures-2025
     kind: amending_legislation
     title: Taxation (Budget Measures) Act 2025
     url: https://www.legislation.govt.nz/act/public/2025/26/en/latest/sections/LMS1441509/
     covers: Family tax credit abatement threshold and rate from 2026-04-01.
-    locator: Section 7, amending Income Tax Act s MD 13(3)(a)(i); section 8 for Best Start cohort rule.
+    locator: Sections 2(5), 7(1)-(3) amending Income Tax Act s MD 13(3)(a)(i)-(ii), and 8 for the Best Start cohort rule.
     verification_status: relevant_clauses_checked_2026-09-21
   - id: wff-tax-administration-act
     kind: legislation
