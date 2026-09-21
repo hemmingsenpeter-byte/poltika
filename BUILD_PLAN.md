@@ -364,7 +364,26 @@ twin of the New Zealand policy system.
     already-approved parameters directly, which were never raw external
     data in the first place.
 11. Build parameter loader (consumes canonical Poltika variables only, never
-    a source-specific representation)
+    a source-specific representation) — Claude Code implements, GPT/Codex
+    gives fresh-context review (rotation reversed from Task 10: Claude Code
+    is the author this time), Pete merges/accepts.
+    - **11.1** Define the loader's interface to Task 12: requested policy,
+      version, and modelled date in; typed parameter values or an explicit
+      unresolved outcome out.
+    - **11.2** Parse and validate `policy.yaml`: supported `schema_version`,
+      `status: approved`, `policy_version`, units, source IDs, and
+      non-overlapping effective intervals.
+    - **11.3** Select values by effective date without silently substituting
+      a missing interval or value.
+    - **11.4** Preserve the `in_work_base` gate: `review_status: needs_review`
+      must not yield an unconditional $7,670 value. Pass the dated
+      Order-status requirement through to the calculator contract, not
+      resolved inside the loader.
+    - **11.5** Test valid, missing, overlapping, unapproved, and
+      unresolved-rate cases; assemble the source/spec/diff/test review
+      packet.
+    - **11.6** Open the implementation PR for GPT/Codex's fresh-context
+      review before Pete merges.
 12. Build pure `calculate_wff()` function. Add component-level
     `validation_checks` for the reviewed exclusion triggers identified in
     Task 10.3 (MD 14/15, the in-work direct-abatement path, ME 2(2)-(4),
