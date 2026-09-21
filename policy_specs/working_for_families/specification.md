@@ -223,3 +223,49 @@ conditions, component ordering, source locators, date handling, and whether
 this static-year branch can be implemented without accidentally representing
 out-of-domain households as zero entitlement. Do not implement the policy
 calculator or statutory-value fixtures before the review outcome is resolved.
+
+## Task 10 follow-up: MD 4-9/14, MG 1-4 verification (Claude Code, 2026-09-21)
+
+Full-text checked (curl, not WebFetch — see ADR/PR #6 history for why) against
+`https://www.legislation.govt.nz/act/public/2007/97/en/latest/parts/DLM1518405/`.
+
+**MD 5-9 (the five in-work tax credit requirements) match the draft's
+framing exactly** — age ≥16 (MD 5), principal caregiver (MD 6), residence
+(MD 7), not receiving a main benefit or basic/independent-circumstances
+grant (MD 8), earner test with a business-income pathway for the
+self-employment case the draft already deferred (MD 9). No discrepancy.
+
+**Two genuine findings, not yet in the draft:**
+
+1. **MG 1(4): Best Start "is overridden by section 80KW of the Tax
+   Administration Act 1994"** for an "Extra instalment" case. This is a
+   citation to a different Act entirely, not currently in `sources.yaml` or
+   anywhere in this spec. Not investigated further here — per the
+   ground-truth rule, flagging it rather than guessing what s 80KW covers.
+   Needs its own source-map entry before the Best Start branch can be
+   called reviewed against full text.
+2. **The Best Start calculation step (step 5, "Proposed full-year
+   calculation sequence") doesn't exclude protected-Best-Start-credit
+   cases, unlike the family-tax-credit step (step 2) which explicitly
+   excludes MD 14 cases.** MG 3(2)(b)(ii) excludes "the days of any
+   calendar months in which the person receives protected Best Start tax
+   credit as described in section MG 4" from the abatement-days count —
+   structurally the same carve-out mechanism as MD 13(3)(b)/MD 14 for
+   family tax credit, just a separate provision for a separate credit. The
+   draft's step 5 exclusion list (birth cohorts, part-year, PPL, multiple
+   children) doesn't mention it. WFF-08 already names MG 4 as a citation
+   needing verification, so this isn't a new source lead, but the Task 10
+   calculation draft itself doesn't yet carry that exclusion the way its
+   FTC counterpart does. Should be added symmetrically before this branch
+   is treated as reviewed.
+
+Reversal-Order check re-confirmed same day (2026-09-21, per the PR #6
+thread): s 2(43)-(45) of the 2026 Act require a specific Order in Council to
+commence the reversal, with 1 April 2027 as the s 2(44) fallback if none is
+made; no such secondary legislation is on the official register as of this
+check. `in_work_base`'s `needs_review` status is unaffected — this confirms
+the current value, it doesn't clear it for `approved`.
+
+Not drafting new `policy.yaml`/`specification.md` content for these — that
+stays with the Task 10 author, to keep independent review meaningful for
+whatever comes next.
