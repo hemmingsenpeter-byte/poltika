@@ -607,7 +607,7 @@ twin of the New Zealand policy system.
       not addressed here for WFF, and is not a gap.
     - **15.5** Test until satisfied, self-review anticipating GPT/Codex
       flags, open the PR for fresh-context review before Pete merges.
-      **Complete 22 September 2026, PR pending review:**
+      **Complete, merged 22 September 2026 (PR #17):**
       `tests/regression/test_known_historical_issues.py` -- 9 tests, one
       per issue from 15.1. 4 reconstruct the minimal scenario directly
       (the calculator-logic bugs, none of which spec_cases.yaml/
@@ -629,7 +629,18 @@ twin of the New Zealand policy system.
       was also corrected: it still claimed "nothing under `src/`... or
       `tests/`... exists yet" and "v0.1 is still in Week 0", both stale
       since Task 11. 117 tests total (up from 108).
-      `pytest`/`ruff`/`mypy --strict` all pass.
+      `pytest`/`ruff`/`mypy --strict` all pass. GPT/Codex's fresh-context
+      review found two further issues, fixed same day: the income-
+      provenance regression checked only the Rahui case, asserting
+      without verifying that Claire & Laura and Faraj had "the same fix
+      applied identically" (fixed to check all three by id); and the
+      `REPOSITORY_STRUCTURE.md` update claimed `docs/` was entirely
+      undone, missing that `docs/research/` already held two files from
+      earlier session work (fixed, with the target-architecture tree
+      annotated to distinguish it from the still-hypothetical
+      `docs/{data_model,...}.md` files). Pete recommended acceptance and
+      delegated the final merge decision to Claude Code, matching Tasks
+      13/14's pattern.
 16. External coverage-gap check (OpenFisca test names, strictly after suite
     completion) — return to primary sources for any gap found
 17. Independent adversarial review (fresh-context, no implementer explanation)
