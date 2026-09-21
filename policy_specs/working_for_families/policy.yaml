@@ -47,7 +47,7 @@ inputs:
     owner: person
     type: dated_income_and_government_payment_facts
     period: full_tax_year
-    source_rule_ids: [WFF-04, WFF-05, WFF-08]
+    source_rule_ids: [WFF-04, WFF-05, WFF-06, WFF-08]
     missing_outcome: needs_review
   - id: net_family_scheme_income
     owner: assessment_unit

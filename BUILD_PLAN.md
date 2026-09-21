@@ -282,7 +282,8 @@ twin of the New Zealand policy system.
     narrow v0.1 input domain on 21 September 2026. Follow-up PR #8 records
     further checks of the 2025 rate Order and Budget Measures Act, Tax
     Administration Act s 80KW's extra-instalment exception, MG 4's protected
-    Best Start boundary, and correction of the repealed MB 14 inventory row.
+    Best Start boundary, MC 6(c)'s same-child payment exclusions, and
+    correction of the repealed MB 14 inventory row.
     **Still open:** independent review of PR
     #8, the remaining relevant MB/MC full-text checks and any exception
     issues that review finds, a fresh reversal-Order
