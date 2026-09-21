@@ -491,9 +491,9 @@ twin of the New Zealand policy system.
     setting `spec_cases.yaml`'s `status: approved` -- see
     specification.md's "Task 13 acceptance" note.
 14. Build benchmark tests (against independently published IRD examples).
-    **Complete 22 September 2026, PR pending review:**
+    **Complete, merged 22 September 2026 (PR #16):**
     `policy_specs/working_for_families/benchmarks.yaml` (`status:
-    pending_review`) holds 9 cases drawn from the four IRD pages
+    approved`) holds 9 cases drawn from the four IRD pages
     `sources.yaml` already names as benchmark candidates (family tax
     credit, in-work tax credit, minimum family tax credit, Best Start),
     fetched directly (browser user agent, since a bare fetch 403'd) on
@@ -552,7 +552,16 @@ twin of the New Zealand policy system.
     own benchmarked rate is itself the live, unresolved Task 10.2 legal
     question; and two provenance statements were corrected (the "every
     value copied verbatim" claim, and the same self-employment
-    misattribution above).
+    misattribution above). A second review round then caught the Faraj
+    whole-year-domain error described above, plus three partnered cases
+    (Rahui, Claire & Laura, Faraj) that had put a published household
+    income directly into `family_scheme_income.claimant_amount`,
+    misrepresenting it as one person's individually verified amount --
+    fixed to `family_scheme_income: null` in all three, the honest
+    representation given neither partner's individual amount is actually
+    known. Pete recommended acceptance and delegated the final accept
+    decision to Claude Code, matching Task 13's pattern -- see
+    specification.md's "Task 14 acceptance" note.
 15. Build regression tests, including the frozen dataset-snapshot fixtures
     from Task 10b: same scenario + same snapshot must yield the same
     deterministic result

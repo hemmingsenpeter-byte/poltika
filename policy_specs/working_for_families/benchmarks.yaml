@@ -112,7 +112,25 @@
 #     be used (the Task 12 PR #14 second review finding). Rather than
 #     inventing an income split IRD never published, these are recorded as
 #     scope-boundary cases: needs_review, not the IRD-stated dollar figure.
-status: pending_review
+#
+# status: approved 22 September 2026, PR #16. GPT/Codex's fresh-context
+# Task 14 review found and Claude Code fixed, across two rounds: (1) an
+# overclaim about what the cases prove (household-level exclusion-trigger
+# facts held `verified` without the cited IRD text stating them, resolved
+# with the `assumed_facts` field and the `conditional_arithmetic_match`
+# outcome kind), the Jaimee case's unflagged dependency on the still-live
+# Task 10.2 in_work_base rate question, and two provenance statements; (2)
+# Faraj's child wrongly marked qualifying for the whole tax year despite
+# IRD's stated in-year birth date, and three partnered cases mislabelling
+# a published household income as one person's individually verified
+# amount. Pete recommended acceptance and delegated the final accept
+# decision to Claude Code, matching Task 13's pattern. Immediately before
+# this status change, re-verified pytest (108/108), ruff, and
+# mypy --strict all pass and re-confirmed both second-round findings are
+# actually present in the merged state. Changes no test values or
+# calculation behaviour -- per this file's own discipline, this status
+# field records review acceptance only.
+status: approved
 
 benchmarks:
   - id: ird_ftc_sarah_full_credit

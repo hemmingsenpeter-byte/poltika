@@ -731,3 +731,18 @@ before fixing:
 
 108/108 tests, `ruff`, and `mypy --strict` all re-verified passing (no
 change to any other case's scenario or expected values).
+
+## Task 14 acceptance (Pete recommended; Claude Code decided, 22 September 2026)
+
+Pete recommended accepting the reviewed PR #16 revision after both rounds
+of findings above and explicitly delegated the final accept decision for
+`benchmarks.yaml` to Claude Code, matching how Task 13's `spec_cases.yaml`
+acceptance was handled rather than deciding personally as with Task 10.4.
+Immediately before setting `status: approved`, Claude Code re-verified
+`pytest` (108/108), `ruff`, and `mypy --strict` all pass and re-confirmed
+both second-round findings (Faraj's whole-year domain fix, the three
+partnered cases' `family_scheme_income: null` correction) are actually
+present in the merged state, not just claimed. This assigns
+`status: approved` to `benchmarks.yaml`'s 9 cases. It changes no test
+values or calculation behaviour -- per the file's own header, this status
+field records review acceptance, nothing else.
