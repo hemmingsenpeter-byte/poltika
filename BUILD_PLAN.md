@@ -642,7 +642,26 @@ twin of the New Zealand policy system.
       delegated the final merge decision to Claude Code, matching Tasks
       13/14's pattern.
 16. External coverage-gap check (OpenFisca test names, strictly after suite
-    completion) — return to primary sources for any gap found
+    completion) — return to primary sources for any gap found. **Complete
+    22 September 2026 for WFF (ADR-0009), PR pending review:** per
+    ADR-0004, independently included both OpenFisca Aotearoa and
+    `PolicyEngine/policyengine-nz` as comparators, not OpenFisca alone.
+    Structural-only (directory/file names, current commit; no file
+    contents, test logic, or values read) -- OpenFisca Aotearoa's
+    `family_scheme` test directory lists `best_start`, `eligibility`,
+    `family_scheme`, `family_tax_credit`, `in_work_tax_credit`,
+    `minimum_family_tax_credit`; PolicyEngine NZ has one consolidated
+    `test_working_for_families.yaml` plus a separate Treasury-validation
+    test file, and variable files for `best_start`/`family_tax_credit`/
+    `in_work_tax_credit` but apparently none separately named for minimum
+    family tax credit. No genuine scenario-category gap found: every
+    named category maps onto WFF coverage already built in depth across
+    Tasks 12-15 (`spec_cases.yaml`'s 23 cases, `benchmarks.yaml`'s 9,
+    `tests/regression`'s 9), several more granular than either external
+    project's own public structure. A legitimate clean result, not a
+    shortcut -- see ADR-0009 for the full comparison and reasoning. Must
+    be repeated independently for Accommodation Supplement once AS's own
+    test suite is complete.
 17. Independent adversarial review (fresh-context, no implementer explanation)
 18. Classify discrepancies
 19. Resolve ambiguities, record decision artifacts (where genuine ambiguity exists)
