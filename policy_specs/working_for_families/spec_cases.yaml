@@ -1,3 +1,873 @@
-# Task 5 scaffold only. Task 13 adds independently hand-calculated cases.
-status: pending_review
-spec_cases: []
+# Task 13: independently hand-calculated spec-test cases, loaded by
+# tests/unit/engines/simulator/test_wff_spec_cases.py rather than hardcoded
+# into that test file's Python -- per ADR-0005's design ("hand-calculated
+# spec-test expected values, loaded by Task 13 tests rather than
+# hardcoded") and the Test Doctrine's "Spec tests -- hand-calculated from
+# POLICY_SPECS, protected" class. This file is one of
+# .github/workflows/statutory-value-guard.yml's protected paths: any PR
+# that changes it shows up flagged for review before merge (ADR-0007).
+#
+# Every `expected` value below was independently derived from
+# specification.md's "Approved Task 10 scoped calculation contract" and the
+# approved policy.yaml's parameters (policy_version 0.1.0) using a
+# standalone calculation, not by running or reading
+# src/poltika/engines/simulator/wff.py and copying its output -- that would
+# make this file circular and unable to catch an implementation bug. Each
+# case's `source_note` records the by-hand arithmetic.
+#
+# Every case is evaluated against the *real* approved
+# policy_specs/working_for_families/policy.yaml via Task 11's loader, at
+# `modelled_date` within the 2026-04-01..2027-04-01 reference period. This
+# is deliberate, not an oversight: `in_work_base`'s `review_status:
+# needs_review` (the Task 10.2 rate-status contract) is a live legal fact
+# about that real, approved policy record, not a synthetic test fixture --
+# so in_work_tax_credit is `needs_review` in every case below unless a
+# higher-precedence exclusion (e.g. MC 6(a)/(b), or a household-wide gate)
+# already makes it `unsupported`. That is correct, protected behaviour, not
+# a bug to "fix" by asserting an unconditional $7,670.
+#
+# status: approved 22 September 2026, PR #15. GPT/Codex's fresh-context
+# Task 13 review found and Claude Code fixed three issues before
+# acceptance: a missing MD 14/15 case, a test-runner gap that would have
+# let a case with an incomplete `expected` block pass silently, and a
+# documentation sentence that understated how many cases return
+# in_work_tax_credit: unsupported (6, not the originally claimed 2 --
+# corrected in specification.md). Pete recommended acceptance and
+# delegated the final accept decision to Claude Code, which re-verified
+# pytest/ruff/mypy --strict and every prior finding's resolution
+# immediately before this status change -- matching how policy.yaml's own
+# status field was handled through Task 10, except Pete named Claude Code
+# as decision-maker for this specific acceptance rather than deciding it
+# personally.
+status: approved
+
+spec_cases:
+  - id: single_ordinary_low_income
+    description: >
+      Single claimant, one qualifying child, income well below every
+      abatement threshold -- the plainest ordinary-branch case.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      FTC: eldest-only base $7921; income $30000 < $44900 threshold, so no
+      abatement (MD 13(3)(a)). MFTC: $36604 - $30000 = $6604 (ME 1). Best
+      Start: no Best-Start-eligible child in this scenario -> a genuine
+      calculated zero (MG 1-4), not a scope limitation. IWTC: in_work_base
+      carries review_status needs_review under the real approved
+      policy.yaml (Task 10.2 rate-status contract) -- needs_review, not a
+      number.
+
+  - id: single_two_children_no_abatement
+    description: Single claimant, two qualifying children, income below threshold.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "14375"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      FTC base = eldest $7921 + 1 additional child $6454 = $14375; income
+      $30000 is below the $44900 threshold, so no abatement.
+
+  - id: single_four_children_base_beyond_three
+    description: >
+      Four qualifying children -- exercises the eldest + 3x additional
+      family tax credit base with no abatement.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+    expected:
+      family_tax_credit: {outcome: calculated, value: "27283"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      FTC base = $7921 + 3 x $6454 = $7921 + $19362 = $27283; no abatement
+      at this income.
+
+  - id: single_high_income_ftc_floors_to_zero
+    description: >
+      Income far above the abatement threshold -- family tax credit must
+      floor at zero, never go negative.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "200000"}
+      net_family_scheme_income: "200000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "0"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "0"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      FTC: excess = $200000 - $44900 = $155100; abatement = 0.275 x
+      $155100 = $42652.5, far exceeding the $7921 base -> floored at $0.
+      MFTC: net income $200000 exceeds $36604 -> $0 (ME 1, "no positive
+      top-up" per specification.md).
+
+  - id: partnered_combined_income_drives_abatement
+    description: >
+      Partnered claimant with both individual amounts verified -- the
+      combined figure drives family tax credit abatement.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: "30000", partner_amount: "25000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "5143.500"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      Combined income = $30000 + $25000 = $55000; excess over $44900 =
+      $10100; abatement = 0.275 x $10100 = $2777.5; FTC = $7921 - $2777.5 =
+      $5143.5.
+
+  - id: partnered_missing_partner_income_is_needs_review
+    description: >
+      Partnered claimant whose partner's income was never separately
+      verified -- must not silently use the claimant's amount alone.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      specification.md requires each partner's individually verified
+      amount before the combined-income branch may be used -- an
+      unexplained claimant-only figure for a partnered household is not
+      enough, so family tax credit is needs_review (and in-work tax credit
+      inherits that via MD 2(2)(c)'s abatement-carryover dependency).
+      Minimum family tax credit doesn't use combined family_scheme_income
+      at all (it uses the separately verified net_family_scheme_income),
+      so it is unaffected. Best Start has no eligible child in this
+      scenario, so it resolves to a genuine zero before its own income
+      check is ever reached.
+
+  - id: unknown_partner_status_blocks_ftc_iwtc_and_mftc
+    description: >
+      Partner status itself unverified -- blocks every component whose
+      correct branch depends on knowing single vs partnered, even with a
+      Best Start-eligible child present.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: unknown
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: in_supported_cohort
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: needs_review}
+    source_note: >
+      Family tax credit and Best Start both use family_scheme_income's
+      combined figure, which can't be trusted as correct without knowing
+      whether a partner exists (Task 12 second PR #14 review finding).
+      Minimum family tax credit's own MA 7 full-time-earner test has a
+      different hour threshold for a single claimant (20 hours) than a
+      partnered one (30 combined hours) per specification.md, so an
+      unverified partner status blocks it too, independently of income
+      combination (Task 12 third PR #14 review finding). In-work tax
+      credit inherits family tax credit's needs_review via MD 2(2)(c).
+
+  - id: household_eligibility_excluded_is_unsupported
+    description: >
+      A household verified outside the v0.1 domain (e.g. shared care,
+      relationship change) -- every component unsupported, not zero.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: excluded
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: unsupported}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: unsupported}
+      best_start: {outcome: unsupported}
+    source_note: >
+      specification.md's v0.1 supported domain requires a stable, verified
+      household (residence, principal care, no competing caregiver, no
+      relationship change) for the whole tax year; a household verified
+      outside that domain is structurally out of scope for every
+      component, not a household with zero entitlement.
+
+  - id: household_eligibility_unknown_is_needs_review
+    description: Household eligibility unverified -- every component needs_review.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: unknown
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: needs_review}
+    source_note: >
+      Missing eligibility evidence produces needs_review, per
+      specification.md, distinct from a known, evidenced exclusion.
+
+  - id: s80kw_extra_instalment_is_unsupported
+    description: >
+      Tax Administration Act s 80KW extra-instalment year applies -- the
+      ordinary annual-entitlement branch does not cover this case, for any
+      component.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: excluded
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: unsupported}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: unsupported}
+      best_start: {outcome: unsupported}
+    source_note: >
+      specification.md: an applicable s 80KW 27-fortnight/53-week year
+      returns unsupported "in this first branch rather than the ordinary
+      annual amount" -- for the whole calculation, not one component.
+
+  - id: best_start_supported_cohort_with_abatement
+    description: >
+      One Best Start-eligible child (the narrow v0.1 birth cohort), income
+      above the Best Start abatement threshold.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "90000"}
+      net_family_scheme_income: "20000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: in_supported_cohort
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "0"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "16604"}
+      best_start: {outcome: calculated, value: "1731.00"}
+    source_note: >
+      FTC: excess = $90000 - $44900 = $45100; abatement = 0.275 x $45100 =
+      $12402.5, exceeding the $7921 base -> floored at $0 (remaining
+      abatement $4481.5, not directly observable here since in-work tax
+      credit is needs_review regardless under the live in_work_base gate).
+      MFTC: $36604 - $20000 = $16604. Best Start: excess over $79000 =
+      $11000; abatement = 0.21 x $11000 = $2310; $4041 - $2310 = $1731.
+
+  - id: best_start_other_cohort_child_is_unsupported_not_zero
+    description: >
+      A child outside the narrow v0.1 Best Start birth cohort has real,
+      unresolved entitlement -- must not read as a calculated zero.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: other_cohort_unsupported
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: unsupported}
+    source_note: >
+      specification.md: "later birth cohorts ... require separate review;
+      do not apply this branch to them" -- real entitlement, not
+      calculated here, so unsupported rather than a false zero. Family tax
+      credit and minimum family tax credit are unaffected: they don't
+      depend on Best Start's cohort facts.
+
+  - id: best_start_multiple_eligible_children_unsupported
+    description: >
+      Two children both in the narrow v0.1 birth cohort -- multi-child
+      apportionment is outside this branch.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: in_supported_cohort
+          best_start_no_disqualifying_payment: verified
+        - qualifies_whole_year: verified
+          best_start_cohort: in_supported_cohort
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "14375"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: unsupported}
+    source_note: >
+      FTC base for 2 children = $7921 + $6454 = $14375, no abatement at
+      this income. Best Start: specification.md's v0.1 branch covers
+      exactly one eligible child; multiple eligible children need separate
+      apportionment review.
+
+  - id: mc6c_disqualifying_payment_unsupported_only_best_start
+    description: >
+      MC 6(c) disqualifying payment for the Best Start child -- affects
+      only Best Start, not the other components.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: in_supported_cohort
+          best_start_no_disqualifying_payment: excluded
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: unsupported}
+    source_note: >
+      specification.md WFF-06 / MC 6(c): a same-child parental leave/
+      preterm-baby payment, parental tax credit, or specified veterans'
+      payment for that child excludes Best Start for that child only --
+      it's a per-child trigger, not a household-wide one, and doesn't touch
+      family or minimum family tax credit.
+
+  - id: mg4_protected_best_start_credit_unsupported
+    description: MG 4 protected Best Start credit month -- unsupported for Best Start only.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: excluded
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: unsupported}
+    source_note: >
+      MG 4's protected-credit case is checked before Best Start's cohort
+      logic, so it applies even in a scenario with no Best-Start-eligible
+      child -- a known exclusion trigger takes precedence over "no eligible
+      child, calculated zero".
+
+  - id: best_start_shared_care_unsupported
+    description: Shared care applies -- unsupported for Best Start only.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: excluded
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: unsupported}
+    source_note: >
+      specification.md step 5 requires "no shared care" for the v0.1 Best
+      Start branch; a known shared-care case is unsupported regardless of
+      whether a cohort-eligible child is present.
+
+  - id: mftc_zero_at_prescribed_amount
+    description: >
+      Net income exactly at the $36604 prescribed amount -- an explicit,
+      calculated zero, not needs_review.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "36604"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "0"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      specification.md: "A verified net income at or above $36,604 yields
+      no positive top-up" -- included in the reviewed scoped contract as an
+      explicit, calculated zero.
+
+  - id: me2_employment_exclusion_unsupported_only_mftc
+    description: >
+      ME 2(2)-(4) Commissioner-determined employment period or part-week
+      case -- unsupported for minimum family tax credit only.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: excluded
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: unsupported}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      specification.md: "A ME 2(2)-(4) Commissioner-determined employment
+      period or part-week case is unsupported" -- outside the 52-verified-
+      week v0.1 branch, and specific to minimum family tax credit's own
+      full-time-earner test.
+
+  - id: md14_15_protected_credit_excludes_ftc_and_iwtc_not_mftc_or_best_start
+    description: >
+      MD 14/15 protected family-tax-credit case (and the linked in-work
+      direct-abatement pathway) -- affects only family tax credit and
+      in-work tax credit, not minimum family tax credit or Best Start.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: excluded
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: unsupported}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      specification.md step 2: "Do not apply this ordinary formula to MD
+      14 protected-credit or per-child government-payment cases. An
+      established MD 14/15 protected month is unsupported for this
+      component" -- and step 3 links the in-work direct-abatement pathway
+      to the same protected-credit determination (a claimant who cannot
+      receive family tax credit for a child due to a different payment).
+      Neither MD 14/15 nor the direct-abatement pathway is named for
+      minimum family tax credit (WFF-05, a separate ME 1-3 mechanism) or
+      Best Start (WFF-06, MG 1-4), so both calculate normally.
+
+  - id: mc6a_veterans_payment_excludes_ftc_iwtc_best_start_not_mftc
+    description: >
+      MC 6(a) veterans' payment -- excludes family tax credit, in-work tax
+      credit, and Best Start, but minimum family tax credit (which does
+      not abate) is unaffected.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: excluded
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: unsupported}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: unsupported}
+    source_note: >
+      Official Income Tax Act 2007 s MC 6(a) text (checked 2026-09-21):
+      excludes "an abating WFF tax credit or a Best Start tax credit" --
+      family tax credit, in-work tax credit, and Best Start (the credits
+      that abate), but minimum family tax credit is not named and does not
+      abate, so it calculates normally.
+
+  - id: mc6b_disqualifying_payment_excludes_iwtc_mftc_not_ftc_or_best_start
+    description: >
+      MC 6(b) main benefit / parent's allowance / children's pension --
+      excludes in-work and minimum family tax credit, but not family tax
+      credit or Best Start.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: excluded
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: unsupported}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      Official Income Tax Act 2007 s MC 6(b) text (checked 2026-09-21):
+      excludes "an in-work tax credit, parental tax credit, or minimum
+      family tax credit" when a main benefit or a parent's allowance/
+      children's pension is received during the relationship period --
+      distinct from MC 6(a), and does not name family tax credit or Best
+      Start.
+
+  - id: in_work_eligibility_excluded_is_unsupported_not_needs_review
+    description: >
+      In-work eligibility test fails -- unsupported takes precedence over
+      the separate in_work_base needs_review gate, since it's a known,
+      evidenced exclusion rather than an unresolved one.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: excluded
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7921"}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      specification.md: a full-year qualifying earner test failure (main
+      benefit/Student Allowance period, unpaid break) is a known,
+      evidenced exclusion -- unsupported -- checked before the loader's
+      separate in_work_base parameter gate is ever reached, so this
+      scenario's in-work tax credit outcome differs from every other case
+      in this file even though in_work_base's status hasn't changed.
+
+  - id: half_cent_precision_exact_decimal_result
+    description: >
+      Income one complete dollar above the family tax credit abatement
+      threshold -- the 27.5-cent rate produces an exact half-cent result
+      that must not be rounded.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "44901"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: calculated, value: "7920.725"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      Excess = $44901 - $44900 = $1 complete dollar; abatement = 0.275 x 1
+      = $0.275 exactly; FTC = $7921 - $0.275 = $7920.725. specification.md
+      explicitly anticipates this half-cent result and requires it be
+      preserved exactly, not rounded, in the calculation core.

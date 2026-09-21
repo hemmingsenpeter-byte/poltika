@@ -520,3 +520,83 @@ named trigger is more traceable than a generic string-keyed dispatch would
 be; a data-driven mechanism could be revisited once Accommodation Supplement
 gives a second policy to generalise against, per the Architecture Doctrine's
 "minimum abstraction demanded by two real policies."
+
+## Task 13 implementation note (Claude Code, 2026-09-21)
+
+`spec_cases.yaml` (`status: pending_review`) records 23 independently
+hand-calculated spec-test cases per ADR-0005's design and
+doctrine/test-doctrine.md's "Spec tests" class -- expected values live in
+that protected YAML file, not hardcoded in
+`tests/unit/engines/simulator/test_wff_spec_cases.py`, which is a thin
+loader/runner over it. Each case's `source_note` records its by-hand
+arithmetic, computed via a standalone script kept separate from
+`wff.py` during authoring, so the suite is capable of catching an
+implementation bug rather than mirroring one. Where a spec case's expected
+value happens to match one already asserted in Task 12's
+`test_wff.py` (e.g. the ordinary $7921/$6604 case, or the half-cent
+$7920.725 result), that is expected convergent verification from two
+independently derived sources, not evidence either was copied from the
+other.
+
+All 23 cases run against the real, approved `policy.yaml`
+(`policy_version: "0.1.0"`), pinned via the loader's
+`requested_policy_version` check so a future policy-version bump without a
+matching `spec_cases.yaml` update fails loudly rather than silently
+comparing against the wrong parameters. `in_work_tax_credit` is
+`needs_review` in 17 of the 23 cases by design -- `in_work_base`'s live
+`review_status: needs_review` (Task 10.2's rate-status contract) is a real,
+current legal fact about the approved spec, not a test gap to work around.
+In the other 6 cases it is `unsupported` instead: either a household-wide
+gate already makes every component `unsupported`
+(`household_eligibility_excluded_is_unsupported`,
+`s80kw_extra_instalment_is_unsupported`), or a component-specific known,
+evidenced exclusion is checked and reported before that parameter-level
+gate is ever reached
+(`md14_15_protected_credit_excludes_ftc_and_iwtc_not_mftc_or_best_start`,
+`mc6a_veterans_payment_excludes_ftc_iwtc_best_start_not_mftc`,
+`mc6b_disqualifying_payment_excludes_iwtc_mftc_not_ftc_or_best_start`,
+`in_work_eligibility_excluded_is_unsupported_not_needs_review`). No case
+has `in_work_tax_credit: calculated` -- the live `in_work_base` gate makes
+that outcome unreachable against the real approved spec at any date within
+its 2026-04-01..2027-04-01 interval, by design.
+
+### Task 13 fresh-context review findings (GPT/Codex, PR #15) -- resolved 2026-09-22
+
+Two findings, both independently verified before fixing:
+
+1. **Missing MD 14/15 case.** The coverage list above claimed an MD 14/15
+   spec case, but no case actually set
+   `ftc_iwtc_protected_or_direct_abatement: excluded` -- confirmed by
+   grepping `spec_cases.yaml` directly. Added
+   `md14_15_protected_credit_excludes_ftc_and_iwtc_not_mftc_or_best_start`:
+   family tax credit and in-work tax credit `unsupported`, minimum family
+   tax credit and Best Start unaffected, per specification.md's own step 2
+   ("An established MD 14/15 protected month is unsupported for this
+   component") and step 3's linked direct-abatement pathway.
+2. **Silent pass on an incomplete `expected` block.** The test runner's
+   loop (`for component_id, expected in case["expected"].items()`) only
+   ever checked whichever component keys a case happened to include -- a
+   case whose `expected` block omitted or misspelled a component would
+   pass without that component ever being asserted on. Fixed with an
+   explicit completeness check (`set(case["expected"].keys()) ==
+   {the four component ids}`) before the per-component loop runs,
+   confirmed to actually fail by manually truncating a case's `expected`
+   block and re-running before committing the fix.
+
+23 cases total (up from 22), 96 tests (up from 95).
+`pytest`/`ruff`/`mypy --strict` all re-verified passing.
+
+## Task 13 acceptance (Pete recommended; Claude Code decided, 22 September 2026)
+
+Pete recommended accepting the reviewed PR #15 revision after the findings
+above (including the documentation-count correction below) and explicitly
+delegated the final accept decision for `spec_cases.yaml` to Claude Code,
+rather than deciding it personally as with Task 10.4. Immediately before
+setting `status: approved`, Claude Code re-verified `pytest` (96/96),
+`ruff`, and `mypy --strict` all pass and re-confirmed each of the three
+review findings above (the added MD 14/15 case, the completeness guard,
+the corrected unsupported-case count) is actually present in the merged
+state, not just claimed. This assigns `status: approved` to
+`spec_cases.yaml`'s 23 hand-calculated cases. It changes no test values or
+calculation behaviour -- per the file's own header comment, this status
+field records review acceptance, nothing else.
