@@ -490,7 +490,78 @@ twin of the New Zealand policy system.
     Claude Code, which re-verified all of the above immediately before
     setting `spec_cases.yaml`'s `status: approved` -- see
     specification.md's "Task 13 acceptance" note.
-14. Build benchmark tests (against independently published IRD examples)
+14. Build benchmark tests (against independently published IRD examples).
+    **Complete, merged 22 September 2026 (PR #16):**
+    `policy_specs/working_for_families/benchmarks.yaml` (`status:
+    approved`) holds 9 cases drawn from the four IRD pages
+    `sources.yaml` already names as benchmark candidates (family tax
+    credit, in-work tax credit, minimum family tax credit, Best Start),
+    fetched directly (browser user agent, since a bare fetch 403'd) on
+    2026-09-22. Every numeric `expected` value is copied verbatim from
+    IRD's own stated worked-example result -- the opposite discipline from
+    Task 13's spec_cases.yaml, where every value was self-derived; here the
+    whole point is a third-party number, confirmed to be stated for
+    2026-27 rates and as an annual (not weekly/fortnightly) figure before
+    use. `tests/unit/engines/simulator/test_wff_benchmarks.py` is a thin
+    loader/runner, plus guard tests (non-empty file, unique IDs, every
+    `ird_source` resolves to a real `sources.yaml` entry, and the same
+    all-four-components completeness check PR #15's review established for
+    spec_cases.yaml).
+
+    5 cases are numeric matches against a real published figure: Sarah's
+    full family tax credit (2 children, no abatement), Jaimee's in-work
+    tax credit (5 children, confirming the beyond-three-children $780
+    formula against a real example), and three minimum family tax credit
+    cases (Jeremy, Casey with mixed self-employment-plus-salary income, and
+    Casey's later zero-entitlement example when her income rises mid-year
+    above $36,604). 4 cases are scope-boundary demonstrations -- a real
+    published scenario where the correct answer, per the already-reviewed
+    v0.1 domain, is `needs_review`/`unsupported`, not IRD's stated number:
+    Rahui and Claire & Laura's partnered examples give only a combined
+    family income, never each partner's individually verified amount
+    (demonstrating the Task 12 PR #14 partner-verification fix against a
+    real example, not a self-authored one); Brooklyn's example is the
+    direct-abatement pathway specification.md marks unsupported in v0.1;
+    the Faraj family's example has a child (Azra) IRD states was born
+    1 June 2026, partway through the 2026-27 tax year -- she does not
+    qualify for the whole tax year, so the household gate makes all four
+    components `unsupported`, not only Best Start as an earlier revision
+    claimed (PR #16's second review round). Casey's self-employment-plus-salary eligibility was
+    initially assumed out of scope by loose analogy with
+    specification.md's own in-work tax credit domain paragraph (a v0.1
+    scope decision, not an IRD rule -- IRD's in-work tax credit page
+    itself says self-employment income qualifies); re-reading
+    specification.md's minimum family tax credit domain paragraph directly
+    showed no such exclusion exists there, so it was promoted to an
+    in-scope case instead of dropped. All cases run against a synthetic
+    fixture (real approved rates, but every parameter including
+    `in_work_base` marked approved), the same design Task 12's
+    `test_wff.py` already established, so the live rate-status gate
+    (already covered by Task 13) doesn't mask whether a scope-boundary
+    case is correctly excluded for its own, scenario-level reason. 108
+    tests total (up from 96). `pytest`/`ruff`/`mypy --strict` all pass.
+    **GPT/Codex's fresh-context review found three further issues, fixed
+    2026-09-22:** several cases marked household-level exclusion-trigger
+    facts `verified` without the cited IRD text stating them, while the
+    header overclaimed everything uncovered was left unverified -- fixed
+    with an explicit per-case `assumed_facts` list and a renamed
+    `conditional_arithmetic_match` outcome kind, making clear these are
+    conditional arithmetic checks, not unconditional verified entitlements
+    (see specification.md's "Task 14 fresh-context review findings" for
+    full detail); the Jaimee in-work tax credit case didn't flag that its
+    own benchmarked rate is itself the live, unresolved Task 10.2 legal
+    question; and two provenance statements were corrected (the "every
+    value copied verbatim" claim, and the same self-employment
+    misattribution above). A second review round then caught the Faraj
+    whole-year-domain error described above, plus three partnered cases
+    (Rahui, Claire & Laura, Faraj) that had put a published household
+    income directly into `family_scheme_income.claimant_amount`,
+    misrepresenting it as one person's individually verified amount --
+    fixed to `family_scheme_income: null` in all three, the honest
+    representation given neither partner's individual amount is actually
+    known. Pete recommended acceptance and delegated the final accept
+    decision to Claude Code, matching Task 13's pattern -- see
+    specification.md's "Task 14 acceptance" note.
 15. Build regression tests, including the frozen dataset-snapshot fixtures
     from Task 10b: same scenario + same snapshot must yield the same
     deterministic result

@@ -600,3 +600,149 @@ state, not just claimed. This assigns `status: approved` to
 `spec_cases.yaml`'s 23 hand-calculated cases. It changes no test values or
 calculation behaviour -- per the file's own header comment, this status
 field records review acceptance, nothing else.
+
+## Task 14 implementation note (Claude Code, 2026-09-22)
+
+`benchmarks.yaml` (`status: pending_review`) holds 9 cases drawn from the
+four `sources.yaml` benchmark-candidate IRD pages, fetched directly on
+2026-09-22 and cross-checked for 2026-27 rates and annual (not
+weekly/fortnightly) figures before use. Full rationale, every case's
+IRD-quoted source text, and the design decisions below are recorded in
+`benchmarks.yaml`'s own header and per-case `source_note` fields rather
+than duplicated here.
+
+Two findings worth recording explicitly, since both trace directly back to
+this file's own text:
+
+1. IRD's minimum family tax credit page's "Casey earns self-employed
+   income and a salary" example was initially assumed out of scope by
+   analogy with this file's own in-work tax credit domain paragraph above
+   ("Self-employment can legally qualify, but is outside this first
+   branch") -- that sentence is this document's v0.1 scope decision, not
+   an IRD rule: IRD's in-work tax credit page itself states plainly that
+   self-employment income qualifies ("You'll qualify for an in-work tax
+   credit if you're self-employed"). Re-reading this file's minimum family
+   tax credit domain paragraph directly shows the self-employment scope
+   narrowing is specific to the in-work component; the minimum family tax
+   credit paragraph requires only "documented full-time-earner weeks under
+   MA 7 ... and a separately verified net family-scheme-income amount
+   under s ME 3", with no self-employment exclusion of its own -- and
+   IRD's own page describes exactly Casey's salary-plus-self-employment
+   combination as a normal, intended minimum family tax credit pathway.
+   Promoted as an in-scope numeric benchmark rather than dropped.
+2. IRD's family tax credit and in-work tax credit pages publish two
+   partnered examples (Rahui; Claire & Laura) stating only a combined
+   family income, never each partner's individually verified amount --
+   this file's supported-domain paragraph requires that individual
+   verification before the combined-income branch may be used (the Task
+   12 PR #14 second review finding). Rather than inventing an income split
+   IRD never published, both are recorded as scope-boundary cases
+   (`needs_review`, not IRD's stated dollar figures) -- a real,
+   independently published confirmation that the partner-verification
+   requirement holds even where a published example doesn't happen to
+   supply it.
+
+No in-scope Best Start numeric benchmark currently exists in IRD's
+published guidance: the only worked example (the Faraj family) is a child
+born outside the narrow v0.1 birth cohort, recorded instead as a
+scope-boundary case confirming the Task 12 false-zero fix against a real
+published scenario.
+
+108 tests total (up from 96). `pytest`/`ruff`/`mypy --strict` all pass.
+
+### Task 14 fresh-context review findings (GPT/Codex, PR #16) -- resolved 2026-09-22
+
+Three findings, each independently verified before fixing:
+
+1. **What the benchmarks prove was overstated (P1).** Every numeric case
+   marks several scenario facts (household eligibility, s 80KW status,
+   MC 6(a)/(b), MD 14/15, Best Start shared-care/protected-credit status,
+   each child's whole-year qualification) `verified`, although the cited
+   IRD example states none of these -- while the file's header claimed
+   "everything the example doesn't cover [is] left genuinely unverified",
+   which was true for the numeric inputs (income, net income, hours) but
+   not for these ambient exclusion-trigger facts. Resolved by adding an
+   explicit `assumed_facts` list to every case naming exactly which
+   scenario fields are assumption, not source-stated fact, renaming
+   `outcome_kind: numeric_match` to `conditional_arithmetic_match`, and
+   rewriting `benchmarks.yaml`'s header under "What these cases prove,
+   precisely" to state plainly that a case proves conditional arithmetic
+   correctness, not an unconditional verified entitlement.
+2. **The synthetic fixture's `in_work_base` approval was presented as
+   settled (P1).** `ird_iwtc_jaimee_full_credit_beyond_three_children`
+   used the same all-approved synthetic fixture as every other case
+   without flagging that, for this one case specifically, the approval
+   status of the underlying rate is itself the live, unresolved legal
+   question Task 10.2's rate-status contract describes -- "an unchecked
+   future reversal Order" makes an unconditional full-year figure
+   `needs_review`, and IRD's own page says the rate may revert. Resolved
+   by adding this as an explicit item in that case's `assumed_facts` and a
+   dedicated header paragraph spelling out the conditionality plainly.
+3. **Two provenance statements were inaccurate (P2).** The header's "every
+   numeric expected value is copied verbatim from IRD" did not hold for
+   Jaimee's side-computed family tax credit figure ($33,737, never
+   published by IRD) or Casey's zero-entitlement case (a semantic reading
+   of "no longer qualifies", not a literal digit IRD prints) -- both now
+   named as explicit exceptions in the header. Separately, this file and
+   `benchmarks.yaml` both described "the in-work tax credit page's
+   explicit self-employment exclusion", but IRD's in-work tax credit page
+   states self-employment income qualifies; the exclusion is this
+   document's own v0.1 scope decision. Both files corrected to attribute
+   that narrow boundary to specification.md, not to IRD.
+
+`pytest`/`ruff`/`mypy --strict` all re-verified passing.
+
+### Task 14 second re-review finding (GPT/Codex, PR #16) -- resolved 2026-09-22
+
+Two source-to-scenario correctness issues, both independently verified
+before fixing:
+
+1. **Faraj's child marked as qualifying for the whole tax year despite an
+   in-year birth date.** IRD states directly: "Baby Azra is born on 1 June
+   2026." The 2026-27 tax year runs 2026-04-01 to 2027-03-31, so Azra was
+   not in the claimant's care for the whole tax year -- specification.md's
+   v0.1 domain requires exactly that ("under 18 ... throughout the tax
+   year"). The case had `children[].qualifies_whole_year: verified`,
+   which is wrong on the example's own stated fact. Fixed to `excluded`;
+   because the household gate applies to every component before any
+   component-specific logic runs, this makes all four components
+   `unsupported`, not only Best Start as the case previously asserted --
+   `benchmarked_components` widened accordingly, and the case renamed from
+   `ird_best_start_faraj_child_outside_narrow_cohort` to
+   `ird_faraj_in_year_birth_fails_whole_year_domain` to describe what it
+   now actually demonstrates. The Best Start birth-cohort mechanism this
+   case previously exercised is covered in isolation by `spec_cases.yaml`
+   instead (Task 13).
+2. **Three partnered cases (Rahui, Claire & Laura, Faraj) put a published
+   household income into `claimant_amount`.** Each example states only a
+   combined family income (e.g. Rahui: "the family income for the year is
+   $100,000"), never either partner's individual amount, and each case's
+   scenario correctly reflected that by omitting `partner_amount` --  but
+   put the household total directly into `family_scheme_income.
+   claimant_amount`, which misrepresents a combined figure as one person's
+   individually verified amount. `VerifiedIncome.claimant_amount` means
+   specifically the claimant's own verified amount; IRD's examples do not
+   establish what either partner's individual amount is. Fixed to
+   `family_scheme_income: null` in all three cases -- neither partner's
+   individually verified amount is known, which is the honest
+   representation and resolves via the ordinary "family_scheme_income not
+   verified" path rather than the more specific (and here, inaccurate)
+   partner-income-gap path.
+
+108/108 tests, `ruff`, and `mypy --strict` all re-verified passing (no
+change to any other case's scenario or expected values).
+
+## Task 14 acceptance (Pete recommended; Claude Code decided, 22 September 2026)
+
+Pete recommended accepting the reviewed PR #16 revision after both rounds
+of findings above and explicitly delegated the final accept decision for
+`benchmarks.yaml` to Claude Code, matching how Task 13's `spec_cases.yaml`
+acceptance was handled rather than deciding personally as with Task 10.4.
+Immediately before setting `status: approved`, Claude Code re-verified
+`pytest` (108/108), `ruff`, and `mypy --strict` all pass and re-confirmed
+both second-round findings (Faraj's whole-year domain fix, the three
+partnered cases' `family_scheme_income: null` correction) are actually
+present in the merged state, not just claimed. This assigns
+`status: approved` to `benchmarks.yaml`'s 9 cases. It changes no test
+values or calculation behaviour -- per the file's own header, this status
+field records review acceptance, nothing else.

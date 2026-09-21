@@ -78,6 +78,8 @@ sources:
     covers: Annual calculation, abatement, instalment rounding, and worked examples.
     page_updated: 2026-02-25
     locator: How the family tax credit works > Please note (excess abatement reduces in-work tax credit); Weekly or fortnightly payments; Examples.
+    verification_status: task_14_worked_examples_fetched_and_promoted_2026-09-22
+    access_note: A bare fetch returned no content; a browser-user-agent request succeeded (same pattern already used for legislation.govt.nz elsewhere in this file). Three worked examples (Sarah, Rahui, Claire & Laura) transcribed into policy_specs/working_for_families/benchmarks.yaml.
   - id: wff-ird-in-work-tax-credit
     kind: agency_guidance_and_examples
     title: In-work tax credit
@@ -85,6 +87,8 @@ sources:
     covers: Eligibility, abatement interaction, and worked examples.
     page_updated: 2026-03-24
     locator: Increase from 1 April 2026; How the in-work tax credit works; Examples.
+    verification_status: task_14_worked_examples_fetched_and_promoted_2026-09-22
+    access_note: Fetched via browser user agent, 2026-09-22. Three worked examples (Jaimee, the Claire & Laura continuation, Brooklyn) transcribed into benchmarks.yaml.
   - id: wff-ird-temporary-increase
     kind: agency_change_notice
     title: In-work tax credit increase from 1 April
@@ -97,6 +101,8 @@ sources:
     covers: Income and work requirements, calculation, and worked examples.
     page_updated: 2026-02-25
     locator: Income limit; Minimum hours of work; Non-salary or wage income; Examples.
+    verification_status: task_14_worked_examples_fetched_and_promoted_2026-09-22
+    access_note: Fetched via browser user agent, 2026-09-22. Three worked examples (Jeremy, Casey earning self-employed income and a salary, Casey going over the income limit) transcribed into benchmarks.yaml.
   - id: wff-ird-best-start
     kind: agency_guidance_and_examples
     title: Best Start
@@ -104,6 +110,8 @@ sources:
     covers: Birth-date transition, paid parental leave interaction, and worked examples.
     page_updated: 2026-02-25
     locator: How Best Start works; Best Start and paid parental leave; Examples.
+    verification_status: task_14_worked_example_fetched_2026-09-22_out_of_v0.1_scope
+    access_note: Fetched via browser user agent, 2026-09-22. The page's only worked example (the Faraj family) is a child born 2026-06-01, outside the narrow v0.1 supported Best Start birth cohort (2024-04-01..2025-03-31) -- recorded in benchmarks.yaml as a scope-boundary case, not a numeric benchmark. No in-scope Best Start worked example currently exists in IRD's published guidance.
   - id: wff-ird-government-payments
     kind: agency_guidance
     title: Government payments that affect your Working for Families
