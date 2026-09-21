@@ -1,3 +1,481 @@
-# Task 5 scaffold only. Task 14 adds independently verified official examples.
+# Task 14: benchmark tests against independently published IRD worked
+# examples, per doctrine/test-doctrine.md's "Benchmark tests for expected
+# statutory values" class and BUILD_PLAN.md's "checked against
+# independently published IRD/MSD/Treasury worked examples. This is what
+# prevents AI-on-AI validation from being the only check." This file is one
+# of .github/workflows/statutory-value-guard.yml's protected paths.
+#
+# Every numeric `expected` value below is copied verbatim from the cited
+# IRD page's own stated worked-example result (not derived by Claude Code),
+# with the exact wording quoted in `source_note` for traceability. This is
+# the opposite discipline from spec_cases.yaml (Task 13), where every value
+# was hand-derived independently from specification.md -- here, the whole
+# point is a THIRD PARTY's number, fetched directly from ird.govt.nz (via a
+# browser-user-agent request, since a bare fetch 403'd -- the same access
+# pattern already used elsewhere in this repo) on 2026-09-22.
+#
+# `benchmarked_components` names which component(s) each case is actually
+# checking a published number against. The other components in `expected`
+# are not benchmarked against a published figure, but every case still
+# asserts all four -- consistent with the completeness discipline PR #15's
+# review established for spec_cases.yaml -- recording whatever
+# calculate_wff() honestly produces given exactly the facts that specific
+# IRD example actually states, with everything the example doesn't cover
+# left genuinely unverified (None/UNKNOWN), never fabricated to make a
+# number line up.
+#
+# All four IRD pages this file draws from explicitly confirm 2026-27 rates
+# ($7,921/$6,454/$44,900/27.5% family tax credit; $7,670/$780 in-work;
+# $36,604/$703 minimum family; $4,041/$79,000/21% Best Start, and the Best
+# Start page states outright: "In the examples we use the rates for the
+# 2026-2027 tax year"). specification.md's own reviewed rates match these
+# exactly -- an independent cross-check in itself. Every example's stated
+# result is explicitly an ANNUAL figure (IRD labels each one "(for the
+# year)"/"full-year entitlement"), never a weekly/fortnightly instalment
+# treated as if it were the annual amount -- the specific trap
+# specification.md warns against.
+#
+# All cases run against a synthetic fixture carrying the same statutory
+# rates as the real approved policy.yaml (policy_version 0.1.0), but with
+# every parameter -- including in_work_base -- marked approved, exactly
+# the same design test_wff.py (Task 12) already established and documents:
+# in_work_base's live needs_review rate-status gate is a separate, already
+# protected concern (spec_cases.yaml, Task 13), and using it here would
+# mask whether a genuine arithmetic or scope-boundary bug exists behind
+# that unrelated gate. Two of these cases (Brooklyn's direct-abatement
+# exclusion, Faraj's birth-cohort exclusion) specifically need that
+# separation to prove the exclusion is a real scenario-level fact, not an
+# artifact of the live rate gate.
+#
+# Two IRD-published examples were deliberately NOT promoted as in-scope
+# numeric benchmarks, each for a reason discovered by checking the
+# specification.md text directly rather than assumed by analogy:
+#   - Casey's minimum family tax credit example (self-employed income plus
+#     a qualifying salaried job) was initially assumed out of scope by
+#     loose analogy with the in-work tax credit page's explicit
+#     self-employment exclusion -- re-reading specification.md's minimum
+#     family tax credit domain paragraph directly shows no such exclusion
+#     exists for that component (only in-work tax credit's domain excludes
+#     self-employment), so Casey's example is promoted as in-scope after
+#     all.
+#   - Rahui's and Claire & Laura's family tax credit examples give only a
+#     combined partnered family income ($100,000), never each partner's
+#     individually verified amount -- specification.md's domain requires
+#     that individual verification before the combined-income branch may
+#     be used (the Task 12 PR #14 second review finding). Rather than
+#     inventing an income split IRD never published, these are recorded as
+#     scope-boundary cases: needs_review, not the IRD-stated dollar figure.
 status: pending_review
-benchmarks: []
+
+benchmarks:
+  - id: ird_ftc_sarah_full_credit
+    ird_source: wff-ird-family-tax-credit
+    ird_example_name: "Sarah gets the full family tax credit"
+    outcome_kind: numeric_match
+    benchmarked_components: [family_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "37800"}
+      net_family_scheme_income: null
+      net_family_scheme_income_me3_attested: false
+      in_work_eligibility: unknown
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: unknown
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: unknown
+          best_start_no_disqualifying_payment: unknown
+        - qualifies_whole_year: verified
+          best_start_cohort: unknown
+          best_start_no_disqualifying_payment: unknown
+    expected:
+      family_tax_credit: {outcome: calculated, value: "14375"}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD: "Sarah is a single mum with 2 dependent children: Emily (4) and
+      Oliver (7 months). Her family income for the year is $37,800... In
+      her case, it totals $14,375." Eldest $7,921 + additional $6,454 =
+      $14,375, matching the approved parameters exactly, with no abatement
+      since $37,800 is below the $44,900 threshold. In-work/minimum-family/
+      Best Start are needs_review, not benchmarked -- Sarah's example does
+      not state her employment hours, a net (after-tax) income figure, or
+      either child's exact birth date, so those inputs are genuinely
+      unverified from this example alone, not fabricated to force a
+      result.
+
+  - id: ird_iwtc_jaimee_full_credit_beyond_three_children
+    ird_source: wff-ird-in-work-tax-credit
+    ird_example_name: "Jaimee gets the full in-work tax credit"
+    outcome_kind: numeric_match
+    benchmarked_components: [in_work_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "41600"}
+      net_family_scheme_income: null
+      net_family_scheme_income_me3_attested: false
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: unknown
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    expected:
+      family_tax_credit: {outcome: calculated, value: "33737"}
+      in_work_tax_credit: {outcome: calculated, value: "9230"}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD: "Jaimee has 5 children... Her family income for the year is
+      $41,600... Because Jaimee's family income is below $44,900, she gets
+      the full in-work tax credit. In her case, it totals $9,230" -- base
+      $7,670 (first 3 children) + $780 x 2 (children beyond 3) = $9,230, a
+      real published confirmation of the beyond-three-children formula, not
+      just a self-derived one. family_tax_credit ($33,737 = $7,921 +
+      $6,454 x 4, no abatement below threshold) is a genuine side
+      computation from the same stated income, not itself benchmarked --
+      IRD's in-work tax credit page doesn't state a family tax credit
+      figure for Jaimee. minimum_family_tax_credit/best_start are
+      needs_review: this example doesn't state full-time-earner hours, a
+      net income figure, or any child's birth date.
+
+  - id: ird_mftc_jeremy_salary_only
+    ird_source: wff-ird-minimum-family-tax-credit
+    ird_example_name: "Jeremy gets a minimum family tax credit"
+    outcome_kind: numeric_match
+    benchmarked_components: [minimum_family_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: null
+      net_family_scheme_income: "24367"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: unknown
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "12237"}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD: "Jeremy... works 22 hours a week, earning a salary of $27,000
+      (before tax). He also gets child support of $1,000 a year... His
+      family income after tax is $24,367... Income limit: $36,604 - family
+      income after tax: $24,367 = minimum family tax credit for the full
+      year: $12,237." Jeremy's 22 weekly hours exceed MA 7's 20-hour single
+      threshold; his $24,367 figure is IRD's own worked ME 3-style
+      derivation (salary after tax plus child support received), matching
+      `net_family_scheme_income_me3_attested: true`. family_tax_credit/
+      in_work_tax_credit are needs_review: this example verifies net
+      (after-tax) income for minimum family tax credit specifically, not a
+      separate gross family-scheme income figure or employment status for
+      the other credits.
+
+  - id: ird_mftc_casey_self_employed_plus_salary
+    ird_source: wff-ird-minimum-family-tax-credit
+    ird_example_name: "Casey earns self-employed income and a salary"
+    outcome_kind: numeric_match
+    benchmarked_components: [minimum_family_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: null
+      net_family_scheme_income: "28317"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: unknown
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "8287"}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD: "Casey... is a self-employed music teacher... Her self-employed
+      income comes to $2,000 a year... Casey also works 22 hours a week at
+      the local garden centre, earning a salary of $31,000 a year...
+      Normally, you do not qualify for a minimum family tax credit if
+      you're self-employed. But Casey qualifies because she also earns a
+      salary for a job where she works over 20 hours a week... Her family
+      income after tax is $28,317... minimum family tax credit for the
+      full year: $8,287." specification.md's minimum family tax credit
+      domain paragraph (re-checked directly, not assumed by analogy with
+      in-work tax credit's separate self-employment exclusion) requires
+      only "documented full-time-earner weeks under MA 7" and a verified
+      net ME 3 income -- it does not exclude a self-employed-plus-salaried
+      income mix the way in-work tax credit's domain does, so this example
+      is in scope. Casey's salaried 22 hours alone satisfies the single
+      20-hour MA 7 test; her self-employment income only enters the net
+      income total IRD already worked out.
+
+  - id: ird_mftc_casey_zero_over_income_limit
+    ird_source: wff-ird-minimum-family-tax-credit
+    ird_example_name: "Casey goes over the income limit"
+    outcome_kind: numeric_match
+    benchmarked_components: [minimum_family_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: null
+      net_family_scheme_income: "37280"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: unknown
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: calculated, value: "0"}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD, continuing Casey's example from the same page: "in December,
+      Casey is offered a full-time role at the garden centre... At the end
+      of the tax year (31 March) Casey's family income after tax is
+      $37,280... Her family income after tax ($37,280) is more than the
+      income limit ($36,604)... Casey now no longer qualifies for a
+      minimum family tax credit." $37,280 is IRD's own stated full-year
+      after-tax total (self-employed $2,000 + salary $42,400 - tax $6,720),
+      not a part-year figure -- Casey's hours only ever increased during
+      the year (never dropping below the single 20-hour MA 7 threshold),
+      so `minimum_family_full_time_earner_weeks: verified` accurately
+      represents the whole year without glossing over the mid-year change
+      IRD describes. The zero result independently confirms the same
+      "net income at or above $36,604 yields no positive top-up" rule
+      Task 13's `mftc_zero_at_prescribed_amount` spec case already covers
+      with a self-derived figure -- this is the same rule's real,
+      independently published confirmation.
+
+  - id: ird_ftc_rahui_partnered_combined_income_not_individually_verified
+    ird_source: wff-ird-family-tax-credit
+    ird_example_name: "Rahui family earns over $44,900"
+    outcome_kind: scope_boundary
+    benchmarked_components: [family_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: "100000"}
+      net_family_scheme_income: null
+      net_family_scheme_income_me3_attested: false
+      in_work_eligibility: unknown
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: unknown
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD: "Eva Rahui and her partner Henare have 3 dependent children...
+      Both partners work and the family income for the year is
+      $100,000... the Rahui family's full-year entitlement [is] $5,676.50"
+      -- a real published number this benchmark deliberately does NOT
+      assert, because IRD gives only the combined $100,000 figure, never
+      each partner's individually verified amount specification.md's
+      domain requires before the combined-income branch may be used (Task
+      12 PR #14's second review finding). The correct, honest output of
+      our approved v0.1 domain for this real published scenario is
+      needs_review, not IRD's $5,676.50 -- treating a combined-only figure
+      as sufficient would silently reintroduce the exact gap that finding
+      closed. This is the point of the case: demonstrating the
+      verification requirement holds even against a real official example
+      that doesn't happen to supply it, not a numeric cross-check.
+
+  - id: ird_ftc_iwtc_claire_laura_partnered_abatement_carryover
+    ird_source: wff-ird-family-tax-credit
+    ird_example_name: "Abatement is more than the full family tax credit"
+    outcome_kind: scope_boundary
+    benchmarked_components: [family_tax_credit, in_work_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: "100000"}
+      net_family_scheme_income: null
+      net_family_scheme_income_me3_attested: false
+      in_work_eligibility: unknown
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: unknown
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD (family tax credit page): "Claire and Laura... the family income
+      for the year is $100,000... Because the abatement is larger than the
+      full family tax credit, Claire and Laura will not get a family tax
+      credit... the remaining abatement of $777.50 will come off their
+      in-work tax credit." IRD (in-work tax credit page), continuing the
+      same example: "$7,670 - $777.50 = $6,892.50" -- together a real
+      published, cross-page confirmation of exactly the MD 2(2)(c)
+      abatement-carryover mechanism `calculate_wff()` implements. Not
+      asserted numerically for the same reason as the Rahui case above:
+      only a combined $100,000 figure is published, never each partner's
+      individual amount, so our calculator correctly returns needs_review
+      for both credits rather than the two IRD-stated figures -- the
+      MD 2(2)(c) carryover mechanism itself is independently confirmed
+      against real numbers by test_wff.py's synthetic-fixture unit tests
+      instead (Task 12), which is not constrained by this same
+      partner-verification gap.
+
+  - id: ird_iwtc_brooklyn_direct_abatement_pathway_out_of_scope
+    ird_source: wff-ird-in-work-tax-credit
+    ird_example_name: "Brooklyn gets an in-work tax credit but not a family tax credit"
+    outcome_kind: scope_boundary
+    benchmarked_components: [family_tax_credit, in_work_tax_credit]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "47000"}
+      net_family_scheme_income: null
+      net_family_scheme_income_me3_attested: false
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: excluded
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: unknown
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: unknown, best_start_no_disqualifying_payment: unknown}
+    expected:
+      family_tax_credit: {outcome: unsupported}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: needs_review}
+    source_note: >
+      IRD: "Brooklyn... receives an unsupported child's benefit for
+      Jack... She cannot get a family tax credit because she receives an
+      unsupported child's benefit... An abatement applies to the in-work
+      tax credit... $7,670 - $577.50 = $7,092.50." A real published
+      instance of exactly the "claimant cannot receive family tax credit
+      for a child due to a different payment" direct-abatement pathway
+      specification.md marks unsupported in v0.1 ("the separate
+      direct-abatement pathway requires review and is unsupported in this
+      scope"). Our `ftc_iwtc_protected_or_direct_abatement` field
+      deliberately bundles the MD 14/15 protected-credit case and this
+      direct-abatement pathway as one shared trigger (already reviewed and
+      accepted in PR #14/#15), which is why family_tax_credit's own
+      `unsupported` reason string here reads "MD 14/15" even though
+      Brooklyn's real trigger is the broader "different payment" case --
+      a known wording-precision limitation of that existing shared field,
+      not a new issue, noted here rather than silently accepted. IRD's
+      $7,092.50 is deliberately not asserted: our calculator correctly
+      declines to compute it in this scope, rather than reproducing the
+      alternate formula IRD applies for this pathway.
+
+  - id: ird_best_start_faraj_child_outside_narrow_cohort
+    ird_source: wff-ird-best-start
+    ird_example_name: "When the Faraj family's Best Start payments start"
+    outcome_kind: scope_boundary
+    benchmarked_components: [best_start]
+    modelled_date: 2026-06-01
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: "83500"}
+      net_family_scheme_income: null
+      net_family_scheme_income_me3_attested: false
+      in_work_eligibility: unknown
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: unknown
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: other_cohort_unsupported
+          best_start_no_disqualifying_payment: unknown
+    expected:
+      family_tax_credit: {outcome: needs_review}
+      in_work_tax_credit: {outcome: needs_review}
+      minimum_family_tax_credit: {outcome: needs_review}
+      best_start: {outcome: unsupported}
+    source_note: >
+      IRD: "Samira Faraj and her partner Malik are expecting a baby...
+      Baby Azra is born on 1 June 2026... The Faraj family earn $83,500
+      for the 2027 tax year... A full entitlement for a year: $4,041 -
+      $945 (abatement) = $3,096." Azra's 1 June 2026 birth date is real
+      and stated directly by IRD, not inferred -- it falls after the
+      narrow 2024-04-01..2025-03-31 v0.1 Best Start cohort specification.md
+      scopes ("later birth cohorts... require separate review; do not
+      apply this branch to them"), so `best_start_cohort:
+      other_cohort_unsupported` is a faithful reading of the example, not
+      a fabricated fact. IRD's own $3,096 figure is real statutory law for
+      Azra's actual cohort; it is deliberately not asserted here because
+      it is genuinely outside what this branch calculates -- the case
+      demonstrates `unsupported`, not a false zero, for a real published
+      later-cohort child, the same failure mode Task 12's second PR #14
+      review finding fixed against a self-authored scenario. This is also
+      the only Best Start worked example IRD publishes; no in-scope
+      numeric Best Start benchmark exists in current IRD guidance.

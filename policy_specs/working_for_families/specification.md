@@ -600,3 +600,49 @@ state, not just claimed. This assigns `status: approved` to
 `spec_cases.yaml`'s 23 hand-calculated cases. It changes no test values or
 calculation behaviour -- per the file's own header comment, this status
 field records review acceptance, nothing else.
+
+## Task 14 implementation note (Claude Code, 2026-09-22)
+
+`benchmarks.yaml` (`status: pending_review`) holds 9 cases drawn from the
+four `sources.yaml` benchmark-candidate IRD pages, fetched directly on
+2026-09-22 and cross-checked for 2026-27 rates and annual (not
+weekly/fortnightly) figures before use. Full rationale, every case's
+IRD-quoted source text, and the design decisions below are recorded in
+`benchmarks.yaml`'s own header and per-case `source_note` fields rather
+than duplicated here.
+
+Two findings worth recording explicitly, since both trace directly back to
+this file's own text:
+
+1. IRD's minimum family tax credit page's "Casey earns self-employed
+   income and a salary" example was initially assumed out of scope by
+   analogy with the in-work tax credit page's explicit self-employment
+   exclusion above ("Self-employment can legally qualify, but is outside
+   this first branch"). Re-reading this file's minimum family tax credit
+   domain paragraph directly shows that exclusion is specific to the
+   in-work component; the minimum family tax credit paragraph requires
+   only "documented full-time-earner weeks under MA 7 ... and a separately
+   verified net family-scheme-income amount under s ME 3", with no
+   self-employment exclusion of its own -- confirmed by IRD's own page,
+   which describes exactly Casey's salary-plus-self-employment combination
+   as a normal, intended minimum family tax credit pathway. Promoted as an
+   in-scope numeric benchmark rather than dropped.
+2. IRD's family tax credit and in-work tax credit pages publish two
+   partnered examples (Rahui; Claire & Laura) stating only a combined
+   family income, never each partner's individually verified amount --
+   this file's supported-domain paragraph requires that individual
+   verification before the combined-income branch may be used (the Task
+   12 PR #14 second review finding). Rather than inventing an income split
+   IRD never published, both are recorded as scope-boundary cases
+   (`needs_review`, not IRD's stated dollar figures) -- a real,
+   independently published confirmation that the partner-verification
+   requirement holds even where a published example doesn't happen to
+   supply it.
+
+No in-scope Best Start numeric benchmark currently exists in IRD's
+published guidance: the only worked example (the Faraj family) is a child
+born outside the narrow v0.1 birth cohort, recorded instead as a
+scope-boundary case confirming the Task 12 false-zero fix against a real
+published scenario.
+
+108 tests total (up from 96). `pytest`/`ruff`/`mypy --strict` all pass.
