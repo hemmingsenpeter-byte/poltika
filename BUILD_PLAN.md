@@ -308,7 +308,10 @@ twin of the New Zealand policy system.
       legislation register and specify the date-dependent treatment of the
       possible reversal Order. Done when `in_work_base` cannot silently
       produce a full-year result for an unverified interval; recheck again
-      at implementation for each modelled date.
+      at implementation for each modelled date. Author pass recorded
+      21 September 2026 in the Task 10.2 source/spec update; the official
+      s 2 page showed no Order on that date, while the future interval remains
+      unverified. Independent review remains part of 10.3.
     - **10.3 Whole-spec independent review — Claude Code.** Derive the
       expected scoped behaviour from primary sources before reading the
       author response, then review the complete source map, policy draft,
