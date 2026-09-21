@@ -45,6 +45,46 @@ class ParameterReviewStatus(str, Enum):
     DRAFT_PENDING_REVIEW = "draft_pending_review"
 
 
+class ParameterValueType(str, Enum):
+    """`value_type` values observed in the approved WFF policy.yaml.
+
+    Per SCHEMA.md's Task 7 review response: "unit typing (Literal/enum, not
+    free text)". Adding a policy that needs a new dimension (e.g. Accommodation
+    Supplement) means adding a member here, not widening back to `str`.
+    """
+
+    MONEY = "money"
+    FRACTION = "fraction"
+
+
+class ParameterUnit(str, Enum):
+    """`unit` values observed in the approved WFF policy.yaml -- same rationale
+    as `ParameterValueType`.
+    """
+
+    NZD_PER_TAX_YEAR = "NZD_per_tax_year"
+    NZD_PER_TAX_YEAR_AFTER_TAX = "NZD_per_tax_year_after_tax"
+    NZD_PER_CHILD_PER_TAX_YEAR = "NZD_per_child_per_tax_year"
+    NZD_PER_COMPLETE_NZD_ABOVE_THRESHOLD = "NZD_per_complete_NZD_above_threshold"
+
+
+# SCHEMA.md: "Currency must state NZD and its annual or weekly basis; rates
+# must state their dimension (for example, fraction of income)". A unit that's
+# independently valid can still be the wrong dimension for its value_type (a
+# "fraction" claiming a currency-per-year unit, or "money" claiming a rate
+# unit) -- this is the specific combination check, not just membership.
+_VALID_UNITS_BY_VALUE_TYPE: dict[ParameterValueType, frozenset[ParameterUnit]] = {
+    ParameterValueType.MONEY: frozenset(
+        {
+            ParameterUnit.NZD_PER_TAX_YEAR,
+            ParameterUnit.NZD_PER_TAX_YEAR_AFTER_TAX,
+            ParameterUnit.NZD_PER_CHILD_PER_TAX_YEAR,
+        }
+    ),
+    ParameterValueType.FRACTION: frozenset({ParameterUnit.NZD_PER_COMPLETE_NZD_ABOVE_THRESHOLD}),
+}
+
+
 class ReferencePeriod(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
@@ -95,9 +135,24 @@ class ParameterSpec(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
-    value_type: str
-    unit: str
-    values: list[ParameterValue]
+    value_type: ParameterValueType
+    unit: ParameterUnit
+    # A parameter with no values would silently resolve "unsupported" for
+    # every modelled date -- not incorrect per SCHEMA.md's "no matching
+    # interval means unsupported", but never a legitimate authored shape;
+    # reject it as a malformed policy.yaml rather than letting it pass quietly.
+    values: list[ParameterValue] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _unit_matches_value_type(self) -> ParameterSpec:
+        allowed = _VALID_UNITS_BY_VALUE_TYPE[self.value_type]
+        if self.unit not in allowed:
+            raise ValueError(
+                f"parameter '{self.id}' has value_type '{self.value_type.value}' "
+                f"with unit '{self.unit.value}', which is not a valid unit for that "
+                f"dimension -- expected one of {sorted(u.value for u in allowed)}"
+            )
+        return self
 
     @model_validator(mode="after")
     def _values_non_overlapping(self) -> ParameterSpec:

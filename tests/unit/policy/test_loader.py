@@ -282,3 +282,47 @@ def test_source_catalog_missing_file_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(InvalidSourceCatalogError):
         load_policy_parameters(tmp_path, MODELLED_DATE)
+
+
+def test_empty_values_list_rejected(tmp_path: Path) -> None:
+    """A parameter with no effective-dated values is a malformed policy.yaml,
+    not a legitimate always-unsupported parameter -- reject it at load time
+    rather than let it pass quietly and resolve "unsupported" forever."""
+    policy = _base_policy()
+    policy["parameters"][0]["values"] = []
+    _write_policy(tmp_path, policy)
+
+    with pytest.raises(ValueError, match="at least 1 item"):
+        load_policy_parameters(tmp_path, MODELLED_DATE)
+
+
+def test_unknown_value_type_rejected(tmp_path: Path) -> None:
+    policy = _base_policy()
+    policy["parameters"][0]["value_type"] = "percentage"  # not a known dimension
+    _write_policy(tmp_path, policy)
+
+    with pytest.raises(ValueError):
+        load_policy_parameters(tmp_path, MODELLED_DATE)
+
+
+def test_unknown_unit_rejected(tmp_path: Path) -> None:
+    policy = _base_policy()
+    policy["parameters"][0]["unit"] = "USD_per_month"  # free text, not a known unit
+    _write_policy(tmp_path, policy)
+
+    with pytest.raises(ValueError):
+        load_policy_parameters(tmp_path, MODELLED_DATE)
+
+
+def test_value_type_unit_dimension_mismatch_rejected(tmp_path: Path) -> None:
+    """Both value_type and unit are independently valid, but a "fraction"
+    claiming a currency-per-year unit is the wrong dimension -- SCHEMA.md:
+    "rates must state their dimension" -- and must be rejected as a
+    combination, not just as independently-valid free text."""
+    policy = _base_policy()
+    policy["parameters"][0]["value_type"] = "fraction"
+    policy["parameters"][0]["unit"] = "NZD_per_tax_year"  # a money unit, not a rate unit
+    _write_policy(tmp_path, policy)
+
+    with pytest.raises(ValueError, match="not a valid unit for that dimension"):
+        load_policy_parameters(tmp_path, MODELLED_DATE)

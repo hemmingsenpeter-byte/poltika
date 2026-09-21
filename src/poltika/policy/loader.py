@@ -241,7 +241,7 @@ def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterRe
         parameter_id=param.id,
         outcome="resolved",
         value=value.value,
-        unit=param.unit,
+        unit=param.unit.value,
         source_id=value.source_id,
         locator=value.locator,
     )
