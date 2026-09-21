@@ -65,6 +65,13 @@ inputs:
     source_rule_ids: [WFF-06]
     required_for: best_start
     missing_outcome: needs_review
+  - id: extra_instalment_status
+    owner: assessment_unit
+    type: verified_section_80kw_applicability
+    period: full_tax_year
+    source_rule_ids: [WFF-09]
+    missing_outcome: needs_review
+    note: An applicable 27-fortnight or 53-week payment year is outside the ordinary annual branch; do not assume it cannot occur.
 
 parameters:
   - id: family_tax_credit_eldest_child
