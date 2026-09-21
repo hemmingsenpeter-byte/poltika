@@ -57,9 +57,12 @@ Best Start individually; the household eligibility gate (OpenFisca's
 separate `eligibility.yaml` category, collapsed in Poltika's schema into
 the single `eligibility_facts` input `policy.yaml` already declares — an
 existing, reviewed Task 4/10 design decision, not reopened here); and
-partnered/combined-income verification (OpenFisca's and PolicyEngine
-NZ's `family_scheme` category, and Poltika's own `VerifiedIncome`/
-`PartnerStatus` facts).
+partnered/combined-income verification (OpenFisca's separate
+`family_scheme.yaml` category -- no separately named equivalent category
+was found in the PolicyEngine NZ paths inspected here, which is itself
+consistent with "no named-category gap": there is nothing named there to
+compare against -- and Poltika's own `VerifiedIncome`/`PartnerStatus`
+facts).
 
 This finding is deliberately narrower than "Poltika's coverage is as
 deep as, or deeper than, either comparator's." A pinned list of
