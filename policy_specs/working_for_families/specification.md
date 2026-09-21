@@ -474,8 +474,24 @@ fixing, not just trusted:
    construction -- `family_scheme_income` is now `VerifiedIncome | None`,
    and every abatement calculation uses its `combined` property.
 
-All three fixes are covered by targeted tests in
-`tests/unit/engines/simulator/test_wff.py` (66 tests total, up from 58);
+### Task 12 second re-review finding (GPT/Codex, PR #14) -- resolved 2026-09-21
+
+One further blocking gap, found after finding 3 above was fixed:
+`VerifiedIncome.partner_amount is None` is the correct shape both for a
+genuinely single claimant (no partner to verify) *and* for a partnered
+claimant whose partner's income simply wasn't captured -- those are not the
+same case, but `VerifiedIncome` alone can't tell them apart, so a partnered
+household could still produce a numeric family tax credit or Best Start
+result using the claimant's income alone. Resolved by adding an independent
+`PartnerStatus` fact (`SINGLE`/`PARTNERED`/`UNKNOWN`, defaulting to
+`UNKNOWN`, never `SINGLE`) to `WffScenario`, plus `_partner_income_gap_reason()`,
+checked by both family tax credit and Best Start: `PARTNERED` with no
+`partner_amount` supplied, or `UNKNOWN` partner status at all, is
+`needs_review`, never a number computed from the claimant's income alone. A
+`SINGLE` claimant with a `partner_amount` set is rejected at construction as
+a structural contradiction. 4 new tests (70 total, up from 66) cover the
+missing-partner-income case for both affected components, the unknown-
+partner-status case, and the single-with-partner-amount rejection.
 `pytest`/`ruff`/`mypy --strict` all re-verified passing.
 
 Component-level `validation_checks` are documented per-component above, but

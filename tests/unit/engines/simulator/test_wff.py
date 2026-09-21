@@ -29,6 +29,7 @@ from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
     FactStatus,
+    PartnerStatus,
     VerifiedIncome,
     WffScenario,
     calculate_wff,
@@ -146,6 +147,7 @@ def _base_scenario(**overrides: object) -> WffScenario:
         "household_eligibility": FactStatus.VERIFIED,
         "extra_instalment_status": FactStatus.VERIFIED,
         "children": [_qualifying_child()],
+        "partner_status": PartnerStatus.SINGLE,
         "family_scheme_income": _income(30000),
         "net_family_scheme_income": Decimal(30000),
         "net_family_scheme_income_me3_attested": True,
@@ -703,11 +705,72 @@ def test_partnered_combined_income_used_for_abatement(parameters):
     """specification.md: the ordinary branch uses the combined amount once
     each person's individual amount is verified non-negative."""
     # claimant 30000 + partner 20000 = 50000 combined; excess over 44900 = 5100
-    scenario = _base_scenario(family_scheme_income=_income(30000, partner_amount=20000))
+    scenario = _base_scenario(
+        partner_status=PartnerStatus.PARTNERED,
+        family_scheme_income=_income(30000, partner_amount=20000),
+    )
 
     result = calculate_wff(scenario, parameters)
 
     assert result.family_tax_credit.outcome == "calculated"
     expected_abatement = Decimal("0.275") * Decimal(5100)
     assert result.family_tax_credit.value == Decimal(7921) - expected_abatement
+
+
+# --- partner status: closes the gap where VerifiedIncome alone can't tell
+# --- "no partner" from "partnered but partner income unverified" (Task 12
+# --- review finding, PR #14)
+
+
+def test_partnered_missing_partner_income_is_needs_review_not_a_number(parameters):
+    """The blocking gap from the second PR #14 re-review: a partnered
+    claimant whose partner's income was never verified must not produce a
+    numeric result using the claimant's amount alone -- that would silently
+    understate (or otherwise misstate) the combined figure specification.md
+    requires."""
+    scenario = _base_scenario(
+        partner_status=PartnerStatus.PARTNERED,
+        family_scheme_income=_income(30000),  # no partner_amount supplied
+    )
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.family_tax_credit.outcome == "needs_review"
+    assert result.family_tax_credit.value is None
+    assert "partner" in (result.family_tax_credit.reason or "").lower()
+
+
+def test_partnered_missing_partner_income_needs_review_for_best_start_too(parameters):
+    scenario = _base_scenario(
+        partner_status=PartnerStatus.PARTNERED,
+        family_scheme_income=_income(30000),
+        children=[_qualifying_child(best_start_cohort=BestStartCohort.IN_SUPPORTED_COHORT)],
+    )
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.best_start.outcome == "needs_review"
+    assert result.best_start.value is None
+
+
+def test_unknown_partner_status_is_needs_review_even_with_a_single_income_figure(parameters):
+    """If partner status itself is unverified, a claimant-only income figure
+    can't be trusted as the correct ordinary-branch amount either -- it
+    might be missing a partner's income that was never asked for."""
+    scenario = _base_scenario(partner_status=PartnerStatus.UNKNOWN, family_scheme_income=_income(30000))
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.family_tax_credit.outcome == "needs_review"
+    assert "partner status" in (result.family_tax_credit.reason or "")
+
+
+def test_single_claimant_with_partner_amount_rejected() -> None:
+    """A structural contradiction, not a policy outcome: SINGLE means no
+    partner exists to have a verified amount at all."""
+    with pytest.raises(ValueError, match="partner_amount"):
+        _base_scenario(
+            partner_status=PartnerStatus.SINGLE,
+            family_scheme_income=_income(30000, partner_amount=10000),
+        )
 

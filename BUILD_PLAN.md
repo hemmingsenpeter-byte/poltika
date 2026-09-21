@@ -426,16 +426,25 @@ twin of the New Zealand policy system.
     `Decimal` instead of going through specification.md's required
     per-person verification. All three fixed with dedicated types
     (`mc6b_disqualifying_payment`, `BestStartCohort`, `VerifiedIncome`) and
-    targeted tests. 66 tests (`tests/unit/engines/simulator/test_wff.py`,
-    up from 58): the ordinary full-year branch with hand-derived
-    exact-decimal expected values (including the half-cent MD 13 case),
-    every unsupported/needs_review trigger individually and in precedence
+    targeted tests. A second re-review pass then found `VerifiedIncome`
+    alone still couldn't distinguish a genuinely single claimant from a
+    partnered claimant whose partner's income was never verified --
+    `partner_amount is None` looked the same either way, so a partnered
+    household could still produce a numeric result from the claimant's
+    income alone. Fixed with an independent `PartnerStatus`
+    (`SINGLE`/`PARTNERED`/`UNKNOWN`, defaulting to `UNKNOWN`) plus a
+    `_partner_income_gap_reason()` check on family tax credit and Best
+    Start. 70 tests (`tests/unit/engines/simulator/test_wff.py`, up from
+    58): the ordinary full-year branch with hand-derived exact-decimal
+    expected values (including the half-cent MD 13 case), every
+    unsupported/needs_review trigger individually and in precedence
     combinations, the MD 2(2)(c) abatement-carryover interaction between
     family and in-work tax credit (including a caught-and-fixed bug where
     in-work tax credit would have silently assumed zero remaining abatement
     whenever family tax credit itself could not be calculated), the real
-    approved WFF `policy.yaml`'s live `in_work_base` needs_review gate, and
-    rejection of structurally malformed negative income.
+    approved WFF `policy.yaml`'s live `in_work_base` needs_review gate,
+    rejection of structurally malformed negative income, and the
+    missing-partner-income/unknown-partner-status cases above.
     `pytest`/`ruff`/`mypy --strict` all pass.
 13. Build spec tests
 14. Build benchmark tests (against independently published IRD examples)

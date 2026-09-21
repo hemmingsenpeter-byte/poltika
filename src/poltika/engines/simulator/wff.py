@@ -120,6 +120,25 @@ class ChildFacts:
     best_start_no_disqualifying_payment: FactStatus = FactStatus.UNKNOWN
 
 
+class PartnerStatus(str, Enum):
+    """Whether the claimant has a partner, per specification.md's "one
+    claimant and a stable partner status" domain precondition -- a
+    household-level fact, independent of `VerifiedIncome`.
+
+    This exists because `VerifiedIncome.partner_amount is None` is
+    ambiguous on its own: it's the correct shape both for a genuinely single
+    claimant (no partner to verify) *and* for a partnered claimant whose
+    partner's income simply wasn't supplied. Those are not the same case --
+    the second one must be `needs_review`, not silently treated as the
+    first. `PartnerStatus` is the independent fact that resolves the
+    ambiguity; see `_partner_income_gap_reason`.
+    """
+
+    SINGLE = "single"
+    PARTNERED = "partnered"
+    UNKNOWN = "unknown"
+
+
 @dataclass(frozen=True)
 class VerifiedIncome:
     """A verified `family_scheme_income` figure, per specification.md's
@@ -129,10 +148,15 @@ class VerifiedIncome:
     when both individual amounts are non-negative ... an unexplained
     household total is never enough."
 
-    `partner_amount is None` means a single claimant (no partner to verify).
-    Structurally, this type makes it impossible to supply a bare combined
-    total without going through per-person verification -- there is no
-    "just give me a number" constructor -- and `__post_init__` enforces the
+    `partner_amount is None` here means only "no partner amount was
+    supplied" -- it does NOT by itself mean "single claimant". Whether that
+    absence is correct (a genuinely single claimant) or a verification gap
+    (a partnered claimant whose partner's income wasn't captured) depends on
+    `WffScenario.partner_status`, which this type has no access to -- see
+    `PartnerStatus` and `_partner_income_gap_reason`. Structurally, this
+    type still makes it impossible to supply a bare combined total without
+    going through per-person verification -- there is no "just give me a
+    number" constructor -- and `__post_init__` enforces the
     non-negative-per-person requirement the ordinary branch depends on.
     """
 
@@ -178,10 +202,20 @@ class WffScenario:
     # policy.yaml's `children` input.
     children: list[ChildFacts] = field(default_factory=list)
 
+    # Whether the claimant has a partner -- independent of
+    # `family_scheme_income`'s shape; see `PartnerStatus`'s docstring for
+    # why this can't be inferred from `VerifiedIncome.partner_amount` alone.
+    # Defaults to UNKNOWN, never SINGLE: SCHEMA.md forbids silently
+    # defaulting a missing fact to a value that would let a partnered
+    # household's unverified partner income pass as though there were no
+    # partner to verify.
+    partner_status: PartnerStatus = PartnerStatus.UNKNOWN
+
     # policy.yaml's `family_scheme_income` input (NZD_per_tax_year). `None`
     # means unverified -- policy.yaml's `missing_outcome: needs_review`.
     # `VerifiedIncome`, not a bare `Decimal`: see that type's docstring --
-    # this is what enforces the partnered-income verification boundary.
+    # this is what enforces the partnered-income verification boundary,
+    # together with `partner_status` above.
     family_scheme_income: VerifiedIncome | None = None
 
     # policy.yaml's `net_family_scheme_income` input (NZD_per_tax_year_
@@ -240,6 +274,20 @@ class WffScenario:
             raise ValueError(
                 f"WffScenario.net_family_scheme_income must not be negative, got {self.net_family_scheme_income}"
             )
+        # A SINGLE claimant with a partner_amount is a structural
+        # contradiction, not a policy outcome -- reject it rather than
+        # silently including an amount that shouldn't exist in the combined
+        # figure (or silently ignoring it, which would be just as wrong).
+        if (
+            self.partner_status == PartnerStatus.SINGLE
+            and self.family_scheme_income is not None
+            and self.family_scheme_income.partner_amount is not None
+        ):
+            raise ValueError(
+                "WffScenario.partner_status is SINGLE but family_scheme_income.partner_amount "
+                f"is set ({self.family_scheme_income.partner_amount}) -- a single claimant "
+                "cannot have a verified partner amount"
+            )
 
 
 @dataclass(frozen=True)
@@ -281,6 +329,29 @@ class WffResult:
             assert c.value is not None  # guaranteed by outcome == "calculated"
             total += c.value
         return total
+
+
+def _partner_income_gap_reason(scenario: WffScenario) -> str | None:
+    """`None` if `family_scheme_income.combined` can be trusted as the
+    ordinary branch's amount; otherwise the `needs_review` reason. Closes
+    the gap `VerifiedIncome` alone can't: `partner_amount is None` is the
+    right shape for a genuinely single claimant, but also the wrong-looking
+    -- and indistinguishable -- shape for a partnered claimant whose
+    partner's income was never verified. Only `WffScenario.partner_status`,
+    checked here, can tell those two apart.
+    """
+    if scenario.partner_status == PartnerStatus.UNKNOWN:
+        return (
+            "partner status (single vs partnered) is unverified -- cannot confirm "
+            "family_scheme_income represents the correct ordinary-branch amount"
+        )
+    if (
+        scenario.partner_status == PartnerStatus.PARTNERED
+        and scenario.family_scheme_income is not None
+        and scenario.family_scheme_income.partner_amount is None
+    ):
+        return "partnered claimant but the partner's family-scheme income has not been separately verified"
+    return None
 
 
 def _complete_dollar_excess(amount: Decimal, threshold: Decimal) -> Decimal:
@@ -407,6 +478,9 @@ def _family_tax_credit(
             ComponentResult(outcome="needs_review", reason="family_scheme_income not verified"),
             zero,
         )
+    partner_income_gap = _partner_income_gap_reason(scenario)
+    if partner_income_gap is not None:
+        return (ComponentResult(outcome="needs_review", reason=partner_income_gap), zero)
 
     eldest = _param_value(parameters, "family_tax_credit_eldest_child")
     if isinstance(eldest, ComponentResult):
@@ -594,6 +668,9 @@ def _best_start(scenario: WffScenario, parameters: PolicyParameterSet) -> Compon
         )
     if scenario.family_scheme_income is None:
         return ComponentResult(outcome="needs_review", reason="family_scheme_income not verified")
+    partner_income_gap = _partner_income_gap_reason(scenario)
+    if partner_income_gap is not None:
+        return ComponentResult(outcome="needs_review", reason=partner_income_gap)
 
     annual_amount = _param_value(parameters, "best_start_annual_amount")
     if isinstance(annual_amount, ComponentResult):
