@@ -343,14 +343,26 @@ twin of the New Zealand policy system.
     sources.yaml/specification.md, if any) — GPT/Codex; manually acquire and
     freeze each as an immutable, versioned raw snapshot with full provenance
     (retrieval_method: manual_download) — Claude Code — see Data Acquisition
-    Doctrine. Every WFF rate/threshold confirmed through Task 10's review
-    traces to a legislated Act, Order, or amending Act, not an external
-    dataset; likely resolves to a documented "none needed for WFF" finding
-    rather than an acquisition cycle, but that determination is still owed
-    explicitly, not assumed.
-10b. Build the transformation/validation layer mapping frozen raw snapshots
-    to canonical Poltika variables; register each frozen snapshot as a
-    regression fixture — Claude Code
+    Doctrine. **Complete 21 September 2026: no external statistical dataset
+    required for WFF v0.1.** Every approved WFF rate/threshold traces to
+    sourced legislation (Income Tax Act, the 2025 Tax Credit Order, amending
+    Acts), not a Stats NZ/Treasury-style series; family-scheme income and
+    eligibility are verified per-scenario inputs, not a shared dataset
+    Poltika sources itself (`ARCHITECTURE.md`'s module contract already
+    recorded "WFF has none identified so far" for `data_dependencies`). The
+    dated in-work Order check is a policy-source verification, tracked via
+    `sources.yaml`'s existing `order_check` provenance notes — not a reason
+    to invent a statistical dataset or its own raw-snapshot machinery.
+10b. **Not applicable to WFF — no action taken.** Building the
+    transformation/validation layer now, with nothing to transform, would
+    be exactly the premature abstraction Architecture Doctrine warns
+    against. This task's actual construction is deferred to whichever
+    policy first has a real snapshot to transform — expected to be
+    Accommodation Supplement's Task 22a (Stats NZ Statistical Area Unit
+    geography data), not built speculatively ahead of that need. Task 11
+    is not blocked by this: WFF's parameter loader consumes `policy.yaml`'s
+    already-approved parameters directly, which were never raw external
+    data in the first place.
 11. Build parameter loader (consumes canonical Poltika variables only, never
     a source-specific representation)
 12. Build pure `calculate_wff()` function. Add component-level
