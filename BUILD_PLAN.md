@@ -383,13 +383,22 @@ twin of the New Zealand policy system.
       unresolved-rate cases; assemble the source/spec/diff/test review
       packet.
     - **11.6** Open the implementation PR for GPT/Codex's fresh-context
-      review before Pete merges. **11.1-11.5 done, 11.6 in progress 21
-      September 2026:** `src/poltika/policy/loader.py` +
-      `src/poltika/semantics/schemas/policy_spec.py`, 13 tests (9 synthetic
+      review before Pete merges. **Complete, merged 21 September 2026
+      (PR #13):** `src/poltika/policy/loader.py` +
+      `src/poltika/semantics/schemas/policy_spec.py`, 24 tests (20 synthetic
       fixture cases plus 4 run directly against the real approved WFF
       `policy.yaml`, confirming `in_work_base` resolves to `needs_review`,
-      never a silent $7,670), `pytest`/`ruff`/`mypy --strict` all pass. PR
-      opened for GPT/Codex's review.
+      never a silent $7,670). Two fresh-context review rounds from
+      GPT/Codex found and Claude Code fixed five issues before approval:
+      float used instead of exact `Decimal` for statutory amounts; no
+      rejection of duplicate parameter IDs (would silently overwrite);
+      `effective_to` wrongly required instead of schema-permitted
+      open-ended; declared `source_catalog` ignored in favour of a
+      hardcoded filename; and empty parameter value lists / free-text
+      `value_type`/`unit` accepted instead of validated as closed,
+      dimension-consistent enums per SCHEMA.md's Task 7 review response.
+      Final GPT/Codex verdict: approved for merge, no remaining
+      discrepancies. `pytest`/`ruff`/`mypy --strict` all pass.
 12. Build pure `calculate_wff()` function. Add component-level
     `validation_checks` for the reviewed exclusion triggers identified in
     Task 10.3 (MD 14/15, the in-work direct-abatement path, ME 2(2)-(4),
