@@ -13,6 +13,7 @@ sources:
     verification_status: full_text_review_pending
     access_note: Official full-page retrieval returned 403 in the initial Task 10 pass; later browser-user-agent fetches enabled direct checks of MB 1-13 and MC 2-11, plus MD 1, MD 3-10, MD 13-15, ME 1-3, MF 4L, and MG 1-4 (PR #6 review comment 5753283332 and Task 10 follow-up). MB 9 and MB 14 are repealed; the rest of Part M is not claimed as fully reviewed.
     mb_mc_audit: Official version as at 2026-09-04, checked 2026-09-21. MB 1-13 and MC 2-11 reviewed in full; notable scope checks are MB 1(5)/(5D)-(5E), MB 11(2)-(3), MB 13(1)-(3), MC 5(1)-(3), MC 6(a)-(c), MC 7(1)-(2), MC 8(1), MC 9(1)-(3), and MC 10(1)-(4). Recheck the version at implementation time.
+    calculation_audit: Official version as at 2026-09-04, checked 2026-09-21. MD 1-3, MD 10, MD 13-15, ME 1-3, MG 1-4, and MF 1-4/4L checked for the scoped full-year calculation; MD 2(2)(c) orders abatement, MD 13(3)(a) and MG 3(2)(a) use complete dollars of income excess, and MF 4(4) concerns display of instalments. MD 13's 27.5-cent rate can produce a half-cent annual result; no intermediate cent rounding was found in these provisions. Independent review remains required before approval.
   - id: wff-tax-credit-order-2025
     kind: amending_legislation
     title: Income Tax (Tax Credit) Order 2025

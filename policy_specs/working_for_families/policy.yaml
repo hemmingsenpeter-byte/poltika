@@ -50,7 +50,7 @@ inputs:
     period: full_tax_year
     source_rule_ids: [WFF-02]
     missing_outcome: needs_review
-    note: Independently verified for the assessment unit under applicable subpart MB rules, including any partner-wide MB 13 threshold and child-income allocation; wages alone are insufficient.
+    note: Independently verified under subpart MB, including any partner-wide MB 13 threshold and child-income allocation. Partnered cases need each person's amount and the combined amount; this branch uses the combined amount only when both individual amounts are non-negative. Wages alone are insufficient.
   - id: work_and_payment_facts
     owner: person
     type: dated_income_and_government_payment_facts
@@ -65,7 +65,7 @@ inputs:
     source_rule_ids: [WFF-05]
     required_for: minimum_family_tax_credit
     missing_outcome: needs_review
-    note: Distinct from family_scheme_income; must follow Income Tax Act s ME 3.
+    note: Distinct from family_scheme_income; verification must attest to the ME 3 adjusted-income, adjusted-tax-liability, amount-received, and amount-paid derivation.
   - id: paid_parental_leave_periods
     owner: person
     type: dated_intervals
