@@ -155,6 +155,7 @@ components:
     output_id: in_work_tax_credit_annual
     validation_checks:
       - mc6a_veterans_payment
+      - mc6b_disqualifying_payment
       - md14_15_protected_credit_or_direct_abatement_pathway
       - in_work_eligibility
       - s80kw_extra_instalment
@@ -162,6 +163,7 @@ components:
     source_rule_ids: [WFF-01, WFF-05, WFF-08]
     output_id: minimum_family_tax_credit_annual
     validation_checks:
+      - mc6b_disqualifying_payment
       - me2_2_4_employment_exclusion
       - me3_net_income_attestation
       - s80kw_extra_instalment

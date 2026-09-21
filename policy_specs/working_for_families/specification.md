@@ -424,22 +424,59 @@ independently to `calculated`/`needs_review`/`unsupported` with a reason;
 summed, and only when all four are `calculated`.
 
 `policy.yaml`'s `components[]` entries now each carry a `validation_checks`
-list naming their known exclusion triggers (MC 6(a), MD 14/15, the in-work
-direct-abatement pathway, ME 2(2)-(4), MG 4, MC 6(c), shared care, and s
-80KW), fulfilling the Task 10.3/10.4 obligation. This is additive
+list naming their known exclusion triggers (MC 6(a), MC 6(b), MD 14/15, the
+in-work direct-abatement pathway, ME 2(2)-(4), MG 4, MC 6(c), shared care,
+and s 80KW), fulfilling the Task 10.3/10.4 obligation. This is additive
 documentation metadata on the already-approved `policy_version: "0.1.0"`,
 not a new eligibility rule or a change to any statutory value, so it does
 not itself require a new policy-version review cycle.
 
-One primary-source gap is flagged rather than resolved: this file states
-"MC 6(b) and (c) affect different components or children" but does not say
-which component MC 6(b) (as distinct from 6(a) and 6(c), which it does
-state) attaches to. `calculate_wff()` has no separate MC 6(b) fact for that
-reason; a known MC 6(b) payment must be surfaced through
-`in_work_eligibility` (the closest declared input, `work_and_payment_facts`,
-which already covers "benefit-status ... conditions" per WFF-04) rather than
-silently ignored. Resolving the precise mapping needs a return to primary
-sources, not an inference from this implementation.
+### Task 12 fresh-context review findings (GPT/Codex, PR #14) -- resolved 2026-09-21
+
+Three findings, each independently verified against primary sources before
+fixing, not just trusted:
+
+1. **MC 6(b)'s component mapping.** This file previously stated "MC 6(b) and
+   (c) affect different components or children" without saying which
+   component MC 6(b) attaches to, and `calculate_wff()` had no separate
+   MC 6(b) fact -- minimum family tax credit could return a positive number
+   regardless of MC 6(b) applicability. Resolved by checking the official
+   Income Tax Act 2007 text directly (legislation.govt.nz, Part M, s MC 6,
+   fetched 2026-09-21, via a browser-user-agent request after a bare fetch
+   403'd -- the same access pattern already recorded elsewhere in
+   `sources.yaml`): MC 6(b) excludes "an in-work tax credit, parental tax
+   credit, or minimum family tax credit" when a main benefit or a parent's
+   allowance/children's pension is received during the relationship period
+   -- distinct from MC 6(a), which excludes "an abating WFF tax credit or a
+   Best Start tax credit" (family tax credit, in-work tax credit, and Best
+   Start, but not minimum family tax credit, consistent with "abating"
+   describing only the credits MD 13 actually abates). `WffScenario` now
+   carries `mc6b_disqualifying_payment`, checked by both in-work tax credit
+   and minimum family tax credit.
+2. **A false Best Start zero.** A child outside the narrow 2024-04-01..
+   2025-03-31 v0.1 calculation cohort was represented by a single
+   `best_start_birth_cohort: bool`, defaulting to `False` -- which this file
+   explicitly says is wrong: "later birth cohorts ... require separate
+   review; do not apply this branch to them" describes real, uncalculated
+   entitlement, not zero entitlement. Resolved by replacing the bool with a
+   four-state `BestStartCohort` (`IN_SUPPORTED_COHORT`,
+   `OUTSIDE_BEST_START_ENTITLEMENT`, `OTHER_COHORT_UNSUPPORTED`, `UNKNOWN`),
+   so a calculated zero is reachable only when every child is verified
+   genuinely outside Best Start entitlement altogether, not merely outside
+   this narrow branch.
+3. **Partnered income verification.** This file's supported-domain
+   paragraph above requires each partner's individually verified,
+   non-negative family-scheme income before using the combined amount; a
+   bare `Decimal` on `WffScenario` could carry an unexplained household
+   total with no such verification. Resolved with a `VerifiedIncome` type
+   (`claimant_amount`, optional `partner_amount`) that has no "just give me
+   a number" constructor and rejects a negative amount for either person at
+   construction -- `family_scheme_income` is now `VerifiedIncome | None`,
+   and every abatement calculation uses its `combined` property.
+
+All three fixes are covered by targeted tests in
+`tests/unit/engines/simulator/test_wff.py` (66 tests total, up from 58);
+`pytest`/`ruff`/`mypy --strict` all re-verified passing.
 
 Component-level `validation_checks` are documented per-component above, but
 enforced in code as scenario-level `FactStatus` facts on `WffScenario`

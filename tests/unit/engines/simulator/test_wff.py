@@ -26,8 +26,10 @@ import pytest
 import yaml
 
 from poltika.engines.simulator.wff import (
+    BestStartCohort,
     ChildFacts,
     FactStatus,
+    VerifiedIncome,
     WffScenario,
     calculate_wff,
 )
@@ -122,10 +124,17 @@ def _param(param_id: str, value_type: str, unit: str, value: str) -> dict:
     }
 
 
+def _income(claimant_amount: object, *, partner_amount: object = None) -> VerifiedIncome:
+    return VerifiedIncome(
+        claimant_amount=Decimal(claimant_amount),
+        partner_amount=Decimal(partner_amount) if partner_amount is not None else None,
+    )
+
+
 def _qualifying_child(**overrides: object) -> ChildFacts:
     base: dict[str, object] = {
         "qualifies_whole_year": FactStatus.VERIFIED,
-        "best_start_birth_cohort": False,
+        "best_start_cohort": BestStartCohort.OUTSIDE_BEST_START_ENTITLEMENT,
         "best_start_no_disqualifying_payment": FactStatus.VERIFIED,
     }
     base.update(overrides)
@@ -137,12 +146,13 @@ def _base_scenario(**overrides: object) -> WffScenario:
         "household_eligibility": FactStatus.VERIFIED,
         "extra_instalment_status": FactStatus.VERIFIED,
         "children": [_qualifying_child()],
-        "family_scheme_income": Decimal(30000),
+        "family_scheme_income": _income(30000),
         "net_family_scheme_income": Decimal(30000),
         "net_family_scheme_income_me3_attested": True,
         "in_work_eligibility": FactStatus.VERIFIED,
         "ftc_iwtc_protected_or_direct_abatement": FactStatus.VERIFIED,
         "mc6a_veterans_payment": FactStatus.VERIFIED,
+        "mc6b_disqualifying_payment": FactStatus.VERIFIED,
         "minimum_family_full_time_earner_weeks": FactStatus.VERIFIED,
         "best_start_no_shared_care": FactStatus.VERIFIED,
         "best_start_protected_credit": FactStatus.VERIFIED,
@@ -157,7 +167,7 @@ def _base_scenario(**overrides: object) -> WffScenario:
 def test_below_all_thresholds_full_entitlement(parameters):
     """Income below every abatement threshold: every component calculates at
     its full statutory rate, with no abatement at all."""
-    scenario = _base_scenario(family_scheme_income=Decimal(30000))
+    scenario = _base_scenario(family_scheme_income=_income(30000))
 
     result = calculate_wff(scenario, parameters)
 
@@ -176,7 +186,7 @@ def test_half_cent_abatement_result_preserved_exactly(parameters):
     """specification.md: the 27.5-cent rate 'can produce a half-cent annual
     result'; the calculation core must preserve it exactly, not round."""
     # income = threshold + 1 -> excess = 1 complete dollar -> abatement = 0.275
-    scenario = _base_scenario(family_scheme_income=Decimal(44901))
+    scenario = _base_scenario(family_scheme_income=_income(44901))
 
     result = calculate_wff(scenario, parameters)
 
@@ -187,7 +197,7 @@ def test_half_cent_abatement_result_preserved_exactly(parameters):
 def test_abatement_excess_uses_complete_dollars_not_cents(parameters):
     """MD 13(3)(a): the rate applies to complete dollars of excess -- $0.99
     of excess must not itself trigger any abatement."""
-    scenario = _base_scenario(family_scheme_income=Decimal("44900.99"))
+    scenario = _base_scenario(family_scheme_income=_income("44900.99"))
 
     result = calculate_wff(scenario, parameters)
 
@@ -197,7 +207,7 @@ def test_abatement_excess_uses_complete_dollars_not_cents(parameters):
 def test_additional_children_and_family_tax_credit_amounts(parameters):
     scenario = _base_scenario(
         children=[_qualifying_child(), _qualifying_child(), _qualifying_child()],
-        family_scheme_income=Decimal(30000),
+        family_scheme_income=_income(30000),
     )
 
     result = calculate_wff(scenario, parameters)
@@ -209,7 +219,7 @@ def test_in_work_additional_child_beyond_three(parameters):
     """4 qualifying children: base rate covers 1-3, the 4th adds $780."""
     scenario = _base_scenario(
         children=[_qualifying_child() for _ in range(4)],
-        family_scheme_income=Decimal(20000),  # well under threshold, no abatement
+        family_scheme_income=_income(20000),  # well under threshold, no abatement
     )
 
     result = calculate_wff(scenario, parameters)
@@ -223,7 +233,7 @@ def test_abatement_carries_from_family_credit_to_in_work_credit(parameters):
     credit. Family tax credit floors at zero -- it must never go negative."""
     # 1 child: family_credit_base = 7921. Choose income so abatement clearly
     # exceeds that base: excess = 35100 (income 80000) -> abatement = 9652.5.
-    scenario = _base_scenario(family_scheme_income=Decimal(80000))
+    scenario = _base_scenario(family_scheme_income=_income(80000))
 
     result = calculate_wff(scenario, parameters)
 
@@ -235,7 +245,7 @@ def test_abatement_carries_from_family_credit_to_in_work_credit(parameters):
 
 
 def test_in_work_credit_floors_at_zero_when_remaining_abatement_exceeds_it(parameters):
-    scenario = _base_scenario(family_scheme_income=Decimal(200000))
+    scenario = _base_scenario(family_scheme_income=_income(200000))
 
     result = calculate_wff(scenario, parameters)
 
@@ -256,8 +266,8 @@ def test_minimum_family_tax_credit_zero_at_or_above_prescribed_amount(parameters
 
 def test_best_start_single_cohort_child_with_abatement(parameters):
     scenario = _base_scenario(
-        children=[_qualifying_child(best_start_birth_cohort=True)],
-        family_scheme_income=Decimal(80000),  # excess over 79000 = 1000 -> abate 210
+        children=[_qualifying_child(best_start_cohort=BestStartCohort.IN_SUPPORTED_COHORT)],
+        family_scheme_income=_income(80000),  # excess over 79000 = 1000 -> abate 210
     )
 
     result = calculate_wff(scenario, parameters)
@@ -270,7 +280,7 @@ def test_best_start_no_cohort_child_is_a_real_calculated_zero(parameters):
     """No Best Start-eligible child is a genuine, evidenced zero -- not a
     scope limitation -- distinct from the multi-child case below, which is
     genuinely out of the v0.1 branch."""
-    scenario = _base_scenario(children=[_qualifying_child(best_start_birth_cohort=False)])
+    scenario = _base_scenario(children=[_qualifying_child(best_start_cohort=BestStartCohort.OUTSIDE_BEST_START_ENTITLEMENT)])
 
     result = calculate_wff(scenario, parameters)
 
@@ -386,6 +396,38 @@ def test_me2_employment_exclusion_unsupported_only_for_minimum_family_credit(par
     assert result.family_tax_credit.outcome == "calculated"
 
 
+def test_mc6b_disqualifying_payment_unsupported_for_iwtc_and_mftc_not_ftc_or_best_start(parameters):
+    """Task 12 review finding 1, confirmed against the official Act text
+    (Income Tax Act 2007 s MC 6, checked 2026-09-21): MC 6(b) excludes
+    in-work tax credit and minimum family tax credit when a main benefit or
+    a parent's allowance/children's pension is received during the
+    relationship period -- distinct from MC 6(a), which excludes family tax
+    credit, in-work tax credit, and Best Start, but not minimum family tax
+    credit. Before this fix, minimum family tax credit had no MC 6(b) check
+    at all and could return a positive number regardless."""
+    scenario = _base_scenario(mc6b_disqualifying_payment=FactStatus.EXCLUDED)
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.in_work_tax_credit.outcome == "unsupported"
+    assert "MC 6(b)" in (result.in_work_tax_credit.reason or "")
+    assert result.minimum_family_tax_credit.outcome == "unsupported"
+    assert "MC 6(b)" in (result.minimum_family_tax_credit.reason or "")
+    assert result.family_tax_credit.outcome == "calculated"
+    assert result.best_start.outcome == "calculated"
+
+
+def test_mc6b_disqualifying_payment_unknown_is_needs_review_for_iwtc_and_mftc(parameters):
+    scenario = _base_scenario(mc6b_disqualifying_payment=FactStatus.UNKNOWN)
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.in_work_tax_credit.outcome == "needs_review"
+    assert result.minimum_family_tax_credit.outcome == "needs_review"
+    assert result.family_tax_credit.outcome == "calculated"
+    assert result.best_start.outcome == "calculated"
+
+
 def test_best_start_shared_care_unsupported_only_for_best_start(parameters):
     scenario = _base_scenario(best_start_no_shared_care=FactStatus.EXCLUDED)
 
@@ -407,7 +449,7 @@ def test_mc6c_disqualifying_payment_unsupported_only_for_best_start(parameters):
     scenario = _base_scenario(
         children=[
             _qualifying_child(
-                best_start_birth_cohort=True,
+                best_start_cohort=BestStartCohort.IN_SUPPORTED_COHORT,
                 best_start_no_disqualifying_payment=FactStatus.EXCLUDED,
             )
         ],
@@ -422,8 +464,8 @@ def test_mc6c_disqualifying_payment_unsupported_only_for_best_start(parameters):
 def test_multiple_best_start_cohort_children_unsupported(parameters):
     scenario = _base_scenario(
         children=[
-            _qualifying_child(best_start_birth_cohort=True),
-            _qualifying_child(best_start_birth_cohort=True),
+            _qualifying_child(best_start_cohort=BestStartCohort.IN_SUPPORTED_COHORT),
+            _qualifying_child(best_start_cohort=BestStartCohort.IN_SUPPORTED_COHORT),
         ],
     )
 
@@ -431,6 +473,50 @@ def test_multiple_best_start_cohort_children_unsupported(parameters):
 
     assert result.best_start.outcome == "unsupported"
     assert "multi-child" in (result.best_start.reason or "") or "more than one" in (result.best_start.reason or "")
+
+
+def test_best_start_other_cohort_child_is_unsupported_not_zero(parameters):
+    """Task 12 review finding 2: a child outside the narrow 2024-04-01..
+    2025-03-31 v0.1 cohort is NOT proven to have zero Best Start entitlement
+    -- specification.md explicitly says later birth cohorts 'require
+    separate review; do not apply this branch to them'. Before this fix,
+    the only non-cohort state was a bool default False, which this same
+    scenario would have silently reported as a calculated zero."""
+    scenario = _base_scenario(
+        children=[_qualifying_child(best_start_cohort=BestStartCohort.OTHER_COHORT_UNSUPPORTED)]
+    )
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.best_start.outcome == "unsupported"
+    assert result.best_start.value is None
+    assert "narrow" in (result.best_start.reason or "") or "birth cohort" in (result.best_start.reason or "")
+    # Every other component is unaffected by Best Start's own cohort facts.
+    assert result.family_tax_credit.outcome == "calculated"
+
+
+def test_best_start_unknown_cohort_child_is_needs_review_not_zero(parameters):
+    scenario = _base_scenario(children=[_qualifying_child(best_start_cohort=BestStartCohort.UNKNOWN)])
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.best_start.outcome == "needs_review"
+    assert result.best_start.value is None
+
+
+def test_best_start_genuine_zero_requires_verified_outside_entitlement(parameters):
+    """The only state that yields a calculated zero is every child verified
+    OUTSIDE_BEST_START_ENTITLEMENT -- distinguishing this from the two tests
+    above (OTHER_COHORT_UNSUPPORTED, UNKNOWN) is the whole point of the fix:
+    a real, evidenced absence of entitlement, not a default or a scope gap."""
+    scenario = _base_scenario(
+        children=[_qualifying_child(best_start_cohort=BestStartCohort.OUTSIDE_BEST_START_ENTITLEMENT)]
+    )
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.best_start.outcome == "calculated"
+    assert result.best_start.value == Decimal(0)
 
 
 # --- needs_review: unverified facts, never a silent value or zero -------------
@@ -567,7 +653,7 @@ def test_total_is_none_when_any_component_is_not_calculated(parameters):
 
 
 def test_total_sums_only_when_every_component_is_calculated(parameters):
-    scenario = _base_scenario(family_scheme_income=Decimal(30000))
+    scenario = _base_scenario(family_scheme_income=_income(30000))
 
     result = calculate_wff(scenario, parameters)
 
@@ -584,11 +670,44 @@ def test_total_sums_only_when_every_component_is_calculated(parameters):
 # --- malformed input is rejected structurally, not resolved as a policy outcome
 
 
-def test_negative_family_scheme_income_rejected() -> None:
-    with pytest.raises(ValueError, match="family_scheme_income"):
-        _base_scenario(family_scheme_income=Decimal(-1))
+def test_negative_claimant_income_rejected() -> None:
+    with pytest.raises(ValueError, match="claimant_amount"):
+        VerifiedIncome(claimant_amount=Decimal(-1))
+
+
+def test_negative_partner_income_rejected() -> None:
+    with pytest.raises(ValueError, match="partner_amount"):
+        VerifiedIncome(claimant_amount=Decimal(30000), partner_amount=Decimal(-1))
 
 
 def test_negative_net_family_scheme_income_rejected() -> None:
     with pytest.raises(ValueError, match="net_family_scheme_income"):
         _base_scenario(net_family_scheme_income=Decimal(-1))
+
+
+# --- partnered income: combined-branch verification boundary (Task 12 review finding 3)
+
+
+def test_single_claimant_combined_equals_claimant_amount(parameters):
+    """No partner: `combined` is just the claimant's verified amount, and the
+    ordinary branch proceeds exactly as for a single scalar figure."""
+    scenario = _base_scenario(family_scheme_income=_income(30000))
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.family_tax_credit.outcome == "calculated"
+    assert result.family_tax_credit.value == Decimal(7921)  # below threshold, no abatement
+
+
+def test_partnered_combined_income_used_for_abatement(parameters):
+    """specification.md: the ordinary branch uses the combined amount once
+    each person's individual amount is verified non-negative."""
+    # claimant 30000 + partner 20000 = 50000 combined; excess over 44900 = 5100
+    scenario = _base_scenario(family_scheme_income=_income(30000, partner_amount=20000))
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.family_tax_credit.outcome == "calculated"
+    expected_abatement = Decimal("0.275") * Decimal(5100)
+    assert result.family_tax_credit.value == Decimal(7921) - expected_abatement
+

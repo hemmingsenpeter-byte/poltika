@@ -16,15 +16,18 @@ no relationship change, no competing caregiver. Anything outside that domain
 must resolve to `unsupported` or `needs_review`, never a silent zero or a
 guessed number (SCHEMA.md; CLAUDE.md's "Ground truth" section).
 
-One primary-source gap this implementation does NOT resolve, flagged rather
-than guessed per CLAUDE.md: specification.md notes "MC 6(b) and (c) affect
-different components or children" but does not state which component MC 6(b)
-(as opposed to 6(a) and 6(c), which it does state) attaches to. This module
-has no separate MC 6(b) fact for that reason -- a known MC 6(b) payment must
-be surfaced by the caller through `in_work_eligibility` (the closest matching
-declared input, `work_and_payment_facts`, which already covers "benefit-status
-... conditions" per WFF-04) rather than silently ignored. Resolving the exact
-mapping is future source work, not something this module should infer.
+MC 6(b)'s component mapping (an earlier version of this file left as an
+unresolved primary-source gap) is now checked directly against the official
+Income Tax Act 2007 text (legislation.govt.nz, Part M, s MC 6, fetched
+2026-09-21): "a person does not qualify for -- ... (b) an in-work tax
+credit, parental tax credit, or minimum family tax credit if, during the
+relationship period, they receive -- (i) a main benefit; or ... (iii) a
+parent's allowance or a children's pension". This is distinct from MC 6(a),
+which excludes "an abating WFF tax credit or a Best Start tax credit" (family
+tax credit, in-work tax credit, and Best Start -- the credits that abate --
+but not minimum family tax credit, which doesn't). MC 6(b) therefore gates
+in-work tax credit *and* minimum family tax credit; parental tax credit is
+out of v0.1 scope and not modelled.
 """
 
 from __future__ import annotations
@@ -68,6 +71,34 @@ class FactStatus(str, Enum):
     UNKNOWN = "unknown"
 
 
+class BestStartCohort(str, Enum):
+    """A child's Best Start birth-cohort classification. Not a bool: a child
+    can be genuinely outside Best Start entitlement altogether (too old --
+    outside the first-three-years window entirely), or within that general
+    window but in a birth cohort/period specification.md explicitly puts
+    outside the v0.1 calculable branch ("later birth cohorts ... require
+    separate review; do not apply this branch to them") -- collapsing those
+    two into one `bool` would silently treat "out of this narrow branch,
+    entitlement genuinely unknown" the same as "verified zero entitlement",
+    which is exactly the false-zero bug this type exists to prevent.
+    """
+
+    # Born 2024-04-01 through 2025-03-31 inclusive, eligible for the entire
+    # 2026-27 tax year -- the one cohort specification.md step 5 calculates.
+    IN_SUPPORTED_COHORT = "in_supported_cohort"
+    # Verified genuinely outside Best Start entitlement altogether (e.g.
+    # older than the first-three-years window for the whole tax year) --
+    # a real, evidenced zero, not a scope limitation.
+    OUTSIDE_BEST_START_ENTITLEMENT = "outside_best_start_entitlement"
+    # Within Best Start's general eligibility window but a birth cohort or
+    # in-year birth/third-birthday period specification.md excludes from
+    # this narrow v0.1 branch (e.g. born on/after 2025-04-01, a first-year
+    # pre-2026-04-01 birth, or an in-year birth/third birthday) -- entitlement
+    # is real law, just not something this branch calculates.
+    OTHER_COHORT_UNSUPPORTED = "other_cohort_unsupported"
+    UNKNOWN = "unknown"
+
+
 @dataclass(frozen=True)
 class ChildFacts:
     """One child's facts, per policy.yaml's `children` input
@@ -82,13 +113,41 @@ class ChildFacts:
     """
 
     qualifies_whole_year: FactStatus
-    # Best Start's v0.1 cohort: born 2024-04-01 through 2025-03-31 inclusive,
-    # eligible for the entire 2026-27 tax year (specification.md step 5).
-    best_start_birth_cohort: bool = False
+    best_start_cohort: BestStartCohort = BestStartCohort.UNKNOWN
     # MC 6(c) disqualifying payment for *this* child (same-child parental
     # leave/preterm-baby payment, parental tax credit, or specified
     # veterans' payment) -- specification.md WFF-06.
     best_start_no_disqualifying_payment: FactStatus = FactStatus.UNKNOWN
+
+
+@dataclass(frozen=True)
+class VerifiedIncome:
+    """A verified `family_scheme_income` figure, per specification.md's
+    partnered-income boundary: "For a partnered claimant, the verification
+    must also show each person's family-scheme income and their combined
+    amount. The ordinary combined-income abatement branch ... is used only
+    when both individual amounts are non-negative ... an unexplained
+    household total is never enough."
+
+    `partner_amount is None` means a single claimant (no partner to verify).
+    Structurally, this type makes it impossible to supply a bare combined
+    total without going through per-person verification -- there is no
+    "just give me a number" constructor -- and `__post_init__` enforces the
+    non-negative-per-person requirement the ordinary branch depends on.
+    """
+
+    claimant_amount: Decimal
+    partner_amount: Decimal | None = None
+
+    def __post_init__(self) -> None:
+        if self.claimant_amount < 0:
+            raise ValueError(f"VerifiedIncome.claimant_amount must not be negative, got {self.claimant_amount}")
+        if self.partner_amount is not None and self.partner_amount < 0:
+            raise ValueError(f"VerifiedIncome.partner_amount must not be negative, got {self.partner_amount}")
+
+    @property
+    def combined(self) -> Decimal:
+        return self.claimant_amount + (self.partner_amount if self.partner_amount is not None else Decimal(0))
 
 
 @dataclass(frozen=True)
@@ -121,7 +180,9 @@ class WffScenario:
 
     # policy.yaml's `family_scheme_income` input (NZD_per_tax_year). `None`
     # means unverified -- policy.yaml's `missing_outcome: needs_review`.
-    family_scheme_income: Decimal | None = None
+    # `VerifiedIncome`, not a bare `Decimal`: see that type's docstring --
+    # this is what enforces the partnered-income verification boundary.
+    family_scheme_income: VerifiedIncome | None = None
 
     # policy.yaml's `net_family_scheme_income` input (NZD_per_tax_year_
     # after_tax), required_for minimum_family_tax_credit only.
@@ -150,6 +211,13 @@ class WffScenario:
     # minimum family tax credit (which does not abate and is not described
     # as MC 6(a)-affected in specification.md).
     mc6a_veterans_payment: FactStatus = FactStatus.UNKNOWN
+    # MC 6(b): a main benefit, or a parent's allowance/children's pension,
+    # received during the relationship period. Per the official Act text
+    # (checked 2026-09-21): excludes in-work tax credit and minimum family
+    # tax credit (also parental tax credit, out of v0.1 scope) -- distinct
+    # from MC 6(a) above, which excludes family tax credit, in-work tax
+    # credit, and Best Start, but not minimum family tax credit.
+    mc6b_disqualifying_payment: FactStatus = FactStatus.UNKNOWN
 
     # MA 7 / ME 2: 52 verified full-time-earner weeks with no ME 2(2)-(4)
     # Commissioner-determined employment period or part-week case.
@@ -166,10 +234,12 @@ class WffScenario:
         # accepting it would be dangerous: `_complete_dollar_excess` floors
         # a negative excess to zero, so a sign error upstream would quietly
         # read as "no abatement" instead of surfacing the bad data.
-        for name in ("family_scheme_income", "net_family_scheme_income"):
-            value = getattr(self, name)
-            if value is not None and value < 0:
-                raise ValueError(f"WffScenario.{name} must not be negative, got {value}")
+        # (family_scheme_income's non-negativity is enforced by
+        # VerifiedIncome.__post_init__ itself, per person, at construction.)
+        if self.net_family_scheme_income is not None and self.net_family_scheme_income < 0:
+            raise ValueError(
+                f"WffScenario.net_family_scheme_income must not be negative, got {self.net_family_scheme_income}"
+            )
 
 
 @dataclass(frozen=True)
@@ -353,7 +423,7 @@ def _family_tax_credit(
 
     additional_children = len(scenario.children) - 1
     family_credit_base = eldest + additional * additional_children
-    abatement = rate * _complete_dollar_excess(scenario.family_scheme_income, threshold)
+    abatement = rate * _complete_dollar_excess(scenario.family_scheme_income.combined, threshold)
     family_credit = max(zero, family_credit_base - abatement)
     remaining_abatement = max(zero, abatement - family_credit_base)
 
@@ -383,6 +453,11 @@ def _in_work_tax_credit(
             outcome="unsupported",
             reason="in-work eligibility test fails (main benefit/Student Allowance period, unpaid break, or not a qualifying full-year earner)",
         )
+    if scenario.mc6b_disqualifying_payment == FactStatus.EXCLUDED:
+        return ComponentResult(
+            outcome="unsupported",
+            reason="MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
+        )
     if scenario.mc6a_veterans_payment == FactStatus.UNKNOWN:
         return ComponentResult(outcome="needs_review", reason="MC 6(a) veterans' payment applicability unverified")
     if scenario.ftc_iwtc_protected_or_direct_abatement == FactStatus.UNKNOWN:
@@ -391,6 +466,8 @@ def _in_work_tax_credit(
         )
     if scenario.in_work_eligibility == FactStatus.UNKNOWN:
         return ComponentResult(outcome="needs_review", reason="in-work eligibility unverified")
+    if scenario.mc6b_disqualifying_payment == FactStatus.UNKNOWN:
+        return ComponentResult(outcome="needs_review", reason="MC 6(b) disqualifying-payment status unverified")
 
     if ftc_result.outcome != "calculated":
         # MD 2(2)(c): abatement applies to family tax credit first, then any
@@ -427,8 +504,15 @@ def _minimum_family_tax_credit(scenario: WffScenario, parameters: PolicyParamete
             outcome="unsupported",
             reason="ME 2(2)-(4) Commissioner-determined employment period or a part-week case applies -- outside the 52-verified-week v0.1 branch",
         )
+    if scenario.mc6b_disqualifying_payment == FactStatus.EXCLUDED:
+        return ComponentResult(
+            outcome="unsupported",
+            reason="MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
+        )
     if scenario.minimum_family_full_time_earner_weeks == FactStatus.UNKNOWN:
         return ComponentResult(outcome="needs_review", reason="full-time-earner weeks (MA 7 / ME 2) unverified")
+    if scenario.mc6b_disqualifying_payment == FactStatus.UNKNOWN:
+        return ComponentResult(outcome="needs_review", reason="MC 6(b) disqualifying-payment status unverified")
     if not scenario.net_family_scheme_income_me3_attested:
         return ComponentResult(
             outcome="needs_review",
@@ -467,21 +551,38 @@ def _best_start(scenario: WffScenario, parameters: PolicyParameterSet) -> Compon
     if scenario.best_start_protected_credit == FactStatus.UNKNOWN:
         return ComponentResult(outcome="needs_review", reason="MG 4 protected Best Start credit applicability unverified")
 
-    cohort_children = [c for c in scenario.children if c.best_start_birth_cohort]
+    supported_cohort_children = [
+        c for c in scenario.children if c.best_start_cohort == BestStartCohort.IN_SUPPORTED_COHORT
+    ]
 
-    if len(cohort_children) > 1:
+    # A child in a birth cohort/period specification.md excludes from this
+    # narrow branch has real, unresolved entitlement -- not a zero (Task 12
+    # review finding: an earlier version of this file collapsed "out of the
+    # v0.1 branch" and "verified zero" into the same bool, which is the
+    # false-zero bug this check exists to prevent).
+    if any(c.best_start_cohort == BestStartCohort.OTHER_COHORT_UNSUPPORTED for c in scenario.children):
+        return ComponentResult(
+            outcome="unsupported",
+            reason="a child's Best Start birth cohort/period is outside the v0.1 narrow calculable branch (e.g. a later birth cohort, or an in-year birth/third birthday) -- real entitlement, not calculated here",
+        )
+    if any(c.best_start_cohort == BestStartCohort.UNKNOWN for c in scenario.children):
+        return ComponentResult(
+            outcome="needs_review", reason="a child's Best Start birth-cohort status is unverified"
+        )
+    if len(supported_cohort_children) > 1:
         return ComponentResult(
             outcome="unsupported",
             reason="more than one Best Start birth-cohort-eligible child -- multi-child apportionment is outside the v0.1 single-child branch",
         )
-    if not cohort_children:
-        # A genuine, evidenced fact: no child in the 2024-04-01..2025-03-31
-        # cohort means no Best Start entitlement -- a real zero, not a scope
-        # limitation, per specification.md's "may yield zero for that
-        # component" for an evidenced eligibility-test failure.
+    if not supported_cohort_children:
+        # Every child is verified OUTSIDE_BEST_START_ENTITLEMENT (the only
+        # remaining case once OTHER_COHORT_UNSUPPORTED/UNKNOWN are ruled out
+        # above) -- a genuine, evidenced zero, not a scope limitation, per
+        # specification.md's "may yield zero for that component" for an
+        # evidenced eligibility-test failure.
         return ComponentResult(outcome="calculated", value=Decimal(0))
 
-    child = cohort_children[0]
+    child = supported_cohort_children[0]
     if child.best_start_no_disqualifying_payment == FactStatus.EXCLUDED:
         return ComponentResult(
             outcome="unsupported",
@@ -504,7 +605,7 @@ def _best_start(scenario: WffScenario, parameters: PolicyParameterSet) -> Compon
     if isinstance(rate, ComponentResult):
         return rate
 
-    abatement = rate * _complete_dollar_excess(scenario.family_scheme_income, threshold)
+    abatement = rate * _complete_dollar_excess(scenario.family_scheme_income.combined, threshold)
     best_start = max(Decimal(0), annual_amount - abatement)
 
     return ComponentResult(outcome="calculated", value=best_start)
