@@ -270,8 +270,21 @@ twin of the New Zealand policy system.
 
 ### Weeks 1–2 — WFF Vertical Slice
 10. Complete WFF policy.yaml + specification.md from source. Source-linked
-    draft in PR #6; independent legal/content review and Pete's acceptance
-    remain open. The draft is not an executable policy specification.
+    draft merged 21 September 2026 (PR #6) as a reviewed draft — `status:
+    draft_pending_review`, `policy_version: null` — per Pete's explicit
+    decision that merging a draft does not clear it for calculator
+    implementation. Independent review found and the author fixed three
+    issues pre-merge (complete-dollar abatement truncation, a missing-input
+    status conflict, an interval/note contradiction on the temporary
+    in-work rate); confirmed correct against full Act text, not just IRD
+    guidance, for MD 1/3/10/13 and ME 1/3. **Still open, in a follow-up
+    PR:** remaining Act provisions (MD 4-9 in-work earner test, MD 14
+    protected credit, MG 1-4 Best Start in full), Pete's explicit sign-off
+    on the proposed narrow v0.1 supported domain, and a fresh reversal-Order
+    check at actual implementation time (not fired as of 21 September 2026,
+    confirmed against the Act's own secondary-legislation register, not
+    just petrol-price news). Task 10 completes only once that follow-up is
+    reviewed and Pete accepts it as `approved`.
 10a. Identify the minimum authoritative external statistical datasets the WFF
     vertical actually needs (beyond the legislated rates already captured in
     sources.yaml/specification.md, if any); manually acquire and freeze each
