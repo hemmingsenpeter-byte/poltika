@@ -323,12 +323,17 @@ twin of the New Zealand policy system.
       fixtures may consume the draft before this gate.
 10a. Identify the minimum authoritative external statistical datasets the WFF
     vertical actually needs (beyond the legislated rates already captured in
-    sources.yaml/specification.md, if any); manually acquire and freeze each
-    as an immutable, versioned raw snapshot with full provenance
-    (retrieval_method: manual_download) — see Data Acquisition Doctrine
+    sources.yaml/specification.md, if any) — GPT/Codex; manually acquire and
+    freeze each as an immutable, versioned raw snapshot with full provenance
+    (retrieval_method: manual_download) — Claude Code — see Data Acquisition
+    Doctrine. Every WFF rate/threshold confirmed through Task 10's review
+    traces to a legislated Act, Order, or amending Act, not an external
+    dataset; likely resolves to a documented "none needed for WFF" finding
+    rather than an acquisition cycle, but that determination is still owed
+    explicitly, not assumed.
 10b. Build the transformation/validation layer mapping frozen raw snapshots
     to canonical Poltika variables; register each frozen snapshot as a
-    regression fixture
+    regression fixture — Claude Code
 11. Build parameter loader (consumes canonical Poltika variables only, never
     a source-specific representation)
 12. Build pure `calculate_wff()` function
