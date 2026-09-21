@@ -338,48 +338,61 @@ this static-year branch can be implemented without accidentally representing
 out-of-domain households as zero entitlement. Do not implement the policy
 calculator or statutory-value fixtures before the review outcome is resolved.
 
-## Task 10 follow-up: MD 4-9/14, MG 1-4 verification (Claude Code, 2026-09-21)
+## Task 10 follow-up: MD 4-9/14, MG 1-4 verification (Claude Code, 2026-09-21) — resolved
 
-Full-text checked (curl, not WebFetch — see ADR/PR #6 history for why) against
-`https://www.legislation.govt.nz/act/public/2007/97/en/latest/parts/DLM1518405/`.
+Both findings below are resolved as of PR #8/#9/#10 and superseded by the
+Task 10.3 whole-spec review further down. Left here, marked resolved, for
+the provenance trail rather than deleted. MD 5-9 matched the draft exactly
+and needed no follow-up.
 
-**MD 5-9 (the five in-work tax credit requirements) match the draft's
-framing exactly** — age ≥16 (MD 5), principal caregiver (MD 6), residence
-(MD 7), not receiving a main benefit or basic/independent-circumstances
-grant (MD 8), earner test with a business-income pathway for the
-self-employment case the draft already deferred (MD 9). No discrepancy.
+1. ~~MG 1(4)'s Tax Administration Act s 80KW citation missing from
+   `sources.yaml`~~ — resolved: `wff-tax-administration-act` added to
+   `sources.yaml` (PR #8) and the `extra_instalment_status` input, plus the
+   s 80KW paragraph in the calculation sequence below, added (PR #9/#10).
+2. ~~Best Start's calculation step didn't exclude protected-Best-Start
+   (MG 4) cases~~ — resolved: step 5 now excludes "months receiving
+   protected Best Start credit under MG 4" symmetrically with step 2's
+   MD 14 exclusion (PR #8).
 
-**Two genuine findings, not yet in the draft:**
+The reversal-Order check recorded here (2026-09-21) is superseded by the
+Task 10.2 rate-status contract above, which is stricter: an as-of check
+confirms no Order on that date, not the whole 2026-27 tax year.
 
-1. **MG 1(4): Best Start "is overridden by section 80KW of the Tax
-   Administration Act 1994"** for an "Extra instalment" case. This is a
-   citation to a different Act entirely, not currently in `sources.yaml` or
-   anywhere in this spec. Not investigated further here — per the
-   ground-truth rule, flagging it rather than guessing what s 80KW covers.
-   Needs its own source-map entry before the Best Start branch can be
-   called reviewed against full text.
-2. **The Best Start calculation step (step 5, "Proposed full-year
-   calculation sequence") doesn't exclude protected-Best-Start-credit
-   cases, unlike the family-tax-credit step (step 2) which explicitly
-   excludes MD 14 cases.** MG 3(2)(b)(ii) excludes "the days of any
-   calendar months in which the person receives protected Best Start tax
-   credit as described in section MG 4" from the abatement-days count —
-   structurally the same carve-out mechanism as MD 13(3)(b)/MD 14 for
-   family tax credit, just a separate provision for a separate credit. The
-   draft's step 5 exclusion list (birth cohorts, part-year, PPL, multiple
-   children) doesn't mention it. WFF-08 already names MG 4 as a citation
-   needing verification, so this isn't a new source lead, but the Task 10
-   calculation draft itself doesn't yet carry that exclusion the way its
-   FTC counterpart does. Should be added symmetrically before this branch
-   is treated as reviewed.
+## Task 10.3 whole-spec independent review (Claude Code, 2026-09-21)
 
-Reversal-Order check re-confirmed same day (2026-09-21, per the PR #6
-thread): s 2(43)-(45) of the 2026 Act require a specific Order in Council to
-commence the reversal, with 1 April 2027 as the s 2(44) fallback if none is
-made; no such secondary legislation is on the official register as of this
-check. `in_work_base`'s `needs_review` status is unaffected — this confirms
-the current value, it doesn't clear it for `approved`.
+Reviewed the complete source map, policy draft, calculation sequence, and
+status outcomes as one document — not incrementally per PR — after
+independently deriving expected behaviour from primary sources across the
+PR #6/#8/#9/#10/#11 review passes (each already recorded its own
+comparison; this pass checks the whole assembled result for internal
+consistency, not individual claims again).
 
-Not drafting new `policy.yaml`/`specification.md` content for these — that
-stays with the Task 10 author, to keep independent review meaningful for
-whatever comes next.
+**No CODE_ERROR, SPEC_ERROR, or SOURCE_CONFLICT found.** The
+`unsupported`/`needs_review` discipline is now applied consistently across
+every component (FTC's MD 14/15, IWTC's direct-abatement pathway, MFTC's
+ME 2(2)-(4), Best Start's MG 4, and the s 80KW extra-instalment case) —
+known-and-excluded conditions consistently return `unsupported`, unverified
+applicability consistently returns `needs_review`, and nothing collapses
+either into a silent zero. Every `parameters[].source_id` resolves to a
+`sources.yaml` entry. `policy.yaml`'s `assessment.unsupported` list matches
+the household/eligibility exclusions described in prose exactly (six items,
+checked one-for-one).
+
+**One finding worth acting on before Task 12, not a correctness bug:**
+`assessment.unsupported` consolidates the six household-level exclusions
+into one machine-readable list, but the five component-level exclusions
+(MD 14/15, the IWTC direct-abatement pathway, ME 2(2)-(4), MG 4, s 80KW) are
+each stated only in prose, scattered across four different steps and one
+table. Nothing is missing — every one of them is present and correctly
+handled — but an implementer working from `policy.yaml` alone (the
+executable contract) rather than reading every paragraph of this file
+could plausibly miss one. This is exactly what the `validation_checks`
+field in `ARCHITECTURE.md`'s simulation module contract is for — recommend
+each `components[]` entry in `policy.yaml` gain a `validation_checks` list
+naming its known exclusion triggers when Task 12 starts, rather than
+leaving them prose-only. Not blocking Task 10's closure; a Task 12
+implementation note.
+
+**Reviewed revision:** this file and `policy.yaml`/`sources.yaml` as of PR
+#11 (`docs/task10-temp-iwtc-rate`, commit `b937e2d` plus this review's own
+edit). Task 10.3 is done; Task 10.4 (Pete's acceptance) is next.
