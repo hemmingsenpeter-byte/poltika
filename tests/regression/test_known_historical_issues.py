@@ -197,14 +197,22 @@ def test_household_income_not_mislabelled_as_claimant_amount() -> None:
     `family_scheme_income.claimant_amount`, misrepresenting a combined
     figure as one person's individually verified amount --
     `VerifiedIncome.claimant_amount` means specifically the claimant's own
-    verified amount. Checks the Rahui case (the same fix applied
-    identically to the other two)."""
-    case = load_wff_benchmark_case("ird_ftc_rahui_partnered_combined_income_not_individually_verified")
-
-    assert case["scenario"]["family_scheme_income"] is None, (
-        "a household total must not be recorded as one person's claimant_amount -- "
-        "see PR #16's second review round"
+    verified amount. Checks all three cases: an earlier revision of this
+    test checked only Rahui and asserted the other two were "the same fix
+    applied identically" without actually verifying that, which would not
+    have caught a regression reintroducing the mistake in just one of the
+    other two (PR #17's own review finding)."""
+    case_ids = (
+        "ird_ftc_rahui_partnered_combined_income_not_individually_verified",
+        "ird_ftc_iwtc_claire_laura_partnered_abatement_carryover",
+        "ird_faraj_in_year_birth_fails_whole_year_domain",
     )
+    for case_id in case_ids:
+        case = load_wff_benchmark_case(case_id)
+        assert case["scenario"]["family_scheme_income"] is None, (
+            f"{case_id}: a household total must not be recorded as one person's "
+            "claimant_amount -- see PR #16's second review round"
+        )
 
 
 def test_child_born_in_year_is_not_marked_qualifying_whole_year() -> None:

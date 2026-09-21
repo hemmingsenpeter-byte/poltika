@@ -32,6 +32,8 @@ poltika/
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 ├── review_packets/     — assembled review packet template/instances
 ├── reviews/           — review and discrepancy records
+├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
+│                         clean-room comparative review of NZ policy-modelling projects
 │
 ├── src/poltika/
 │   ├── common/            — errors.py (exception hierarchy)
@@ -49,9 +51,12 @@ poltika/
 ```
 
 Only `src/poltika/{data,scenarios,llm}` and `tests/{integration,fixtures}`,
-plus everything under `data/`, `config/`, `docs/`, and `scripts/`, remain
-undone from the target tree below — created incrementally as the
-BUILD_PLAN.md tasks that need them are reached, not all at once.
+plus everything under `data/`, `config/`, and `scripts/`, remain undone
+from the target tree below — created incrementally as the BUILD_PLAN.md
+tasks that need them are reached, not all at once. `docs/` is partially
+instantiated: `docs/research/` (above) already holds two files; the
+target tree's `docs/{data_model.md,policy_model.md,provenance.md,
+assurance.md,glossary.md}` specification files do not exist yet.
 `src/poltika/engines/{assurance,discovery,hypothesis}` are correctly still
 empty placeholders; see below.
 
@@ -61,6 +66,7 @@ empty placeholders; see below.
 poltika/
 │
 ├── docs/
+│   ├── research/       — already instantiated; see "Instantiated today" above
 │   ├── data_model.md
 │   ├── policy_model.md
 │   ├── provenance.md
