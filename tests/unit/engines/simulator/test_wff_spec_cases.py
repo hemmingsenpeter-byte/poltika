@@ -129,6 +129,16 @@ def test_wff_spec_case(case: dict[str, Any]) -> None:
         "best_start": result.best_start,
     }
 
+    # A case whose `expected` block omits a component previously passed
+    # silently -- the loop below only ever checked the keys present, so a
+    # missing or misspelled component id was never actually asserted on.
+    # Every case must cover all four components explicitly, even when a
+    # component isn't the point of that case, so nothing goes unchecked.
+    assert set(case["expected"].keys()) == set(component_results.keys()), (
+        f"{case['id']}: expected block must cover exactly "
+        f"{sorted(component_results.keys())}, got {sorted(case['expected'].keys())}"
+    )
+
     for component_id, expected in case["expected"].items():
         actual = component_results[component_id]
         assert actual.outcome == expected["outcome"], (

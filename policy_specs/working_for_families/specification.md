@@ -523,7 +523,7 @@ gives a second policy to generalise against, per the Architecture Doctrine's
 
 ## Task 13 implementation note (Claude Code, 2026-09-21)
 
-`spec_cases.yaml` (`status: pending_review`) records 22 independently
+`spec_cases.yaml` (`status: pending_review`) records 23 independently
 hand-calculated spec-test cases per ADR-0005's design and
 doctrine/test-doctrine.md's "Spec tests" class -- expected values live in
 that protected YAML file, not hardcoded in
@@ -538,7 +538,7 @@ $7920.725 result), that is expected convergent verification from two
 independently derived sources, not evidence either was copied from the
 other.
 
-All 22 cases run against the real, approved `policy.yaml`
+All 23 cases run against the real, approved `policy.yaml`
 (`policy_version: "0.1.0"`), pinned via the loader's
 `requested_policy_version` check so a future policy-version bump without a
 matching `spec_cases.yaml` update fails loudly rather than silently
@@ -546,6 +546,33 @@ comparing against the wrong parameters. `in_work_tax_credit` is
 `needs_review` in most cases by design -- `in_work_base`'s live
 `review_status: needs_review` (Task 10.2's rate-status contract) is a real,
 current legal fact about the approved spec, not a test gap to work around
--- except in the one case (`in_work_eligibility_excluded_is_unsupported_
-not_needs_review`) that demonstrates a known, evidenced exclusion is
+-- except in the two cases (`in_work_eligibility_excluded_is_unsupported_
+not_needs_review`, `md14_15_protected_credit_excludes_ftc_and_iwtc_not_
+mftc_or_best_start`) that demonstrate a known, evidenced exclusion is
 checked, and reported, before that parameter-level gate is ever reached.
+
+### Task 13 fresh-context review findings (GPT/Codex, PR #15) -- resolved 2026-09-22
+
+Two findings, both independently verified before fixing:
+
+1. **Missing MD 14/15 case.** The coverage list above claimed an MD 14/15
+   spec case, but no case actually set
+   `ftc_iwtc_protected_or_direct_abatement: excluded` -- confirmed by
+   grepping `spec_cases.yaml` directly. Added
+   `md14_15_protected_credit_excludes_ftc_and_iwtc_not_mftc_or_best_start`:
+   family tax credit and in-work tax credit `unsupported`, minimum family
+   tax credit and Best Start unaffected, per specification.md's own step 2
+   ("An established MD 14/15 protected month is unsupported for this
+   component") and step 3's linked direct-abatement pathway.
+2. **Silent pass on an incomplete `expected` block.** The test runner's
+   loop (`for component_id, expected in case["expected"].items()`) only
+   ever checked whichever component keys a case happened to include -- a
+   case whose `expected` block omitted or misspelled a component would
+   pass without that component ever being asserted on. Fixed with an
+   explicit completeness check (`set(case["expected"].keys()) ==
+   {the four component ids}`) before the per-component loop runs,
+   confirmed to actually fail by manually truncating a case's `expected`
+   block and re-running before committing the fix.
+
+23 cases total (up from 22), 96 tests (up from 95).
+`pytest`/`ruff`/`mypy --strict` all re-verified passing.

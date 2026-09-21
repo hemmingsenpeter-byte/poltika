@@ -672,6 +672,47 @@ spec_cases:
       week v0.1 branch, and specific to minimum family tax credit's own
       full-time-earner test.
 
+  - id: md14_15_protected_credit_excludes_ftc_and_iwtc_not_mftc_or_best_start
+    description: >
+      MD 14/15 protected family-tax-credit case (and the linked in-work
+      direct-abatement pathway) -- affects only family tax credit and
+      in-work tax credit, not minimum family tax credit or Best Start.
+    modelled_date: 2026-06-01
+    policy_version: "0.1.0"
+    scenario:
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: "30000"}
+      net_family_scheme_income: "30000"
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: excluded
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - qualifies_whole_year: verified
+          best_start_cohort: outside_best_start_entitlement
+          best_start_no_disqualifying_payment: verified
+    expected:
+      family_tax_credit: {outcome: unsupported}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      best_start: {outcome: calculated, value: "0"}
+    source_note: >
+      specification.md step 2: "Do not apply this ordinary formula to MD
+      14 protected-credit or per-child government-payment cases. An
+      established MD 14/15 protected month is unsupported for this
+      component" -- and step 3 links the in-work direct-abatement pathway
+      to the same protected-credit determination (a claimant who cannot
+      receive family tax credit for a child due to a different payment).
+      Neither MD 14/15 nor the direct-abatement pathway is named for
+      minimum family tax credit (WFF-05, a separate ME 1-3 mechanism) or
+      Best Start (WFF-06, MG 1-4), so both calculate normally.
+
   - id: mc6a_veterans_payment_excludes_ftc_iwtc_best_start_not_mftc
     description: >
       MC 6(a) veterans' payment -- excludes family tax credit, in-work tax
