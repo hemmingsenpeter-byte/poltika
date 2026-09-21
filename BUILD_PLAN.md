@@ -284,12 +284,16 @@ twin of the New Zealand policy system.
     Administration Act s 80KW's extra-instalment exception, MG 4's protected
     Best Start boundary, MC 6(c)'s same-child payment exclusions, and
     correction of the repealed MB 14 inventory row.
-    **Still open:** independent review of PR
-    #8, the remaining relevant MB/MC full-text checks and any exception
-    issues that review finds, a fresh reversal-Order
-    check at implementation time (none found on 21 September 2026), and
-    Pete's final acceptance. Task 10 is not complete and the policy is not
-    executable until that final review and acceptance are recorded.
+    PR #8 independently reviewed (all four highest-risk new claims —
+    s 80KW, the MB 14 repeal, MB 13's $5,000 exception, MC 6(c) — confirmed
+    against full statute text, not just cited) and merged 21 September 2026
+    as a further reviewed draft, `e67ae56`; `status: draft_pending_review`
+    and `policy_version: null` unchanged by the merge. **Still open:** the
+    remaining relevant MB/MC full-text checks and any exception issues that
+    turns up, a fresh reversal-Order check at implementation time (none
+    found as of 21 September 2026), and Pete's final acceptance. Task 10 is
+    not complete and the policy is not executable until that final review
+    and acceptance are recorded.
 10a. Identify the minimum authoritative external statistical datasets the WFF
     vertical actually needs (beyond the legislated rates already captured in
     sources.yaml/specification.md, if any); manually acquire and freeze each
