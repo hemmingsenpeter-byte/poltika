@@ -564,7 +564,49 @@ twin of the New Zealand policy system.
     specification.md's "Task 14 acceptance" note.
 15. Build regression tests, including the frozen dataset-snapshot fixtures
     from Task 10b: same scenario + same snapshot must yield the same
-    deterministic result
+    deterministic result — Claude Code implements, GPT/Codex gives
+    fresh-context review, Pete merges/accepts (same rotation as Tasks
+    11-14). Task 10b was closed N/A for WFF (no external statistical
+    dataset needed), so the dataset-snapshot half of this task has nothing
+    to build yet for WFF; it applies once Accommodation Supplement's Task
+    22a introduces a real Stats NZ snapshot. What WFF's Task 15 does own:
+    doctrine/test-doctrine.md's "Regression tests for known historical
+    issues" — this project already has a documented list of exactly that,
+    from Tasks 12-14's own review cycles.
+    - **15.1** Inventory the known historical issues to protect against,
+      each traceable to the PR/finding that caught it: the MD 2(2)(c)
+      abatement-carryover bug where in-work tax credit would have
+      silently assumed zero remaining abatement (Task 12, caught before
+      review); the Best Start false-zero bug conflating "outside this
+      narrow branch" with "verified zero" (Task 12, PR #14 first
+      re-review); the two partner-income-verification gaps -- missing
+      partner income, and unknown partner status blocking minimum family
+      tax credit specifically (Task 12, PR #14 second and third
+      re-reviews); the missing MD 14/15 spec case and the spec-case
+      `expected`-block completeness gap (Task 13, PR #15); and the
+      benchmark-specific scenario errors -- a household income mislabelled
+      as one person's individually verified amount, and a child marked as
+      qualifying for the whole tax year despite a stated in-year birth
+      date (Task 14, PR #16 second round).
+    - **15.2** Decide where these live: a new `tests/regression/`
+      directory (already reserved, unpopulated, in
+      REPOSITORY_STRUCTURE.md's target tree) holding one test per named
+      historical issue, distinct from `spec_cases.yaml`/`benchmarks.yaml`'s
+      per-policy-question framing. Reuse the existing scenario fixtures
+      from those two files where the same scenario already exercises the
+      issue, rather than duplicating fixture data; construct a new,
+      minimal, targeted scenario only where no existing case isolates the
+      specific defect.
+    - **15.3** Implement one regression test per issue from 15.1, each
+      named after and docstring-linked to its defect and originating
+      PR/finding, asserting specifically the behaviour that was wrong
+      before the fix (not a restatement of the general spec/benchmark
+      case).
+    - **15.4** Confirm explicitly, in the test file or its documentation,
+      that Task 10b's dataset-snapshot-fixture requirement is intentionally
+      not addressed here for WFF, and is not a gap.
+    - **15.5** Test until satisfied, self-review anticipating GPT/Codex
+      flags, open the PR for fresh-context review before Pete merges.
 16. External coverage-gap check (OpenFisca test names, strictly after suite
     completion) — return to primary sources for any gap found
 17. Independent adversarial review (fresh-context, no implementer explanation)
