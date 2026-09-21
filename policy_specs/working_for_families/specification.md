@@ -543,13 +543,22 @@ All 23 cases run against the real, approved `policy.yaml`
 `requested_policy_version` check so a future policy-version bump without a
 matching `spec_cases.yaml` update fails loudly rather than silently
 comparing against the wrong parameters. `in_work_tax_credit` is
-`needs_review` in most cases by design -- `in_work_base`'s live
+`needs_review` in 17 of the 23 cases by design -- `in_work_base`'s live
 `review_status: needs_review` (Task 10.2's rate-status contract) is a real,
-current legal fact about the approved spec, not a test gap to work around
--- except in the two cases (`in_work_eligibility_excluded_is_unsupported_
-not_needs_review`, `md14_15_protected_credit_excludes_ftc_and_iwtc_not_
-mftc_or_best_start`) that demonstrate a known, evidenced exclusion is
-checked, and reported, before that parameter-level gate is ever reached.
+current legal fact about the approved spec, not a test gap to work around.
+In the other 6 cases it is `unsupported` instead: either a household-wide
+gate already makes every component `unsupported`
+(`household_eligibility_excluded_is_unsupported`,
+`s80kw_extra_instalment_is_unsupported`), or a component-specific known,
+evidenced exclusion is checked and reported before that parameter-level
+gate is ever reached
+(`md14_15_protected_credit_excludes_ftc_and_iwtc_not_mftc_or_best_start`,
+`mc6a_veterans_payment_excludes_ftc_iwtc_best_start_not_mftc`,
+`mc6b_disqualifying_payment_excludes_iwtc_mftc_not_ftc_or_best_start`,
+`in_work_eligibility_excluded_is_unsupported_not_needs_review`). No case
+has `in_work_tax_credit: calculated` -- the live `in_work_base` gate makes
+that outcome unreachable against the real approved spec at any date within
+its 2026-04-01..2027-04-01 interval, by design.
 
 ### Task 13 fresh-context review findings (GPT/Codex, PR #15) -- resolved 2026-09-22
 
