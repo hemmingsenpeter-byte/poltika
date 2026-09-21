@@ -140,10 +140,42 @@ parameters:
       - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.21, source_id: wff-income-tax-act, locator: 'section MG 3', review_status: approved}
 
 components:
-  - {id: family_tax_credit, source_rule_ids: [WFF-01, WFF-02, WFF-03, WFF-07, WFF-08], output_id: family_tax_credit_annual}
-  - {id: in_work_tax_credit, source_rule_ids: [WFF-01, WFF-02, WFF-04, WFF-08], output_id: in_work_tax_credit_annual}
-  - {id: minimum_family_tax_credit, source_rule_ids: [WFF-01, WFF-05, WFF-08], output_id: minimum_family_tax_credit_annual}
-  - {id: best_start, source_rule_ids: [WFF-01, WFF-06, WFF-07], output_id: best_start_annual}
+  - id: family_tax_credit
+    source_rule_ids: [WFF-01, WFF-02, WFF-03, WFF-07, WFF-08]
+    output_id: family_tax_credit_annual
+    # Task 10.3 finding: consolidate this component's known exclusion
+    # triggers here (previously prose-only across the calculation sequence)
+    # so an implementer working from policy.yaml alone can't miss one.
+    validation_checks:
+      - mc6a_veterans_payment
+      - md14_15_protected_credit
+      - s80kw_extra_instalment
+  - id: in_work_tax_credit
+    source_rule_ids: [WFF-01, WFF-02, WFF-04, WFF-08]
+    output_id: in_work_tax_credit_annual
+    validation_checks:
+      - mc6a_veterans_payment
+      - mc6b_disqualifying_payment
+      - md14_15_protected_credit_or_direct_abatement_pathway
+      - in_work_eligibility
+      - s80kw_extra_instalment
+  - id: minimum_family_tax_credit
+    source_rule_ids: [WFF-01, WFF-05, WFF-08]
+    output_id: minimum_family_tax_credit_annual
+    validation_checks:
+      - mc6b_disqualifying_payment
+      - me2_2_4_employment_exclusion
+      - me3_net_income_attestation
+      - s80kw_extra_instalment
+  - id: best_start
+    source_rule_ids: [WFF-01, WFF-06, WFF-07]
+    output_id: best_start_annual
+    validation_checks:
+      - mc6a_veterans_payment
+      - mc6c_disqualifying_payment
+      - mg4_protected_credit
+      - shared_care
+      - s80kw_extra_instalment
 
 outputs:
   unit: NZD_per_tax_year

@@ -404,6 +404,53 @@ twin of the New Zealand policy system.
     Task 10.3 (MD 14/15, the in-work direct-abatement path, ME 2(2)-(4),
     MG 4, and s 80KW); enforce the dated in-work Order status from sourced
     policy state, never a live network call from the deterministic core.
+    **Complete 21 September 2026, PR #14 pending re-review:**
+    `src/poltika/engines/simulator/wff.py` -- a pure function taking a
+    `WffScenario` of canonical facts and a Task-11 `PolicyParameterSet`,
+    returning per-component `calculated`/`needs_review`/`unsupported` with a
+    reason for all four components (family tax credit, in-work tax credit,
+    minimum family tax credit, Best Start); `total_annual_entitlement()`
+    sums only when every component is `calculated`. `policy.yaml`'s
+    `components[]` entries now each carry `validation_checks` naming their
+    known exclusion triggers, closing the Task 10.3/10.4 obligation.
+    GPT/Codex's fresh-context Task 12 review found three further issues,
+    each independently verified against primary sources before fixing (see
+    specification.md's "Task 12 fresh-context review findings" for detail):
+    minimum family tax credit had no MC 6(b) check at all, though the
+    official Act text (checked directly, 2026-09-21) confirms MC 6(b)
+    excludes both in-work and minimum family tax credit; a Best Start child
+    outside the narrow v0.1 birth cohort defaulted to a calculated zero
+    instead of `unsupported`, though specification.md already said later
+    cohorts "require separate review"; and a partnered household's
+    `family_scheme_income` could be supplied as one unverified combined
+    `Decimal` instead of going through specification.md's required
+    per-person verification. All three fixed with dedicated types
+    (`mc6b_disqualifying_payment`, `BestStartCohort`, `VerifiedIncome`) and
+    targeted tests. A second re-review pass then found `VerifiedIncome`
+    alone still couldn't distinguish a genuinely single claimant from a
+    partnered claimant whose partner's income was never verified --
+    `partner_amount is None` looked the same either way, so a partnered
+    household could still produce a numeric result from the claimant's
+    income alone. Fixed with an independent `PartnerStatus`
+    (`SINGLE`/`PARTNERED`/`UNKNOWN`, defaulting to `UNKNOWN`) plus a
+    `_partner_income_gap_reason()` check on family tax credit and Best
+    Start. 70 tests (`tests/unit/engines/simulator/test_wff.py`, up from
+    58): the ordinary full-year branch with hand-derived exact-decimal
+    expected values (including the half-cent MD 13 case), every
+    unsupported/needs_review trigger individually and in precedence
+    combinations, the MD 2(2)(c) abatement-carryover interaction between
+    family and in-work tax credit (including a caught-and-fixed bug where
+    in-work tax credit would have silently assumed zero remaining abatement
+    whenever family tax credit itself could not be calculated), the real
+    approved WFF `policy.yaml`'s live `in_work_base` needs_review gate,
+    rejection of structurally malformed negative income, and the
+    missing-partner-income/unknown-partner-status cases above. A third
+    re-review pass found `PartnerStatus.UNKNOWN` still let minimum family
+    tax credit return a number, though specification.md's own text ties its
+    MA 7 full-time-earner threshold to single (20 hours) vs partnered (30
+    combined hours) status -- fixed with a direct `partner_status` check in
+    `_minimum_family_tax_credit()`. 71 tests total, up from 70.
+    `pytest`/`ruff`/`mypy --strict` all pass.
 13. Build spec tests
 14. Build benchmark tests (against independently published IRD examples)
 15. Build regression tests, including the frozen dataset-snapshot fixtures
