@@ -691,3 +691,43 @@ Three findings, each independently verified before fixing:
    that narrow boundary to specification.md, not to IRD.
 
 `pytest`/`ruff`/`mypy --strict` all re-verified passing.
+
+### Task 14 second re-review finding (GPT/Codex, PR #16) -- resolved 2026-09-22
+
+Two source-to-scenario correctness issues, both independently verified
+before fixing:
+
+1. **Faraj's child marked as qualifying for the whole tax year despite an
+   in-year birth date.** IRD states directly: "Baby Azra is born on 1 June
+   2026." The 2026-27 tax year runs 2026-04-01 to 2027-03-31, so Azra was
+   not in the claimant's care for the whole tax year -- specification.md's
+   v0.1 domain requires exactly that ("under 18 ... throughout the tax
+   year"). The case had `children[].qualifies_whole_year: verified`,
+   which is wrong on the example's own stated fact. Fixed to `excluded`;
+   because the household gate applies to every component before any
+   component-specific logic runs, this makes all four components
+   `unsupported`, not only Best Start as the case previously asserted --
+   `benchmarked_components` widened accordingly, and the case renamed from
+   `ird_best_start_faraj_child_outside_narrow_cohort` to
+   `ird_faraj_in_year_birth_fails_whole_year_domain` to describe what it
+   now actually demonstrates. The Best Start birth-cohort mechanism this
+   case previously exercised is covered in isolation by `spec_cases.yaml`
+   instead (Task 13).
+2. **Three partnered cases (Rahui, Claire & Laura, Faraj) put a published
+   household income into `claimant_amount`.** Each example states only a
+   combined family income (e.g. Rahui: "the family income for the year is
+   $100,000"), never either partner's individual amount, and each case's
+   scenario correctly reflected that by omitting `partner_amount` --  but
+   put the household total directly into `family_scheme_income.
+   claimant_amount`, which misrepresents a combined figure as one person's
+   individually verified amount. `VerifiedIncome.claimant_amount` means
+   specifically the claimant's own verified amount; IRD's examples do not
+   establish what either partner's individual amount is. Fixed to
+   `family_scheme_income: null` in all three cases -- neither partner's
+   individually verified amount is known, which is the honest
+   representation and resolves via the ordinary "family_scheme_income not
+   verified" path rather than the more specific (and here, inaccurate)
+   partner-income-gap path.
+
+108/108 tests, `ruff`, and `mypy --strict` all re-verified passing (no
+change to any other case's scenario or expected values).

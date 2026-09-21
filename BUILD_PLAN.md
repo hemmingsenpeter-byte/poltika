@@ -522,9 +522,11 @@ twin of the New Zealand policy system.
     (demonstrating the Task 12 PR #14 partner-verification fix against a
     real example, not a self-authored one); Brooklyn's example is the
     direct-abatement pathway specification.md marks unsupported in v0.1;
-    the Faraj family's Best Start example has a child born outside the
-    narrow v0.1 cohort (demonstrating the Task 12 false-zero fix against a
-    real example). Casey's self-employment-plus-salary eligibility was
+    the Faraj family's example has a child (Azra) IRD states was born
+    1 June 2026, partway through the 2026-27 tax year -- she does not
+    qualify for the whole tax year, so the household gate makes all four
+    components `unsupported`, not only Best Start as an earlier revision
+    claimed (PR #16's second review round). Casey's self-employment-plus-salary eligibility was
     initially assumed out of scope by loose analogy with
     specification.md's own in-work tax credit domain paragraph (a v0.1
     scope decision, not an IRD rule -- IRD's in-work tax credit page

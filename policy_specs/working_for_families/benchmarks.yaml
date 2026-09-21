@@ -397,7 +397,7 @@ benchmarks:
       household_eligibility: verified
       extra_instalment_status: verified
       partner_status: partnered
-      family_scheme_income: {claimant_amount: "100000"}
+      family_scheme_income: null
       net_family_scheme_income: null
       net_family_scheme_income_me3_attested: false
       in_work_eligibility: unknown
@@ -430,16 +430,24 @@ benchmarks:
       Both partners work and the family income for the year is
       $100,000... the Rahui family's full-year entitlement [is] $5,676.50"
       -- a real published number this benchmark deliberately does NOT
-      assert, because IRD gives only the combined $100,000 figure, never
-      each partner's individually verified amount specification.md's
-      domain requires before the combined-income branch may be used (Task
-      12 PR #14's second review finding). The correct, honest output of
-      our approved v0.1 domain for this real published scenario is
-      needs_review, not IRD's $5,676.50 -- treating a combined-only figure
-      as sufficient would silently reintroduce the exact gap that finding
-      closed. This is the point of the case: demonstrating the
-      verification requirement holds even against a real official example
-      that doesn't happen to supply it, not a numeric cross-check.
+      assert. IRD's $100,000 is a HOUSEHOLD total, not attributable to
+      either partner individually; earlier versions of this case put it
+      directly into `family_scheme_income.claimant_amount`, which
+      misrepresented a combined figure as one person's individually
+      verified amount (PR #16 review finding) -- `VerifiedIncome.
+      claimant_amount` means specifically the claimant's own verified
+      amount, and IRD's example does not establish what either partner's
+      individual amount is. `family_scheme_income: null` is the honest
+      representation: neither partner's individually verified amount is
+      known, so specification.md's requirement that "the verification must
+      also show each person's family-scheme income and their combined
+      amount" before the combined-income branch may be used (Task 12 PR
+      #14's second review finding) is not met, and family_tax_credit
+      resolves needs_review via the ordinary "family_scheme_income not
+      verified" path -- not IRD's $5,676.50. This is the point of the
+      case: demonstrating the verification requirement holds even against
+      a real official example that doesn't happen to supply it, not a
+      numeric cross-check.
 
   - id: ird_ftc_iwtc_claire_laura_partnered_abatement_carryover
     ird_source: wff-ird-family-tax-credit
@@ -451,7 +459,7 @@ benchmarks:
       household_eligibility: verified
       extra_instalment_status: verified
       partner_status: partnered
-      family_scheme_income: {claimant_amount: "100000"}
+      family_scheme_income: null
       net_family_scheme_income: null
       net_family_scheme_income_me3_attested: false
       in_work_eligibility: unknown
@@ -488,13 +496,17 @@ benchmarks:
       published, cross-page confirmation of exactly the MD 2(2)(c)
       abatement-carryover mechanism `calculate_wff()` implements. Not
       asserted numerically for the same reason as the Rahui case above:
-      only a combined $100,000 figure is published, never each partner's
-      individual amount, so our calculator correctly returns needs_review
-      for both credits rather than the two IRD-stated figures -- the
-      MD 2(2)(c) carryover mechanism itself is independently confirmed
-      against real numbers by test_wff.py's synthetic-fixture unit tests
-      instead (Task 12), which is not constrained by this same
-      partner-verification gap.
+      IRD's $100,000 is a household total, not either partner's
+      individually verified amount -- `family_scheme_income: null` is the
+      honest representation (an earlier revision incorrectly put the
+      household figure into `claimant_amount`, misrepresenting it as one
+      person's amount; PR #16 review finding). Our calculator correctly
+      returns needs_review for both credits via the ordinary
+      "family_scheme_income not verified" path, rather than the two
+      IRD-stated figures -- the MD 2(2)(c) carryover mechanism itself is
+      independently confirmed against real numbers by test_wff.py's
+      synthetic-fixture unit tests instead (Task 12), which is not
+      constrained by this same partner-verification gap.
 
   - id: ird_iwtc_brooklyn_direct_abatement_pathway_out_of_scope
     ird_source: wff-ird-in-work-tax-credit
@@ -553,17 +565,17 @@ benchmarks:
       declines to compute it in this scope, rather than reproducing the
       alternate formula IRD applies for this pathway.
 
-  - id: ird_best_start_faraj_child_outside_narrow_cohort
+  - id: ird_faraj_in_year_birth_fails_whole_year_domain
     ird_source: wff-ird-best-start
     ird_example_name: "When the Faraj family's Best Start payments start"
     outcome_kind: scope_boundary
-    benchmarked_components: [best_start]
+    benchmarked_components: [family_tax_credit, in_work_tax_credit, minimum_family_tax_credit, best_start]
     modelled_date: 2026-06-01
     scenario:
       household_eligibility: verified
       extra_instalment_status: verified
       partner_status: partnered
-      family_scheme_income: {claimant_amount: "83500"}
+      family_scheme_income: null
       net_family_scheme_income: null
       net_family_scheme_income_me3_attested: false
       in_work_eligibility: unknown
@@ -574,7 +586,7 @@ benchmarks:
       best_start_no_shared_care: verified
       best_start_protected_credit: verified
       children:
-        - qualifies_whole_year: verified
+        - qualifies_whole_year: excluded
           best_start_cohort: other_cohort_unsupported
           best_start_no_disqualifying_payment: unknown
     assumed_facts:
@@ -585,27 +597,37 @@ benchmarks:
       - "mc6b_disqualifying_payment"
       - "best_start_no_shared_care"
       - "best_start_protected_credit"
-      - "children[].qualifies_whole_year"
     expected:
-      family_tax_credit: {outcome: needs_review}
-      in_work_tax_credit: {outcome: needs_review}
-      minimum_family_tax_credit: {outcome: needs_review}
+      family_tax_credit: {outcome: unsupported}
+      in_work_tax_credit: {outcome: unsupported}
+      minimum_family_tax_credit: {outcome: unsupported}
       best_start: {outcome: unsupported}
     source_note: >
       IRD: "Samira Faraj and her partner Malik are expecting a baby...
       Baby Azra is born on 1 June 2026... The Faraj family earn $83,500
       for the 2027 tax year... A full entitlement for a year: $4,041 -
       $945 (abatement) = $3,096." Azra's 1 June 2026 birth date is real
-      and stated directly by IRD, not inferred -- it falls after the
-      narrow 2024-04-01..2025-03-31 v0.1 Best Start cohort specification.md
-      scopes ("later birth cohorts... require separate review; do not
-      apply this branch to them"), so `best_start_cohort:
-      other_cohort_unsupported` is a faithful reading of the example, not
-      a fabricated fact. IRD's own $3,096 figure is real statutory law for
-      Azra's actual cohort; it is deliberately not asserted here because
-      it is genuinely outside what this branch calculates -- the case
-      demonstrates `unsupported`, not a false zero, for a real published
-      later-cohort child, the same failure mode Task 12's second PR #14
-      review finding fixed against a self-authored scenario. This is also
+      and stated directly by IRD, not inferred: the 2026-27 tax year runs
+      2026-04-01 to 2027-03-31, so a child born 1 June 2026 was not in the
+      claimant's care for the whole tax year -- specification.md's v0.1
+      domain requires exactly that ("under 18 ... throughout the tax
+      year"). `children[].qualifies_whole_year` is therefore `excluded`,
+      a source-stated fact rather than an assumption (removed from
+      `assumed_facts` for that reason), and PR #16's review correctly
+      identified an earlier revision's `verified` here as wrong. Since a
+      household gate applies to every component before any
+      component-specific logic runs, this now makes ALL FOUR components
+      `unsupported`, not just best_start -- `benchmarked_components`
+      widened accordingly. `best_start_cohort: other_cohort_unsupported`
+      remains an accurate secondary fact about Azra (she is also outside
+      the narrow 2024-04-01..2025-03-31 v0.1 Best Start cohort), but the
+      household gate is reached first and is what actually determines this
+      case's outcome, so the cohort-specific mechanism this case
+      previously claimed to demonstrate is not the one actually exercised
+      here -- that mechanism is exercised in isolation by
+      `spec_cases.yaml`'s own hand-derived Best Start cohort cases
+      instead (Task 13). IRD's own $3,096 figure is real statutory law for
+      Azra's actual case; it is deliberately not asserted here because it
+      is genuinely outside what this v0.1 branch calculates. This is also
       the only Best Start worked example IRD publishes; no in-scope
       numeric Best Start benchmark exists in current IRD guidance.
