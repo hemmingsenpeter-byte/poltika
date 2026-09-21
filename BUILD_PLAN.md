@@ -383,7 +383,13 @@ twin of the New Zealand policy system.
       unresolved-rate cases; assemble the source/spec/diff/test review
       packet.
     - **11.6** Open the implementation PR for GPT/Codex's fresh-context
-      review before Pete merges.
+      review before Pete merges. **11.1-11.5 done, 11.6 in progress 21
+      September 2026:** `src/poltika/policy/loader.py` +
+      `src/poltika/semantics/schemas/policy_spec.py`, 13 tests (9 synthetic
+      fixture cases plus 4 run directly against the real approved WFF
+      `policy.yaml`, confirming `in_work_base` resolves to `needs_review`,
+      never a silent $7,670), `pytest`/`ruff`/`mypy --strict` all pass. PR
+      opened for GPT/Codex's review.
 12. Build pure `calculate_wff()` function. Add component-level
     `validation_checks` for the reviewed exclusion triggers identified in
     Task 10.3 (MD 14/15, the in-work direct-abatement path, ME 2(2)-(4),
