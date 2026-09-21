@@ -10,21 +10,29 @@ sources:
     locator: Subparts MB-MG; especially ss MB 1-14, MC 3-11, MD 3-15, ME 1-3, MG 1-4.
     version_note: Official index showed a latest version as at 2026-09-04 on 2026-09-21.
     verification_status: full_text_review_pending
-    access_note: Official full-page retrieval returned 403 in the initial Task 10 pass; later browser-user-agent fetches enabled direct checks of MD 1, MD 3, MD 10, MD 13, ME 1, and ME 3 (PR #6 review comment 5753283332). Other provisions still need full-text review.
+    access_note: Official full-page retrieval returned 403 in the initial Task 10 pass; later browser-user-agent fetches enabled direct checks of selected MB/MC provisions and MD 1, MD 3-10, MD 13-15, ME 1-3, MF 4L, and MG 1-4 (PR #6 review comment 5753283332 and Task 10 follow-up). Other provisions still need full-text review.
   - id: wff-tax-credit-order-2025
     kind: amending_legislation
     title: Income Tax (Tax Credit) Order 2025
     url: https://www.legislation.govt.nz/regulation/public/2025/0260/latest/whole.html
     covers: Family tax credit, minimum family tax credit, and Best Start rates from 2026-04-01.
-    locator: Clauses 4-6 and application provision.
-    verification_status: full_text_review_pending
+    locator: Clause 2 commencement and clauses 4-6, including their 2026-27-and-later application subclauses.
+    verification_status: relevant_clauses_checked_2026-09-21
   - id: wff-budget-measures-2025
     kind: amending_legislation
     title: Taxation (Budget Measures) Act 2025
     url: https://www.legislation.govt.nz/act/public/2025/26/en/latest/sections/LMS1441509/
     covers: Family tax credit abatement threshold and rate from 2026-04-01.
-    locator: Section 7, amending Income Tax Act s MD 13(3)(a)(i); section 8 for Best Start cohort rule.
-    verification_status: full_text_review_pending
+    locator: Sections 2(5), 7(1)-(3) amending Income Tax Act s MD 13(3)(a)(i)-(ii), and 8 for the Best Start cohort rule.
+    verification_status: relevant_clauses_checked_2026-09-21
+  - id: wff-tax-administration-act
+    kind: legislation
+    title: Tax Administration Act 1994
+    url: https://www.legislation.govt.nz/act/public/1994/166/en/latest/sections/DLM348343/DLM1264739
+    covers: Extra-instalment exception that can alter annual WFF, minimum-family, and Best Start entitlement.
+    locator: Section 80KW(1)-(7), especially the 27-fortnight and 53-week applicability tests and the override formulas.
+    version_note: Official latest version as at 2026-07-01, checked 2026-09-21.
+    verification_status: section_80kw_full_text_checked_2026-09-21
   - id: wff-budget-measures-2026
     kind: future_amending_legislation
     title: Taxation (Budget Measures) Act 2026

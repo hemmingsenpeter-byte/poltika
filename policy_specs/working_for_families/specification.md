@@ -21,11 +21,11 @@ law currently in force, not a substitute for those provisions.
 | WFF-02 | Family scheme income begins with net income and requires the adjustments in subpart MB. It cannot be represented safely as wages alone; relationship periods, partner income, and child support paid or received matter. | Income Tax Act ss MB 1-14; `wff-ird-interpretation-2026`, `wff-ird-family-income`. The adjustment inventory below is a required input-domain checklist. |
 | WFF-03 | Family tax credit uses the eldest-child and additional-child annual amounts, prorated by eligible days. Abatement is based on family scheme income; any excess over family tax credit can reduce in-work tax credit. | Income Tax Act ss MD 1, MD 3, MD 13-15; `wff-ird-family-tax-credit`. Confirm ordering and protected-credit cases in the Act. |
 | WFF-04 | In-work tax credit has additional age, care, residence, benefit-status, and earner conditions. The calculation varies with qualifying children and eligible weeks. | Income Tax Act ss MD 4-10 and MA 7; `wff-ird-in-work-tax-credit`. Distinguish the earner test from the full-time-earner test used for minimum family tax credit. |
-| WFF-05 | Minimum family tax credit tops up qualifying after-tax family income for eligible full-time-earner weeks; it is separate from the abating family and in-work credits. | Income Tax Act ss ME 1-3 and MA 7; `wff-ird-minimum-family-tax-credit`. Check the Act's net-family-scheme-income definition before implementing a tax calculation. |
-| WFF-06 | Best Start is a per-child credit during the first three years. Paid parental leave defers payment. For children born before 1 April 2026, the first year is exempt from income abatement; later birth cohorts can be abated from their first year. | Income Tax Act ss MG 1-4; `wff-ird-best-start`, `wff-budget-measures-2025`. Confirm partial-year, birth-date, and protected-credit cases. |
+| WFF-05 | Minimum family tax credit tops up qualifying after-tax family income for eligible full-time-earner weeks; it is separate from the abating family and in-work credits. | Income Tax Act ss MA 7 and ME 1-3; `wff-ird-minimum-family-tax-credit`. Full-time-earner hours and ME 2 employment exclusions must be checked separately from the in-work earner test. |
+| WFF-06 | Best Start is a per-child credit during the first three years. Same-child parental leave or preterm baby payments, parental tax credit, and specified veterans' payments can exclude entitlement for a period under MC 6(c). For children born before 1 April 2026, the first year is exempt from income abatement; later birth cohorts can be abated from their first year. | Income Tax Act ss MC 6(c), MG 1-4; `wff-ird-best-start`, `wff-budget-measures-2025`. Confirm partial-year, birth-date, and protected-credit cases. |
 | WFF-07 | Shared care is component-specific. IRD describes a principal-care threshold of 122 days per year or a third of a four-month period and different apportionment for family tax credit/Best Start, in-work tax credit, and minimum family tax credit. | Income Tax Act ss MC 9-11 and component provisions; `wff-ird-shared-care`. Its examples use older rates, so do not promote their amounts to 2026 benchmarks. |
 | WFF-08 | A main benefit may coexist with family tax credit and Best Start but normally prevents in-work and minimum family tax credit. Payment source can be IRD or MSD. | Income Tax Act ss MD 8, MD 14, MG 4; `wff-ird-government-payments`. Verify exceptions and the protected-credit monthly calculation. |
-| WFF-09 | Instalment payments and annual entitlement are distinct. IRD describes weekly/fortnightly instalments as annual entitlement divided by 52/26 and rounded down to whole dollars. | Income Tax Act subpart MF; `wff-ird-family-tax-credit`, `wff-ird-best-start`. Check exact statutory instalment treatment and mid-year changes. |
+| WFF-09 | Instalment payments and annual entitlement are generally distinct. IRD describes weekly/fortnightly instalments as annual entitlement divided by 52/26 and rounded down to whole dollars, but an extra-instalment year can also alter annual entitlement. | Income Tax Act subpart MF; Tax Administration Act s 80KW (`wff-tax-administration-act`); `wff-ird-family-tax-credit`, `wff-ird-best-start`. Check payment schedule and mid-year changes. |
 
 ## Family scheme income adjustment inventory
 
@@ -41,7 +41,7 @@ otherwise a supplied `family_income` cannot be treated as derived by Poltika.
 | MB 7, 7B-8 | Settlor-attributable trust income and employment/fringe benefits (including controlling-shareholder cases) are distinct adjustments. |
 | MB 9-10 | MB 9 is repealed; specified exempt pensions and annuities have a half-inclusion rule under MB 10. |
 | MB 11-12B | Dependent-child passive income above the $500 threshold, non-resident foreign-sourced income, and non-beneficiary trust distributions each have their own tests. |
-| MB 13-14 | Other family-support payments can be included when the statutory threshold is met; remission income of a discharged bankrupt is excluded. |
+| MB 13-14 | MB 13 includes qualifying other payments subject to its exclusions and a $5,000 total-value exception (payments of $5,000 or less are not included under MB 13(1)). MB 14's former remission-income exclusion is repealed; do not apply it as a current adjustment. |
 
 IRD also requires the claimant and partner's income, child support received and
 paid, and relevant worldwide income of a non-resident partner to be handled as
@@ -102,9 +102,10 @@ increase; use the revision recorded in `sources.yaml` and preserve its date.
 This section is a proposed implementation contract, separate from the Task 2
 source map above. The companion `policy.yaml` is `draft_pending_review` with
 `policy_version: null`; neither file authorises executable policy content yet.
-The official legislation site exposed indexed provision text but returned 403
-to full-page retrieval during this pass. The pinpoint checks below therefore
-remain independent-review gates, not claims of complete legal verification.
+The official legislation site returned 403 to the initial full-page fetch;
+later browser-user-agent retrieval enabled direct checks of the relevant
+provisions recorded in `sources.yaml`. Unchecked provisions and exceptions
+remain review gates, not claims of complete legal verification.
 
 ### Proposed v0.1 supported domain
 
@@ -124,16 +125,27 @@ salary/wage earner throughout the year, with no main benefit or Student
 Allowance period and no unpaid work break. Self-employment can legally
 qualify, but is outside this first branch until its facts and MD 9 pathway are
 reviewed (`wff-ird-in-work-tax-credit`; Income Tax Act ss MD 4-10). For the
-minimum family component, require documented full-time-earner weeks and a
-separately verified **net** family-scheme-income amount under s ME 3; gross
+minimum family component, require documented full-time-earner weeks under
+MA 7 (at least 20 hours for a single person or 30 combined hours for partners
+per week, subject to ME 2's employment exclusions) and a separately verified
+**net** family-scheme-income amount under s ME 3; gross
 family-scheme income must not be substituted. For Best Start, the first
 calculable branch is one qualifying child born from 1 April 2024 through
-31 March 2025, eligible for the entire tax year, with no paid parental leave
-or shared care. This keeps the birth-cohort and part-period cases explicit
+31 March 2025, eligible for the entire tax year, with no MC 6(c)
+disqualifying payment for that child and no shared care. This keeps the
+birth-cohort and part-period cases explicit
 without guessing their apportionment (WFF-05/06; Income Tax Act ss ME 1-3,
 MG 1-4; `wff-ird-minimum-family-tax-credit`, `wff-ird-best-start`). These
-component branches are **proposals for review**, not an approved reduction of
-WFF's eventual scope.
+component branches define a limited v0.1 scope, not the entitlement of
+households outside that scope.
+
+Pete accepted this narrow v0.1 input boundary on 21 September 2026: stable
+full-year household/care facts, a separately verified family-scheme-income
+input, and a separately verified net family-scheme-income input for MFTC.
+This is a scope decision, not a determination that all calculations below
+are approved. Cases meeting Tax Administration Act s 80KW's 27-fortnight or
+53-week extra-instalment conditions are outside the ordinary full-year branch;
+the payment schedule must be checked, not inferred from the tax-year length.
 
 The calculator must return per-component `calculated`, `unsupported`, or
 `needs_review`, with a reason. Missing eligibility evidence, an unverified
@@ -156,8 +168,9 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    before a full-year result can be claimed. Petrol-price guidance is not
    itself the operative legal instrument
    (`wff-iwtc-increase-act-2026`, ss 2, 105-106; `wff-ird-temporary-increase`).
-2. Validate family membership, qualifying children, residence, care, and
-   family-scheme income. Calculate the full-year family tax credit as $7,921
+2. Validate family membership, qualifying children, residence, care,
+   component-specific MC 6 exclusions, and family-scheme income. Calculate
+   the full-year family tax credit as $7,921
    for the eldest qualifying child plus $6,454 for each additional qualifying
    child. For the ordinary full-year case, abatement is $0.275 times the
    number of **complete dollars** by which family-scheme income exceeds
@@ -177,8 +190,9 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    the separate direct-abatement pathway requires review and is unsupported
    in this draft (WFF-04/08; Income Tax Act ss MD 4-10, 13-15;
    `wff-ird-in-work-tax-credit`).
-4. If minimum-family eligibility and s ME 3 net family-scheme income are
-   independently established, the all-52-week draft amount is the positive
+4. If minimum-family eligibility, MA 7/ME 2 full-time-earner weeks, and
+   s ME 3 net family-scheme income are independently established, the
+   all-52-week draft amount is the positive
    difference between $36,604 and that net income. It does not abate with the
    family/in-work credits and must not be calculated from gross income alone.
    Tax and part-week derivations remain unsupported (WFF-05; Income Tax Act
@@ -187,8 +201,9 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    $4,041. For an abatable year, reduce it by 21 cents per **complete dollar**
    of family-scheme income over $79,000, with a zero floor. First-year
    pre-1-April-2026 births, later birth cohorts, births/third birthdays within
-   the year, paid parental leave, and multiple eligible children require
-   separate review; do not apply this branch to them (WFF-06; Income Tax Act
+   the year, MC 6(c) disqualifying payments, and multiple eligible children require
+   separate review; do not apply this branch to them or to months receiving
+   protected Best Start credit under MG 4 (WFF-06/08; Income Tax Act
    ss MG 1-4; `wff-tax-credit-order-2025`, cl 6;
    `wff-ird-best-start`).
 
@@ -198,7 +213,13 @@ instalment down to a whole dollar; instalments and annual square-up are not
 in the initial calculation output (WFF-09; Income Tax Act subpart MF;
 `wff-ird-family-tax-credit`). Use decimal arithmetic and preserve cents in
 annual results; independently verify any statutory intermediate rounding
-before implementation. No official example is promoted to `benchmarks.yaml`
+before implementation. Section 80KW of the Tax Administration Act can alter
+annual entitlement if the person receives 27 fortnightly or may have received
+53 weekly instalments under the section's all-year payment conditions. If
+that exception applies, return
+`unsupported` in this first branch rather than the ordinary annual amount;
+if its applicability is unknown, return `needs_review` (`wff-tax-administration-act`,
+s 80KW(1)-(7)). No official example is promoted to `benchmarks.yaml`
 or `spec_cases.yaml` by this draft.
 
 ### Review gates and source checks

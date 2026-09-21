@@ -47,7 +47,7 @@ inputs:
     owner: person
     type: dated_income_and_government_payment_facts
     period: full_tax_year
-    source_rule_ids: [WFF-04, WFF-05, WFF-08]
+    source_rule_ids: [WFF-04, WFF-05, WFF-06, WFF-08]
     missing_outcome: needs_review
   - id: net_family_scheme_income
     owner: assessment_unit
@@ -65,6 +65,13 @@ inputs:
     source_rule_ids: [WFF-06]
     required_for: best_start
     missing_outcome: needs_review
+  - id: extra_instalment_status
+    owner: person
+    type: verified_section_80kw_applicability
+    period: full_tax_year
+    source_rule_ids: [WFF-09]
+    missing_outcome: needs_review
+    note: An applicable 27-fortnight or 53-week payment year is outside the ordinary annual branch; do not assume it cannot occur.
 
 parameters:
   - id: family_tax_credit_eldest_child
