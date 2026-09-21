@@ -35,13 +35,13 @@ otherwise a supplied `family_income` cannot be treated as derived by Poltika.
 
 | Provision | Adjustment or classification to preserve |
 | --- | --- |
-| MB 1-2 | Start from net income, allocate income across relationship/employment periods, and annualise income for a non-year period. |
-| MB 3-4 | Business/investment activities and major shareholding in close companies require adjusted income rather than merely taxable wages. |
-| MB 5-6 | Superannuation and retirement-savings distributions have separate inclusion rules. |
-| MB 7, 7B-8 | Settlor-attributable trust income and employment/fringe benefits (including controlling-shareholder cases) are distinct adjustments. |
+| MB 1-2 | Start from net income, allocate employment, main-benefit, and other income across the applicable periods, and annualise income for a non-year period. MB 1 also distinguishes PIE income/distributions, maintenance deductions, and main income-equalisation deposits/refunds. |
+| MB 3-4 | Net-loss business/investment activities are disregarded for this purpose, subject to MB 3's associated-activity and deduction-apportionment rules; major shareholding in close companies requires a separate attributed-income calculation rather than merely taxable wages. |
+| MB 5-6 | Specified superannuation distributions linked to recent employer contributions and specified RSCT-withheld retirement-savings distributions have separate inclusion and timing tests; ordinary distributions must not be treated as automatically included. |
+| MB 7, 7B-8 | Settlor-attributable trust income, specified employment benefits for non-controlling employees, and attributed fringe benefits for controlling shareholders are distinct adjustments with their own exclusions and thresholds. |
 | MB 9-10 | MB 9 is repealed; specified exempt pensions and annuities have a half-inclusion rule under MB 10. |
-| MB 11-12B | Dependent-child passive income above the $500 threshold, non-resident foreign-sourced income, and non-beneficiary trust distributions each have their own tests. |
-| MB 13-14 | MB 13 includes qualifying other payments subject to its exclusions and a $5,000 total-value exception (payments of $5,000 or less are not included under MB 13(1)). MB 14's former remission-income exclusion is repealed; do not apply it as a current adjustment. |
+| MB 11-12B | If the listed dependent-child income types total more than $500, only the excess is allocated across the child's principal caregivers; non-resident partner foreign-sourced income and non-beneficiary, non-settlor trust distributions have separate tests. |
+| MB 13-14 | MB 13 includes qualifying income-replacement/living-expense payments after its specific exclusions. Its $5,000 exception tests the combined otherwise-includable total for the person and their spouse or partner, not each payment or person separately. MB 14's former remission-income exclusion is repealed; do not apply it as a current adjustment. |
 
 IRD also requires the claimant and partner's income, child support received and
 paid, and relevant worldwide income of a non-resident partner to be handled as
@@ -120,6 +120,20 @@ Income Tax Act ss MB 1-14, MC 3-11; `wff-ird-family-income`). This is a
 deliberately narrow input contract, not a claim that other households receive
 no WFF entitlement.
 
+For this branch, the claimant must meet MC 5(2)'s own residence pathway for
+the whole entitlement period: the prior continuous 12-month New Zealand
+residence-and-presence test, daily YD 1 residence, and the transitional-resident
+exclusion must each be verified. The emergency-benefit and child-residence
+alternatives in MC 5(1)/(3) are outside this first branch, not grounds for a
+zero entitlement. All children in this branch are under 18 throughout the tax
+year; MC 9's Commissioner-determined extension for some 18-year-olds is outside
+it. A competing caregiver or an MC 7 case where partners qualify for different
+children also needs a separate determination and is unsupported here. Known
+MC 6(a)-(c) payments must be checked by component and period; absence cannot
+be inferred from a missing payment field. The claimant must also satisfy
+MC 10(1)'s principal-care definition, including its exclusions for certain
+institutional caregivers (WFF-01/06/07; Income Tax Act ss MC 3-10).
+
 For the in-work component, the initial calculable branch requires a qualifying
 salary/wage earner throughout the year, with no main benefit or Student
 Allowance period and no unpaid work break. Self-employment can legally
@@ -169,7 +183,11 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    itself the operative legal instrument
    (`wff-iwtc-increase-act-2026`, ss 2, 105-106; `wff-ird-temporary-increase`).
 2. Validate family membership, qualifying children, residence, care,
-   component-specific MC 6 exclusions, and family-scheme income. Calculate
+   component-specific MC 6 exclusions, the absence of an MC 7 claimant
+   allocation, and family-scheme income. An MC 6(a) veterans' payment can
+   disqualify abating WFF and Best Start for a relationship period, while
+   MC 6(b) and (c) affect different components or children; do not collapse
+   these into one household-wide test. Calculate
    the full-year family tax credit as $7,921
    for the eldest qualifying child plus $6,454 for each additional qualifying
    child. For the ordinary full-year case, abatement is $0.275 times the
@@ -224,14 +242,17 @@ or `spec_cases.yaml` by this draft.
 
 ### Review gates and source checks
 
-- Re-read the operative Income Tax Act Part M version as at the chosen
-  assessment date, particularly MB 1-14, MC 3-11, MD 3-15, ME 1-3, MG 1-4,
-  and MF. Confirm each formula, rounding point, protected-credit exception,
-  and commencement/application clause against full text, not only IRD pages.
-- Verify the 2025 Tax Credit Order clauses 4-6, the 2025 Budget Measures Act
-  s 7, and 2026 annual-rates Act ss 2/105-106. Search secondary legislation
-  for an actual early in-work reversal Order for each modelled date. An
-  unconfirmed order status keeps `in_work_base` at `needs_review`.
+- The relevant MB 1-13 and MC 2-11 provisions were checked against the
+  official 4 September 2026 Act version on 21 September 2026; MB 9 and MB 14
+  are repealed. Recheck the operative version for each later modelled date.
+  Before executable approval, independently review this scoped contract and
+  confirm the remaining MD/MF formula, rounding, and protected-credit paths
+  needed by the calculator against full text, not only IRD pages.
+- The 2025 Tax Credit Order clauses 2/4-6, 2025 Budget Measures Act ss 2/7-8,
+  and 2026 annual-rates Act ss 2/105-106 were checked in the earlier Task 10
+  passes. Search secondary legislation for an actual early in-work reversal
+  Order for each modelled date. An unconfirmed order status keeps
+  `in_work_base` at `needs_review`.
 - Independently test the proposed supported-domain boundary, especially
   whether verified family-scheme income and net family-scheme income are
   acceptable v0.1 canonical inputs. Resolve any genuine scope/interpretation

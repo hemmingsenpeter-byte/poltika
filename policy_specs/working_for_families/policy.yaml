@@ -14,7 +14,13 @@ assessment:
   membership_period: tax_year
   supported_domain: stable_membership_full_tax_year
   source_rule_ids: [WFF-01, WFF-02, WFF-07]
-  unsupported: [relationship_change, shared_care, part_year_child_eligibility]
+  unsupported:
+    - relationship_change
+    - shared_care
+    - part_year_child_eligibility
+    - competing_claimant_or_mc7_allocation
+    - mc9_age_18_extension
+    - mc5_alternative_residence_route
 
 inputs:
   - id: assessment_date
@@ -29,12 +35,14 @@ inputs:
     period: full_tax_year
     source_rule_ids: [WFF-01]
     missing_outcome: needs_review
+    note: Verify the claimant's MC 5(2) residence pathway, including prior 12-month residence/presence, daily residence, and transitional-resident exclusion; also verify MC 10(1) principal-care exclusions. Other MC 5 pathways are outside the initial branch.
   - id: children
     owner: person
     type: list_of_dated_child_facts
     period: full_tax_year
     source_rule_ids: [WFF-01, WFF-06, WFF-07]
     missing_outcome: needs_review
+    note: Initial branch requires each child to remain under 18 and in the claimant's full care throughout the tax year; MC 7 and MC 9 exceptions need separate review.
   - id: family_scheme_income
     owner: assessment_unit
     type: verified_amount
@@ -42,7 +50,7 @@ inputs:
     period: full_tax_year
     source_rule_ids: [WFF-02]
     missing_outcome: needs_review
-    note: Includes applicable subpart MB adjustments; wages alone are insufficient.
+    note: Independently verified for the assessment unit under applicable subpart MB rules, including any partner-wide MB 13 threshold and child-income allocation; wages alone are insufficient.
   - id: work_and_payment_facts
     owner: person
     type: dated_income_and_government_payment_facts
