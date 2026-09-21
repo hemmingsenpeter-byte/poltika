@@ -24,19 +24,41 @@ poltika/
 ├── ROADMAP.md
 ├── CHANGELOG.md
 ├── RESEARCH.md         — external papers/prior art, structural reference only (never a policy source; see doctrine/ip-doctrine.md)
+├── pyproject.toml      — dependencies (Pydantic, PyYAML) and dev tooling (pytest, Ruff, mypy strict)
+├── uv.lock
 │
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
 ├── adr/               — architecture decisions with rationale and context
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 ├── review_packets/     — assembled review packet template/instances
-└── reviews/           — review and discrepancy records
+├── reviews/           — review and discrepancy records
+├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
+│                         clean-room comparative review of NZ policy-modelling projects
+│
+├── src/poltika/
+│   ├── common/            — errors.py (exception hierarchy)
+│   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml)
+│   ├── policy/            — loader.py (Task 11 parameter loader)
+│   └── engines/simulator/ — wff.py (Task 12 calculate_wff())
+│
+└── tests/
+    ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
+    ├── unit/
+    │   ├── policy/         — loader tests (Task 11)
+    │   └── engines/simulator/ — calculator unit tests (Task 12), spec-case and
+    │                            benchmark-case loader/runners (Tasks 13-14)
+    └── regression/         — known-historical-issue tests (Task 15)
 ```
 
-Nothing under `src/`, `data/`, `config/`, `docs/`, `tests/`, or `scripts/`
-exists yet — v0.1 is still in Week 0 (source gathering and schema design,
-BUILD_PLAN.md Tasks 1–9). Those directories are documented below as the
-**target**, to be created incrementally as the tasks that need them are
-reached, not all at once.
+Only `src/poltika/{data,scenarios,llm}` and `tests/{integration,fixtures}`,
+plus everything under `data/`, `config/`, and `scripts/`, remain undone
+from the target tree below — created incrementally as the BUILD_PLAN.md
+tasks that need them are reached, not all at once. `docs/` is partially
+instantiated: `docs/research/` (above) already holds two files; the
+target tree's `docs/{data_model.md,policy_model.md,provenance.md,
+assurance.md,glossary.md}` specification files do not exist yet.
+`src/poltika/engines/{assurance,discovery,hypothesis}` are correctly still
+empty placeholders; see below.
 
 ## Target architecture (create on demand, per task)
 
@@ -44,6 +66,7 @@ reached, not all at once.
 poltika/
 │
 ├── docs/
+│   ├── research/       — already instantiated; see "Instantiated today" above
 │   ├── data_model.md
 │   ├── policy_model.md
 │   ├── provenance.md
