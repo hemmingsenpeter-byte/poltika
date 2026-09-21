@@ -141,22 +141,41 @@ what evidence was considered, who/what decided, when.
 
 ## Roadmap Doctrine (frozen)
 
-v0.1, v0.1.5, and the immediate direction of v0.2 are fixed. Everything after v0.2
-is an ordered *capability* sequence, not a version-numbered one — actual order may
-shift based on development and customer evidence.
+Superseded its original capability-sequence framing per ADR-0008 (2026-09-21):
+v0.1 through v1.0 are now a fully versioned sequence, defined in full in
+`ROADMAP.md` (scope and exit gate per release) — this section states the
+sequence and the dependency reasoning behind its order, not the detail.
 
-Fixed sequence:
-v0.1 (deterministic foundation) → v0.1.5 (evidence intelligence / pilotability) →
-v0.2 (more policies + uncertainty + narrow on-demand Discovery) →
-[capability-driven from here] Hypothesis capability → Assurance capability →
-cross-domain Discovery → fiscal + behavioural modelling → system-wide integration →
-v1.0
+v0.1 (deterministic foundation) → v0.1.5 (evidence intelligence /
+pilotability) → v0.2 (authoritative data foundation) → v0.3 (policy
+interaction graph) → v0.4 (scenario engine) → v0.5 (uncertainty and
+assurance) → v0.6 (Discovery engine) → v0.7 (Hypothesis engine) → v0.8
+(long-term NZ system model) → v0.9 (decision-intelligence product) → v1.0
+(production hardening) → beyond v1.0, an unnumbered capability-track
+sequence (Economic Digital Twin, Physical NZ, Adaptive Digital Twin,
+National Decision Intelligence).
 
-Automated external-data ingestion (a Stats NZ API connector and equivalents)
-is not a fixed-version item — it is a capability-driven addition, available
-wherever a later phase needs it (most directly Assurance capability and
-cross-domain Discovery), that replaces v0.1's manual acquisition beneath the
-same canonical-variable/simulator/Assurance contract without changing it.
+**Why this order, not another:** v0.2→v0.3→v0.4 is strictly
+dependency-ordered — no historical reconstruction or scenario comparison is
+possible without real data (v0.2) and a dependency graph to propagate a
+parameter change through (v0.3) before scenarios can be compared (v0.4).
+v0.5 (Assurance) sits before Discovery/Hypothesis, not after: it hardens the
+deterministic core — backtesting, sensitivity, stress-testing the v0.1–v0.4
+Simulator/Scenario engine — before anything exploratory or uncertain is
+allowed near it, the same "deterministic correctness before probabilistic
+sophistication" principle as the frozen Scope Doctrine, applied one level
+up. v0.6 (Discovery) before v0.7 (Hypothesis) is forced by logic, not a
+style choice: a hypothesis cannot be tested before Discovery has proposed a
+candidate relationship to test it against — the Simulator promotion gate is
+`Discovery → Hypothesis → evidence → validation → human approval → model
+specification → tests → Simulator`, and nothing re-enters the hardened
+Simulator without passing all of it.
+
+The Stats NZ API connector and equivalents are pinned to v0.2 (the
+data-foundation release) rather than left unpinned — this resolves the
+original doctrine's deliberate vagueness about "whichever later phase needs
+it" now that v0.2 concretely is that phase, not a reversal of the
+underlying principle that automation follows real need.
 
 **v1.0 definition (testable, not aspirational):**
 Poltika v1.0 can ingest a structured package of material fiscal and policy changes
