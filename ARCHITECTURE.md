@@ -21,32 +21,153 @@ Poltika does not treat model memory or external implementations as authoritative
 
 ---
 
-## Technology stack (settled)
+## Technology stack
+
+### v0.1, as actually implemented so far
+
+This is what exists in the repo today (Tasks 11-14: parameter loader,
+calculator, spec tests, benchmark tests) — the lean subset the doctrine
+below calls for, not the full long-term target.
 
 | Layer | Stack |
 | --- | --- |
-| Core language | Python |
-| API/backend | FastAPI |
-| Schemas / validation | Pydantic |
-| v0.1 frontend | Streamlit |
-| Later frontend | Next.js + TypeScript |
-| Primary database | PostgreSQL |
-| Data transformation | dbt |
-| Analytical/scratch data | Parquet, with DuckDB as an internal scratch/query tool |
-| Policy parameters | Versioned YAML |
-| Simulation | Deterministic Python domain engines behind a common `DomainEngine` interface |
-| AI layer | Claude or GPT structured-output/tool-use → validated `ScenarioRequest` |
-| Testing | pytest + formula/unit tests + golden/calibration tests + integration tests |
-| Lint/type checking | Ruff + mypy |
-| Containers | Docker / Docker Compose |
-| CI/CD | GitHub Actions |
-| Source control | Git + GitHub |
-| Dependency locking | `uv.lock` or `poetry.lock` |
-| Repo structure | Monorepo |
+| Core language | Python 3.10+ (managed via `uv`) |
+| Schemas / validation | Pydantic v2 |
+| Data format | PyYAML (`policy.yaml`, `spec_cases.yaml`, `benchmarks.yaml`, `sources.yaml`) |
+| Testing | pytest |
+| Lint/type checking | Ruff + mypy (`strict = true`) |
+| Build | setuptools, `src/` layout |
+| CI/CD | GitHub Actions (`statutory-value-guard.yml`, visibility-only) |
 
-**v0.1 scope is deliberately lean:** Python + FastAPI + Pydantic + Streamlit + YAML policy specs + pytest/Ruff/mypy. PostgreSQL, dbt, and Docker infrastructure are brought in only where needed, rather than building a large platform prematurely.
+No API, frontend, or database exists yet — Task 21 ("Add API") is gated on
+the pure calculator passing acceptance, and the frontend/database layers
+below are the target to build toward as later BUILD_PLAN.md tasks reach
+them, not something to start now.
 
-**Not yet frozen:** production cloud provider, observability stack, queue system, and final authentication architecture. Multi-tenant auth in particular is deferred beyond the initial demo.
+### Long-term target stack
+
+Recorded 2026-09-22 (Pete, relaying GPT's stack recommendation) as the
+architecture to build *toward* across v0.1's remaining tasks and beyond —
+this supersedes the previous "v0.1 frontend: Streamlit" line below; the
+decision is to go straight to Next.js rather than build and later replace
+a Streamlit UI. Optimises for four things: **determinism, auditability,
+developer speed, and an architecture that can expand into the
+multi-engine system (ROADMAP.md's v0.3+ Discovery/Hypothesis engines)
+without a rewrite.**
+
+| Layer | Choice | Why |
+| --- | --- | --- |
+| Language | Python 3.13 | Policy modelling, statistics, simulation and data ecosystem |
+| Package/env | `uv` | Fast, simple dependency + virtual-env management |
+| Backend/API | FastAPI + Pydantic v2 | Typed contracts around the deterministic engine |
+| Database | PostgreSQL | Scenarios, parameters, provenance, datasets, model versions |
+| ORM | SQLAlchemy 2 + Alembic | Explicit DB models + migrations |
+| Data processing | Polars + PyArrow | Fast tabular processing without prematurely introducing Spark |
+| Numerical | NumPy + SciPy | Simulation, distributions, sensitivity calculations — **v0.2+ per Scope Doctrine, not v0.1** |
+| Statistical | statsmodels | Transparent statistical modelling where required — **v0.2+**, same reason |
+| Schemas | Pydantic | Canonical variables and engine boundaries |
+| Policy rules | Pure Python functions + declarative YAML/JSON metadata | Rules stay deterministic, testable and inspectable |
+| Graph | NetworkX | Policy interaction graph (ROADMAP.md's v0.3) — don't deploy a graph database |
+| Front end | Next.js + TypeScript | A proper UI, not coupled to Python |
+| UI | Tailwind + shadcn/ui | Fast interface development |
+| Charts | Plotly | Scenario distributions, sensitivities and comparisons |
+| LLM | Provider abstraction over OpenAI/Anthropic APIs | Orchestrates/explains; never calculates — see the invariant below |
+| Testing | pytest + Hypothesis | Unit tests plus property-based testing of policy rules |
+| Quality | Ruff + mypy + pre-commit | Strong Python discipline |
+| Containers | Docker + Docker Compose | Reproducibility |
+| CI/CD | GitHub Actions | Tests/type checks/migrations on every change |
+| Hosting | Cloud Run + Cloud SQL (later) | Don't over-engineer deployment during the first build |
+
+Several rows (NumPy/SciPy, statsmodels, the Discovery/Hypothesis engines
+NetworkX's graph feeds) name capabilities the Scope Doctrine explicitly
+defers past v0.1 ("Deterministic correctness before probabilistic
+sophistication. No Monte Carlo, no sensitivity analysis in v0.1"). Their
+presence in this table records the long-term destination; it is not
+authorization to add them to `pyproject.toml` now. Each is adopted only
+when the BUILD_PLAN.md task that actually needs it is reached, per the
+Architecture Doctrine's "minimum abstraction demanded by two real
+policies" and REPOSITORY_STRUCTURE.md's "create on demand, per task"
+discipline — the same discipline `engines/discovery/` and
+`engines/hypothesis/` are already held to as named-but-unpopulated
+placeholders.
+
+**Deliberately not used in v0.1 or its near-term successors:** Kubernetes,
+Kafka, microservices, Neo4j, Spark, Airflow, vector databases, fine-tuned
+models, multi-agent frameworks (CrewAI, AutoGen), and a general-purpose
+data lake. Each would mainly increase the surface area to build and debug
+before it's earned; any of them may become justified later, but that is a
+new, explicit architecture decision when it happens, not a default.
+Likewise, OpenFisca is not adopted as Poltika's runtime architecture — see
+"OpenFisca Aotearoa / BetterRules" below, unchanged by this stack update.
+
+**Not yet frozen:** production cloud provider (Cloud Run/Cloud SQL above
+is a working assumption, not a commitment), observability stack, queue
+system, and final authentication architecture. Multi-tenant auth in
+particular is deferred beyond the initial demo.
+
+### A modular monolith, not agents, for v0.1
+
+v0.1 is **not** built around autonomous agents talking to each other:
+
+```text
+Agent → Agent → Agent → Agent        (NOT this, for v0.1)
+```
+
+It is a modular Python monolith whose internal module boundaries are
+drawn so that Discovery, Hypothesis, Simulator, and Assurance *can* later
+become independent services or agents without a rewrite — paying that
+distributed-systems tax only when a real capability (ROADMAP.md's v0.6+
+Discovery/Hypothesis engines) actually needs it, not up front. Those
+module boundaries already exist in REPOSITORY_STRUCTURE.md's canonical
+tree (`src/poltika/{data,semantics,policy,engines/{simulator,assurance,
+discovery,hypothesis},scenarios,llm,common}`) — this principle names why
+that tree is shaped the way it is; it does not introduce a second,
+competing tree. The one gap it surfaces: v0.3's policy interaction graph
+(NetworkX, table above) has no named slot yet in REPOSITORY_STRUCTURE.md,
+consistent with that file's "create on demand" discipline — add a `graph/`
+entry there when v0.3 actually needs it, not now.
+
+The layered request path this modular monolith serves:
+
+```text
+Next.js UI
+      │
+      ▼
+FastAPI
+      │
+      ▼
+Application / Orchestration Layer
+      │
+ ┌────┴─────────────────────────────┐
+ │                                  │
+ ▼                                  ▼
+LLM services                  Deterministic Core
+(explain/orchestrate)         (authoritative)
+                                     │
+                      ┌──────────────┼──────────────┐
+                      ▼              ▼              ▼
+                  Policy Rules    Simulation     Assurance
+                      │              │              │
+                      └──────────────┼──────────────┘
+                                     ▼
+                            Semantic Data Layer
+                                     │
+                              PostgreSQL/Data
+```
+
+### The hard invariant
+
+> **LLMs may propose, retrieve, classify, orchestrate and explain. They may
+> not produce authoritative numerical policy outcomes. Every published
+> quantitative result must be reproducible from versioned inputs,
+> deterministic calculation code and recorded assumptions.**
+
+This is not new policy — it is the same rule the "Critical architectural
+rule" section below already enforces (and Tasks 11-14 already built to).
+It is stated here as a named, quotable invariant because it is the single
+rule most load-bearing for Poltika's credibility to Treasury, ministries,
+and other government users: everything else in this document is
+negotiable engineering detail against that baseline.
 
 ### Critical architectural rule: the LLM never calculates policy outcomes
 
@@ -67,7 +188,7 @@ Postgres / versioned parameters
           ↓
 Deterministic result + provenance
           ↓
-Streamlit
+Next.js UI
 ```
 
 Natural language → structured Pydantic `ScenarioRequest` → deterministic Python engines → calculated result → LLM explanation. All policy calculation happens in deterministic, testable Python engines; the AI layer never produces a number.
