@@ -607,6 +607,29 @@ twin of the New Zealand policy system.
       not addressed here for WFF, and is not a gap.
     - **15.5** Test until satisfied, self-review anticipating GPT/Codex
       flags, open the PR for fresh-context review before Pete merges.
+      **Complete 22 September 2026, PR pending review:**
+      `tests/regression/test_known_historical_issues.py` -- 9 tests, one
+      per issue from 15.1. 4 reconstruct the minimal scenario directly
+      (the calculator-logic bugs, none of which spec_cases.yaml/
+      benchmarks.yaml happens to isolate on their own); 3 load the real
+      case by id from `spec_cases.yaml`/`benchmarks.yaml` and either
+      re-run it through `calculate_wff()` (the MD 14/15 case, confirming
+      it still exists and still exercises the trigger) or check the
+      specific scenario field that was wrong (the two benchmark
+      authoring mistakes, where re-running the full case would just
+      restate Task 14's own suite); 2 call the real, currently-shipping
+      `test_wff_spec_case()`/`test_wff_benchmark()` functions directly
+      with a deliberately truncated case and require them to fail loudly
+      -- exercising the actual shipped guard rather than a
+      re-implementation of it. `tests/conftest.py` (new) holds the
+      shared fixtures/helpers this needed, extracted once three other
+      files had each already defined a near-identical version rather
+      than write a fourth copy -- those three files are otherwise
+      untouched. `REPOSITORY_STRUCTURE.md`'s "Instantiated today" section
+      was also corrected: it still claimed "nothing under `src/`... or
+      `tests/`... exists yet" and "v0.1 is still in Week 0", both stale
+      since Task 11. 117 tests total (up from 108).
+      `pytest`/`ruff`/`mypy --strict` all pass.
 16. External coverage-gap check (OpenFisca test names, strictly after suite
     completion) — return to primary sources for any gap found
 17. Independent adversarial review (fresh-context, no implementer explanation)
