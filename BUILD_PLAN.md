@@ -290,10 +290,13 @@ twin of the New Zealand policy system.
     as a further reviewed draft, `e67ae56`. PR #9 completed the MB/MC
     source-audit draft and was independently reviewed with no discrepancies
     in the provisions checked; Pete accepted its merge as a reviewed draft
-    on 21 September 2026 (`038abfb`). `status: draft_pending_review` and
-    `policy_version: null` remain unchanged. **Still open:** the closure
-    subtasks below. Task 10 is not complete and the policy is not executable
-    until Pete accepts the final scoped specification.
+    on 21 September 2026 (`038abfb`). PR #10 completed the source-linked
+    calculation draft; PR #11 completed the temporary-rate contract and
+    whole-spec independent review. Pete accepted the reviewed PR #11 revision
+    (`bf70d1b`) on 21 September 2026. The scoped WFF specification is now
+    `status: approved`, `policy_version: "0.1.0"`; Task 10 is complete.
+    Approval does not clear `in_work_base`'s `needs_review` status or permit
+    an unconditional full-year in-work result for an unverified interval.
 
     Task 10 closure subtasks (distinct from data Tasks 10a/10b):
     - **10.1 Statutory calculation contract — GPT/Codex.** Check the
@@ -303,24 +306,38 @@ twin of the New Zealand policy system.
       source-linked draft. Done when no in-scope formula relies only on
       agency guidance or an unstated rounding/exception assumption. Author
       pass recorded 21 September 2026 in the Task 10.1 source/spec update;
-      its interpretations await the independent review in 10.3.
+      its interpretations were included in the independent review in 10.3.
     - **10.2 Temporary in-work rate — GPT/Codex.** Recheck the secondary-
       legislation register and specify the date-dependent treatment of the
       possible reversal Order. Done when `in_work_base` cannot silently
       produce a full-year result for an unverified interval; recheck again
-      at implementation for each modelled date.
+      at implementation for each modelled date. Author pass recorded
+      21 September 2026 in the Task 10.2 source/spec update; the official
+      s 2 page showed no Order on that date, while the future interval remains
+      unverified. The rate-status contract was independently reviewed in 10.3.
     - **10.3 Whole-spec independent review — Claude Code.** Derive the
       expected scoped behaviour from primary sources before reading the
       author response, then review the complete source map, policy draft,
       calculation sequence, status outcomes, and 10.1/10.2 diff. Classify
       discrepancies and return them for correction or Pete's decision.
       Done when findings are resolved and the reviewed revision is identified.
+      **Done 21 September 2026** (PR #11, `docs/task10-temp-iwtc-rate`):
+      no CODE_ERROR/SPEC_ERROR/SOURCE_CONFLICT found across the whole
+      assembled document. One non-blocking finding recorded directly in
+      `specification.md` — component-level exclusion conditions (MD 14/15,
+      IWTC's direct-abatement pathway, ME 2(2)-(4), MG 4, s 80KW) are
+      correct but prose-only and scattered; recommend giving each
+      `policy.yaml` component a `validation_checks` list (per
+      `ARCHITECTURE.md`'s module contract) when Task 12 starts, not before.
+      Reviewed revision: PR #11 plus this review's own cleanup commit.
     - **10.4 Acceptance and release gate — Pete, with GPT/Codex drafting
       the approval change.** Pete accepts the supported domain, remaining
       unsupported cases, and any genuine interpretation decision after
       10.3. Only then assign `policy_version`, set `status: approved`, record
       the accepted revision and close Task 10. No calculator or statutory
-      fixtures may consume the draft before this gate.
+      fixtures may consume the draft before this gate. **Done 21 September
+      2026:** Pete expressly accepted the reviewed PR #11 revision and
+      approved policy version `0.1.0` with its status outcomes intact.
 10a. Identify the minimum authoritative external statistical datasets the WFF
     vertical actually needs (beyond the legislated rates already captured in
     sources.yaml/specification.md, if any) — GPT/Codex; manually acquire and
@@ -336,7 +353,11 @@ twin of the New Zealand policy system.
     regression fixture — Claude Code
 11. Build parameter loader (consumes canonical Poltika variables only, never
     a source-specific representation)
-12. Build pure `calculate_wff()` function
+12. Build pure `calculate_wff()` function. Add component-level
+    `validation_checks` for the reviewed exclusion triggers identified in
+    Task 10.3 (MD 14/15, the in-work direct-abatement path, ME 2(2)-(4),
+    MG 4, and s 80KW); enforce the dated in-work Order status from sourced
+    policy state, never a live network call from the deterministic core.
 13. Build spec tests
 14. Build benchmark tests (against independently published IRD examples)
 15. Build regression tests, including the frozen dataset-snapshot fixtures

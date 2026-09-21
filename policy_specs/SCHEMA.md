@@ -1,11 +1,12 @@
 # POLICY_SPECS v0.1 schema draft
 
 **Schema version:** `0.1` (draft). **Status:** Task 4 design draft with Task 6
-versioning; not an approved implementation schema or policy calculation.
+versioning; not itself an approved implementation schema or policy calculation.
 **Basis:** the Task 2 WFF and Accommodation Supplement source maps,
 the frozen doctrines in `BUILD_PLAN.md`, and the bounded Task 3 structural
 handoff. Claude Code's Task 7 repo-feasibility review is recorded below;
-policy content remains unapproved.
+WFF policy content was separately approved at Task 10, while Accommodation
+Supplement remains unapproved pending Task 22.
 
 ## Boundary
 
@@ -52,8 +53,9 @@ rule is accepted.
   policy rule or rate change alone
   does not change `schema_version`.
 - `policy_version` identifies a reviewed revision of one policy's content.
-  It is `null` in the Task 5 scaffolds because neither policy has reached its
-  Task 10/22 review gate. Once assigned, it changes when that policy's
+  It was `null` in the Task 5 scaffolds. WFF received its first version
+  (`"0.1.0"`) at Task 10 approval; Accommodation Supplement remains `null`
+  until its Task 22 gate. Once assigned, it changes when that policy's
   approved specification changes, even if the schema shape stays the same.
 - `reference_period` describes the period the policy record is intended to
   model. Each parameter value has its own `effective_from` and optional
@@ -108,7 +110,8 @@ value and not zero.
 Legal commencement, the observed date of an agency table, and the date a
 source was retrieved are separate facts. Future law stays in a future
 effective interval. In particular, WFF's possible in-work tax credit reversal
-needs a dated legal instrument check at Task 10, while AS's 2027 homeowner
+requires a dated legal instrument check for each modelled interval, while AS's
+2027 homeowner
 change must not affect September 2026 cases. The Task 2 maps' listed figures
 are observations, not approved parameter values or benchmark expectations.
 

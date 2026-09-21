@@ -1,10 +1,11 @@
 # Working for Families specification
 
-**Status:** Task 2 independent source map complete on 21 September 2026; not an
-approved implementation specification. **Reference period:** 2026-27 tax year.
-Source IDs below refer to [sources.yaml](sources.yaml). Task 10 must turn this
-map into a scoped, reviewed calculation specification before values or examples
-become protected tests. No external implementation was consulted.
+**Status:** Task 2 source map complete; Task 10 scoped specification approved
+by Pete on 21 September 2026 (`policy_version: "0.1.0"`). **Reference period:**
+2026-27 tax year. Source IDs below refer to [sources.yaml](sources.yaml).
+Approval covers only the supported domain and explicit status outcomes below;
+it does not promote examples to protected tests or clear a parameter marked
+`needs_review`. No external implementation was consulted.
 
 ## Statutory structure
 
@@ -69,7 +70,7 @@ Annual statutory amounts and displayed weekly instalments must remain distinct.
 | --- | --- | --- |
 | From 1 April 2026 | The 2025 Tax Credit Order changes annual family tax credit rates to $7,921 for the eldest child and $6,454 for each additional child; minimum family tax credit's prescribed amount to $36,604; and Best Start's annual rate to $4,041. | `wff-tax-credit-order-2025`, clauses 4-6; Income Tax Act ss MD 3, ME 1, MG 2. |
 | From 1 April 2026 | The family tax credit abatement threshold is $44,900 and the rate is 27.5 cents per complete dollar above it. | `wff-budget-measures-2025`; Income Tax Act s MD 13(3)(a); `wff-ird-family-tax-credit`. |
-| From 1 April 2026, subject to earlier reversal | The temporary in-work tax credit base is $7,670 annually rather than $5,070; a later Order in Council can set the reversal date. A petrol-price condition is described by IRD, but the operative legal event is the Order. | `wff-iwtc-increase-act-2026`, ss 105-106; `wff-ird-temporary-increase`. Verify the Order status for each modelled date. |
+| From 1 April 2026, subject to earlier reversal | The temporary in-work tax credit base is $7,670 annually rather than $5,070. Section 105(2) reverses the amendment on the date set by an Order in Council, or on 1 April 2027 if no earlier Order takes effect. The 2026-27 full-year rate remains conditional while that year is open. | `wff-iwtc-increase-act-2026`, ss 2(40), 2(43)-(45), 105-106; `wff-ird-temporary-increase`. Apply the rate-status contract below. |
 | From 1 April 2026 | Best Start abatement is 21 cents per complete dollar of family scheme income above $79,000 for periods subject to abatement. The pre-1-April-2026 birth exception remains relevant. | Income Tax Act s MG 3; `wff-ird-best-start`; `wff-budget-measures-2025`. |
 | From 1 April 2027 | Enacted changes to family scheme income adjustments and residence are future law on this reference date. | `wff-budget-measures-2026`; `wff-ird-interpretation-2026`. Do not apply them to 2026-27 cases. |
 
@@ -82,13 +83,17 @@ a cross-check but not a replacement for independently calculated statutory
 expectations. A prior revision of that chart omitted the temporary in-work
 increase; use the revision recorded in `sources.yaml` and preserve its date.
 
-## Task 10 and review gates
+## Task 10 scope and follow-on gates
+
+The source and independent-review gates for this scope are complete. The
+following constraints still govern implementation and benchmark promotion.
 
 - Set the v0.1 input domain explicitly. Unsupported adjustment or exception
   paths must return an unsupported/needs-review outcome, not zero entitlement.
-- Verify whether an Order in Council has ended the temporary in-work rate for
-  each modelled date. The 2026 Act permits an early legal change; the petrol
-  condition described by IRD does not change the rate without that instrument.
+- Verify the official reversal-Order record for the complete modelled interval,
+  including its end date, before using the temporary in-work base. The 2026
+  Act permits an early legal change; the petrol condition described by IRD
+  does not change the rate without that instrument.
 - Specify exact component ordering, part-period day/week treatment, tax and
   rounding rules, and protected-credit treatment from the operative provisions.
 - Recalculate fully specified official examples independently before making
@@ -96,16 +101,17 @@ increase; use the revision recorded in `sources.yaml` and preserve its date.
 - Have an independent reviewer verify the dated law and the supported-domain
   decisions. Pete decides genuine interpretation ambiguities; this map does not.
 
-## Task 10 calculation draft (not approved)
+## Approved Task 10 scoped calculation contract
 
-**Draft date:** 21 September 2026. **Period:** 1 April 2026 to 31 March 2027.
-This section is a proposed implementation contract, separate from the Task 2
-source map above. The companion `policy.yaml` is `draft_pending_review` with
-`policy_version: null`; neither file authorises executable policy content yet.
+**Reviewed and accepted:** 21 September 2026. **Period:** 1 April 2026 to
+31 March 2027. This section is the scoped implementation contract, separate
+from the Task 2 source map above. The companion `policy.yaml` is `approved`
+at `policy_version: "0.1.0"`; calculators must still enforce every
+`unsupported`/`needs_review` branch and the live in-work rate-status gate.
 The official legislation site returned 403 to the initial full-page fetch;
 later browser-user-agent retrieval enabled direct checks of the relevant
 provisions recorded in `sources.yaml`. Unchecked provisions and exceptions
-remain review gates, not claims of complete legal verification.
+remain outside the approved branch, not claims of complete legal verification.
 
 ### Proposed v0.1 supported domain
 
@@ -177,19 +183,47 @@ numeric zero. A genuine, evidenced failure of an eligibility test may yield
 zero for that component. Do not sum a partial result and present it as total
 WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
 
-### Proposed full-year calculation sequence
+### Temporary in-work base: Task 10.2 rate-status contract
 
-1. Select the law and parameter interval for the assessment date; verify the
-   temporary in-work base has not been reversed by an Order in Council. The
-   2026 Act changed MD 10(3)(a) to $7,670 with a possible earlier reversal;
-   the `policy.yaml` end date is the statutory outer bound, not confirmation
-   that the increased rate applies throughout 2026-27. On 21 September 2026,
-   the official Act page reported no secondary legislation made under s 2(43)
-   on that site; this does not establish the position on a later assessment date.
-   An early reversal needs a separately specified split-period calculation
-   before a full-year result can be claimed. Petrol-price guidance is not
-   itself the operative legal instrument
-   (`wff-iwtc-increase-act-2026`, ss 2, 105-106; `wff-ird-temporary-increase`).
+Section 105(1) substituted $7,670 for $5,070 in MD 10(3)(a) from
+1 April 2026 (commencement s 2(40)). Section 105(2) reverses that substitution
+on a single date set by Order in Council under s 2(43); if it has not begun by
+1 April 2027, s 2(44) commences it that day. The Order is secondary legislation
+under s 2(45). On 21 September 2026 the official s 2 page showed no secondary
+legislation made under that section on the website, and a targeted official-site
+search found no reversal Order (`wff-iwtc-increase-act-2026`). This check fixes
+only the observed as-of position. It does not establish the rate for dates
+after the check or certify the whole 2026-27 tax year.
+
+| Evidence for modelled interval | Outcome for the in-work component |
+| --- | --- |
+| Official version and Order record establish no reversal throughout the entire completed, supported full tax year | Use $7,670 as the MD 10(3)(a) annual base, subject to all other eligibility, abatement, and approval gates. This row does not authorise a part-year annual formula. |
+| Interval extends beyond the last Order check, including a full 2026-27 calculation requested on 21 September 2026 | `needs_review` for an unconditional annual in-work amount. A no-future-Order projection is a separately labelled scenario assumption, not verified law or a benchmark. |
+| An Order is found with a commencement date within the modelled interval | Record the instrument and effective date; do not present an ordinary full-year $7,670 amount. The split-period annual entitlement path is `unsupported` until its statutory calculation and treatment are independently specified and reviewed. |
+| Order status cannot be verified for the modelled interval | `needs_review`, not $7,670, $5,070, or zero. |
+| Modelled period starts on or after 1 April 2027 | Recheck the operative MD 10 version and any later amendments; s 2(44) guarantees the s 105(2) reversal no later than this date, but does not establish all future policy values. |
+
+MF 4L, inserted by s 106, expressly calculates **instalments** for 2026-27
+if an early Order takes effect. Its pre-/post-change-date amounts do not by
+themselves specify a full-year annual-entitlement apportionment. Do not infer
+that annual formula from the instalment rule. The petrol-price description in
+IRD guidance is context for a possible Order, not an operative rate switch
+(`wff-income-tax-act`, s MF 4L; `wff-ird-temporary-increase`).
+
+The `in_work_base` YAML row remains `needs_review`: its 2027-04-01 end is the
+latest statutory reversal date, **not** an independently verified uninterrupted
+rate interval. An implementation must source and record an as-of Order check
+covering each modelled date before selecting a rate. It must not treat the YAML
+row alone as permission to calculate an unconditional full-year amount.
+
+### Scoped full-year calculation sequence
+
+1. Select the law and parameter interval for the complete assessment period;
+   apply the Task 10.2 rate-status contract above to the in-work component.
+   A point-in-time Order check cannot verify a future full-year rate, and an
+   unresolved in-work component cannot be silently included in total WFF.
+   Check the official Order record again at implementation and for each
+   modelled date (`wff-iwtc-increase-act-2026`, ss 2, 105-106).
 2. Validate family membership, qualifying children, residence, care,
    component-specific MC 6 exclusions, the absence of an MC 7 claimant
    allocation, and family-scheme income. An MC 6(a) veterans' payment can
@@ -221,11 +255,11 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    by `remaining_abatement`, with a zero floor (MD 2(2)(c)(ii)). If the claimant
    cannot receive family tax credit for a child due to a different payment,
    the separate direct-abatement pathway requires review and is unsupported
-   in this draft (WFF-04/08; Income Tax Act ss MD 4-10, 13-15;
+   in this scope (WFF-04/08; Income Tax Act ss MD 4-10, 13-15;
    `wff-ird-in-work-tax-credit`).
 4. If minimum-family eligibility, MA 7/ME 2 full-time-earner weeks, and
    s ME 3 net family-scheme income are independently established, the
-   all-52-week draft amount is the positive
+   all-52-week scoped amount is the positive
    difference between $36,604 and that net income. It does not abate with the
    family/in-work credits and must not be calculated from gross income alone.
    ME 3 defines the supplied net amount as adjusted income minus adjusted
@@ -237,10 +271,10 @@ WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
    `unsupported`; an unverified tax derivation is `needs_review`. A verified
    net income at
    or above $36,604 yields no positive top-up, consistent with IRD's stated
-   income limit; the zero-credit treatment is an interpretation for the
-   independent reviewer to confirm (WFF-05; Income Tax Act ss ME 1-3;
+   income limit; the zero-credit treatment is included in the reviewed
+   scoped contract (WFF-05; Income Tax Act ss ME 1-3;
    `wff-ird-minimum-family-tax-credit`).
-5. For the single full-year Best Start branch above, the draft maximum is
+5. For the single full-year Best Start branch above, the scoped maximum is
    $4,041. For an abatable year, reduce it by 21 cents per **complete dollar**
    of family-scheme income over $79,000, with a zero floor. First-year
    pre-1-April-2026 births, later birth cohorts, births/third birthdays within
@@ -275,82 +309,105 @@ that exception applies, return
 `unsupported` in this first branch rather than the ordinary annual amount;
 if its applicability is unknown, return `needs_review` (`wff-tax-administration-act`,
 s 80KW(1)-(7)). No official example is promoted to `benchmarks.yaml`
-or `spec_cases.yaml` by this draft.
+or `spec_cases.yaml` by this approval.
 
-### Review gates and source checks
+### Source checks and implementation obligations
 
 - Task 10.1 checked MD 1-3/10/13-15, ME 1-3, MG 1-4, and MF 1-4/4L against
   the official 4 September 2026 Act version on 21 September 2026. The
-  ordinary 365-day/52-week formulas and MD 2 abatement order are now linked
-  to those provisions. Independent review must still test the partnered
-  income boundary, exact-decimal/half-cent handling, non-negative component
-  handling, and MFTC zero-credit interpretation before executable approval.
+  ordinary 365-day/52-week formulas and MD 2 abatement order are linked
+  to those provisions. Task 10.3 reviewed the assembled scoped contract;
+  implementation and tests must preserve the partnered-income boundary,
+  exact-decimal/half-cent handling, non-negative component handling, and
+  MFTC zero-credit treatment.
 - The relevant MB 1-13 and MC 2-11 provisions were checked against the
   official 4 September 2026 Act version on 21 September 2026; MB 9 and MB 14
   are repealed. Recheck the operative version for each later modelled date.
-  Before executable approval, independently review this scoped contract and
-  confirm the remaining MD/MF formula, rounding, and protected-credit paths
-  needed by the calculator against full text, not only IRD pages.
+  Any branch not covered by this reviewed contract requires a new sourced
+  specification and review, not an extrapolation from this one.
 - The 2025 Tax Credit Order clauses 2/4-6, 2025 Budget Measures Act ss 2/7-8,
   and 2026 annual-rates Act ss 2/105-106 were checked in the earlier Task 10
-  passes. Search secondary legislation for an actual early in-work reversal
-  Order for each modelled date. An unconfirmed order status keeps
-  `in_work_base` at `needs_review`.
-- Independently test the proposed supported-domain boundary, especially
-  whether verified family-scheme income and net family-scheme income are
-  acceptable v0.1 canonical inputs. Resolve any genuine scope/interpretation
-  dispute with Pete before setting `status: approved` or `policy_version`.
+  passes. The 21 September 2026 official s 2 check found no linked reversal
+  Order. Search secondary legislation again for every later modelled interval;
+  an unverified interval keeps the in-work outcome at `needs_review`.
+- Pete accepted the narrow supported-domain boundary, including separately
+  verified family-scheme income and net family-scheme income. New scope or
+  interpretation decisions require a reviewed policy revision.
 - Recalculate the dated IRD worked examples independently during Tasks 13-14;
   the shared-care page uses older rates and is not a 2026-27 benchmark.
 
-**Handoff to Claude Code:** critique the schema shape, missing/unsupported
-conditions, component ordering, source locators, date handling, and whether
-this static-year branch can be implemented without accidentally representing
-out-of-domain households as zero entitlement. Do not implement the policy
-calculator or statutory-value fixtures before the review outcome is resolved.
+The independent whole-spec review is recorded below. Tasks 11-15 must
+implement and test this accepted scope without representing out-of-domain
+households as zero entitlement. Component-level `validation_checks` remain
+a Task 12 obligation, not a new eligibility rule.
 
-## Task 10 follow-up: MD 4-9/14, MG 1-4 verification (Claude Code, 2026-09-21)
+## Task 10 follow-up: MD 4-9/14, MG 1-4 verification (Claude Code, 2026-09-21) — resolved
 
-Full-text checked (curl, not WebFetch — see ADR/PR #6 history for why) against
-`https://www.legislation.govt.nz/act/public/2007/97/en/latest/parts/DLM1518405/`.
+Both findings below are resolved as of PR #8/#9/#10 and superseded by the
+Task 10.3 whole-spec review further down. Left here, marked resolved, for
+the provenance trail rather than deleted. MD 5-9 matched the draft exactly
+and needed no follow-up.
 
-**MD 5-9 (the five in-work tax credit requirements) match the draft's
-framing exactly** — age ≥16 (MD 5), principal caregiver (MD 6), residence
-(MD 7), not receiving a main benefit or basic/independent-circumstances
-grant (MD 8), earner test with a business-income pathway for the
-self-employment case the draft already deferred (MD 9). No discrepancy.
+1. ~~MG 1(4)'s Tax Administration Act s 80KW citation missing from
+   `sources.yaml`~~ — resolved: `wff-tax-administration-act` added to
+   `sources.yaml` (PR #8) and the `extra_instalment_status` input, plus the
+   s 80KW paragraph in the calculation sequence below, added (PR #9/#10).
+2. ~~Best Start's calculation step didn't exclude protected-Best-Start
+   (MG 4) cases~~ — resolved: step 5 now excludes "months receiving
+   protected Best Start credit under MG 4" symmetrically with step 2's
+   MD 14 exclusion (PR #8).
 
-**Two genuine findings, not yet in the draft:**
+The reversal-Order check recorded here (2026-09-21) is superseded by the
+Task 10.2 rate-status contract above, which is stricter: an as-of check
+confirms no Order on that date, not the whole 2026-27 tax year.
 
-1. **MG 1(4): Best Start "is overridden by section 80KW of the Tax
-   Administration Act 1994"** for an "Extra instalment" case. This is a
-   citation to a different Act entirely, not currently in `sources.yaml` or
-   anywhere in this spec. Not investigated further here — per the
-   ground-truth rule, flagging it rather than guessing what s 80KW covers.
-   Needs its own source-map entry before the Best Start branch can be
-   called reviewed against full text.
-2. **The Best Start calculation step (step 5, "Proposed full-year
-   calculation sequence") doesn't exclude protected-Best-Start-credit
-   cases, unlike the family-tax-credit step (step 2) which explicitly
-   excludes MD 14 cases.** MG 3(2)(b)(ii) excludes "the days of any
-   calendar months in which the person receives protected Best Start tax
-   credit as described in section MG 4" from the abatement-days count —
-   structurally the same carve-out mechanism as MD 13(3)(b)/MD 14 for
-   family tax credit, just a separate provision for a separate credit. The
-   draft's step 5 exclusion list (birth cohorts, part-year, PPL, multiple
-   children) doesn't mention it. WFF-08 already names MG 4 as a citation
-   needing verification, so this isn't a new source lead, but the Task 10
-   calculation draft itself doesn't yet carry that exclusion the way its
-   FTC counterpart does. Should be added symmetrically before this branch
-   is treated as reviewed.
+## Task 10.3 whole-spec independent review (Claude Code, 2026-09-21)
 
-Reversal-Order check re-confirmed same day (2026-09-21, per the PR #6
-thread): s 2(43)-(45) of the 2026 Act require a specific Order in Council to
-commence the reversal, with 1 April 2027 as the s 2(44) fallback if none is
-made; no such secondary legislation is on the official register as of this
-check. `in_work_base`'s `needs_review` status is unaffected — this confirms
-the current value, it doesn't clear it for `approved`.
+Reviewed the complete source map, policy draft, calculation sequence, and
+status outcomes as one document — not incrementally per PR — after
+independently deriving expected behaviour from primary sources across the
+PR #6/#8/#9/#10/#11 review passes (each already recorded its own
+comparison; this pass checks the whole assembled result for internal
+consistency, not individual claims again).
 
-Not drafting new `policy.yaml`/`specification.md` content for these — that
-stays with the Task 10 author, to keep independent review meaningful for
-whatever comes next.
+**No CODE_ERROR, SPEC_ERROR, or SOURCE_CONFLICT found.** The
+`unsupported`/`needs_review` discipline is now applied consistently across
+every component (FTC's MD 14/15, IWTC's direct-abatement pathway, MFTC's
+ME 2(2)-(4), Best Start's MG 4, and the s 80KW extra-instalment case) —
+known-and-excluded conditions consistently return `unsupported`, unverified
+applicability consistently returns `needs_review`, and nothing collapses
+either into a silent zero. Every `parameters[].source_id` resolves to a
+`sources.yaml` entry. `policy.yaml`'s `assessment.unsupported` list matches
+the household/eligibility exclusions described in prose exactly (six items,
+checked one-for-one).
+
+**One finding worth acting on before Task 12, not a correctness bug:**
+`assessment.unsupported` consolidates the six household-level exclusions
+into one machine-readable list, but the five component-level exclusions
+(MD 14/15, the IWTC direct-abatement pathway, ME 2(2)-(4), MG 4, s 80KW) are
+each stated only in prose, scattered across four different steps and one
+table. Nothing is missing — every one of them is present and correctly
+handled — but an implementer working from `policy.yaml` alone (the
+executable contract) rather than reading every paragraph of this file
+could plausibly miss one. This is exactly what the `validation_checks`
+field in `ARCHITECTURE.md`'s simulation module contract is for — recommend
+each `components[]` entry in `policy.yaml` gain a `validation_checks` list
+naming its known exclusion triggers when Task 12 starts, rather than
+leaving them prose-only. Not blocking Task 10's closure; a Task 12
+implementation note.
+
+**Reviewed revision:** this file and `policy.yaml`/`sources.yaml` as of PR
+#11 (`docs/task10-temp-iwtc-rate`, commits `b937e2d` and `bf70d1b`).
+
+## Task 10.4 acceptance (Pete, 2026-09-21)
+
+Pete accepted the reviewed PR #11 revision after Task 10.3, including the
+narrow full-year input domain, the component-specific `unsupported` and
+`needs_review` outcomes, and the temporary in-work rate-status contract.
+This acceptance assigns `policy_version: "0.1.0"` and `status: approved` to
+the scoped WFF specification. It is not approval of a future, unverified
+Order status or an unconditional full-year $7,670 in-work result. The
+`in_work_base` value retains `review_status: needs_review`; Tasks 11-12 must
+enforce the dated Order check through sourced policy state, with no live
+network request inside the deterministic calculator. The component-level
+`validation_checks` consolidation is carried to Task 12.

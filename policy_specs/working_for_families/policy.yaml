@@ -1,8 +1,8 @@
-# Task 10 source-linked draft. Not executable before independent review.
+# Task 10 approved scoped specification; observe per-parameter review gates.
 schema_version: "0.1"
 policy_id: working_for_families
-policy_version: null
-status: draft_pending_review
+policy_version: "0.1.0"
+status: approved
 reference_period:
   from: 2026-04-01
   to: 2027-04-01
@@ -86,22 +86,22 @@ parameters:
     value_type: money
     unit: NZD_per_tax_year
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 7921, source_id: wff-tax-credit-order-2025, locator: 'clause 4; Income Tax Act s MD 3(4)(a)', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 7921, source_id: wff-tax-credit-order-2025, locator: 'clause 4; Income Tax Act s MD 3(4)(a)', review_status: approved}
   - id: family_tax_credit_additional_child
     value_type: money
     unit: NZD_per_tax_year
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 6454, source_id: wff-tax-credit-order-2025, locator: 'clause 4; Income Tax Act s MD 3(4)(b)', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 6454, source_id: wff-tax-credit-order-2025, locator: 'clause 4; Income Tax Act s MD 3(4)(b)', review_status: approved}
   - id: family_tax_credit_abatement_threshold
     value_type: money
     unit: NZD_per_tax_year
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 44900, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 44900, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: approved}
   - id: family_tax_credit_abatement_rate
     value_type: fraction
     unit: NZD_per_complete_NZD_above_threshold
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.275, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.275, source_id: wff-budget-measures-2025, locator: 'section 7; Income Tax Act s MD 13(3)(a)(i)', review_status: approved}
   - id: in_work_base
     value_type: money
     unit: NZD_per_tax_year
@@ -112,32 +112,32 @@ parameters:
         source_id: wff-iwtc-increase-act-2026
         locator: sections 2 and 105; Income Tax Act s MD 10(3)(a)
         review_status: needs_review
-        note: 2027-04-01 is the statutory latest reversal date, not a confirmed full-year duration; recheck for an earlier Order in Council for each assessment date.
+        note: Candidate upper-bound interval only. Section 105(1) made 7670 operative from 2026-04-01, but s 105(2) may reverse it to 5070 on an earlier Order date; otherwise reversal occurs on 2027-04-01. The 2026-09-21 no-Order check does not verify the rest of 2026-27. Do not use this row alone for an unconditional full-year result; apply the rate-status outcomes in specification.md and recheck at implementation.
   - id: in_work_additional_child
     value_type: money
     unit: NZD_per_tax_year
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 780, source_id: wff-income-tax-act, locator: 'section MD 10(3)(b)', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 780, source_id: wff-income-tax-act, locator: 'section MD 10(3)(b)', review_status: approved}
   - id: minimum_family_prescribed_amount
     value_type: money
     unit: NZD_per_tax_year_after_tax
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 36604, source_id: wff-tax-credit-order-2025, locator: 'clause 5; Income Tax Act s ME 1(3)(a)', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 36604, source_id: wff-tax-credit-order-2025, locator: 'clause 5; Income Tax Act s ME 1(3)(a)', review_status: approved}
   - id: best_start_annual_amount
     value_type: money
     unit: NZD_per_child_per_tax_year
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 4041, source_id: wff-tax-credit-order-2025, locator: 'clause 6; Income Tax Act s MG 2', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 4041, source_id: wff-tax-credit-order-2025, locator: 'clause 6; Income Tax Act s MG 2', review_status: approved}
   - id: best_start_abatement_threshold
     value_type: money
     unit: NZD_per_tax_year
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 79000, source_id: wff-income-tax-act, locator: 'section MG 3', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 79000, source_id: wff-income-tax-act, locator: 'section MG 3', review_status: approved}
   - id: best_start_abatement_rate
     value_type: fraction
     unit: NZD_per_complete_NZD_above_threshold
     values:
-      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.21, source_id: wff-income-tax-act, locator: 'section MG 3', review_status: draft_pending_independent_review}
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 0.21, source_id: wff-income-tax-act, locator: 'section MG 3', review_status: approved}
 
 components:
   - {id: family_tax_credit, source_rule_ids: [WFF-01, WFF-02, WFF-03, WFF-07, WFF-08], output_id: family_tax_credit_annual}
