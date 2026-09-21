@@ -494,6 +494,24 @@ missing-partner-income case for both affected components, the unknown-
 partner-status case, and the single-with-partner-amount rejection.
 `pytest`/`ruff`/`mypy --strict` all re-verified passing.
 
+### Task 12 third re-review finding (GPT/Codex, PR #14) -- resolved 2026-09-21
+
+One narrower blocking gap, found after the second re-review's fix landed:
+`PartnerStatus.UNKNOWN` still permitted a numeric minimum family tax
+credit. Minimum family tax credit doesn't use combined income at all (the
+second finding's fix, `_partner_income_gap_reason()`, only covers family
+tax credit and Best Start), but this file's own supported-domain paragraph
+requires "documented full-time-earner weeks under MA 7 (at least 20 hours
+for a single person or 30 combined hours for partners per week ...)" --
+i.e. MA 7's threshold itself depends on partner status, which
+`minimum_family_full_time_earner_weeks: VERIFIED` alone doesn't establish.
+Resolved by checking `partner_status == PartnerStatus.UNKNOWN` directly in
+`_minimum_family_tax_credit()`. 1 new test (71 total, up from 70), which
+also confirms in-work tax credit correctly inherits `needs_review` through
+the existing MD 2(2)(c) propagation (not a new, separate partner-status
+check on in-work tax credit, which doesn't itself depend on partner
+status). `pytest`/`ruff`/`mypy --strict` all re-verified passing.
+
 Component-level `validation_checks` are documented per-component above, but
 enforced in code as scenario-level `FactStatus` facts on `WffScenario`
 (`src/poltika/engines/simulator/wff.py`), not read back out of `policy.yaml`

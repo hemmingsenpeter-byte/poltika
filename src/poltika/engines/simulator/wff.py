@@ -254,7 +254,11 @@ class WffScenario:
     mc6b_disqualifying_payment: FactStatus = FactStatus.UNKNOWN
 
     # MA 7 / ME 2: 52 verified full-time-earner weeks with no ME 2(2)-(4)
-    # Commissioner-determined employment period or part-week case.
+    # Commissioner-determined employment period or part-week case. MA 7's
+    # threshold itself is 20 solo hours or 30 combined partnered hours per
+    # week, so this alone isn't enough -- `_minimum_family_tax_credit` also
+    # checks `partner_status` below, since VERIFIED here doesn't say which
+    # threshold was applied.
     minimum_family_full_time_earner_weeks: FactStatus = FactStatus.UNKNOWN
 
     # Best Start: "no shared care" (household-wide, specification.md step 5).
@@ -585,6 +589,17 @@ def _minimum_family_tax_credit(scenario: WffScenario, parameters: PolicyParamete
         )
     if scenario.minimum_family_full_time_earner_weeks == FactStatus.UNKNOWN:
         return ComponentResult(outcome="needs_review", reason="full-time-earner weeks (MA 7 / ME 2) unverified")
+    if scenario.partner_status == PartnerStatus.UNKNOWN:
+        # MA 7's full-time-earner test itself depends on partner status --
+        # specification.md: "at least 20 hours for a single person or 30
+        # combined hours for partners per week". minimum_family_full_time_
+        # earner_weeks being VERIFIED doesn't establish *which* threshold
+        # was actually applied; without knowing single vs partnered, that
+        # verification can't be trusted for this branch.
+        return ComponentResult(
+            outcome="needs_review",
+            reason="partner status (single vs partnered) is unverified -- MA 7's full-time-earner threshold (20 solo hours vs 30 combined) depends on it",
+        )
     if scenario.mc6b_disqualifying_payment == FactStatus.UNKNOWN:
         return ComponentResult(outcome="needs_review", reason="MC 6(b) disqualifying-payment status unverified")
     if not scenario.net_family_scheme_income_me3_attested:

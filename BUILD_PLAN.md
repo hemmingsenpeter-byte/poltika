@@ -444,7 +444,12 @@ twin of the New Zealand policy system.
     whenever family tax credit itself could not be calculated), the real
     approved WFF `policy.yaml`'s live `in_work_base` needs_review gate,
     rejection of structurally malformed negative income, and the
-    missing-partner-income/unknown-partner-status cases above.
+    missing-partner-income/unknown-partner-status cases above. A third
+    re-review pass found `PartnerStatus.UNKNOWN` still let minimum family
+    tax credit return a number, though specification.md's own text ties its
+    MA 7 full-time-earner threshold to single (20 hours) vs partnered (30
+    combined hours) status -- fixed with a direct `partner_status` check in
+    `_minimum_family_tax_credit()`. 71 tests total, up from 70.
     `pytest`/`ruff`/`mypy --strict` all pass.
 13. Build spec tests
 14. Build benchmark tests (against independently published IRD examples)

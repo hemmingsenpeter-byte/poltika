@@ -765,6 +765,31 @@ def test_unknown_partner_status_is_needs_review_even_with_a_single_income_figure
     assert "partner status" in (result.family_tax_credit.reason or "")
 
 
+def test_unknown_partner_status_is_needs_review_for_minimum_family_tax_credit_too(parameters):
+    """Second PR #14 re-review finding: minimum family tax credit's own MA 7
+    full-time-earner test has a different hour threshold for a single
+    claimant (20 hours) than for a partnered one (30 combined hours) --
+    specification.md. A `minimum_family_full_time_earner_weeks: VERIFIED`
+    fact alone doesn't say which threshold was actually applied, so an
+    unverified partner status must still block a numeric result here, even
+    though minimum family tax credit doesn't use combined income at all
+    (unlike family tax credit / Best Start, which the first partner-status
+    fix already covered)."""
+    scenario = _base_scenario(partner_status=PartnerStatus.UNKNOWN)
+
+    result = calculate_wff(scenario, parameters)
+
+    assert result.minimum_family_tax_credit.outcome == "needs_review"
+    assert result.minimum_family_tax_credit.value is None
+    assert "full-time-earner" in (result.minimum_family_tax_credit.reason or "")
+    # family tax credit is needs_review too (the first partner-status fix,
+    # via _partner_income_gap_reason), and in-work tax credit inherits that
+    # via the existing MD 2(2)(c) remaining-abatement propagation -- not a
+    # new partner-status check on in-work tax credit itself.
+    assert result.family_tax_credit.outcome == "needs_review"
+    assert result.in_work_tax_credit.outcome == "needs_review"
+
+
 def test_single_claimant_with_partner_amount_rejected() -> None:
     """A structural contradiction, not a policy outcome: SINGLE means no
     partner exists to have a verified amount at all."""
