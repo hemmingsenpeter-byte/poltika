@@ -1,10 +1,15 @@
 # Accommodation Supplement specification
 
-**Status:** Task 2 independent source map complete on 21 September 2026; not an
-approved implementation specification. **Reference period:** September 2026.
-Source IDs below refer to [sources.yaml](sources.yaml). Task 22 must turn this
-map into a scoped, reviewed calculation specification before values or examples
-become protected tests. No external implementation was consulted.
+**Status:** Task 2 independent source map complete on 21 September 2026; Task
+22's scoped calculation contract drafted 22 September 2026 (see below); not
+yet an approved implementation specification -- Pete's acceptance decision on
+the whole contract is still pending. The one escalated ambiguity (r 18(2)'s
+income-excess rounding) is decided -- see DEC-001
+(`decisions/DEC-001-income-excess-rounding.md`), 22 September 2026, medium
+confidence, with a recorded residual verification risk. **Reference period:**
+proposed 2026-03-02 to 2027-04-01 (see the Task 22 contract below; supersedes
+the earlier "September 2026" placeholder). Source IDs below refer to
+[sources.yaml](sources.yaml). No external implementation was consulted.
 
 ## Statutory structure
 
@@ -92,3 +97,238 @@ recalculation before it becomes a protected benchmark.
   threshold table and location before promoting them to protected benchmarks.
 - Independently review effective dates, discretionary s 69 paths, reassessment
   timing, and the supported-domain decisions. Pete decides genuine ambiguity.
+
+## Proposed Task 22 scoped calculation contract (draft, not yet accepted)
+
+**Drafted:** 22 September 2026, working from the Task 2 source map above plus
+direct re-checks of the Social Security Act 2018 (`as-social-security-act`)
+and Social Security Regulations 2018 (`as-social-security-regulations`)
+official text (legislation.govt.nz, browser user-agent, since a bare fetch
+403s -- the same access pattern this project already established for WFF).
+**Not approved.** Mirrors WFF's Task 10 pattern: a narrow, explicit v0.1
+input domain plus a scoped calculation sequence, presented for Pete's
+acceptance decision, not self-accepted here. One question below is left as a
+genuine, unresolved ambiguity for Pete to decide, not silently picked.
+
+### Two review-gate questions, resolved or escalated
+
+**s 423(3) asset-to-income imputation -- resolved by inference from the
+Act's own wording, no escalation needed, but still one party's reading
+pending independent re-confirmation (PR #24 review finding -- see
+`sources.yaml`'s `task_22_check` notes for the reproducibility check and
+working fetch method).** Checked s 423(3) itself (2026-09-22): "the
+following must be treated as $1 a week of income: (a) every $100 of cash
+assets over $5,400 held by [a person in a relationship, or a single person
+with a dependent child or children]; and (b) every $100 of cash assets over
+$2,700 held by any other person." "Every $100" only has a coherent reading
+as counting complete $100 increments of the excess -- there is no partial-
+hundred treatment stated or implied, unlike the genuine gap below. This is
+an inference from the wording, not a quotation of an explicit "complete
+hundreds" rule -- it matches the same complete-unit floor discipline WFF's
+MD 13(3)(a)/MG 3(2)(a) already established for this project
+(`_complete_dollar_excess()` in `wff.py`) by analogy, not a new invention,
+but a fresh-context reviewer should independently re-read s 423(3) before
+this is treated as settled rather than author-asserted.
+
+**Regulation 18(2)'s income-excess rounding -- escalated to Pete, now
+decided (DEC-001, 22 September 2026).** Checked r 18(2) directly: "That
+amount must be reduced by 25 cents for every $1 of the relevant weekly
+income... in excess of the income level specified in subclause (3)."
+Unlike WFF's MD 13(3)(a) ("0.275 times the number of **complete dollars**
+by which family-scheme income exceeds..."), r 18(2) contains no "complete
+dollar" instruction for the income *excess* itself -- it is genuinely
+silent on whether that excess is rounded/floored to a whole dollar before
+the 25% reduction is applied. Regulation 19 ("Rounding") only governs the
+*final* accommodation supplement amount ("must be rounded up to the
+complete dollar"), not this intermediate step; s 423(1)(f)'s enabling
+power is likewise only about rounding "assessed amounts of accommodation
+supplement" (the final figure), not the income excess. Two MSD pages read
+this two different ways: `as-msd-income-method`'s general worksheet
+rounds the excess weekly income down to a whole dollar before multiplying
+by 25%; `as-msd-student-partner-example` applies the reduction directly
+to a fractional $54.14.
+
+**Decision (DEC-001):** apply the 25% reduction to the exact, unrounded
+weekly income excess -- matching the student-partner worked example, not
+the general worksheet's floor-first convention. Rationale: r 18(2) omits
+the "complete dollars" language MD 13(3)(a) uses explicitly for the same
+kind of step, and this project already has direct evidence the drafters
+write that instruction when they mean it; r 19 already states the *one*
+place rounding happens (the final amount), so reading silence elsewhere
+as "round anyway" would insert an unwritten step. Confidence: medium, not
+high -- see `decisions/DEC-001-income-excess-rounding.md` for the full
+evidence and rationale, and its explicitly recorded residual risk: MSD's
+general worksheet reflects the opposite convention, and if that worksheet
+mirrors MSD's actual production payment calculation rather than being a
+simplified public explainer, real-world payments could diverge from this
+reading in fractional-excess edge cases. Before this convention is
+promoted from "best-reading default" to a protected benchmark value
+(Task 24), find at least one more independently published worked example
+with a fractional excess, or a direct MSD confirmation -- the
+student-partner example is currently the only agency source stating it
+this way.
+
+**AS-10 (MSD-paid WFF exclusion) -- statutory basis confirmed to exist,
+full AS/WFF interaction not resolved (out of this task's scope).** The
+Act's own definitions section cross-references "WFF tax credit" (defined
+via Income Tax Act 2007 s YA 1, through ss 98/428) directly against
+"clause 8(l) of Schedule 3" as the income-exclusions schedule. This
+confirms Schedule 3 cl 8 is a real, existing statutory income-exclusion
+list that specifically names WFF tax credit, corroborating (not
+independently re-deriving the full text of) `specification.md`'s existing
+AS-10 citation. The deeper question -- whether every *MSD-paid* WFF
+component receives the same treatment as the *IRD-paid* route Schedule 3
+cl 8 and the IRD source both describe -- remains open, exactly as AS-10
+already says, and is Task 28's problem (WFF + AS interaction), not this
+task's.
+
+### Proposed v0.1 supported domain
+
+One claimant, optionally with a partner in an ordinary (non-joint-tenancy,
+non-community-spouse) relationship. Rent, contributions, or board payments
+only (Schedule 4 Part 7 cl 1-3, 25%-of-base-rate entry threshold) --
+homeowner accommodation costs (cl 4-6, 30%-of-base-rate entry threshold,
+mortgage-security "reasonably required" MSD judgment) are a deliberately
+separate, unsupported branch for v0.1, the same kind of narrowing WFF used
+for self-employment income under the in-work tax credit. Claimant category
+limited to Jobseeker Support, Sole Parent Support, Supported Living
+Payment, or non-beneficiary (r 18's ordinary income-reduction route) --
+NZ Superannuation/Veteran's Pension recipients (a structurally different
+s 67(e)/Schedule 5 income-*limit* exclusion, not an r 18 reduction) and
+mixed-benefit couples (a separate half-married rate table) are unsupported
+for this first branch. This is a deliberately narrow input contract, not a
+claim that other households or claimant categories receive no entitlement
+(the same framing WFF's Task 10 contract used).
+
+Unsupported (must resolve to `unsupported` or `needs_review`, never a
+false zero or a silent default):
+
+- Social housing exclusion (s 66) or other-funding exclusion (s 67) applying
+  -- including the disability/care-funding branch of s 67(d), which the
+  existing Task 2 table did not separately name as its own trigger.
+- Student Allowance exclusion or exception (s 67(b), the student-partner
+  branch) -- not calculated in this branch even though it is exactly the
+  branch containing the unresolved rounding question above.
+- Joint tenancy (s 68) or community spouse/partner (Schedule 4 Part 7
+  cl 6A) treatment.
+- NZ Superannuation/Veteran's Pension claimant category, or a mixed-benefit
+  couple.
+- Any s 69 discretionary refusal, reduction, or cancellation ground.
+- Homeowner accommodation costs (cl 4-6).
+- An unverified Statistical Area Unit -- a location input without a
+  verified Area 1-4 classification must not silently default to Area 4
+  (`as-msd-areas`; already stated in the Task 2 map, restated here as a
+  binding contract term).
+- Cash assets at or above the r 15 ceiling (a genuine, evidenced zero via
+  the assets requirement, not a scope limitation -- distinct from the
+  s 423(3) imputation above, which applies *below* that ceiling).
+- Any exempt cash asset requiring Part 1 of Schedule 8's own
+  determination (r 16) -- not modelled in this branch; exemptions must be
+  verified, not assumed absent.
+- A weekly qualifying accommodation costs calculation involving
+  accommodation income from boarders or sub-letting, or business use of
+  part of the premises (Schedule 4 Part 7 cl 7's `b`/`c`/`d`/`f` terms) --
+  the first calculable branch is the plain case (`b = c = d = f = 0`,
+  i.e. the claimant's own accommodation costs, no sub-letting, boarding,
+  or business use), matching WFF's own "narrow, add complexity later"
+  precedent; the fuller formula is documented above for when this is
+  extended, not implemented in v0.1.
+
+### Scoped calculation sequence (v0.1 domain only)
+
+1. Verify household eligibility: accommodation costs exist (s 65AAA), no
+   social-housing exclusion (s 66), no other-funding exclusion applicable
+   (s 67, including the disability/care branch), no s 69 refusal/
+   reduction/cancellation ground applicable, cash assets below the r 15
+   ceiling for the claimant's relationship/dependent-child category
+   ($16,200 or $8,100, checked directly against the regulation text,
+   2026-09-22), Statistical Area Unit verified to an Area 1-4
+   classification. Any unverified or excluded condition returns
+   `unsupported`/`needs_review` for the whole calculation, before any
+   component-specific step -- the same household-gate-first pattern
+   `_household_gate_failure()` already established for WFF.
+2. Calculate weekly qualifying accommodation costs under the plain-case
+   formula (Schedule 4 Part 7 cl 7, `b = c = d = f = 0`): the claimant's
+   verified weekly accommodation costs, unreduced.
+3. Select the entry threshold: 25% of the claimant's base rate (rent/board
+   tenure, cl 1-3). The base rate itself is set per claimant category
+   (Jobseeker/Sole Parent/Supported Living/non-beneficiary) by the
+   relevant dated MSD table (`as-msd-jobseeker-rates-2026`,
+   `as-msd-sole-parent-rates-2026`, `as-msd-supported-living-rates-2026`,
+   `as-msd-rates-2026`) -- Task 22 does not independently recalculate or
+   promote these dated tables to protected values; that is Tasks 23-24's
+   job. The parameter carries `review_status: needs_review` until then.
+4. The cost-based amount is 70% of the positive excess of qualifying costs
+   over the entry threshold, capped at the applicable Area 1-4 maximum for
+   the claimant's household category. These caps are **statutory, not
+   agency guidance** -- confirmed directly in Schedule 4 Part 7 cl 1-3
+   itself (checked 2026-09-22, current since the 2 March 2026 amendment,
+   with no further 1 April 2026 Order amendment found for this clause):
+   household with 1+ dependent children in a relationship, or a sole
+   parent with 2+ dependent children -- $305/$220/$160/$120 (Areas 1-4);
+   no dependent children in a relationship, or a sole parent with 1
+   dependent child -- $235/$155/$105/$80; any other person (a single
+   claimant with no dependent children) -- $165/$105/$80/$70. A
+   non-positive excess pays a genuine calculated zero for this component
+   (at the exact entry threshold, the cost-based amount is zero), not
+   `unsupported`.
+5. If the claimant is a non-beneficiary (r 18's route, not the s 67(e)
+   pension-income-limit route), reduce the capped amount by 25 cents per
+   $1 of relevant weekly income (combined with any partner's, unless the
+   claimant is a community spouse/partner, which is unsupported in this
+   branch) in excess of the applicable jobseeker-support-equivalent income
+   level (r 18(3)(a)-(c)). Add $1 of imputed weekly income per complete
+   $100 of cash assets over the s 423(3) threshold ($5,400 or $2,700,
+   confirmed directly against the Act text) before applying this
+   reduction. **Per DEC-001, the reduction applies to the exact,
+   unrounded income excess -- do not floor it to a whole dollar first.**
+   This is a medium-confidence best-reading default, not yet corroborated
+   by a second independent worked example (see DEC-001's residual risk);
+   do not promote it to a protected benchmark value without that
+   corroboration. A result at or below zero after this step pays zero,
+   not `unsupported`.
+6. Round the final positive amount up to the complete dollar (r 19) --
+   confirmed this governs only the final figure, not any intermediate
+   step.
+
+### Note for Task 25 (schema stress test)
+
+AS is assessed on an ongoing weekly basis, reassessed on a change of
+circumstance, not against a fixed annual membership period the way WFF's
+`assessment.membership_period: tax_year` is -- `SCHEMA.md`'s "allowing
+relationships and care to change within a tax year or **benefit week**"
+already anticipated this. `reference_period` (below, tracking which
+*statutory version* applies) and `assessment.membership_period` (the
+*assessment's own* periodicity) are two different things for AS in a way
+they weren't clearly distinguished for WFF -- flagging this now as
+specification.md's own contribution to Task 25, not solving the schema
+question here.
+
+### Source checks and implementation obligations
+
+- Task 2's source map (`sources.yaml`, dated 2026-09-21) remains the
+  primary-source inventory; this section adds direct 2026-09-22 re-checks
+  of ss 65AAA-69, 423, Schedule 4 Part 7 (cl 1-8), and Regulations rr
+  15-19 against the official "latest" consolidated text
+  (legislation.govt.nz, browser user-agent). Schedule 3 cl 8's exact text
+  was not independently re-fetched this session -- only its existence and
+  WFF-tax-credit cross-reference were confirmed (AS-10 above); recheck
+  before relying on its exact wording.
+- Recheck the operative version of every cited provision at
+  implementation and for each later modelled date, per this project's
+  established discipline -- particularly Schedule 4 Part 7's cl 1-6 caps,
+  which are Act-level dollar figures rather than annually-indexed Order
+  amounts, and the 2027-04-01 homeowner threshold change (`as-2026-
+  amendment`), which is out of scope for a September 2026 reference
+  period but must be rechecked before modelling any later date.
+- Dated MSD rate/threshold tables (entry thresholds by claimant category,
+  jobseeker-equivalent income levels) are not independently recalculated
+  or promoted to protected values by this task -- they carry
+  `review_status: needs_review` in `policy.yaml` until Tasks 23-24's
+  benchmark process, matching WFF's `in_work_base` precedent for a
+  parameter whose contract shape is settled before its exact dated value
+  is.
+- Pete accepts or declines this scoped contract, and decides the r 18(2)
+  rounding ambiguity, recording that decision under
+  `decisions/DEC-NNN-<topic>.md` per `decisions/README.md` -- not
+  self-accepted or silently resolved here.

@@ -1,5 +1,155 @@
-# Task 5 scaffold only. Task 22 supplies the reviewed policy specification.
+# Task 22 draft scoped specification. NOT approved -- see specification.md's
+# "Proposed Task 22 scoped calculation contract" section for the full
+# rationale, the escalated r 18(2) rounding ambiguity, and why `parameters`
+# below is deliberately empty (a concrete Task 25 schema-stress-test finding,
+# not an oversight -- see the comment above `parameters:`).
 schema_version: "0.1"
 policy_id: accommodation_supplement
 policy_version: null
-status: scaffold
+status: draft_pending_review
+reference_period:
+  from: 2026-03-02
+  to: 2027-04-01
+source_catalog: sources.yaml
+
+assessment:
+  unit: accommodation_supplement_claim
+  roles: [claimant, partner]
+  membership_period: assessment_week
+  supported_domain: single_claimant_or_ordinary_couple_rent_or_board_tenure_supported_benefit_categories
+  source_rule_ids: [AS-01, AS-02, AS-04, AS-09]
+  unsupported:
+    - social_housing_exclusion
+    - other_funding_exclusion_including_disability_care
+    - student_allowance_exclusion_or_exception
+    - joint_tenancy
+    - community_spouse_or_partner
+    - pension_or_veterans_claimant_category
+    - mixed_benefit_couple
+    - s69_discretionary_refusal_reduction_cancellation
+    - homeowner_tenure
+    - unverified_statistical_area_unit
+    - exempt_cash_asset_unverified
+    - accommodation_income_or_business_use_qualifying_costs
+
+inputs:
+  - id: household_eligibility_facts
+    owner: assessment_unit
+    type: documented_eligibility_facts
+    period: assessment_week
+    source_rule_ids: [AS-01]
+    missing_outcome: needs_review
+    note: Social housing exclusion (s 66); other-funding exclusion (s 67), covering each of its paragraphs this branch cares about -- the s 67(b) Student Allowance exclusion/exception (PR #24 review finding -- distinct from "other funding" in specification.md's own qualification table and named separately in assessment.unsupported below, so it needs its own explicit mention here, not an implicit "s 67" umbrella) and the s 67(d) disability/care branch this Task 2 map did not originally name; and s 69 discretionary refusal/reduction/cancellation grounds. Absence of an exclusion cannot be inferred from a missing field.
+  - id: claimant_category
+    owner: claimant
+    type: verified_benefit_or_non_beneficiary_category
+    period: assessment_week
+    source_rule_ids: [AS-04, AS-08]
+    missing_outcome: needs_review
+    note: Jobseeker Support, Sole Parent Support, Supported Living Payment, or non-beneficiary are the v0.1 supported categories (r 18's ordinary income-reduction route). NZ Superannuation/Veteran's Pension (a separate s 67(e)/Schedule 5 income-limit route) and mixed-benefit couples are unsupported.
+  - id: tenure_type
+    owner: claimant
+    type: verified_tenure_type
+    period: assessment_week
+    source_rule_ids: [AS-02, AS-04]
+    missing_outcome: needs_review
+    note: rent_contributions_or_board is the v0.1 supported tenure (Schedule 4 Part 7 cl 1-3, 25%-of-base-rate entry threshold). Homeowner tenure (cl 4-6, 30%-of-base-rate threshold) is unsupported.
+  - id: weekly_accommodation_costs
+    owner: claimant
+    type: verified_amount
+    unit: NZD_per_week
+    period: assessment_week
+    source_rule_ids: [AS-03]
+    missing_outcome: needs_review
+    note: The plain-case weekly qualifying accommodation costs (Schedule 4 Part 7 cl 7, b = c = d = f = 0) -- no accommodation income from boarders/sub-letting, no business-use deduction. A claimant with any of those is unsupported in this branch.
+  - id: partner_status
+    owner: assessment_unit
+    type: verified_partner_status
+    period: assessment_week
+    source_rule_ids: [AS-09]
+    missing_outcome: needs_review
+    note: single or ordinary_couple only. Joint tenancy (s 68) and community spouse/partner (Schedule 4 Part 7 cl 6A) are separate, unsupported branches even though they are also "couple" cases.
+  - id: dependent_children_count
+    owner: assessment_unit
+    type: verified_count
+    period: assessment_week
+    source_rule_ids: [AS-04]
+    missing_outcome: needs_review
+    note: Selects the Schedule 4 Part 7 cl 1-3 household category (1+ dependent children in a relationship or a sole parent with 2+; no dependent children in a relationship or a sole parent with 1; any other person).
+  - id: statistical_area_unit
+    owner: claimant
+    type: verified_area_1_to_4_classification
+    period: assessment_week
+    source_rule_ids: [AS-05]
+    missing_outcome: needs_review
+    note: Must be a verified Statistical Area Unit resolved to Area 1-4 (as-msd-areas). Never inferred from a suburb/city name; never silently defaulted to Area 4.
+  - id: cash_assets
+    owner: assessment_unit
+    type: verified_amount
+    unit: NZD
+    period: assessment_week
+    source_rule_ids: [AS-06]
+    missing_outcome: needs_review
+    note: Includes partner's assets per s 69(2), subject to s 69(2A)/(2B) exceptions (community spouse/partner cases -- unsupported in this branch). Any exempt cash asset (r 16, Schedule 8 Part 1) must be verified, not assumed absent.
+  - id: weekly_income
+    owner: assessment_unit
+    type: verified_amount
+    unit: NZD_per_week
+    period: assessment_week
+    required_for: accommodation_supplement
+    source_rule_ids: [AS-07]
+    missing_outcome: needs_review
+    note: Combined weekly income of claimant and partner (r 18(2A)), before the s 423(3) asset-imputation addition. Required only for the non-beneficiary income-reduction step (r 18); other supported claimant categories may have a different or no separate AS income test (AS-08).
+
+# Task 25 finding, not an oversight: every ParameterUnit member in
+# src/poltika/semantics/schemas/policy_spec.py is tax-year-based and
+# WFF-worded (NZD_per_tax_year, NZD_per_tax_year_after_tax,
+# NZD_per_child_per_tax_year, and a fraction unit specifically named
+# NZD_per_complete_NZD_above_threshold). AS needs a weekly-dollar unit
+# (the Schedule 4 Part 7 cl 1-3 area caps, confirmed directly against the
+# Act text: $305/$220/$160/$120, $235/$155/$105/$80, $165/$105/$80/$70 for
+# Areas 1-4 by household category) and a general-purpose rate/fraction
+# unit not implicitly WFF's "above threshold" framing (r 18(2)'s 25% income
+# reduction; s 423(3)'s $1-per-$100-of-assets imputation; r 15's flat
+# asset ceiling, which is a gate amount, not a rate, and doesn't fit
+# ParameterValueType.FRACTION or MONEY's existing unit sets either).
+# Per this task's own scope fence ("do not redesign the schema in this
+# task"), that extension is left for Task 25/26, not added here --
+# populating this list with mislabeled WFF units would misrepresent the
+# data, and populating it with schema-invalid units would break
+# load_policy_spec(). Every value this task independently verified against
+# primary sources is recorded in specification.md's "Proposed Task 22
+# scoped calculation contract" section instead, ready to move here once
+# the schema can represent it correctly.
+parameters: []
+
+components:
+  - id: accommodation_supplement
+    source_rule_ids: [AS-01, AS-02, AS-03, AS-04, AS-05, AS-06, AS-07, AS-08, AS-09]
+    output_id: accommodation_supplement_weekly
+    validation_checks:
+      - social_housing_exclusion
+      - other_funding_exclusion_including_disability_care
+      - student_allowance_exclusion_or_exception
+      - joint_tenancy
+      - community_spouse_or_partner
+      - pension_or_veterans_claimant_category
+      - mixed_benefit_couple
+      - s69_discretionary_refusal_reduction_cancellation
+      - homeowner_tenure
+      - unverified_statistical_area_unit
+      - asset_ceiling_exceeded
+      - exempt_cash_asset_unverified
+      - accommodation_income_or_business_use_qualifying_costs
+      # income_excess_rounding_convention_undecided removed: resolved by
+      # DEC-001 (22 September 2026) -- apply 25% to the exact, unrounded
+      # income excess. No longer a runtime decision gate; it's an
+      # ordinary calculation-sequence rule now (specification.md step 5).
+      # DEC-001's medium-confidence/not-yet-corroborated caveat is a Task
+      # 24 benchmark-promotion concern, not a calculator-input trigger.
+
+outputs:
+  unit: NZD_per_week
+  components: [accommodation_supplement_weekly]
+  outcome_states: [calculated, unsupported, needs_review]
+  note: Weekly entitlement, not an annual or fortnightly figure. Rounded up to the complete dollar (r 19) only at the final step -- see specification.md for why intermediate steps must not also round.

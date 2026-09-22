@@ -888,7 +888,59 @@ twin of the New Zealand policy system.
     (`910c37b`). Merged as commit `9e84864`.
 
 ### Week 3 — Accommodation Supplement
-22. Complete AS specification
+22. Complete AS specification — **Drafted for Pete's acceptance decision,
+    22 September 2026 (PR pending).** Working from the already-complete
+    Task 2 source map, directly re-checked the Social Security Act 2018
+    (ss 65AAA-69, 423, Schedule 4 Part 7 cl 1-8) and Social Security
+    Regulations 2018 (rr 15-19) official text. Resolved specification.md's
+    s 423(3) $100-asset-step question directly from the Act text (complete
+    hundreds, matching WFF's existing complete-dollar-excess convention).
+    **Escalated to Pete, now decided (DEC-001, 22 September 2026):** r
+    18(2)'s income-excess rounding -- confirmed the Regulations are
+    genuinely silent on whether to round the excess before applying the
+    25% reduction (unlike WFF's explicit "complete dollars" language),
+    and MSD's own two pages disagree. Pete decided: apply the 25%
+    reduction to the exact, unrounded excess (matching the
+    student-partner worked example, not the general worksheet's
+    floor-first convention) -- textually, r 18(2) omits the language MD
+    13(3)(a) uses when the drafters do mean a complete-dollar floor, and
+    r 19 already states the one place rounding happens (the final
+    amount). Confidence: medium, not high -- `decisions/
+    DEC-001-income-excess-rounding.md` records a residual verification
+    risk (MSD's general worksheet reflects the opposite convention; find
+    a second independently published fractional-excess example, or a
+    direct MSD confirmation, before promoting this to a protected
+    benchmark value in Task 24). `policy.yaml`'s now-stale
+    `income_excess_rounding_convention_undecided` validation check
+    removed -- resolved, not an open runtime gate any more. Confirmed
+    AS-10's statutory basis exists (Schedule 3
+    cl 8 cross-referenced against the Act's "WFF tax credit" definition)
+    without resolving the full AS/WFF interaction (Task 28's job).
+    Proposed a narrow v0.1 supported domain (single claimant or ordinary
+    couple, rent/board tenure only, Jobseeker/Sole Parent/Supported
+    Living/non-beneficiary categories) mirroring WFF's Task 10 narrowing
+    pattern, with every named unsupported case (student, pension,
+    mixed-benefit, joint-tenancy, community-spouse, homeowner, unverified
+    area, asset exemptions, sub-letting/boarder accommodation income)
+    required to resolve `unsupported`/`needs_review`, never a false zero
+    or a silent default to Area 4. Also confirmed, directly against
+    Schedule 4 Part 7 cl 1-3, that the area caps are **statutory** dollar
+    figures, not just agency guidance as the Task 2 map's citation implied.
+    **Task 25 finding, surfaced early rather than worked around:**
+    `policy.yaml`'s `parameters` list is deliberately left empty --
+    `ParameterUnit`'s enum has no weekly-dollar unit and no general-purpose
+    fraction/rate unit outside WFF's "above threshold" wording, so every
+    value this task verified lives in `specification.md`'s contract
+    instead, ready to move into `policy.yaml` once Task 25/26 extends the
+    schema. `policy.yaml`'s `status` moved from `scaffold` to
+    `draft_pending_review`; `policy_version` stays `null` until Pete's
+    acceptance decision, matching WFF's Task 10/10.4 precedent (domain
+    scoping and ambiguity decisions are Pete's call, not self-accepted).
+    No code, test, or WFF file changed. GPT/Codex fresh-context review
+    complete (PR #24, findings fixed); the r 18(2) ambiguity is decided
+    (DEC-001). Pending: Pete's acceptance decision on the whole scoped
+    contract, and the residual DEC-001 corroboration before Task 24 can
+    treat the rounding convention as a protected benchmark rule.
 22a. Identify and freeze the minimum authoritative external statistical
     datasets AS actually needs (e.g. Stats NZ Statistical Area Unit geography
     data underpinning the AS-05 Area 1-4 lookup), each with full provenance
