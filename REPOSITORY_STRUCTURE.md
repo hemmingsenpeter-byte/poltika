@@ -39,23 +39,33 @@ poltika/
 │   ├── common/            — errors.py (exception hierarchy)
 │   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml)
 │   ├── policy/            — loader.py (Task 11 parameter loader)
-│   └── engines/simulator/ — wff.py (Task 12 calculate_wff(); Task 20
-│                            run_wff_module(), the module integration
-│                            entry point over Task 11's loader + Task 12's
-│                            calculator, per ARCHITECTURE.md's Simulation
-│                            module contract)
+│   ├── engines/simulator/ — wff.py (Task 12 calculate_wff(); Task 20
+│   │                        run_wff_module(), the module integration
+│   │                        entry point over Task 11's loader + Task 12's
+│   │                        calculator, per ARCHITECTURE.md's Simulation
+│   │                        module contract)
+│   └── api/               — Task 21: FastAPI app (ADR-0010). main.py (app
+│                            instance, exception handling for
+│                            common.errors.PoltikaError subclasses) and
+│                            wff.py (request/response Pydantic models +
+│                            the one WFF calculation route, wrapping
+│                            run_wff_module() directly — no scenarios/ or
+│                            llm/ layer yet, per ARCHITECTURE.md's request
+│                            path)
 │
 └── tests/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
     ├── unit/
     │   ├── policy/         — loader tests (Task 11)
-    │   └── engines/simulator/ — calculator unit tests (Task 12), spec-case and
-    │                            benchmark-case loader/runners (Tasks 13-14),
-    │                            module-integration tests (Task 20)
+    │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
+    │   │                        benchmark-case loader/runners (Tasks 13-14),
+    │   │                        module-integration tests (Task 20)
+    │   └── api/             — FastAPI TestClient tests (Task 21)
     └── regression/         — known-historical-issue tests (Task 15)
 ```
 
-Only `src/poltika/{data,scenarios,llm}` and `tests/{integration,fixtures}`,
+Only `src/poltika/{data,scenarios,llm}` (`api/` is now instantiated, Task
+21) and `tests/{integration,fixtures}`,
 plus everything under `data/`, `config/`, and `scripts/`, remain undone
 from the target tree below — created incrementally as the BUILD_PLAN.md
 tasks that need them are reached, not all at once. `docs/` is partially
@@ -108,6 +118,7 @@ poltika/
 │       │   └── hypothesis/  — capability-driven, post-v0.2 (Roadmap Doctrine)
 │       ├── scenarios/       — scenario definitions, runner, results
 │       ├── llm/             — orchestration, prompts, guardrails (never calculates — see doctrine/llm_boundaries.md)
+│       ├── api/             — FastAPI app; HTTP request/response boundary only (Task 21, ADR-0010)
 │       └── common/          — types, errors, utilities
 │
 ├── tests/
@@ -145,6 +156,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | `src/poltika/engines/simulator/` | `semantics/`, `policy/`, `scenarios/`, `common/` | Stats NZ (or any) API, source CSV structures, LLM output |
 | `src/poltika/engines/assurance/` | `semantics/`, `policy/`, `scenarios/`, `engines/simulator/`, `common/` | source-specific formats/APIs |
 | `src/poltika/llm/` | `scenarios/` (to build/read a `ScenarioRequest`) | `engines/simulator/` internals, raw/processed data |
+| `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly, no `scenarios/` layer yet) | `data/` (raw or processed), source-specific formats, a caller-supplied policy directory path |
 
 Concretely: the simulator must never do
 

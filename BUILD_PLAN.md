@@ -767,7 +767,118 @@ twin of the New Zealand policy system.
     reviewed commit (`ae8ac13`) and merged. **This closes the Task 17
     ARCHITECTURE_ISSUE finding (full-year rate binding)** — the three
     blocking acceptance tests it required now exist and pass.
-21. Add API — gated on the pure calculator passing acceptance
+21. Add API — gated on the pure calculator passing acceptance (now true:
+    the Task 17-20 loop closed for WFF). **Implemented for WFF, pending
+    review.** Introduces FastAPI + Pydantic v2 directly rather than a
+    placeholder, per ADR-0010, which documents this as its own decision
+    citing ARCHITECTURE.md's recorded long-term stack (commit `21dc905`)
+    and the Streamlit-to-Next.js "go straight to the target" precedent.
+    `fastapi`/`pydantic` added to `pyproject.toml`'s main dependencies;
+    `httpx`/`uvicorn` under the `dev` extra only (not needed to run
+    `TestClient`-based tests, no deployment target decided yet).
+    `REPOSITORY_STRUCTURE.md` updated to add `src/poltika/api/` before
+    creating it, plus the dependency-boundary table row (`api/` may
+    depend on `engines/simulator/`/`common/`, never a caller-supplied
+    policy directory path).
+
+    One route (`POST /wff/calculate`, `src/poltika/api/wff.py`) wraps
+    Task 20's `run_wff_module()` directly against the internally-pinned
+    `policy_specs/working_for_families` directory -- never a
+    caller-supplied path. The request model reuses `WffScenario`'s own
+    `FactStatus`/`BestStartCohort`/`PartnerStatus` string enums directly
+    as Pydantic field types (not re-declared), so the API's vocabulary
+    cannot drift from the calculator's; `requested_policy_version` is a
+    required field, no implicit default, mirroring Task 20's own
+    explicit-version contract. The response's `ComponentResultResponse`
+    shape is pinned explicitly --
+    `{outcome, value: <decimal-as-string> | null, reason}` -- confirmed
+    that Pydantic v2 serializes `Decimal` to a JSON string, not a float,
+    preserving the exact-decimal precision specification.md's calculation
+    sequence requires. `src/poltika/api/main.py` registers explicit
+    exception handlers for `common.errors.PoltikaError` subclasses so a
+    loader-raised structural error never collapses into a 200:
+    `PolicyVersionMismatchError` -> 409 (caller-correctable), any other
+    `PoltikaError` -> 500 (a deployed-data problem, not the caller's
+    fault).
+
+    Four tests in `tests/unit/api/test_wff_api.py` (FastAPI `TestClient`,
+    reusing `spec_cases.yaml`'s own scenario blocks rather than
+    hand-authoring new ones): a normal calculated result, a needs_review
+    component that doesn't collapse to a zero/null-meaning-zero, a
+    malformed request body (missing field + invalid enum value, asserts a
+    4xx with per-field validation errors), and the `policy_version`
+    mismatch case explicitly asserting 409 -- not left as prose-only
+    documentation, since a loader exception silently becoming a 200 is
+    exactly the failure mode this task's doctrine is most worried about.
+    130/130 tests pass (up from 126), `ruff`, and `mypy --strict` clean.
+
+    **Review depth, stated explicitly:** this task adds no new policy
+    logic -- every calculated value still comes from
+    `calculate_wff()`/`run_wff_module()`, already verified through Tasks
+    12 and 17-20's full source-derivation and adversarial-review process.
+    The API layer's only job is HTTP routing, request validation, and
+    response serialization, so it does not get a Task-17-style
+    fresh-context review; ordinary GPT/Codex code review (structure,
+    error handling, schema correctness) is the stated, deliberate depth
+    for this task, not a silently skipped decision.
+
+    **PR #22 review round (GPT/Codex), two findings, both fixed:**
+    (1) `WFF_POLICY_DIR` locates `policy_specs/` relative to this source
+    file, which only resolves inside a source checkout --
+    `pyproject.toml`'s `[tool.setuptools.packages.find]` only packages
+    `src/`, so a normally `pip install`-ed wheel (confirmed by actually
+    building one: `poltika/**` only, no `policy_specs/`) would fail to
+    load `policy.yaml`. Fixing the packaging itself (e.g. moving
+    `policy_specs/` under `src/poltika/`) is a deployment/packaging
+    architecture decision beyond this task's single-module HTTP-wrapper
+    scope, touching every existing reference to `policy_specs/`'s
+    repo-root location -- **left open, explicitly documented as a known
+    limitation** in `poltika/api/main.py`'s module docstring, not silently
+    fixed. What this PR does add: a FastAPI `lifespan` startup check that
+    fails loudly and immediately if `policy_specs/` is missing, rather
+    than a confusing failure on the first request.
+    (2) The 500 handler returned `str(exc)` verbatim, and
+    `InvalidSourceCatalogError` in particular embeds absolute resolved
+    filesystem paths -- confirmed directly. Fixed: the exception is now
+    logged server-side (with traceback) but the response carries a fixed,
+    generic detail message with no exception text.
+    A third, non-bug scope finding was also addressed: the API's OpenAPI
+    `description` and the route's docstring now state explicitly that
+    every `"verified"` fact is the caller's own assertion, not
+    independently confirmed by Poltika, and that a result is a
+    conditional simulation, not a verified entitlement determination.
+    Two new regression tests added (the leak fix, the startup-failure
+    behaviour). 132/132 tests pass (up from 126), `ruff`, and
+    `mypy --strict` clean.
+
+    **Second PR #22 review round (GPT/Codex): accepted the path-leak fix
+    and conditional-simulation wording, but flagged that Task 21's
+    acceptance is scoped to a source-checkout deployment only** --
+    `policy_specs/` is confirmed absent from a built wheel (see finding 1
+    above), and the `lifespan` startup check only makes that failure
+    clear, it does not make the API deployable from an installed
+    artifact. Pete accepted PR #22 under that explicit scope and required
+    recording the following as a **future gate, not yet scheduled as a
+    numbered task**, before any deployment of this (or a later
+    Accommodation-Supplement-extended) API outside a source checkout:
+
+    1. Decide and implement how `policy_specs/` reaches an installed
+       deployment (e.g. embedding it under `src/poltika/` as package
+       data, a separate data-distribution mechanism, or a documented
+       "mount policy_specs/ at deploy time" convention) -- an explicit
+       packaging/deployment architecture decision, not a default to fall
+       into.
+    2. Add an installed-artifact test: build the wheel (`uv build
+       --wheel`), install it into a clean environment separate from this
+       source checkout, and confirm the API actually serves a
+       `/wff/calculate` request successfully end-to-end -- not merely
+       that the Task 21 startup check fails cleanly when the data is
+       missing, but that when correctly packaged, the API actually works
+       outside the checkout it was built in.
+
+    Until both exist, this API must not be presented as deployable beyond
+    a source checkout, regardless of what `pytest`/`ruff`/`mypy --strict`
+    report -- none of those currently run against an installed artifact.
 
 ### Week 3 — Accommodation Supplement
 22. Complete AS specification
