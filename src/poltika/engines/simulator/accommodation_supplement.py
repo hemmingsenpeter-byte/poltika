@@ -34,11 +34,14 @@ equivalent concepts.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 from enum import Enum
+from pathlib import Path
 
 from poltika.engines.simulator.wff import ComponentResult, FactStatus
-from poltika.policy.loader import PolicyParameterSet
+from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
+from poltika.semantics.schemas.policy_spec import ReferencePeriod
 
 
 class ClaimantCategory(str, Enum):
@@ -498,3 +501,155 @@ def calculate_accommodation_supplement(
         final_amount = pre_rounding_amount.to_integral_value(rounding=ROUND_CEILING)
 
     return ComponentResult(outcome="calculated", value=final_amount)
+
+
+_AS_MODULE_ID = "accommodation_supplement"
+
+
+def _covers(value_effective_from: date, value_effective_to: date | None, target_date: date) -> bool:
+    """Same interval-membership test as `wff.py`'s own `_covers()` (itself
+    duplicated from `poltika.policy.loader`'s private helper) -- duplicated
+    again here rather than imported across sibling simulator files, for the
+    same reason: this is a small, self-contained predicate, not a shared
+    abstraction two real policies are asking for."""
+    if target_date < value_effective_from:
+        return False
+    return value_effective_to is None or target_date < value_effective_to
+
+
+def _spans_reference_period(
+    value_effective_from: date, value_effective_to: date | None, reference_period: ReferencePeriod
+) -> bool:
+    """Whether a parameter value's effective interval fully contains the
+    policy's reference_period -- not merely the single requested
+    modelled_date. Mirrors `wff.py`'s `_spans_reference_period()` exactly
+    (Task 19/20's module-boundary invariant (3), now applied to AS)."""
+    if value_effective_from > reference_period.from_:
+        return False
+    return value_effective_to is None or value_effective_to >= reference_period.to
+
+
+def _as_module_validation_failure(
+    policy_dir: Path, modelled_date: date, parameters: PolicyParameterSet
+) -> ComponentResult | None:
+    """The module-boundary invariants Task 20 established for WFF's
+    `run_wff_module()`, applied to AS. Returns the shared `needs_review`
+    result to use for the single `accommodation_supplement` component, or
+    `None` if every invariant holds.
+
+    Unlike `_wff_module_validation_failure()`, there is no separate
+    "every parameter calculate_wff() might look up is declared" check
+    here -- that invariant exists for WFF because an undeclared required
+    parameter was always a malformed-fixture bug (PR #21 review finding).
+    For AS, `calculate_accommodation_supplement()`'s own `_param_value()`
+    helper already resolves an undeclared parameter to `needs_review`
+    directly (Task 23's documented design: an undeclared parameter is AS's
+    normal, expected v0.1 state right now, not a fixture bug) -- adding the
+    same check here would be redundant, not defensive.
+    """
+    spec = load_policy_spec(policy_dir / "policy.yaml")
+    reference_period = spec.reference_period
+
+    # Invariant: the loaded parameter set is actually for this module, not
+    # an unrelated or stale one -- a caller-supplied policy_dir resolving
+    # to a different policy_id would otherwise silently run AS arithmetic
+    # against, say, Working for Families' parameters.
+    if parameters.policy_id != _AS_MODULE_ID:
+        return ComponentResult(
+            outcome="needs_review",
+            reason=(
+                f"loaded policy_id '{parameters.policy_id}' does not match the "
+                f"'{_AS_MODULE_ID}' module -- a mismatched or foreign parameter set"
+            ),
+        )
+
+    # Invariant: the requested date actually falls within the period this
+    # policy version was reviewed to cover, not merely within some
+    # individual parameter's own interval.
+    if not _covers(reference_period.from_, reference_period.to, modelled_date):
+        return ComponentResult(
+            outcome="needs_review",
+            reason=(
+                f"modelled_date {modelled_date} is outside policy '{parameters.policy_id}''s "
+                f"reviewed reference_period [{reference_period.from_}, {reference_period.to})"
+            ),
+        )
+
+    # Invariant: every parameter actually declared in policy.yaml is
+    # rate-covered for the *complete* reference period, not just resolved
+    # for the single requested modelled_date. Iterated generically over
+    # `spec.parameters` -- never hardcoded to AS's specific parameter ids,
+    # the same discipline `_wff_module_validation_failure()` follows.
+    for param in spec.parameters:
+        resolution = parameters.get(param.id)
+        if resolution.outcome != "resolved":
+            # Already needs_review/unsupported for its own reason --
+            # nothing this invariant would add.
+            continue
+        matching_value = next(
+            (v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)),
+            None,
+        )
+        assert matching_value is not None, (
+            f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
+            "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
+        )
+        if not _spans_reference_period(matching_value.effective_from, matching_value.effective_to, reference_period):
+            return ComponentResult(
+                outcome="needs_review",
+                reason=(
+                    f"parameter '{param.id}' value effective {matching_value.effective_from}"
+                    f"-{matching_value.effective_to} covers the requested {modelled_date} but "
+                    f"does not span the complete reference period {reference_period.from_}-"
+                    f"{reference_period.to} -- a point-in-time match cannot verify a full-year "
+                    "rate"
+                ),
+            )
+
+    return None
+
+
+def run_as_module(
+    policy_dir: Path,
+    modelled_date: date,
+    scenario: AsScenario,
+    *,
+    requested_policy_version: str,
+) -> ComponentResult:
+    """Task 24.7: the Accommodation Supplement module's integration entry
+    point, mirroring `wff.py`'s `run_wff_module()` (Task 20) for AS's
+    single-component shape.
+
+    Combines Task 11's `load_policy_parameters()` and this file's own
+    `calculate_accommodation_supplement()` behind one call, enforcing the
+    module contract's `validation_checks` before the component is
+    calculated.
+
+    `requested_policy_version` is a required keyword argument, not an
+    optional one, for the same reason as `run_wff_module()`'s: module
+    identity has two halves (`policy_id`, checked unconditionally against
+    `_AS_MODULE_ID` below, and `policy_version`, checked by
+    `load_policy_parameters()` whenever a caller supplies one to check
+    against) -- an optional parameter defaulting to `None` would let a
+    caller silently skip the version half of that guarantee by omission.
+
+    A schema-version, approval-status, or requested/actual `policy_version`
+    mismatch still raises exactly as `load_policy_parameters()` already
+    does (unchanged, caller-level structural errors) -- only the
+    module-specific invariants above resolve to `needs_review` rather than
+    raising, consistent with `calculate_accommodation_supplement()`'s
+    existing "never a silent zero, always a reason" discipline.
+
+    No cross-module `dependencies` -- like WFF, AS v0.1 is single-module
+    integration (ARCHITECTURE.md's Simulation module contract notes
+    cross-module dependencies are v0.3's job, not this task's).
+    """
+    parameters = load_policy_parameters(
+        policy_dir, modelled_date, requested_policy_version=requested_policy_version
+    )
+
+    validation_failure = _as_module_validation_failure(policy_dir, modelled_date, parameters)
+    if validation_failure is not None:
+        return validation_failure
+
+    return calculate_accommodation_supplement(scenario, parameters)
