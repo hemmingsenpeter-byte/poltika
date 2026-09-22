@@ -1,0 +1,313 @@
+"""Task 23: `calculate_accommodation_supplement()` against the accepted
+Task 22 scoped calculation contract in `policy_specs/accommodation_supplement/
+specification.md`. Expected values are hand-derived independently from that
+contract's formulas (Schedule 4 Part 7 cl 1-3 area caps, r 18(2)'s DEC-001
+unrounded income-excess reduction, s 423(3)'s complete-$100 asset
+imputation, r 19's final round-up), not copied from an implementation.
+
+Runs through Task 11's real loader throughout, but against two fixtures:
+`parameters` is a synthetic policy.yaml carrying the real approved AS rates
+(the 20 values Task 22 independently verified) plus test-only, clearly
+non-authoritative `as_base_rate_*`/`as_income_level_*` values -- these do
+not exist in the real policy.yaml yet (pending Task 24's independent
+recalculation of the dated MSD tables they'd come from), so they cannot be
+"the real approved rate with review_status flipped" the way WFF's synthetic
+fixture works; they exist purely to exercise the calculated-outcome
+arithmetic. `real_as_parameters` is the actual approved
+`policy_specs/accommodation_supplement/policy.yaml`, used to prove the
+still-undeclared base-rate/income-level parameters propagate as
+`needs_review`, not a crash and not a guessed number.
+"""
+
+from __future__ import annotations
+
+from datetime import date
+from decimal import Decimal
+from pathlib import Path
+from typing import Any
+
+import pytest
+import yaml
+
+from poltika.engines.simulator.accommodation_supplement import (
+    Area,
+    AsScenario,
+    ClaimantCategory,
+    PartnerType,
+    TenureType,
+    calculate_accommodation_supplement,
+)
+from poltika.engines.simulator.wff import FactStatus
+from poltika.policy.loader import load_policy_parameters
+
+AS_POLICY_DIR = Path(__file__).resolve().parents[4] / "policy_specs" / "accommodation_supplement"
+MODELLED_DATE = date(2026, 6, 1)
+
+
+@pytest.fixture()
+def real_as_parameters():
+    """The real, approved AS policy.yaml -- used to prove the still-
+    undeclared claimant-category base rates and r 18(3) income level reach
+    the calculator as `needs_review`, never a crash and never a guessed
+    number (see `calculate_accommodation_supplement._param_value`'s
+    docstring for why an undeclared parameter is the normal v0.1 state
+    here, unlike WFF's PR #21 bug)."""
+    return load_policy_parameters(AS_POLICY_DIR, MODELLED_DATE)
+
+
+def _param(param_id: str, value_type: str, unit: str, value: str) -> dict[str, Any]:
+    return {
+        "id": param_id,
+        "value_type": value_type,
+        "unit": unit,
+        "values": [
+            {
+                "effective_from": "2026-03-02",
+                "effective_to": "2027-04-01",
+                "value": value,
+                "source_id": "test-source",
+                "locator": "s 1",
+                "review_status": "approved",
+            }
+        ],
+    }
+
+
+@pytest.fixture()
+def parameters(tmp_path: Path):
+    """The real 20 Task-22-verified AS values, plus test-only
+    `as_base_rate_*`/`as_income_level_*` figures that do NOT exist in the
+    real policy.yaml -- these are not statutory values, just round numbers
+    for exercising the arithmetic (documented inline, never to be confused
+    with a real MSD-sourced rate)."""
+    policy_dir = tmp_path / "policy"
+    policy_dir.mkdir()
+    policy = {
+        "schema_version": "0.1",
+        "policy_id": "accommodation_supplement",
+        "policy_version": "0.1.0",
+        "status": "approved",
+        "reference_period": {"from": "2026-03-02", "to": "2027-04-01"},
+        "source_catalog": "sources.yaml",
+        "assessment": {},
+        "inputs": [],
+        "parameters": [
+            _param("area_cap_with_dependent_children_area1", "money", "NZD_per_week", "305"),
+            _param("area_cap_with_dependent_children_area2", "money", "NZD_per_week", "220"),
+            _param("area_cap_with_dependent_children_area3", "money", "NZD_per_week", "160"),
+            _param("area_cap_with_dependent_children_area4", "money", "NZD_per_week", "120"),
+            _param(
+                "area_cap_no_dependent_children_couple_or_sole_parent_one_child_area1",
+                "money",
+                "NZD_per_week",
+                "235",
+            ),
+            _param(
+                "area_cap_no_dependent_children_couple_or_sole_parent_one_child_area2",
+                "money",
+                "NZD_per_week",
+                "155",
+            ),
+            _param(
+                "area_cap_no_dependent_children_couple_or_sole_parent_one_child_area3",
+                "money",
+                "NZD_per_week",
+                "105",
+            ),
+            _param(
+                "area_cap_no_dependent_children_couple_or_sole_parent_one_child_area4",
+                "money",
+                "NZD_per_week",
+                "80",
+            ),
+            _param("area_cap_single_no_dependent_children_area1", "money", "NZD_per_week", "165"),
+            _param("area_cap_single_no_dependent_children_area2", "money", "NZD_per_week", "105"),
+            _param("area_cap_single_no_dependent_children_area3", "money", "NZD_per_week", "80"),
+            _param("area_cap_single_no_dependent_children_area4", "money", "NZD_per_week", "70"),
+            _param("entry_threshold_rent_board_fraction", "fraction", "fraction", "0.25"),
+            _param("asset_ceiling_relationship_or_dependent_children", "money", "NZD", "16200"),
+            _param("asset_ceiling_other", "money", "NZD", "8100"),
+            _param(
+                "asset_imputation_threshold_relationship_or_dependent_children",
+                "money",
+                "NZD",
+                "5400",
+            ),
+            _param("asset_imputation_threshold_other", "money", "NZD", "2700"),
+            _param("asset_imputation_step_size", "money", "NZD", "100"),
+            _param("asset_imputation_amount_per_step", "money", "NZD_per_week", "1"),
+            _param("income_reduction_rate", "fraction", "fraction", "0.25"),
+            # Test-only figures, NOT statutory values -- see module docstring.
+            _param("as_base_rate_jobseeker_support", "money", "NZD_per_week", "300"),
+            _param("as_base_rate_sole_parent_support", "money", "NZD_per_week", "300"),
+            _param("as_base_rate_supported_living_payment", "money", "NZD_per_week", "300"),
+            _param("as_base_rate_non_beneficiary", "money", "NZD_per_week", "300"),
+            _param("as_income_level_non_beneficiary", "money", "NZD_per_week", "200"),
+        ],
+        "components": [],
+        "outputs": {},
+    }
+    (policy_dir / "policy.yaml").write_text(yaml.safe_dump(policy))
+    (policy_dir / "sources.yaml").write_text(
+        yaml.safe_dump({"sources": [{"id": "test-source", "kind": "legislation"}]})
+    )
+    return load_policy_parameters(policy_dir, MODELLED_DATE)
+
+
+def _ordinary_scenario(**overrides: object) -> AsScenario:
+    base: dict[str, object] = {
+        "household_eligibility": FactStatus.VERIFIED,
+        "claimant_category": ClaimantCategory.JOBSEEKER_SUPPORT,
+        "tenure_type": TenureType.RENT_CONTRIBUTIONS_OR_BOARD,
+        "partner_status": PartnerType.SINGLE,
+        "statistical_area_unit": Area.AREA_1,
+        "weekly_accommodation_costs": Decimal(200),
+        "dependent_children_count": 0,
+        "cash_assets": Decimal(1000),
+        "exempt_cash_asset_status": FactStatus.VERIFIED,
+    }
+    base.update(overrides)
+    return AsScenario(**base)  # type: ignore[arg-type]
+
+
+def test_ordinary_jobseeker_case_no_income_test(parameters) -> None:
+    """Single, no dependent children, Jobseeker Support, Area 1: entry
+    threshold = 0.25 * 300 = 75; excess = 200 - 75 = 125; cost-based =
+    min(0.7 * 125, 165) = 87.5; Jobseeker Support has no AS income test
+    (AS-08), so pre-rounding = 87.5; rounded up (r 19) = 88."""
+    result = calculate_accommodation_supplement(_ordinary_scenario(), parameters)
+
+    assert result.outcome == "calculated"
+    assert result.value == Decimal(88)
+
+
+def test_non_beneficiary_income_reduction_unrounded_excess(parameters) -> None:
+    """Same household, but non-beneficiary with weekly_income=250 and
+    cash_assets=3000. Imputation threshold (single, no children) = 2700;
+    asset excess = 300 -> 3 complete $100 steps -> $3/week imputed.
+    total_income = 253; income_level (test fixture) = 200; excess = 53,
+    NOT floored (DEC-001); reduction = 0.25 * 53 = 13.25; cost-based
+    (unchanged from the ordinary case) = 87.5; pre-rounding =
+    87.5 - 13.25 = 74.25; rounded up = 75."""
+    scenario = _ordinary_scenario(
+        claimant_category=ClaimantCategory.NON_BENEFICIARY,
+        weekly_income=Decimal(250),
+        cash_assets=Decimal(3000),
+    )
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "calculated"
+    assert result.value == Decimal(75)
+
+
+def test_cost_based_amount_at_entry_threshold_is_a_genuine_zero(parameters) -> None:
+    """weekly_accommodation_costs exactly at the entry threshold (75) ->
+    excess = 0 -> cost-based = 0, a genuine calculated zero (not
+    unsupported), per specification.md's "at the exact entry threshold,
+    the cost-based amount is zero"."""
+    scenario = _ordinary_scenario(weekly_accommodation_costs=Decimal(75))
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "calculated"
+    assert result.value == Decimal(0)
+
+
+def test_area_cap_binds_before_income_reduction(parameters) -> None:
+    """A very high weekly_accommodation_costs is capped at the Area 1
+    single-no-children maximum (165) before any income reduction --
+    excess = 2000 - 75 = 1925; 0.7 * 1925 = 1347.5, capped to 165;
+    Jobseeker Support has no income test, so final = ceil(165) = 165."""
+    scenario = _ordinary_scenario(weekly_accommodation_costs=Decimal(2000))
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "calculated"
+    assert result.value == Decimal(165)
+
+
+@pytest.mark.parametrize(
+    ("overrides", "expected_reason_fragment"),
+    [
+        ({"household_eligibility": FactStatus.EXCLUDED}, "household_eligibility_facts verified outside"),
+        (
+            {"claimant_category": ClaimantCategory.PENSION_OR_VETERANS},
+            "outside the v0.1 supported categories",
+        ),
+        ({"tenure_type": TenureType.HOMEOWNER}, "homeowner accommodation costs"),
+        ({"partner_status": PartnerType.JOINT_TENANCY}, "needs its own specification"),
+        ({"exempt_cash_asset_status": FactStatus.UNKNOWN}, "exempt cash asset"),
+        ({"exempt_cash_asset_status": FactStatus.EXCLUDED}, "exempt cash asset"),
+    ],
+)
+def test_unsupported_household_gate_triggers(
+    parameters, overrides: dict[str, object], expected_reason_fragment: str
+) -> None:
+    scenario = _ordinary_scenario(**overrides)
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "unsupported"
+    assert result.value is None
+    assert expected_reason_fragment in (result.reason or "")
+
+
+def test_asset_ceiling_exceeded_is_unsupported_not_zero(parameters) -> None:
+    """cash_assets at/above the r 15 ceiling ($8,100 for a single claimant
+    with no dependent children) fails the assets requirement (s 65(1)(b))
+    -- a genuine, evidenced exclusion, not a calculated zero."""
+    scenario = _ordinary_scenario(cash_assets=Decimal(8100))
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "unsupported"
+    assert result.value is None
+    assert "assets requirement" in (result.reason or "")
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"household_eligibility": FactStatus.UNKNOWN},
+        {"claimant_category": None},
+        {"tenure_type": None},
+        {"partner_status": None},
+        {"statistical_area_unit": None},
+        {"weekly_accommodation_costs": None},
+        {"dependent_children_count": None},
+        {"cash_assets": None},
+    ],
+)
+def test_unverified_facts_are_needs_review_not_a_silent_default(
+    parameters, overrides: dict[str, object]
+) -> None:
+    scenario = _ordinary_scenario(**overrides)
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "needs_review"
+    assert result.value is None
+
+
+def test_non_beneficiary_missing_weekly_income_is_needs_review(parameters) -> None:
+    scenario = _ordinary_scenario(claimant_category=ClaimantCategory.NON_BENEFICIARY)
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "needs_review"
+    assert "weekly_income" in (result.reason or "")
+
+
+def test_real_policy_undeclared_base_rate_is_needs_review_not_a_crash(real_as_parameters) -> None:
+    """The real, approved policy.yaml does not yet declare
+    as_base_rate_jobseeker_support (pending Task 24) -- this must resolve
+    needs_review, not raise KeyError, unlike WFF's PR #21 bug (which was a
+    malformed-fixture edge case, not the normal state of a real
+    policy.yaml)."""
+    result = calculate_accommodation_supplement(_ordinary_scenario(), real_as_parameters)
+
+    assert result.outcome == "needs_review"
+    assert result.value is None
+    assert "as_base_rate_jobseeker_support" in (result.reason or "")
+    assert "not yet declared" in (result.reason or "")

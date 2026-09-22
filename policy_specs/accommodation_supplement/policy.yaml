@@ -104,27 +104,148 @@ inputs:
     missing_outcome: needs_review
     note: Combined weekly income of claimant and partner (r 18(2A)), before the s 423(3) asset-imputation addition. Required only for the non-beneficiary income-reduction step (r 18); other supported claimant categories may have a different or no separate AS income test (AS-08).
 
-# Task 25 finding, not an oversight: every ParameterUnit member in
-# src/poltika/semantics/schemas/policy_spec.py is tax-year-based and
-# WFF-worded (NZD_per_tax_year, NZD_per_tax_year_after_tax,
-# NZD_per_child_per_tax_year, and a fraction unit specifically named
-# NZD_per_complete_NZD_above_threshold). AS needs a weekly-dollar unit
-# (the Schedule 4 Part 7 cl 1-3 area caps, confirmed directly against the
-# Act text: $305/$220/$160/$120, $235/$155/$105/$80, $165/$105/$80/$70 for
-# Areas 1-4 by household category) and a general-purpose rate/fraction
-# unit not implicitly WFF's "above threshold" framing (r 18(2)'s 25% income
-# reduction; s 423(3)'s $1-per-$100-of-assets imputation; r 15's flat
-# asset ceiling, which is a gate amount, not a rate, and doesn't fit
-# ParameterValueType.FRACTION or MONEY's existing unit sets either).
-# Per this task's own scope fence ("do not redesign the schema in this
-# task"), that extension is left for Task 25/26, not added here --
-# populating this list with mislabeled WFF units would misrepresent the
-# data, and populating it with schema-invalid units would break
-# load_policy_spec(). Every value this task independently verified against
-# primary sources is recorded in specification.md's "Proposed Task 22
-# scoped calculation contract" section instead, ready to move here once
-# the schema can represent it correctly.
-parameters: []
+# Task 23 (23 September 2026, per Pete's decision): populated using the
+# narrow ParameterUnit extension (NZD, NZD_per_week, fraction -- see that
+# enum's docstring) added for exactly this purpose. Every value below was
+# independently verified directly against the Social Security Act 2018 or
+# Social Security Regulations 2018 official text during Task 22 (see
+# specification.md's "Approved Task 22 scoped calculation contract"
+# section) -- review_status: approved reflects that direct statutory
+# verification, not a dated MSD table (none of these values come from one).
+#
+# Deliberately NOT included: a base-rate-by-claimant-category parameter
+# and the r 18(3) jobseeker-equivalent income level. Both come from dated
+# MSD tables (as-msd-jobseeker-rates-2026 etc.) this project has not yet
+# independently recalculated -- Task 24's job, matching WFF's in_work_base
+# precedent. ParameterSpec.values requires at least one value (SCHEMA.md:
+# "no matching interval means unsupported... not zero"), so a parameter
+# cannot be declared with no sourced value at all; run_as_module() (Task
+# 23's module-boundary entry point, mirroring wff.py's
+# _WFF_REQUIRED_PARAMETER_IDS check) must detect their absence and resolve
+# needs_review rather than crash, not this file inventing a placeholder.
+parameters:
+  # Schedule 4 Part 7 cl 1-3 area caps, rent/contributions/board tenure.
+  # Household category selects which set of four; Area 1-4 selects within
+  # a set. Confirmed 2026-09-22/23 directly against the Act text
+  # (specification.md, calculation sequence step 4).
+  - id: area_cap_with_dependent_children_area1
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 305, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 1(a)', review_status: approved}
+  - id: area_cap_with_dependent_children_area2
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 220, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 1(b)', review_status: approved}
+  - id: area_cap_with_dependent_children_area3
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 160, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 1(c)', review_status: approved}
+  - id: area_cap_with_dependent_children_area4
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 120, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 1(d)', review_status: approved}
+  - id: area_cap_no_dependent_children_couple_or_sole_parent_one_child_area1
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 235, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 2(a)', review_status: approved}
+  - id: area_cap_no_dependent_children_couple_or_sole_parent_one_child_area2
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 155, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 2(b)', review_status: approved}
+  - id: area_cap_no_dependent_children_couple_or_sole_parent_one_child_area3
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 105, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 2(c)', review_status: approved}
+  - id: area_cap_no_dependent_children_couple_or_sole_parent_one_child_area4
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 80, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 2(d)', review_status: approved}
+  - id: area_cap_single_no_dependent_children_area1
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 165, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 3(a)', review_status: approved}
+  - id: area_cap_single_no_dependent_children_area2
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 105, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 3(b)', review_status: approved}
+  - id: area_cap_single_no_dependent_children_area3
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 80, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 3(c)', review_status: approved}
+  - id: area_cap_single_no_dependent_children_area4
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 70, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 3(d)', review_status: approved}
+
+  # Entry threshold: 25% of the claimant's base rate, rent/board tenure
+  # (Schedule 4 Part 7 cl 1-3). The homeowner threshold (30%, cl 4-6) is
+  # not included -- homeowner tenure is unsupported in this v0.1 domain.
+  - id: entry_threshold_rent_board_fraction
+    value_type: fraction
+    unit: fraction
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 0.25, source_id: as-social-security-act, locator: 'Schedule 4 Part 7 cl 1-3', review_status: approved}
+
+  # r 15 assets requirement -- a gate amount (eligibility ceiling), not a
+  # rate. Confirmed directly against the Regulations text.
+  - id: asset_ceiling_relationship_or_dependent_children
+    value_type: money
+    unit: NZD
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 16200, source_id: as-social-security-regulations, locator: 'r 15(1)(a)', review_status: approved}
+  - id: asset_ceiling_other
+    value_type: money
+    unit: NZD
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 8100, source_id: as-social-security-regulations, locator: 'r 15(1)(b)', review_status: approved}
+
+  # s 423(3) asset-to-income imputation: $1/week per complete $100 of cash
+  # assets over the threshold. Modelled as three parameters (threshold,
+  # step size, per-step amount) rather than baking "$100" into a rate
+  # unit -- the calculator applies floor(excess / step_size) * per_step,
+  # per specification.md's "complete hundreds" reading.
+  - id: asset_imputation_threshold_relationship_or_dependent_children
+    value_type: money
+    unit: NZD
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 5400, source_id: as-social-security-act, locator: 's 423(3)(a)', review_status: approved}
+  - id: asset_imputation_threshold_other
+    value_type: money
+    unit: NZD
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 2700, source_id: as-social-security-act, locator: 's 423(3)(b)', review_status: approved}
+  - id: asset_imputation_step_size
+    value_type: money
+    unit: NZD
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 100, source_id: as-social-security-act, locator: 's 423(3)', review_status: approved}
+  - id: asset_imputation_amount_per_step
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 1, source_id: as-social-security-act, locator: 's 423(3)', review_status: approved}
+
+  # r 18(2): 25 cents per $1 of relevant weekly income in excess of the
+  # r 18(3) income level. DEC-001 decided the excess is NOT floored before
+  # this rate applies -- that is calculator logic (specification.md step
+  # 5), not encoded in this parameter's value or unit.
+  - id: income_reduction_rate
+    value_type: fraction
+    unit: fraction
+    values:
+      - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 0.25, source_id: as-social-security-regulations, locator: 'r 18(2)', review_status: approved}
 
 components:
   - id: accommodation_supplement

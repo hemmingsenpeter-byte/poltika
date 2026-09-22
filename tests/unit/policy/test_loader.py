@@ -326,3 +326,41 @@ def test_value_type_unit_dimension_mismatch_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="not a valid unit for that dimension"):
         load_policy_parameters(tmp_path, MODELLED_DATE)
+
+
+@pytest.mark.parametrize(
+    ("value_type", "unit"),
+    [
+        ("money", "NZD"),
+        ("money", "NZD_per_week"),
+        ("fraction", "fraction"),
+    ],
+)
+def test_task_23_as_units_are_valid(tmp_path: Path, value_type: str, unit: str) -> None:
+    """Task 23's narrow, additive ParameterUnit extension (NZD, NZD_per_week,
+    fraction -- see the ParameterUnit docstring for why) must actually work,
+    not just fail to break WFF. Confirms each new unit resolves normally
+    for its correct value_type, independent of any AS-specific fixture."""
+    policy = _base_policy()
+    policy["parameters"][0]["value_type"] = value_type
+    policy["parameters"][0]["unit"] = unit
+    _write_policy(tmp_path, policy)
+
+    result = load_policy_parameters(tmp_path, MODELLED_DATE)
+
+    resolution = result.get("rate")
+    assert resolution.outcome == "resolved"
+    assert resolution.unit == unit
+
+
+def test_task_23_fraction_unit_still_rejects_wrong_value_type(tmp_path: Path) -> None:
+    """The new bare `fraction` unit must still be dimension-checked like
+    every other unit -- adding it must not accidentally widen `money`'s
+    valid-unit set too."""
+    policy = _base_policy()
+    policy["parameters"][0]["value_type"] = "money"
+    policy["parameters"][0]["unit"] = "fraction"
+    _write_policy(tmp_path, policy)
+
+    with pytest.raises(ValueError, match="not a valid unit for that dimension"):
+        load_policy_parameters(tmp_path, MODELLED_DATE)
