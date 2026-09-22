@@ -67,13 +67,39 @@ def _assumed_parameters(
 
 
 def test_single_claimant_household_category_changes_at_two_dependent_children() -> None:
-    """PR #25 self-review: cl 2 covers a single claimant with one child;
-    only a single claimant with 2+ children reaches cl 1."""
-    one_child = _household_category(PartnerType.SINGLE, 1)
-    two_children = _household_category(PartnerType.SINGLE, 2)
+    """PR #25 self-review: cl 2 covers a single claimant with one child
+    (Area 1 cap $235); only a single claimant with 2+ children reaches cl
+    1 (Area 1 cap $305). Exercised through the public calculator, not the
+    private `_household_category()` helper directly -- a large
+    `weekly_accommodation_costs` pushes the cost-based amount to saturate
+    whichever area cap applies, so the resulting AS amount alone reveals
+    which household category the claimant fell into."""
+    parameters = _assumed_parameters(
+        "regression-household-category-boundary",
+        ClaimantCategory.JOBSEEKER_SUPPORT,
+    )
 
-    assert one_child.value == "no_dependent_children_couple_or_sole_parent_one_child"
-    assert two_children.value == "with_dependent_children"
+    one_child = calculate_accommodation_supplement(
+        _ordinary_as_scenario(
+            dependent_children_count=1,
+            cash_assets=Decimal(10000),
+            weekly_accommodation_costs=Decimal(2000),
+        ),
+        parameters,
+    )
+    two_children = calculate_accommodation_supplement(
+        _ordinary_as_scenario(
+            dependent_children_count=2,
+            cash_assets=Decimal(10000),
+            weekly_accommodation_costs=Decimal(2000),
+        ),
+        parameters,
+    )
+
+    assert one_child.outcome == "calculated"
+    assert one_child.value == Decimal(235), "1 child: cl 2's $235 cap, not cl 1's $305"
+    assert two_children.outcome == "calculated"
+    assert two_children.value == Decimal(305), "2 children: cl 1's $305 cap, not cl 2's $235"
 
 
 def test_one_child_single_uses_higher_asset_ceiling_but_cl2_area_cap() -> None:
