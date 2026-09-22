@@ -711,23 +711,42 @@ twin of the New Zealand policy system.
     acceptance tests** instead of a generic loader guard. The
     ARCHITECTURE_ISSUE finding stays open until those tests exist and
     pass — not resolved by PR #20.
-20. Integrate into simulator — **Blocked on acceptance tests, not yet
-    started.** Per Pete's Task 19 decision above, integration must not be
-    accepted until tests exist proving, at the integration boundary (not
-    inside Task 11's generic loader): (a) the requested calculation's
-    modelled date/interval falls within the policy's reviewed
-    `reference_period` — a foreign or mismatched date must not silently
-    produce an annual result; (b) the loaded `PolicyParameterSet`'s
-    `policy_id`/`policy_version` matches what the integration caller
-    actually requested, not an unrelated or stale parameter set; (c) every
-    parameter the calculation depends on is actually rate-covered for the
-    complete period being calculated, not just individually resolved for a
-    single point-in-time date. These are integration-boundary
-    responsibilities specifically because Task 11's loader itself
-    deliberately stays general-purpose (no hardcoded assessment-period
-    assumption, per its own tested design) — Task 20 is where a specific
-    caller's assumptions about "this is a full 2026-27 WFF calculation"
-    actually apply.
+20. Integrate into simulator — **Implemented for WFF, pending review.**
+    Per Pete's Task 19 decision above and ARCHITECTURE.md's Simulation
+    module contract, added `run_wff_module()`
+    (`src/poltika/engines/simulator/wff.py`): combines Task 11's
+    `load_policy_parameters()` and Task 12's `calculate_wff()` behind one
+    call, enforcing the module contract's `validation_checks` — the
+    existing schema-version/approval-status/`policy_version` gates
+    `load_policy_parameters()` already raises for, plus the three
+    module-specific invariants Task 19 assigned here rather than to Task
+    11's general-purpose loader: (a) the requested modelled date falls
+    within the policy's reviewed `reference_period`, not merely within
+    some individual parameter's own interval — a foreign or mismatched
+    date must not silently produce an annual result; (b) the loaded
+    `PolicyParameterSet.policy_id` matches this module (`
+    working_for_families`), not an unrelated or stale parameter set; (c)
+    every parameter the calculation depends on is rate-covered for the
+    *complete* reference period, not just individually resolved for the
+    single requested date. Each invariant resolves to `needs_review` for
+    all four `WffResult` components (never a silent zero), matching the
+    calculator's own existing gate-failure pattern, rather than raising —
+    only the pre-existing schema/status/version gates still raise, since
+    those are unchanged, caller-level structural errors, not new
+    module-boundary logic.
+
+    Deliberately single-module: no cross-module `dependencies`
+    (ARCHITECTURE.md notes those are v0.3's job). Six new tests in
+    `tests/unit/engines/simulator/test_wff_module.py` cover all three
+    invariants (including the mirror-direction interval case) plus a
+    behaviour-preservation smoke test (`run_wff_module()` against the real
+    approved policy must exactly match calling `load_policy_parameters()`
+    + `calculate_wff()` directly) and confirm the pre-existing
+    `policy_version` mismatch raise is untouched. 125/125 tests pass
+    (up from 119), `ruff`, and `mypy --strict` clean. These are the three
+    blocking acceptance tests the Task 17 ARCHITECTURE_ISSUE finding
+    required — pending GPT/Codex fresh-context review before Pete accepts
+    and the finding is closed.
 21. Add API — gated on the pure calculator passing acceptance
 
 ### Week 3 — Accommodation Supplement

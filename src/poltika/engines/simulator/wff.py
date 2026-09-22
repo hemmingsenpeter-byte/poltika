@@ -33,11 +33,14 @@ out of v0.1 scope and not modelled.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date
 from decimal import ROUND_FLOOR, Decimal
 from enum import Enum
+from pathlib import Path
 from typing import Literal
 
-from poltika.policy.loader import PolicyParameterSet
+from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
+from poltika.semantics.schemas.policy_spec import ReferencePeriod
 
 ComponentOutcome = Literal["calculated", "needs_review", "unsupported"]
 
@@ -745,3 +748,209 @@ def calculate_wff(scenario: WffScenario, parameters: PolicyParameterSet) -> WffR
         minimum_family_tax_credit=mftc_result,
         best_start=best_start_result,
     )
+
+
+# --- Task 20: module integration, per ARCHITECTURE.md's "Simulation module
+# contract" -- combines Task 11's load_policy_parameters() and this file's
+# own calculate_wff() behind one call, adding the module contract's
+# `validation_checks`: the schema-version/approval-status gates
+# load_policy_parameters() already enforces, plus the module-specific
+# invariants below. Task 17's independent review found that a resolved
+# parameter's interval was never checked against the policy's complete
+# reference_period, only against the single requested modelled_date
+# (ARCHITECTURE_ISSUE). Pete decided (22 September 2026, recorded in
+# BUILD_PLAN.md Task 19) to keep Task 11's loader general-purpose and
+# deliberately free of any hardcoded assessment-period assumption --
+# tests/unit/policy/test_loader.py's test_open_ended_final_interval_resolves
+# already establishes that as intentional, not an oversight -- and to place
+# this responsibility here instead, at the module integration boundary,
+# where a specific caller's assumption "this is a full 2026-27 WFF
+# calculation" actually applies.
+
+_WFF_MODULE_ID = "working_for_families"
+
+# Every parameter id calculate_wff()'s component functions look up via
+# _param_value() -- kept as one explicit list so the module boundary can
+# confirm each one actually resolves *before* calculate_wff() runs, rather
+# than letting PolicyParameterSet.get() raise a bare KeyError partway
+# through a component calculation for a policy.yaml that simply never
+# declared one of them (PR #21 review finding).
+_WFF_REQUIRED_PARAMETER_IDS = frozenset(
+    {
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate",
+        "in_work_base",
+        "in_work_additional_child",
+        "minimum_family_prescribed_amount",
+        "best_start_annual_amount",
+        "best_start_abatement_threshold",
+        "best_start_abatement_rate",
+    }
+)
+
+
+def _covers(value_effective_from: date, value_effective_to: date | None, target_date: date) -> bool:
+    """Same interval-membership test as `poltika.policy.loader`'s private
+    `_covers()` -- duplicated deliberately, not imported: that function is
+    a loader implementation detail, and this file must not reach into it
+    (REPOSITORY_STRUCTURE.md's dependency boundary is one-directional,
+    engines/simulator -> policy, not the reverse of poking at policy's
+    private helpers)."""
+    if target_date < value_effective_from:
+        return False
+    return value_effective_to is None or target_date < value_effective_to
+
+
+def _spans_reference_period(
+    value_effective_from: date, value_effective_to: date | None, reference_period: ReferencePeriod
+) -> bool:
+    """Whether a parameter value's effective interval fully contains the
+    policy's reference_period -- not merely the single requested
+    modelled_date. Module-boundary invariant (3): a value whose interval
+    starts partway through the reference period, or ends before it, must
+    not be treated as a verified full-year rate even though it covers one
+    requested `modelled_date`."""
+    if value_effective_from > reference_period.from_:
+        return False
+    return value_effective_to is None or value_effective_to >= reference_period.to
+
+
+def _wff_module_validation_failure(
+    policy_dir: Path, modelled_date: date, parameters: PolicyParameterSet
+) -> ComponentResult | None:
+    """The three Task 20 module-specific `validation_checks`, in addition
+    to the schema-version/approval-status gates `load_policy_parameters()`
+    already enforced by the time this runs. Returns the shared
+    `needs_review` result to use for all four `WffResult` components, or
+    `None` if every invariant holds.
+    """
+    spec = load_policy_spec(policy_dir / "policy.yaml")
+    reference_period = spec.reference_period
+
+    # Invariant (2): the loaded parameter set is actually for this module,
+    # not an unrelated or stale one -- a caller-supplied policy_dir
+    # resolving to a different policy_id would otherwise silently run WFF
+    # arithmetic against, say, Accommodation Supplement's parameters.
+    if parameters.policy_id != _WFF_MODULE_ID:
+        return ComponentResult(
+            outcome="needs_review",
+            reason=(
+                f"loaded policy_id '{parameters.policy_id}' does not match the "
+                f"'{_WFF_MODULE_ID}' module -- a mismatched or foreign parameter set"
+            ),
+        )
+
+    # Invariant (2b): every parameter calculate_wff() might look up is
+    # actually declared by this policy.yaml -- a policy.yaml that omits
+    # one (e.g. an incomplete or malformed authoring pass) must not reach
+    # calculate_wff() and crash with KeyError partway through a component;
+    # it must resolve to the same needs_review contract every other
+    # module-boundary failure does (PR #21 review finding).
+    missing_parameter_ids = sorted(_WFF_REQUIRED_PARAMETER_IDS - parameters.resolutions.keys())
+    if missing_parameter_ids:
+        return ComponentResult(
+            outcome="needs_review",
+            reason=(
+                f"policy '{parameters.policy_id}' does not declare required parameter(s) "
+                f"{missing_parameter_ids} -- calculate_wff() cannot run against an incomplete "
+                "parameter set"
+            ),
+        )
+
+    # Invariant (1): the requested date actually falls within the period
+    # this policy version was reviewed to cover, not merely within some
+    # individual parameter's own interval.
+    if not _covers(reference_period.from_, reference_period.to, modelled_date):
+        return ComponentResult(
+            outcome="needs_review",
+            reason=(
+                f"modelled_date {modelled_date} is outside policy '{parameters.policy_id}''s "
+                f"reviewed reference_period [{reference_period.from_}, {reference_period.to})"
+            ),
+        )
+
+    # Invariant (3): every parameter this calculation could draw on is
+    # rate-covered for the *complete* reference period, not just resolved
+    # for the single requested modelled_date.
+    for param in spec.parameters:
+        resolution = parameters.get(param.id)
+        if resolution.outcome != "resolved":
+            # Already needs_review/unsupported for its own reason (e.g.
+            # in_work_base's live rate-status gate) -- nothing this
+            # invariant would add.
+            continue
+        matching_value = next(
+            (v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)),
+            None,
+        )
+        assert matching_value is not None, (
+            f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
+            "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
+        )
+        if not _spans_reference_period(matching_value.effective_from, matching_value.effective_to, reference_period):
+            return ComponentResult(
+                outcome="needs_review",
+                reason=(
+                    f"parameter '{param.id}' value effective {matching_value.effective_from}"
+                    f"-{matching_value.effective_to} covers the requested {modelled_date} but "
+                    f"does not span the complete reference period {reference_period.from_}-"
+                    f"{reference_period.to} -- a point-in-time match cannot verify a full-year "
+                    "rate"
+                ),
+            )
+
+    return None
+
+
+def run_wff_module(
+    policy_dir: Path,
+    modelled_date: date,
+    scenario: WffScenario,
+    *,
+    requested_policy_version: str,
+) -> WffResult:
+    """Task 20: the WFF module's integration entry point.
+
+    Combines Task 11's `load_policy_parameters()` and this file's own
+    `calculate_wff()` behind one call, enforcing the module contract's
+    `validation_checks` before any component is calculated.
+
+    `requested_policy_version` is a required keyword argument, not an
+    optional one -- module identity has two halves, `policy_id` (checked
+    unconditionally against `_WFF_MODULE_ID` below) and `policy_version`
+    (checked by `load_policy_parameters()`, but only when a caller
+    actually supplies a version to check against). An optional parameter
+    defaulting to `None` would let a caller silently skip the version half
+    of that guarantee by omission -- exactly the gap the "annual module
+    needs an explicit version-selection contract" review finding named
+    (PR #21). Every integration caller must state which `policy_version`
+    it was built against; there is no implicit "whatever's in the
+    directory" fallback.
+
+    A schema-version, approval-status, or requested/actual `policy_version`
+    mismatch still raises exactly as `load_policy_parameters()` already
+    does (unchanged, caller-level structural errors) -- only the
+    module-specific invariants above resolve to `needs_review` rather than
+    raising, consistent with this module's existing "never a silent zero,
+    always a reason" discipline.
+
+    No cross-module `dependencies` -- WFF v0.1 is single-module
+    integration (ARCHITECTURE.md's Simulation module contract explicitly
+    notes cross-module dependencies are v0.3's job, not this task's).
+    """
+    parameters = load_policy_parameters(
+        policy_dir, modelled_date, requested_policy_version=requested_policy_version
+    )
+
+    validation_failure = _wff_module_validation_failure(policy_dir, modelled_date, parameters)
+    if validation_failure is not None:
+        return WffResult(
+            family_tax_credit=validation_failure,
+            in_work_tax_credit=validation_failure,
+            minimum_family_tax_credit=validation_failure,
+            best_start=validation_failure,
+        )
+
+    return calculate_wff(scenario, parameters)
