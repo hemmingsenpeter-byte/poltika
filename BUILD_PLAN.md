@@ -882,6 +882,30 @@ twin of the New Zealand policy system.
     a source checkout, regardless of what `pytest`/`ruff`/`mypy --strict`
     report -- none of those currently run against an installed artifact.
 
+    **Deployment gate closed, 23 September 2026 (ADR-0011).** Presented
+    Pete the three options this section named (embed under `src/`, a
+    separate distribution artifact, a deploy-time mount convention) with
+    the concrete blast radius of each (embedding would touch 12+ existing
+    Python file references and three CI glob patterns); Pete chose the
+    deploy-time mount convention. `policy_specs/` is deploy-time
+    configuration, not package data -- supplied via the
+    `POLTIKA_POLICY_SPECS_DIR` environment variable
+    (`poltika.api.wff._wff_policy_dir()`), falling back to the source-
+    checkout-relative default when unset, so local development and every
+    existing deployment are unaffected. The Task 21 `_lifespan` startup
+    check is unchanged -- only what feeds `WFF_POLICY_DIR` changed.
+    `tests/installed_artifact/test_installed_artifact.py` (marked
+    `installed_artifact`, excluded from the default fast suite via
+    `pyproject.toml`'s `addopts`, run explicitly with `uv run pytest -m
+    installed_artifact`) builds the real wheel, installs it into a
+    throwaway venv with no source checkout on `sys.path`, and confirms
+    `/wff/calculate` actually serves a request end-to-end -- independently
+    verified twice: once via the committed test, once via a manual
+    positive/negative sanity check (with the environment variable
+    correctly unset, startup fails with the documented error; set, the
+    request succeeds). This API may now be presented as deployable beyond
+    a source checkout, given `POLTIKA_POLICY_SPECS_DIR` is set correctly.
+
     Immediately before merging, Claude Code independently re-verified
     `pytest` (132/132), `ruff`, and `mypy --strict` all pass, and that
     CI's `check-protected-paths` check was green, at the reviewed commit

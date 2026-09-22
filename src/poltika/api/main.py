@@ -5,23 +5,23 @@ explicit exception handlers for `common.errors.PoltikaError` subclasses so
 a loader-raised, caller-level structural error never silently collapses
 into a 200 -- see each handler's docstring for the specific status chosen.
 
-**Known packaging limitation, not fixed by this task (PR #22 review
-finding):** `poltika.api.wff.WFF_POLICY_DIR` locates `policy_specs/`
-relative to this source file, which only resolves inside a source
-checkout -- `policy_specs/` lives at the repo root, outside
-`src/poltika/`, and `pyproject.toml`'s `[tool.setuptools.packages.find]`
-only packages `src/`, so a normally `pip install`-ed wheel would not
-carry `policy_specs/` at all and this API would fail to start. Embedding
-policy data inside the installed package (e.g. moving `policy_specs/`
-under `src/poltika/`) is a packaging/deployment architecture decision
-well beyond this task's single-module HTTP-wrapper scope, and touches
-every existing reference to `policy_specs/`'s current repo-root location
-(tests, `wff.py`, `benchmarks.yaml`/`spec_cases.yaml` tooling) -- it needs
-its own explicit decision before this API is ever deployed outside a
-source checkout, not a silent fix here. `_startup_policy_directory_check`
-below only makes the failure loud and immediate (at process startup) if
-that directory is ever missing, rather than a confusing failure on the
-first request.
+**Deployment gate, resolved (ADR-0011, 23 September 2026):**
+`policy_specs/` is confirmed absent from a built wheel (`pyproject.toml`'s
+`[tool.setuptools.packages.find]` only packages `src/`) -- embedding it
+under `src/poltika/` instead would touch 12+ existing file references,
+three CI glob patterns, and `REPOSITORY_STRUCTURE.md`'s whole documented
+tree for a packaging concern, and would blur the existing distinction
+between `policy_specs/` (reviewed, independently-versioned policy
+content) and `src/` (code). Pete decided: `policy_specs/` is deploy-time
+configuration, not package data -- supplied via the `POLTIKA_POLICY_SPECS_
+DIR` environment variable (`poltika.api.wff._wff_policy_dir()`), the same
+way this project already treats `data/`'s raw snapshots as external to
+the code package. Local development is unaffected -- the environment
+variable is optional and falls back to the source-checkout-relative path
+Task 21 originally used. `_lifespan` below still fails loudly and
+immediately at startup if the resolved directory has no `policy.yaml`,
+whichever way it was resolved -- the safety net Task 21 built is
+unchanged, only what feeds `WFF_POLICY_DIR` changed.
 """
 
 from __future__ import annotations
@@ -43,14 +43,16 @@ logger = logging.getLogger("poltika.api")
 @asynccontextmanager
 async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Fail loudly and immediately at startup if `policy_specs/` isn't
-    where `WFF_POLICY_DIR` expects it -- see this module's docstring for
-    why that can happen (a `pip install`-ed deployment, not a source
-    checkout) and why fixing it is out of this task's scope."""
+    where `WFF_POLICY_DIR` expects it -- whether that's the source-
+    checkout-relative default or a `POLTIKA_POLICY_SPECS_DIR` override
+    (ADR-0011, see this module's docstring)."""
     if not (WFF_POLICY_DIR / "policy.yaml").is_file():
         raise RuntimeError(
-            f"WFF_POLICY_DIR ({WFF_POLICY_DIR}) has no policy.yaml -- this API only "
-            "runs from a source checkout today (see poltika.api.main's module docstring "
-            "for the known packaging limitation)"
+            f"WFF_POLICY_DIR ({WFF_POLICY_DIR}) has no policy.yaml -- set "
+            "POLTIKA_POLICY_SPECS_DIR to the directory containing "
+            "working_for_families/policy.yaml if running from an installed "
+            "artifact rather than a source checkout (see poltika.api.main's "
+            "module docstring, ADR-0011)"
         )
     yield
 

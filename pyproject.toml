@@ -28,6 +28,11 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# installed_artifact tests build a wheel and install it into a throwaway
+# venv (ADR-0011) -- too slow for the default fast suite, excluded here
+# and run explicitly with `uv run pytest -m installed_artifact`.
+markers = ["installed_artifact: builds and installs a real wheel (slow, not part of the default suite)"]
+addopts = "-m 'not installed_artifact'"
 
 [tool.ruff]
 line-length = 100
