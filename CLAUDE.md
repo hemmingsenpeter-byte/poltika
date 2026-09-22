@@ -48,6 +48,10 @@ Protected statutory expected values require the process defined in doctrine/test
 
 Use the discrepancy taxonomy in doctrine/review-doctrine.md.
 
+Before publishing or recommending acceptance of an implementation PR, use
+`.claude/skills/pr-review-preflight/SKILL.md`. An author preflight is not the
+independent reviewer rotation required by BUILD_PLAN.md.
+
 Interpretation ambiguity must be escalated rather than silently resolved.
 
 ## External prior art
