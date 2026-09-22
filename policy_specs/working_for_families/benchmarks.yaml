@@ -253,7 +253,7 @@ benchmarks:
       extra_instalment_status: verified
       partner_status: single
       family_scheme_income:
-        claimant_amount: "27000"
+        claimant_amount: "28000"
       net_family_scheme_income: "24367"
       net_family_scheme_income_me3_attested: true
       in_work_eligibility: unknown
@@ -292,16 +292,24 @@ benchmarks:
       `in_work_tax_credit` are needs_review: this example verifies net
       (after-tax) income for minimum family tax credit specifically, not a
       separate gross family-scheme income figure or employment status for
-      the other credits. `family_scheme_income.claimant_amount: 27000` is
-      IRD's stated before-tax salary, added as an `assumed_fact` (Task 17
-      review finding) to satisfy the calculator's family-scheme-income
-      input gate -- it is not asserted as ME 3's precise legal
-      family-scheme-income figure (which may carry further subpart MB
-      adjustments IRD's plain-language example doesn't itemise), and it
-      does not feed the benchmarked $12,237 arithmetic, which uses only
-      the separately verified net figure above. `mc6a_veterans_payment` is
-      left `unknown` (not IRD-stated either way) precisely so that adding
-      `family_scheme_income` above does not inadvertently unlock
+      the other credits. `family_scheme_income.claimant_amount: 28000` is
+      IRD's stated before-tax salary ($27,000) plus the $1,000 child
+      support received IRD states in the same example, added as an
+      `assumed_fact` (Task 17 review finding) to satisfy the calculator's
+      family-scheme-income input gate -- corrected from an earlier
+      revision of this fixture that used $27,000 alone, omitting the
+      child support (PR #20 review finding: IRD's family-income guidance
+      states "child support payments received from an ex-partner are
+      included as family income", and IRD's own $24,367 net figure for
+      this example already includes it, so a gross figure that excludes
+      it is source-inconsistent). It is still not asserted as ME 3's
+      precise legal family-scheme-income figure (which may carry further
+      subpart MB adjustments IRD's plain-language example doesn't
+      itemise), and it does not feed the benchmarked $12,237 arithmetic,
+      which uses only the separately verified net figure above.
+      `mc6a_veterans_payment` is left `unknown` (not IRD-stated either
+      way) precisely so that adding `family_scheme_income` above does not
+      inadvertently unlock
       `family_tax_credit`'s own calculation, which this example was never
       meant to benchmark.
 
