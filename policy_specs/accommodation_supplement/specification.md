@@ -1,14 +1,17 @@
 # Accommodation Supplement specification
 
-**Status:** Task 2 independent source map complete on 21 September 2026; Task
-22's scoped calculation contract drafted 22 September 2026 (see below); not
-yet an approved implementation specification -- Pete's acceptance decision on
-the whole contract is still pending. The one escalated ambiguity (r 18(2)'s
-income-excess rounding) is decided -- see DEC-001
-(`decisions/DEC-001-income-excess-rounding.md`), 22 September 2026, medium
-confidence, with a recorded residual verification risk. **Reference period:**
-proposed 2026-03-02 to 2027-04-01 (see the Task 22 contract below; supersedes
-the earlier "September 2026" placeholder). Source IDs below refer to
+**Status:** Task 2 independent source map complete on 21 September 2026;
+Task 22's scoped calculation contract **approved by Pete, 22 September
+2026** (`policy_version: "0.1.0"` -- see "Task 22 acceptance" below). The
+one escalated ambiguity (r 18(2)'s income-excess rounding) is decided --
+see DEC-001 (`decisions/DEC-001-income-excess-rounding.md`), medium
+confidence, with a recorded residual verification risk. Approval covers
+the scoped domain and calculation contract, not populated dated rate
+values -- `policy.yaml`'s `parameters` list stays empty pending Task
+25/26's schema extension and Tasks 23-24's recalculation work.
+**Reference period:** 2026-03-02 to 2027-04-01 (see the Task 22 contract
+below; supersedes the earlier "September 2026" placeholder). Source IDs
+below refer to
 [sources.yaml](sources.yaml). No external implementation was consulted.
 
 ## Statutory structure
@@ -98,17 +101,18 @@ recalculation before it becomes a protected benchmark.
 - Independently review effective dates, discretionary s 69 paths, reassessment
   timing, and the supported-domain decisions. Pete decides genuine ambiguity.
 
-## Proposed Task 22 scoped calculation contract (draft, not yet accepted)
+## Approved Task 22 scoped calculation contract
 
 **Drafted:** 22 September 2026, working from the Task 2 source map above plus
 direct re-checks of the Social Security Act 2018 (`as-social-security-act`)
 and Social Security Regulations 2018 (`as-social-security-regulations`)
 official text (legislation.govt.nz, browser user-agent, since a bare fetch
 403s -- the same access pattern this project already established for WFF).
-**Not approved.** Mirrors WFF's Task 10 pattern: a narrow, explicit v0.1
-input domain plus a scoped calculation sequence, presented for Pete's
-acceptance decision, not self-accepted here. One question below is left as a
-genuine, unresolved ambiguity for Pete to decide, not silently picked.
+**Reviewed and accepted: 22 September 2026** (see "Task 22 acceptance"
+below). Mirrors WFF's Task 10 pattern: a narrow, explicit v0.1 input domain
+plus a scoped calculation sequence. The one genuine, unresolved ambiguity
+this contract originally left open (r 18(2)'s income-excess rounding) was
+escalated to and decided by Pete -- see DEC-001, not silently picked.
 
 ### Two review-gate questions, resolved or escalated
 
@@ -323,12 +327,40 @@ question here.
   period but must be rechecked before modelling any later date.
 - Dated MSD rate/threshold tables (entry thresholds by claimant category,
   jobseeker-equivalent income levels) are not independently recalculated
-  or promoted to protected values by this task -- they carry
-  `review_status: needs_review` in `policy.yaml` until Tasks 23-24's
-  benchmark process, matching WFF's `in_work_base` precedent for a
-  parameter whose contract shape is settled before its exact dated value
-  is.
+  or promoted to protected values by this task -- `policy.yaml`'s
+  `parameters` list stays empty until Task 25/26 extends `ParameterUnit`
+  (see that list's own comment) and Tasks 23-24's benchmark process
+  populates real dated values, matching WFF's `in_work_base` precedent
+  for a parameter whose contract shape is settled before its exact dated
+  value is.
 - Pete accepts or declines this scoped contract, and decides the r 18(2)
   rounding ambiguity, recording that decision under
   `decisions/DEC-NNN-<topic>.md` per `decisions/README.md` -- not
   self-accepted or silently resolved here.
+
+## Task 22 acceptance (Pete, 22 September 2026)
+
+Pete personally reviewed and decided DEC-001 (the r 18(2) income-excess
+rounding ambiguity) directly, then accepted the whole scoped Task 22
+contract above -- domain, calculation sequence, and both review-gate
+resolutions -- matching how Task 10.4 was Pete's personal decision for
+WFF, not delegated to Claude Code. This assigns `policy_version: "0.1.0"`
+and `status: approved` to the Accommodation Supplement specification.
+
+This is not a claim that every dated MSD rate table has been
+independently recalculated, or that `policy.yaml`'s `parameters` list is
+populated -- it is approval of the scoped **domain and calculation
+contract** (which claimant/tenure/household combinations are supported,
+what the formula sequence is, and how the two review-gate questions
+resolve), the same kind of approval WFF's Task 10.4 granted before Tasks
+11-14 built the loader, calculator, and populated values. `parameters`
+stays empty pending Task 25/26's `ParameterUnit` schema extension; Tasks
+23-24 populate and independently recalculate the actual dated rates
+before any numeric result can be trusted. DEC-001's medium-confidence,
+not-yet-corroborated income-excess-rounding convention must not be
+promoted to a protected benchmark value without the second independent
+example or direct MSD confirmation it calls for.
+
+Immediately before this acceptance, Claude Code re-verified `pytest`
+(132/132), `ruff`, `mypy --strict`, and `load_policy_spec()` all pass
+against the reviewed PR #24 head (`d20c738`). Merged as commit `92a6acd`.

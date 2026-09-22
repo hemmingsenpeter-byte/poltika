@@ -888,8 +888,9 @@ twin of the New Zealand policy system.
     (`910c37b`). Merged as commit `9e84864`.
 
 ### Week 3 — Accommodation Supplement
-22. Complete AS specification — **Drafted for Pete's acceptance decision,
-    22 September 2026 (PR pending).** Working from the already-complete
+22. Complete AS specification — **Complete, approved by Pete 22 September
+    2026 (PR #24, commit `92a6acd`; `policy_version: "0.1.0"`).** Working
+    from the already-complete
     Task 2 source map, directly re-checked the Social Security Act 2018
     (ss 65AAA-69, 423, Schedule 4 Part 7 cl 1-8) and Social Security
     Regulations 2018 (rr 15-19) official text. Resolved specification.md's
@@ -932,15 +933,21 @@ twin of the New Zealand policy system.
     fraction/rate unit outside WFF's "above threshold" wording, so every
     value this task verified lives in `specification.md`'s contract
     instead, ready to move into `policy.yaml` once Task 25/26 extends the
-    schema. `policy.yaml`'s `status` moved from `scaffold` to
-    `draft_pending_review`; `policy_version` stays `null` until Pete's
-    acceptance decision, matching WFF's Task 10/10.4 precedent (domain
-    scoping and ambiguity decisions are Pete's call, not self-accepted).
-    No code, test, or WFF file changed. GPT/Codex fresh-context review
-    complete (PR #24, findings fixed); the r 18(2) ambiguity is decided
-    (DEC-001). Pending: Pete's acceptance decision on the whole scoped
-    contract, and the residual DEC-001 corroboration before Task 24 can
-    treat the rounding convention as a protected benchmark rule.
+    schema. `policy.yaml`'s `status` moved `scaffold` -> `draft_pending_
+    review` -> **`approved`**, `policy_version: "0.1.0"` assigned,
+    matching WFF's Task 10/10.4 precedent -- domain scoping and ambiguity
+    decisions were Pete's personal call (DEC-001), not delegated, and
+    Pete personally accepted the whole scoped contract (specification.md's
+    "Task 22 acceptance" note), the same pattern as WFF's Task 10.4. No
+    code, test, or WFF file changed. GPT/Codex fresh-context review
+    complete (PR #24, findings fixed). Immediately before accepting,
+    Claude Code re-verified `pytest` (132/132), `ruff`, `mypy --strict`,
+    and `load_policy_spec()` all pass at the reviewed commit (`d20c738`).
+    Merged as commit `92a6acd`. This approval covers the scoped domain and
+    calculation contract only -- `policy.yaml`'s `parameters` list stays
+    empty pending Task 25/26's schema extension, and the residual DEC-001
+    corroboration is still needed before Task 24 can treat the rounding
+    convention as a protected benchmark rule.
 22a. Identify and freeze the minimum authoritative external statistical
     datasets AS actually needs (e.g. Stats NZ Statistical Area Unit geography
     data underpinning the AS-05 Area 1-4 lookup), each with full provenance

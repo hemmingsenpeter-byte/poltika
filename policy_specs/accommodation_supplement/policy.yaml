@@ -1,12 +1,15 @@
-# Task 22 draft scoped specification. NOT approved -- see specification.md's
-# "Proposed Task 22 scoped calculation contract" section for the full
-# rationale, the escalated r 18(2) rounding ambiguity, and why `parameters`
-# below is deliberately empty (a concrete Task 25 schema-stress-test finding,
-# not an oversight -- see the comment above `parameters:`).
+# Task 22 approved scoped specification (Pete, 22 September 2026). See
+# specification.md's "Proposed Task 22 scoped calculation contract" section
+# and "Task 22 acceptance" note for the full rationale, DEC-001 (the r 18(2)
+# rounding decision), and why `parameters` below is deliberately empty (a
+# concrete Task 25 schema-stress-test finding, not an oversight -- see the
+# comment above `parameters:`). Approval covers the scoped v0.1 domain and
+# calculation sequence; it is not a claim that every dated MSD rate table
+# has been independently recalculated -- that remains Tasks 23-24's job.
 schema_version: "0.1"
 policy_id: accommodation_supplement
-policy_version: null
-status: draft_pending_review
+policy_version: "0.1.0"
+status: approved
 reference_period:
   from: 2026-03-02
   to: 2027-04-01
