@@ -895,13 +895,25 @@ twin of the New Zealand policy system.
     Regulations 2018 (rr 15-19) official text. Resolved specification.md's
     s 423(3) $100-asset-step question directly from the Act text (complete
     hundreds, matching WFF's existing complete-dollar-excess convention).
-    **Escalated, not resolved:** r 18(2)'s income-excess rounding --
-    confirmed the Regulations are genuinely silent on whether to round the
-    excess before applying the 25% reduction (unlike WFF's explicit
-    "complete dollars" language), and MSD's own two pages disagree; this
-    is either SOURCE_CONFLICT or INTERPRETATION_AMBIGUITY for Pete to
-    decide, recorded as an open decision gate in the draft contract, not
-    silently picked. Confirmed AS-10's statutory basis exists (Schedule 3
+    **Escalated to Pete, now decided (DEC-001, 22 September 2026):** r
+    18(2)'s income-excess rounding -- confirmed the Regulations are
+    genuinely silent on whether to round the excess before applying the
+    25% reduction (unlike WFF's explicit "complete dollars" language),
+    and MSD's own two pages disagree. Pete decided: apply the 25%
+    reduction to the exact, unrounded excess (matching the
+    student-partner worked example, not the general worksheet's
+    floor-first convention) -- textually, r 18(2) omits the language MD
+    13(3)(a) uses when the drafters do mean a complete-dollar floor, and
+    r 19 already states the one place rounding happens (the final
+    amount). Confidence: medium, not high -- `decisions/
+    DEC-001-income-excess-rounding.md` records a residual verification
+    risk (MSD's general worksheet reflects the opposite convention; find
+    a second independently published fractional-excess example, or a
+    direct MSD confirmation, before promoting this to a protected
+    benchmark value in Task 24). `policy.yaml`'s now-stale
+    `income_excess_rounding_convention_undecided` validation check
+    removed -- resolved, not an open runtime gate any more. Confirmed
+    AS-10's statutory basis exists (Schedule 3
     cl 8 cross-referenced against the Act's "WFF tax credit" definition)
     without resolving the full AS/WFF interaction (Task 28's job).
     Proposed a narrow v0.1 supported domain (single claimant or ordinary
@@ -924,9 +936,11 @@ twin of the New Zealand policy system.
     `draft_pending_review`; `policy_version` stays `null` until Pete's
     acceptance decision, matching WFF's Task 10/10.4 precedent (domain
     scoping and ambiguity decisions are Pete's call, not self-accepted).
-    No code, test, or WFF file changed. Pending: GPT/Codex fresh-context
-    review, then Pete's acceptance decision and the r 18(2) `DEC-NNN`
-    decision artifact.
+    No code, test, or WFF file changed. GPT/Codex fresh-context review
+    complete (PR #24, findings fixed); the r 18(2) ambiguity is decided
+    (DEC-001). Pending: Pete's acceptance decision on the whole scoped
+    contract, and the residual DEC-001 corroboration before Task 24 can
+    treat the rounding convention as a protected benchmark rule.
 22a. Identify and freeze the minimum authoritative external statistical
     datasets AS actually needs (e.g. Stats NZ Statistical Area Unit geography
     data underpinning the AS-05 Area 1-4 lookup), each with full provenance

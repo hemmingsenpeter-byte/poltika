@@ -2,8 +2,11 @@
 
 **Status:** Task 2 independent source map complete on 21 September 2026; Task
 22's scoped calculation contract drafted 22 September 2026 (see below); not
-yet an approved implementation specification -- Pete's acceptance decision is
-still pending, including one escalated ambiguity. **Reference period:**
+yet an approved implementation specification -- Pete's acceptance decision on
+the whole contract is still pending. The one escalated ambiguity (r 18(2)'s
+income-excess rounding) is decided -- see DEC-001
+(`decisions/DEC-001-income-excess-rounding.md`), 22 September 2026, medium
+confidence, with a recorded residual verification risk. **Reference period:**
 proposed 2026-03-02 to 2027-04-01 (see the Task 22 contract below; supersedes
 the earlier "September 2026" placeholder). Source IDs below refer to
 [sources.yaml](sources.yaml). No external implementation was consulted.
@@ -127,32 +130,43 @@ MD 13(3)(a)/MG 3(2)(a) already established for this project
 but a fresh-context reviewer should independently re-read s 423(3) before
 this is treated as settled rather than author-asserted.
 
-**Regulation 18(2)'s income-excess rounding -- genuine, unresolved
-ambiguity. Escalating to Pete, not deciding it here.** Checked r 18(2)
-directly: "That amount must be reduced by 25 cents for every $1 of the
-relevant weekly income... in excess of the income level specified in
-subclause (3)." Unlike WFF's MD 13(3)(a) ("0.275 times the number of
-**complete dollars** by which family-scheme income exceeds..."), r 18(2)
-contains no "complete dollar" instruction for the income *excess* itself --
-it is genuinely silent on whether that excess is rounded/floored to a whole
-dollar before the 25% reduction is applied. Regulation 19 ("Rounding")
-only governs the *final* accommodation supplement amount ("must be rounded
-up to the complete dollar"), not this intermediate step; s 423(1)(f)'s
-enabling power is likewise only about rounding "assessed amounts of
-accommodation supplement" (the final figure), not the income excess. Two
-MSD pages read this two different ways: `as-msd-income-method`'s general
-worksheet rounds the excess weekly income down to a whole dollar before
-multiplying by 25%; `as-msd-student-partner-example`
-(`as-msd-student-partner-example`) applies the reduction directly to a
-fractional $54.14. Neither the Act nor the Regulations resolve which
-reading is correct -- this is either SOURCE_CONFLICT (MSD's own two pages
-disagree) or INTERPRETATION_AMBIGUITY (the Regulations are simply silent
-and either reading is defensible), and per Review Doctrine and this
-policy's own `decisions/README.md`, that decision belongs to Pete, not to
-an implementer picking whichever makes an example match. The scoped
-contract below marks the income-reduction step's rounding treatment as an
-open decision gate, not a chosen convention, until Pete records it as a
-`DEC-NNN` decision artifact.
+**Regulation 18(2)'s income-excess rounding -- escalated to Pete, now
+decided (DEC-001, 22 September 2026).** Checked r 18(2) directly: "That
+amount must be reduced by 25 cents for every $1 of the relevant weekly
+income... in excess of the income level specified in subclause (3)."
+Unlike WFF's MD 13(3)(a) ("0.275 times the number of **complete dollars**
+by which family-scheme income exceeds..."), r 18(2) contains no "complete
+dollar" instruction for the income *excess* itself -- it is genuinely
+silent on whether that excess is rounded/floored to a whole dollar before
+the 25% reduction is applied. Regulation 19 ("Rounding") only governs the
+*final* accommodation supplement amount ("must be rounded up to the
+complete dollar"), not this intermediate step; s 423(1)(f)'s enabling
+power is likewise only about rounding "assessed amounts of accommodation
+supplement" (the final figure), not the income excess. Two MSD pages read
+this two different ways: `as-msd-income-method`'s general worksheet
+rounds the excess weekly income down to a whole dollar before multiplying
+by 25%; `as-msd-student-partner-example` applies the reduction directly
+to a fractional $54.14.
+
+**Decision (DEC-001):** apply the 25% reduction to the exact, unrounded
+weekly income excess -- matching the student-partner worked example, not
+the general worksheet's floor-first convention. Rationale: r 18(2) omits
+the "complete dollars" language MD 13(3)(a) uses explicitly for the same
+kind of step, and this project already has direct evidence the drafters
+write that instruction when they mean it; r 19 already states the *one*
+place rounding happens (the final amount), so reading silence elsewhere
+as "round anyway" would insert an unwritten step. Confidence: medium, not
+high -- see `decisions/DEC-001-income-excess-rounding.md` for the full
+evidence and rationale, and its explicitly recorded residual risk: MSD's
+general worksheet reflects the opposite convention, and if that worksheet
+mirrors MSD's actual production payment calculation rather than being a
+simplified public explainer, real-world payments could diverge from this
+reading in fractional-excess edge cases. Before this convention is
+promoted from "best-reading default" to a protected benchmark value
+(Task 24), find at least one more independently published worked example
+with a fractional excess, or a direct MSD confirmation -- the
+student-partner example is currently the only agency source stating it
+this way.
 
 **AS-10 (MSD-paid WFF exclusion) -- statutory basis confirmed to exist,
 full AS/WFF interaction not resolved (out of this task's scope).** The
@@ -266,10 +280,13 @@ false zero or a silent default):
    level (r 18(3)(a)-(c)). Add $1 of imputed weekly income per complete
    $100 of cash assets over the s 423(3) threshold ($5,400 or $2,700,
    confirmed directly against the Act text) before applying this
-   reduction. **The rounding treatment of the income excess itself is the
-   open decision gate above -- do not implement either MSD convention as
-   the accepted rule until Pete decides.** A result at or below zero after
-   this step pays zero, not `unsupported`.
+   reduction. **Per DEC-001, the reduction applies to the exact,
+   unrounded income excess -- do not floor it to a whole dollar first.**
+   This is a medium-confidence best-reading default, not yet corroborated
+   by a second independent worked example (see DEC-001's residual risk);
+   do not promote it to a protected benchmark value without that
+   corroboration. A result at or below zero after this step pays zero,
+   not `unsupported`.
 6. Round the final positive amount up to the complete dollar (r 19) --
    confirmed this governs only the final figure, not any intermediate
    step.

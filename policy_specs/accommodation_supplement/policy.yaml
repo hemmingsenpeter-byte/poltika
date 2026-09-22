@@ -141,7 +141,12 @@ components:
       - asset_ceiling_exceeded
       - exempt_cash_asset_unverified
       - accommodation_income_or_business_use_qualifying_costs
-      - income_excess_rounding_convention_undecided
+      # income_excess_rounding_convention_undecided removed: resolved by
+      # DEC-001 (22 September 2026) -- apply 25% to the exact, unrounded
+      # income excess. No longer a runtime decision gate; it's an
+      # ordinary calculation-sequence rule now (specification.md step 5).
+      # DEC-001's medium-confidence/not-yet-corroborated caveat is a Task
+      # 24 benchmark-promotion concern, not a calculator-input trigger.
 
 outputs:
   unit: NZD_per_week
