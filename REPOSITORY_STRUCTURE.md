@@ -39,14 +39,19 @@ poltika/
 │   ├── common/            — errors.py (exception hierarchy)
 │   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml)
 │   ├── policy/            — loader.py (Task 11 parameter loader)
-│   └── engines/simulator/ — wff.py (Task 12 calculate_wff())
+│   └── engines/simulator/ — wff.py (Task 12 calculate_wff(); Task 20
+│                            run_wff_module(), the module integration
+│                            entry point over Task 11's loader + Task 12's
+│                            calculator, per ARCHITECTURE.md's Simulation
+│                            module contract)
 │
 └── tests/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
     ├── unit/
     │   ├── policy/         — loader tests (Task 11)
     │   └── engines/simulator/ — calculator unit tests (Task 12), spec-case and
-    │                            benchmark-case loader/runners (Tasks 13-14)
+    │                            benchmark-case loader/runners (Tasks 13-14),
+    │                            module-integration tests (Task 20)
     └── regression/         — known-historical-issue tests (Task 15)
 ```
 
