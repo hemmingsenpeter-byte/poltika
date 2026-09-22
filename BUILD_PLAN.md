@@ -851,6 +851,35 @@ twin of the New Zealand policy system.
     behaviour). 132/132 tests pass (up from 126), `ruff`, and
     `mypy --strict` clean.
 
+    **Second PR #22 review round (GPT/Codex): accepted the path-leak fix
+    and conditional-simulation wording, but flagged that Task 21's
+    acceptance is scoped to a source-checkout deployment only** --
+    `policy_specs/` is confirmed absent from a built wheel (see finding 1
+    above), and the `lifespan` startup check only makes that failure
+    clear, it does not make the API deployable from an installed
+    artifact. Pete accepted PR #22 under that explicit scope and required
+    recording the following as a **future gate, not yet scheduled as a
+    numbered task**, before any deployment of this (or a later
+    Accommodation-Supplement-extended) API outside a source checkout:
+
+    1. Decide and implement how `policy_specs/` reaches an installed
+       deployment (e.g. embedding it under `src/poltika/` as package
+       data, a separate data-distribution mechanism, or a documented
+       "mount policy_specs/ at deploy time" convention) -- an explicit
+       packaging/deployment architecture decision, not a default to fall
+       into.
+    2. Add an installed-artifact test: build the wheel (`uv build
+       --wheel`), install it into a clean environment separate from this
+       source checkout, and confirm the API actually serves a
+       `/wff/calculate` request successfully end-to-end -- not merely
+       that the Task 21 startup check fails cleanly when the data is
+       missing, but that when correctly packaged, the API actually works
+       outside the checkout it was built in.
+
+    Until both exist, this API must not be presented as deployable beyond
+    a source checkout, regardless of what `pytest`/`ruff`/`mypy --strict`
+    report -- none of those currently run against an installed artifact.
+
 ### Week 3 — Accommodation Supplement
 22. Complete AS specification
 22a. Identify and freeze the minimum authoritative external statistical
