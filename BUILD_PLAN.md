@@ -767,7 +767,60 @@ twin of the New Zealand policy system.
     reviewed commit (`ae8ac13`) and merged. **This closes the Task 17
     ARCHITECTURE_ISSUE finding (full-year rate binding)** — the three
     blocking acceptance tests it required now exist and pass.
-21. Add API — gated on the pure calculator passing acceptance
+21. Add API — gated on the pure calculator passing acceptance (now true:
+    the Task 17-20 loop closed for WFF). **Implemented for WFF, pending
+    review.** Introduces FastAPI + Pydantic v2 directly rather than a
+    placeholder, per ADR-0010, which documents this as its own decision
+    citing ARCHITECTURE.md's recorded long-term stack (commit `21dc905`)
+    and the Streamlit-to-Next.js "go straight to the target" precedent.
+    `fastapi`/`pydantic` added to `pyproject.toml`'s main dependencies;
+    `httpx`/`uvicorn` under the `dev` extra only (not needed to run
+    `TestClient`-based tests, no deployment target decided yet).
+    `REPOSITORY_STRUCTURE.md` updated to add `src/poltika/api/` before
+    creating it, plus the dependency-boundary table row (`api/` may
+    depend on `engines/simulator/`/`common/`, never a caller-supplied
+    policy directory path).
+
+    One route (`POST /wff/calculate`, `src/poltika/api/wff.py`) wraps
+    Task 20's `run_wff_module()` directly against the internally-pinned
+    `policy_specs/working_for_families` directory -- never a
+    caller-supplied path. The request model reuses `WffScenario`'s own
+    `FactStatus`/`BestStartCohort`/`PartnerStatus` string enums directly
+    as Pydantic field types (not re-declared), so the API's vocabulary
+    cannot drift from the calculator's; `requested_policy_version` is a
+    required field, no implicit default, mirroring Task 20's own
+    explicit-version contract. The response's `ComponentResultResponse`
+    shape is pinned explicitly --
+    `{outcome, value: <decimal-as-string> | null, reason}` -- confirmed
+    that Pydantic v2 serializes `Decimal` to a JSON string, not a float,
+    preserving the exact-decimal precision specification.md's calculation
+    sequence requires. `src/poltika/api/main.py` registers explicit
+    exception handlers for `common.errors.PoltikaError` subclasses so a
+    loader-raised structural error never collapses into a 200:
+    `PolicyVersionMismatchError` -> 409 (caller-correctable), any other
+    `PoltikaError` -> 500 (a deployed-data problem, not the caller's
+    fault).
+
+    Four tests in `tests/unit/api/test_wff_api.py` (FastAPI `TestClient`,
+    reusing `spec_cases.yaml`'s own scenario blocks rather than
+    hand-authoring new ones): a normal calculated result, a needs_review
+    component that doesn't collapse to a zero/null-meaning-zero, a
+    malformed request body (missing field + invalid enum value, asserts a
+    4xx with per-field validation errors), and the `policy_version`
+    mismatch case explicitly asserting 409 -- not left as prose-only
+    documentation, since a loader exception silently becoming a 200 is
+    exactly the failure mode this task's doctrine is most worried about.
+    130/130 tests pass (up from 126), `ruff`, and `mypy --strict` clean.
+
+    **Review depth, stated explicitly:** this task adds no new policy
+    logic -- every calculated value still comes from
+    `calculate_wff()`/`run_wff_module()`, already verified through Tasks
+    12 and 17-20's full source-derivation and adversarial-review process.
+    The API layer's only job is HTTP routing, request validation, and
+    response serialization, so it does not get a Task-17-style
+    fresh-context review; ordinary GPT/Codex code review (structure,
+    error handling, schema correctness) is the stated, deliberate depth
+    for this task, not a silently skipped decision.
 
 ### Week 3 — Accommodation Supplement
 22. Complete AS specification
