@@ -1081,6 +1081,19 @@ twin of the New Zealand policy system.
     Code: do not edit `policy_specs/accommodation_supplement/` (any
     file, including `decisions/`) or `spec_cases.yaml`/`benchmarks.yaml`
     while this is in progress.**
+
+    **Implementation note, 23 September 2026:** the independent statutory
+    pass found no discrepancy across the 20 populated values. The dated MSD
+    benchmark tables exposed a Task 25 schema issue: entry thresholds vary by
+    household category within a claimant category (for example, Supported
+    Living Payment has different single/couple/parent thresholds), while the
+    Task 23 calculator currently requests one `as_base_rate_<claimant_category>`
+    parameter. Task 24.1 therefore keeps each dated benchmark threshold as an
+    explicit per-case assumption and does not add a misleading global base-rate
+    value to `policy.yaml`; Task 25 must resolve the parameter shape before the
+    real policy can produce those ordinary numeric paths without assumptions.
+    This is recorded, not fixed here, because 24.1 explicitly must not modify
+    `calculate_accommodation_supplement()` or its existing unit tests.
 24.2. Regression tests for known historical issues (regression fixture
     parity with WFF's Task 15) — not started. Owner: unassigned.
 24.3. External coverage-gap check (OpenFisca Aotearoa / PolicyEngine NZ,
@@ -1100,7 +1113,10 @@ twin of the New Zealand policy system.
 24.8. Add an AS API route, mirroring Task 21's `run_wff_module()` ->
     FastAPI pattern (ADR-0010) — not started; gated on 24.1-24.7.
 25. Stress-test POLICY_SPECS schema against AS's different structure
-    (housing costs, asset test, geography)
+    (housing costs, asset test, geography). **Open finding from Task 24.1:**
+    replace the single base-rate-per-claimant-category shape with a sourced
+    representation that also selects the applicable household category; do not
+    populate globally misleading `as_base_rate_*` values in the meantime.
 26. Revise schema → v0.2
 27. Migrate WFF's spec files to v0.2
 28. Test WFF + AS interaction
