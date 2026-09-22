@@ -109,17 +109,23 @@ genuine, unresolved ambiguity for Pete to decide, not silently picked.
 
 ### Two review-gate questions, resolved or escalated
 
-**s 423(3) asset-to-income imputation -- resolved directly from the Act
-text, no escalation needed.** Checked s 423(3) itself (2026-09-22): "the
+**s 423(3) asset-to-income imputation -- resolved by inference from the
+Act's own wording, no escalation needed, but still one party's reading
+pending independent re-confirmation (PR #24 review finding -- see
+`sources.yaml`'s `task_22_check` notes for the reproducibility check and
+working fetch method).** Checked s 423(3) itself (2026-09-22): "the
 following must be treated as $1 a week of income: (a) every $100 of cash
 assets over $5,400 held by [a person in a relationship, or a single person
 with a dependent child or children]; and (b) every $100 of cash assets over
 $2,700 held by any other person." "Every $100" only has a coherent reading
 as counting complete $100 increments of the excess -- there is no partial-
-hundred treatment stated or implied, unlike the genuine gap below. This
-matches the same complete-unit floor discipline WFF's MD 13(3)(a)/MG 3(2)(a)
-already established for this project (`_complete_dollar_excess()` in
-`wff.py`), not a new invention.
+hundred treatment stated or implied, unlike the genuine gap below. This is
+an inference from the wording, not a quotation of an explicit "complete
+hundreds" rule -- it matches the same complete-unit floor discipline WFF's
+MD 13(3)(a)/MG 3(2)(a) already established for this project
+(`_complete_dollar_excess()` in `wff.py`) by analogy, not a new invention,
+but a fresh-context reviewer should independently re-read s 423(3) before
+this is treated as settled rather than author-asserted.
 
 **Regulation 18(2)'s income-excess rounding -- genuine, unresolved
 ambiguity. Escalating to Pete, not deciding it here.** Checked r 18(2)

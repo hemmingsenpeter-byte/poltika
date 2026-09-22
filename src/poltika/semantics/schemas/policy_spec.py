@@ -93,6 +93,11 @@ class ReferencePeriod(BaseModel):
     # goes through Pydantic's core validator directly and does not call a
     # Python-level __init__ override for dict input.
     from_: date = Field(alias="from")
+    # Exclusive, matching ParameterValue.effective_to's convention below --
+    # not previously written down here (PR #24 review finding), even
+    # though callers already relied on it (e.g. wff.py's run_wff_module()
+    # checks modelled_date < reference_period.to and prints the interval
+    # as "[from, to)").
     to: date
 
 

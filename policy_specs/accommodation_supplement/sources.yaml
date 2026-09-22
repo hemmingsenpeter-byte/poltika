@@ -16,20 +16,41 @@ sources:
       re-fetched -- only its existence and cross-reference to "WFF tax
       credit" were confirmed. Recheck the operative version for every
       later modelled date.
+      PR #24 review finding: this is a single-session, single-party
+      verification -- re-verified reproducible on a second, independent
+      fetch (same day, same method, byte-identical body content aside
+      from CSRF/timestamp noise) before this PR's response, but that is
+      still the same author re-checking their own earlier read, not an
+      independent party's read. A fresh-context reviewer must
+      independently re-fetch and confirm the s 423(3) and Schedule 4
+      Part 7 cl 1-6 quotes below before either finding is treated as
+      confirmed rather than author-asserted. Working method: `curl -s -A
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+      (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" -L
+      "https://www.legislation.govt.nz/act/public/2018/0032/latest/
+      whole.html"` -- a bare fetch (no user-agent, or a non-browser
+      user-agent) 403s on this site; this is the same access pattern the
+      project already established for the Income Tax Act 2007 during
+      WFF's Task 10/17 work.
   - id: as-social-security-regulations
     kind: regulations
     title: Social Security Regulations 2018
     url: https://www.legislation.govt.nz/regulation/public/2018/0202/latest/
     covers: Asset requirement, income thresholds, and income-based reductions.
     task_22_check: Official "latest" consolidated text checked directly
-      2026-09-22 (browser user-agent; this URL redirects to
+      2026-09-22 (browser user-agent, same method as the Act entry above;
+      this URL redirects to
       /secondary-legislation/pco-drafted/2018/202/en/latest/). rr 15, 16,
       17(reference only), 18, and 19 reviewed in full. r 18(2)'s
       income-excess rounding is confirmed genuinely silent (no "complete
       dollar" language, unlike WFF's MD 13(3)(a)) -- this is the escalated
       ambiguity in specification.md, not resolved here. r 19 confirmed to
       govern only the final accommodation-supplement amount, not any
-      intermediate step.
+      intermediate step. PR #24 review finding: also re-verified
+      reproducible on a second, independent fetch before this PR's
+      response -- same single-session-author caveat as the Act entry
+      above applies; a fresh-context reviewer should independently
+      re-confirm r 18(2)'s exact wording, not take this citation on trust.
   - id: as-2025-amendment
     kind: amending_legislation
     title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025

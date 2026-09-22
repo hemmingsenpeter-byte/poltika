@@ -39,7 +39,7 @@ inputs:
     period: assessment_week
     source_rule_ids: [AS-01]
     missing_outcome: needs_review
-    note: Social housing exclusion (s 66), other-funding exclusion (s 67, including the s 67(d) disability/care branch this Task 2 map did not separately name), and s 69 discretionary refusal/reduction/cancellation grounds. Absence of an exclusion cannot be inferred from a missing field.
+    note: Social housing exclusion (s 66); other-funding exclusion (s 67), covering each of its paragraphs this branch cares about -- the s 67(b) Student Allowance exclusion/exception (PR #24 review finding -- distinct from "other funding" in specification.md's own qualification table and named separately in assessment.unsupported below, so it needs its own explicit mention here, not an implicit "s 67" umbrella) and the s 67(d) disability/care branch this Task 2 map did not originally name; and s 69 discretionary refusal/reduction/cancellation grounds. Absence of an exclusion cannot be inferred from a missing field.
   - id: claimant_category
     owner: claimant
     type: verified_benefit_or_non_beneficiary_category
