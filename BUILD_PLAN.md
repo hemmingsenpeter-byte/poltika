@@ -1170,8 +1170,19 @@ twin of the New Zealand policy system.
     deselected by default) before merging PR #26 too -- both workstreams
     confirmed to coexist with zero interference, not merely assumed from
     the file-level non-overlap.
-24.2. Regression tests for known historical issues (regression fixture
-    parity with WFF's Task 15) — not started. Owner: unassigned.
+24.2. **Complete (23 September 2026):** regression tests for six known
+    historical issues from Tasks 22-24.1, matching WFF Task 15's discipline:
+    the single-claimant 1-child/2-child Schedule 4 category boundary; r 15's
+    deliberately different any-child asset threshold; UNKNOWN exempt-asset
+    status remaining `unsupported`; the non-beneficiary zero floor; real
+    undeclared base-rate and income-level parameters returning `needs_review`
+    rather than `KeyError`; and DEC-001's exact fractional income-excess
+    convention. Each regression independently reconstructs the relevant
+    facts rather than importing a spec/benchmark case. AS YAML conversion and
+    assumption helpers moved to `tests/conftest.py` at their third consumer.
+    195 tests pass (plus the separately-invoked installed-artifact test),
+    Ruff clean, strict mypy clean. Implementation PR pending independent
+    review and Pete's acceptance.
 24.3. External coverage-gap check (OpenFisca Aotearoa / PolicyEngine NZ,
     per ADR-0004, strictly after 24.1-24.2 complete) — not started.
     Owner: unassigned.

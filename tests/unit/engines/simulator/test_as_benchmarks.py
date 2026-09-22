@@ -12,13 +12,12 @@ import yaml
 from poltika.engines.simulator.accommodation_supplement import (
     calculate_accommodation_supplement,
 )
-
-from .test_as_spec_cases import _load_cases, _parameters, _scenario
+from tests.conftest import as_parameters_for_case, as_scenario_from_yaml, load_as_cases
 
 AS_POLICY_DIR = Path(__file__).resolve().parents[4] / "policy_specs" / "accommodation_supplement"
 BENCHMARKS_PATH = AS_POLICY_DIR / "benchmarks.yaml"
 
-_BENCHMARKS = _load_cases(BENCHMARKS_PATH, "benchmarks")
+_BENCHMARKS = load_as_cases(BENCHMARKS_PATH, "benchmarks")
 _BENCHMARK_IDS = [case["id"] for case in _BENCHMARKS]
 
 
@@ -45,12 +44,11 @@ def test_as_benchmarks_are_complete_traceable_and_unique() -> None:
 @pytest.mark.parametrize("benchmark", _BENCHMARKS, ids=_BENCHMARK_IDS)
 def test_as_benchmark(benchmark: dict[str, Any]) -> None:
     result = calculate_accommodation_supplement(
-        _scenario(benchmark["scenario"]), _parameters(benchmark)
+        as_scenario_from_yaml(benchmark["scenario"]), as_parameters_for_case(benchmark)
     )
     expected = benchmark["expected"]["accommodation_supplement"]
     assert result.outcome == expected["outcome"], (
-        f"{benchmark['id']}: expected {expected['outcome']}, "
-        f"got {result.outcome} ({result.reason})"
+        f"{benchmark['id']}: expected {expected['outcome']}, got {result.outcome} ({result.reason})"
     )
     if expected["outcome"] == "calculated":
         assert result.value == Decimal(expected["value"])
