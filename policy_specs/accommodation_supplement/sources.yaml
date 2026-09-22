@@ -32,10 +32,13 @@ sources:
       user-agent) 403s on this site; this is the same access pattern the
       project already established for the Income Tax Act 2007 during
       WFF's Task 10/17 work.
-    task_24_1_independent_check: Independently fetched the official consolidated
-      whole Act again on 2026-09-23 using the recorded browser user-agent method.
-      Schedule 4 Part 7 clauses 1-3 still state the twelve weekly caps exactly
-      as populated in policy.yaml ($305/$220/$160/$120,
+    task_24_1_independent_check: Independently fetched both the official
+      point-in-time Act version operative on the 2026-06-01 modelled date
+      (Schedule 4 in the 2026-03-11 version; the site also identifies the
+      2026-04-01 version) and the latest consolidation on 2026-09-23, using the
+      recorded browser user-agent method. Schedule 4 Part 7 clauses 1-3 state
+      the twelve weekly caps exactly as populated in policy.yaml
+      ($305/$220/$160/$120,
       $235/$155/$105/$80, and $165/$105/$80/$70), the 70% subsidy, and the
       25%-of-base-rate rent/board entry threshold. Section 423(3) still states
       $1 weekly income for every $100 of cash assets over $5,400 for a person
@@ -62,9 +65,10 @@ sources:
       response -- same single-session-author caveat as the Act entry
       above applies; a fresh-context reviewer should independently
       re-confirm r 18(2)'s exact wording, not take this citation on trust.
-    task_24_1_independent_check: Independently fetched the official consolidated
-      Regulations again on 2026-09-23 using the recorded browser user-agent
-      method. Regulation 15(1) still states $16,200 for a person in a
+    task_24_1_independent_check: Independently fetched the official 2026-03-02
+      point-in-time Regulations version operative on the 2026-06-01 modelled
+      date, and the latest consolidation, on 2026-09-23 using the recorded
+      browser user-agent method. Regulation 15(1) states $16,200 for a person in a
       relationship or single person with dependent children and $8,100 in any
       other case. Regulation 18(2) still states a reduction of 25 cents for
       every $1 of relevant weekly income above the subclause (3) income level,
