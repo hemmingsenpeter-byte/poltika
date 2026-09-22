@@ -223,9 +223,15 @@ false zero or a silent default):
   verified Area 1-4 classification must not silently default to Area 4
   (`as-msd-areas`; already stated in the Task 2 map, restated here as a
   binding contract term).
-- Cash assets at or above the r 15 ceiling (a genuine, evidenced zero via
-  the assets requirement, not a scope limitation -- distinct from the
-  s 423(3) imputation above, which applies *below* that ceiling).
+- Cash assets at or above the r 15 ceiling (a genuine, evidenced
+  *exclusion* via the assets requirement failing -- `unsupported`, not a
+  calculated zero, and not a scope limitation either; distinct from the
+  s 423(3) imputation above, which applies *below* that ceiling). PR #25
+  review finding: this item previously said "a genuine, evidenced zero",
+  directly contradicting this list's own header two lines above ("never
+  a false zero") -- the calculator and its test
+  (`test_asset_ceiling_exceeded_is_unsupported_not_zero`) were always
+  correct (`unsupported`); only this parenthetical's wording was wrong.
 - Any exempt cash asset requiring Part 1 of Schedule 8's own
   determination (r 16) -- not modelled in this branch; exemptions must be
   verified, not assumed absent.
