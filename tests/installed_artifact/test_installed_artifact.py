@@ -68,8 +68,19 @@ def test_installed_wheel_serves_a_request_end_to_end(tmp_path: Path) -> None:
     # policy_specs/ directly, standing in for whatever a real deployment
     # would mount/copy there. The installed poltika package on sys.path
     # inside the venv has no src/ checkout at all -- only the wheel.
+    #
+    # PR #26 review finding, reproduced directly before fixing: inheriting
+    # the calling process's PYTHONPATH here let the probe silently import
+    # poltika from THIS checkout's src/ instead of the installed wheel
+    # whenever PYTHONPATH happened to include it -- the test would then
+    # "pass" without proving anything about packaging. Strip it
+    # explicitly; the probe script itself now also asserts the imported
+    # package resolves inside the throwaway venv, so the test fails loudly
+    # if any other leak path is ever introduced, not just this one.
     probe_env = dict(os.environ)
+    probe_env.pop("PYTHONPATH", None)
     probe_env["POLTIKA_POLICY_SPECS_DIR"] = str(REPO_ROOT / "policy_specs")
+    probe_env["POLTIKA_EXPECTED_VENV_DIR"] = str(venv_dir.resolve())
     probe = subprocess.run(
         [str(python), str(PROBE_SCRIPT)],
         capture_output=True,
