@@ -906,6 +906,31 @@ twin of the New Zealand policy system.
     request succeeds). This API may now be presented as deployable beyond
     a source checkout, given `POLTIKA_POLICY_SPECS_DIR` is set correctly.
 
+    **Codex review finding on PR #26, confirmed and fixed:** the probe
+    subprocess inherited the calling process's `PYTHONPATH`, so it could
+    silently import `poltika` from the source checkout instead of the
+    installed wheel -- reproduced directly by hand (setting
+    `PYTHONPATH=<repo>/src` before running the probe against a real
+    throwaway venv did exactly that). Fixed in two independently-verified
+    layers: the parent test now strips `PYTHONPATH` from the probe's
+    environment, and the probe itself asserts its own import resolves
+    inside the throwaway venv before doing anything else, so any other
+    leak path is caught too.
+
+    **Complete, merged 23 September 2026 (PR #26, commit `be27227`),
+    reconciled with the concurrently-developed Task 24.1 (PR #27,
+    above).** Discovered mid-task that Claude Code and GPT/Codex were
+    sharing the primary checkout rather than each in an isolated
+    worktree -- Codex's own branch switch moved Claude Code's working
+    directory without either side running that command directly. Claude
+    Code's own work from that point on was built and verified entirely
+    in a separate `git worktree`, never touching Codex's in-progress
+    files. When both PRs were ready, merged PR #27 first, rebased PR
+    #26 onto the result (clean, no conflicts -- the only file overlap
+    was this document, in separated sections), and re-verified the
+    combined state (189/190 tests, ruff clean, mypy --strict clean, the
+    `installed_artifact` test passing explicitly) before merging PR #26.
+
     Immediately before merging, Claude Code independently re-verified
     `pytest` (132/132), `ruff`, and `mypy --strict` all pass, and that
     CI's `check-protected-paths` check was green, at the reviewed commit
@@ -1127,6 +1152,24 @@ twin of the New Zealand policy system.
     `calculate_accommodation_supplement()` or its existing unit tests.
     Isolated verification: 187/187 tests pass and Ruff is clean; strict mypy
     is clean when run against `src` and the two new runners.
+
+    **Complete, merged 22 September 2026 (PR #27, commit `8c8c06a`).**
+    Claude Code independently re-verified in a fresh, isolated worktree
+    (not the shared checkout Codex used) rather than trusting the PR's
+    own report: reproduced 187/187 passing, `ruff` clean, `mypy --strict`
+    clean (without needing the `PYTHONPATH` workaround the PR description
+    mentions -- that was specific to the shared checkout's polluted
+    state, not this PR's content), and confirmed
+    `calculate_accommodation_supplement()` and its existing Task 23 unit
+    tests are genuinely untouched (empty diff). Reconciled with the
+    concurrently-developed Task 21 deployment gate (PR #26, below): the
+    only file overlap was this document, in clearly separated sections;
+    merged PR #27 first, rebased PR #26 onto the result, and re-verified
+    the **combined** state in the same isolated worktree (189/190 tests,
+    190 = 187 + PR #26's 2 new tests + 1 `installed_artifact` test
+    deselected by default) before merging PR #26 too -- both workstreams
+    confirmed to coexist with zero interference, not merely assumed from
+    the file-level non-overlap.
 24.2. Regression tests for known historical issues (regression fixture
     parity with WFF's Task 15) — not started. Owner: unassigned.
 24.3. External coverage-gap check (OpenFisca Aotearoa / PolicyEngine NZ,
