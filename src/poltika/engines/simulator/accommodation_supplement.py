@@ -227,6 +227,17 @@ def _household_category(
     # the same cl 1 bucket as a couple with 1+; a sole parent with exactly
     # 1 child shares cl 2 with a childless couple; a single claimant with
     # no dependent children is cl 3's "any other person".
+    #
+    # Self-review flag (author preflight, not independently verified):
+    # this treats every SINGLE claimant with dependent_children_count >= 1
+    # as a "sole parent" for Schedule 4 Part 7 cl 1/2 purposes -- the v0.1
+    # PartnerType/dependent_children_count input contract has no separate
+    # "sole parent" fact distinct from "single + has children". This is a
+    # reasonable reading (sole parent ordinarily means a single caregiver
+    # with dependent children in NZ benefit law) but is an implicit
+    # modelling assumption, not something specification.md's contract
+    # states as its own named input -- flag for the reviewer, don't take
+    # it as settled.
     if dependent_children_count >= 2:
         return _HouseholdCategory.WITH_DEPENDENT_CHILDREN
     if dependent_children_count == 1:
@@ -304,6 +315,17 @@ def _household_gate_failure(scenario: AsScenario) -> ComponentResult | None:
             ),
         )
     if scenario.exempt_cash_asset_status != FactStatus.VERIFIED:
+        # Self-review flag (author preflight): this maps BOTH EXCLUDED
+        # (an exemption verified to apply) AND UNKNOWN (unverified either
+        # way) to unsupported -- deliberately, per specification.md's "not
+        # modelled in this branch... exemptions must be verified, not
+        # assumed absent" (this branch attempts no exemption determination
+        # at all, so an unverified status is equally out of scope, not
+        # merely an unresolved fact). This deviates from every other
+        # UNKNOWN check in this file (and from wff.py's convention), which
+        # map UNKNOWN to needs_review, not unsupported -- a reviewer
+        # should treat this as a specific, considered exception, not an
+        # accidental inconsistency, and confirm the reading holds.
         return ComponentResult(
             outcome="unsupported",
             reason=(

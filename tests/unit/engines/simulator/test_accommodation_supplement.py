@@ -201,6 +201,26 @@ def test_non_beneficiary_income_reduction_unrounded_excess(parameters) -> None:
     assert result.value == Decimal(75)
 
 
+def test_income_reduction_exceeding_cost_based_amount_floors_to_zero(parameters) -> None:
+    """Self-review probe: a very high weekly_income must floor the result
+    at zero, not go negative. weekly_accommodation_costs=100 -> excess=25
+    -> cost-based=min(0.7*25,165)=17.5; weekly_income=1000,
+    cash_assets=1000 (below the 2700 imputation threshold, so no imputed
+    income) -> income_excess=1000-200=800 -> reduction=0.25*800=200;
+    pre-rounding=max(0,17.5-200)=0 -> final=0, not a negative amount."""
+    scenario = _ordinary_scenario(
+        claimant_category=ClaimantCategory.NON_BENEFICIARY,
+        weekly_accommodation_costs=Decimal(100),
+        weekly_income=Decimal(1000),
+        cash_assets=Decimal(1000),
+    )
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "calculated"
+    assert result.value == Decimal(0)
+
+
 def test_cost_based_amount_at_entry_threshold_is_a_genuine_zero(parameters) -> None:
     """weekly_accommodation_costs exactly at the entry threshold (75) ->
     excess = 0 -> cost-based = 0, a genuine calculated zero (not
