@@ -1024,10 +1024,32 @@ twin of the New Zealand policy system.
     preflight done per `.claude/skills/pr-review-preflight/SKILL.md`,
     found and fixed two self-flagged (not independently verified)
     judgment calls plus one test-coverage gap before requesting review
-    (commit `9eac0c8`) -- see PR #25 for the full packet, including a
-    "Deferred Codex audit" section. PR #25 opened and held for Pete's own
-    review or the reserved Codex pass, whichever Pete prefers, not merged
-    on self-review.
+    (commit `9eac0c8`).
+
+    **Complete, merged 23 September 2026 (PR #25, commit `53a4084`).**
+    Pete reviewed personally (checked out the branch, ran the full
+    suite/ruff/mypy independently, read the calculator end-to-end against
+    specification.md, cross-checked every parameter ID against
+    `policy.yaml`, and independently hand-recomputed three test cases
+    rather than trusting the docstrings): parameter wiring, arithmetic,
+    the narrow schema extension's scope, the "undeclared parameter ->
+    needs_review" fix, and both self-flagged judgment calls all confirmed
+    correct. One finding, spec-level not code-level: `specification.md`'s
+    "Unsupported" list described the asset-ceiling-exceeded case as "a
+    genuine, evidenced zero", contradicting the list's own header two
+    lines above ("never a false zero") -- the calculator and its test
+    were always correct (`unsupported`); only the wording was wrong.
+    Fixed directly on `main` (commit `a14dfa8`, predates PR #25's own
+    diff -- introduced during Task 22/PR #24, not this task). Immediately
+    before merging, Claude Code independently re-verified `pytest`
+    (158/158), `ruff`, and `mypy --strict` all pass at the reviewed
+    commit (`78cbc1f`), confirmed CI green, and confirmed the doc fix and
+    PR #25's diff don't conflict (PR #25 never touches
+    `specification.md`). The two self-flagged judgment calls (sole-parent
+    inference, exempt-asset `UNKNOWN` -> `unsupported`) and the deferred
+    re-verification of the 20 populated parameter values remain correctly
+    open per PR #25's own framing -- not closed by this review, tracked
+    for Task 24/25.
 24. Repeat test/review process
 25. Stress-test POLICY_SPECS schema against AS's different structure
     (housing costs, asset test, geography)
