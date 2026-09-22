@@ -951,7 +951,30 @@ twin of the New Zealand policy system.
 22a. Identify and freeze the minimum authoritative external statistical
     datasets AS actually needs (e.g. Stats NZ Statistical Area Unit geography
     data underpinning the AS-05 Area 1-4 lookup), each with full provenance
-    and retrieval_method: manual_download — see Data Acquisition Doctrine
+    and retrieval_method: manual_download — see Data Acquisition Doctrine —
+    **Closed N/A, 22 September 2026, matching WFF's Task 10a/10b precedent.**
+    Checked `as-msd-areas` directly (the source already cited in `sources.yaml`
+    as `kind: agency_geography`, not a statistical dataset): it is a complete
+    named Statistical Area Unit -> Area 1-4 lookup table, but explicitly
+    points users to MSD's own separate "area map tool" for the actual
+    address-to-SAU resolution step -- that step is not on the page and not a
+    published Stats NZ dataset either. This does not create a Data
+    Acquisition Doctrine gap because Task 22's already-Pete-accepted
+    `policy.yaml` input contract (`statistical_area_unit`, type
+    `verified_area_1_to_4_classification`) requires the *caller* to supply an
+    already-verified Area 1-4 classification -- Poltika's scoped v0.1 domain
+    never performs address- or SAU-level geographic resolution itself, the
+    same "verified fact in, never independently re-derived" pattern every
+    other WFF/AS input already uses. No canonical Poltika geography variable,
+    no `data/raw/` snapshot, and no Stats NZ dataset are needed for the
+    domain as currently scoped. Per Data Acquisition Doctrine's "minimum
+    necessary, not the full catalogue," acquiring one now would be
+    speculative, not something this vertical actually needs to run or
+    validate. **Revisit if a later task changes `statistical_area_unit` to
+    accept a raw SAU code or address instead of a pre-verified Area
+    classification** -- that would reintroduce the need for MSD's lookup
+    table (already a cited source) and possibly a Stats NZ SAU boundary/
+    concordance dataset for address-level resolution.
 23. Implement pure AS calculator (consumes canonical Poltika variables only)
 24. Repeat test/review process
 25. Stress-test POLICY_SPECS schema against AS's different structure
