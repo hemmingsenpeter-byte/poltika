@@ -769,6 +769,27 @@ def calculate_wff(scenario: WffScenario, parameters: PolicyParameterSet) -> WffR
 
 _WFF_MODULE_ID = "working_for_families"
 
+# Every parameter id calculate_wff()'s component functions look up via
+# _param_value() -- kept as one explicit list so the module boundary can
+# confirm each one actually resolves *before* calculate_wff() runs, rather
+# than letting PolicyParameterSet.get() raise a bare KeyError partway
+# through a component calculation for a policy.yaml that simply never
+# declared one of them (PR #21 review finding).
+_WFF_REQUIRED_PARAMETER_IDS = frozenset(
+    {
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate",
+        "in_work_base",
+        "in_work_additional_child",
+        "minimum_family_prescribed_amount",
+        "best_start_annual_amount",
+        "best_start_abatement_threshold",
+        "best_start_abatement_rate",
+    }
+)
+
 
 def _covers(value_effective_from: date, value_effective_to: date | None, target_date: date) -> bool:
     """Same interval-membership test as `poltika.policy.loader`'s private
@@ -818,6 +839,23 @@ def _wff_module_validation_failure(
             reason=(
                 f"loaded policy_id '{parameters.policy_id}' does not match the "
                 f"'{_WFF_MODULE_ID}' module -- a mismatched or foreign parameter set"
+            ),
+        )
+
+    # Invariant (2b): every parameter calculate_wff() might look up is
+    # actually declared by this policy.yaml -- a policy.yaml that omits
+    # one (e.g. an incomplete or malformed authoring pass) must not reach
+    # calculate_wff() and crash with KeyError partway through a component;
+    # it must resolve to the same needs_review contract every other
+    # module-boundary failure does (PR #21 review finding).
+    missing_parameter_ids = sorted(_WFF_REQUIRED_PARAMETER_IDS - parameters.resolutions.keys())
+    if missing_parameter_ids:
+        return ComponentResult(
+            outcome="needs_review",
+            reason=(
+                f"policy '{parameters.policy_id}' does not declare required parameter(s) "
+                f"{missing_parameter_ids} -- calculate_wff() cannot run against an incomplete "
+                "parameter set"
             ),
         )
 
@@ -871,19 +909,32 @@ def run_wff_module(
     modelled_date: date,
     scenario: WffScenario,
     *,
-    requested_policy_version: str | None = None,
+    requested_policy_version: str,
 ) -> WffResult:
     """Task 20: the WFF module's integration entry point.
 
     Combines Task 11's `load_policy_parameters()` and this file's own
     `calculate_wff()` behind one call, enforcing the module contract's
-    `validation_checks` before any component is calculated. A
-    schema-version, approval-status, or requested/actual `policy_version`
+    `validation_checks` before any component is calculated.
+
+    `requested_policy_version` is a required keyword argument, not an
+    optional one -- module identity has two halves, `policy_id` (checked
+    unconditionally against `_WFF_MODULE_ID` below) and `policy_version`
+    (checked by `load_policy_parameters()`, but only when a caller
+    actually supplies a version to check against). An optional parameter
+    defaulting to `None` would let a caller silently skip the version half
+    of that guarantee by omission -- exactly the gap the "annual module
+    needs an explicit version-selection contract" review finding named
+    (PR #21). Every integration caller must state which `policy_version`
+    it was built against; there is no implicit "whatever's in the
+    directory" fallback.
+
+    A schema-version, approval-status, or requested/actual `policy_version`
     mismatch still raises exactly as `load_policy_parameters()` already
-    does (unchanged, caller-level structural errors) -- only the three
-    module-specific invariants above are new, and they resolve to
-    `needs_review` rather than raising, consistent with this module's
-    existing "never a silent zero, always a reason" discipline.
+    does (unchanged, caller-level structural errors) -- only the
+    module-specific invariants above resolve to `needs_review` rather than
+    raising, consistent with this module's existing "never a silent zero,
+    always a reason" discipline.
 
     No cross-module `dependencies` -- WFF v0.1 is single-module
     integration (ARCHITECTURE.md's Simulation module contract explicitly

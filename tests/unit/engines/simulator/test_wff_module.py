@@ -63,6 +63,25 @@ def _ordinary_scenario() -> WffScenario:
     )
 
 
+# Mirrors wff.py's own _WFF_REQUIRED_PARAMETER_IDS -- every id
+# calculate_wff() looks up. A synthetic fixture that omits one would trip
+# the new missing-required-parameter invariant instead of isolating
+# whichever invariant a given test actually targets, so every test fixture
+# here declares the complete set.
+_ALL_REQUIRED_PARAMETER_IDS = (
+    "family_tax_credit_eldest_child",
+    "family_tax_credit_additional_child",
+    "family_tax_credit_abatement_threshold",
+    "family_tax_credit_abatement_rate",
+    "in_work_base",
+    "in_work_additional_child",
+    "minimum_family_prescribed_amount",
+    "best_start_annual_amount",
+    "best_start_abatement_threshold",
+    "best_start_abatement_rate",
+)
+
+
 def _param(param_id: str, effective_from: str, effective_to: str | None) -> dict[str, Any]:
     return {
         "id": param_id,
@@ -89,6 +108,7 @@ def _write_policy_dir(
     reference_to: str = "2027-04-01",
     param_effective_from: str = "2026-04-01",
     param_effective_to: str | None = "2027-04-01",
+    parameter_ids: tuple[str, ...] = _ALL_REQUIRED_PARAMETER_IDS,
 ) -> Path:
     policy_dir = tmp_path / "policy"
     policy_dir.mkdir()
@@ -101,7 +121,9 @@ def _write_policy_dir(
         "source_catalog": "sources.yaml",
         "assessment": {},
         "inputs": [],
-        "parameters": [_param("rate", param_effective_from, param_effective_to)],
+        "parameters": [
+            _param(param_id, param_effective_from, param_effective_to) for param_id in parameter_ids
+        ],
         "components": [],
         "outputs": {},
     }
@@ -120,7 +142,9 @@ def test_modelled_date_outside_reference_period_is_needs_review(tmp_path: Path) 
     integration boundary."""
     policy_dir = _write_policy_dir(tmp_path, param_effective_to=None)
 
-    result = run_wff_module(policy_dir, date(2030, 1, 1), _ordinary_scenario())
+    result = run_wff_module(
+        policy_dir, date(2030, 1, 1), _ordinary_scenario(), requested_policy_version="0.1.0"
+    )
 
     assert result.family_tax_credit.outcome == "needs_review"
     assert result.in_work_tax_credit.outcome == "needs_review"
@@ -135,12 +159,36 @@ def test_mismatched_policy_id_is_needs_review(tmp_path: Path) -> None:
     silently run WFF arithmetic against a foreign parameter set."""
     policy_dir = _write_policy_dir(tmp_path, policy_id="accommodation_supplement")
 
-    result = run_wff_module(policy_dir, MODELLED_DATE, _ordinary_scenario())
+    result = run_wff_module(
+        policy_dir, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="0.1.0"
+    )
 
     assert result.family_tax_credit.outcome == "needs_review"
     assert result.best_start.outcome == "needs_review"
     assert "policy_id" in (result.family_tax_credit.reason or "")
     assert "accommodation_supplement" in (result.family_tax_credit.reason or "")
+
+
+def test_missing_required_parameter_is_needs_review_not_keyerror(tmp_path: Path) -> None:
+    """Historical issue: PR #21's review finding. A policy.yaml that omits
+    one of calculate_wff()'s required parameter ids passed all three
+    module-boundary invariants as originally implemented, then reached
+    calculate_wff() and raised a bare KeyError partway through a
+    component calculation -- reproduced directly against this file's own
+    synthetic policy helper with only one parameter ('rate') declared.
+    `run_wff_module()` must catch a policy that doesn't declare every
+    parameter it will need before calling calculate_wff() at all."""
+    policy_dir = _write_policy_dir(tmp_path, parameter_ids=("rate",))
+
+    result = run_wff_module(
+        policy_dir, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="0.1.0"
+    )
+
+    assert result.family_tax_credit.outcome == "needs_review"
+    assert result.in_work_tax_credit.outcome == "needs_review"
+    assert result.minimum_family_tax_credit.outcome == "needs_review"
+    assert result.best_start.outcome == "needs_review"
+    assert "does not declare required parameter" in (result.family_tax_credit.reason or "")
 
 
 def test_parameter_interval_not_spanning_full_period_is_needs_review(tmp_path: Path) -> None:
@@ -151,7 +199,9 @@ def test_parameter_interval_not_spanning_full_period_is_needs_review(tmp_path: P
     (Task 19 decision, 22 September 2026)."""
     policy_dir = _write_policy_dir(tmp_path, param_effective_to="2027-01-01")
 
-    result = run_wff_module(policy_dir, MODELLED_DATE, _ordinary_scenario())
+    result = run_wff_module(
+        policy_dir, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="0.1.0"
+    )
 
     assert result.family_tax_credit.outcome == "needs_review"
     assert result.best_start.outcome == "needs_review"
@@ -166,7 +216,9 @@ def test_parameter_interval_starting_after_reference_period_is_needs_review(tmp_
         tmp_path, param_effective_from="2026-07-01", param_effective_to="2027-04-01"
     )
 
-    result = run_wff_module(policy_dir, date(2026, 8, 1), _ordinary_scenario())
+    result = run_wff_module(
+        policy_dir, date(2026, 8, 1), _ordinary_scenario(), requested_policy_version="0.1.0"
+    )
 
     assert result.minimum_family_tax_credit.outcome == "needs_review"
     assert "does not span the complete reference period" in (result.minimum_family_tax_credit.reason or "")
