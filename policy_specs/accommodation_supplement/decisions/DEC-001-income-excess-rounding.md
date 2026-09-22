@@ -86,3 +86,17 @@ established drafting-convention precedent (WFF), but resting on a single
 worked example against a general-worksheet source that states the opposite
 convention; not yet corroborated by a second independent agency example or
 direct confirmation.
+
+**Task 24.1 corroboration search (23 September 2026): negative result.** A
+fresh search checked every worked-example page already catalogued for this
+policy (`as-msd-rent-board-examples`, `as-msd-qualifying-costs`,
+`as-msd-income-example`, and `as-msd-student-partner-example`), the general
+income worksheet, and additional Accommodation Supplement examples discoverable
+on MSD's official MAP/publication domains. The ordinary non-beneficiary example
+and the additional overseas-payment example both use an integral $57.00 income
+excess, so they produce the same result under either convention. The rent,
+board, and qualifying-cost examples do not apply an income reduction. No second
+published fractional-excess example and no direct MSD confirmation was found.
+This does not contradict DEC-001, but it does not corroborate it either:
+confidence remains **medium**, and the student-partner figure remains a
+scope-boundary evidence item rather than a protected numeric benchmark.

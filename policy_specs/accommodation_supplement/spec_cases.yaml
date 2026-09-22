@@ -1,3 +1,130 @@
-# Task 5 scaffold only. Task 24 adds independently hand-calculated cases.
+# Task 24.1: independently hand-calculated Accommodation Supplement cases.
+#
+# Each case uses the 20 approved statutory parameters in policy.yaml. The
+# claimant-category base rate and r 18(3) income level remain undeclared there;
+# where arithmetic needs them, parameter_assumptions names the synthetic input
+# explicitly. These assumptions isolate the approved calculation sequence and
+# are not asserted to be statutory rates.
 status: pending_review
-spec_cases: []
+spec_cases:
+  - id: ordinary_uncapped_jobseeker
+    derivation: 25% of assumed $300 base = $75; 70% of ($200 - $75) = $87.50; r 19 rounds up to $88.
+    parameter_assumptions: {base_rate: '300'}
+    scenario: &ordinary
+      household_eligibility: verified
+      claimant_category: jobseeker_support
+      tenure_type: rent_contributions_or_board
+      partner_status: single
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '200'
+      dependent_children_count: 0
+      cash_assets: '1000'
+      exempt_cash_asset_status: verified
+      weekly_income: null
+    expected: {accommodation_supplement: {outcome: calculated, value: '88'}}
+
+  - id: ordinary_area_cap_binds
+    derivation: 70% of ($2,000 - $75) exceeds the Area 4 single cap of $70; final amount is $70.
+    parameter_assumptions: {base_rate: '300'}
+    scenario:
+      <<: *ordinary
+      statistical_area_unit: area4
+      weekly_accommodation_costs: '2000'
+    expected: {accommodation_supplement: {outcome: calculated, value: '70'}}
+
+  - id: exact_entry_threshold_is_zero
+    derivation: $75 qualifying costs minus the $75 entry threshold leaves no positive excess.
+    parameter_assumptions: {base_rate: '300'}
+    scenario:
+      <<: *ordinary
+      weekly_accommodation_costs: '75'
+    expected: {accommodation_supplement: {outcome: calculated, value: '0'}}
+
+  - id: non_beneficiary_fractional_income_excess_unrounded
+    derivation: >-
+      $3 imputed income from three complete $100 steps above $2,700 makes total income $254.80.
+      Exact excess $54.80 x 25% = $13.70. Cost amount is 70% x ($200.25 - $75) = $87.675;
+      $87.675 - $13.70 = $73.975, rounded up to $74. Flooring the excess first would produce
+      $74.175 and $75, so this case distinguishes DEC-001's convention.
+    parameter_assumptions: {base_rate: '300', income_level: '200'}
+    scenario:
+      <<: *ordinary
+      claimant_category: non_beneficiary
+      weekly_accommodation_costs: '200.25'
+      cash_assets: '3000'
+      weekly_income: '251.80'
+    expected: {accommodation_supplement: {outcome: calculated, value: '74'}}
+
+  - id: household_exclusion_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, household_eligibility: excluded}
+    expected: &unsupported {accommodation_supplement: {outcome: unsupported}}
+  - id: pension_category_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, claimant_category: pension_or_veterans}
+    expected: *unsupported
+  - id: mixed_benefit_couple_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, claimant_category: mixed_benefit_couple}
+    expected: *unsupported
+  - id: homeowner_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, tenure_type: homeowner}
+    expected: *unsupported
+  - id: joint_tenancy_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, partner_status: joint_tenancy}
+    expected: *unsupported
+  - id: community_partner_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, partner_status: community_spouse_or_partner}
+    expected: *unsupported
+  - id: exempt_asset_applies_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, exempt_cash_asset_status: excluded}
+    expected: *unsupported
+  - id: exempt_asset_unverified_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, exempt_cash_asset_status: unknown}
+    expected: *unsupported
+  - id: asset_ceiling_met_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, cash_assets: '8100'}
+    expected: *unsupported
+
+  - id: household_facts_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, household_eligibility: unknown}
+    expected: &needs_review {accommodation_supplement: {outcome: needs_review}}
+  - id: claimant_category_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, claimant_category: null}
+    expected: *needs_review
+  - id: tenure_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, tenure_type: null}
+    expected: *needs_review
+  - id: partner_status_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, partner_status: null}
+    expected: *needs_review
+  - id: area_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, statistical_area_unit: null}
+    expected: *needs_review
+  - id: accommodation_costs_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, weekly_accommodation_costs: null}
+    expected: *needs_review
+  - id: dependent_children_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, dependent_children_count: null}
+    expected: *needs_review
+  - id: cash_assets_unverified
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, cash_assets: null}
+    expected: *needs_review
+  - id: non_beneficiary_income_unverified
+    parameter_assumptions: {base_rate: '300', income_level: '200'}
+    scenario: {<<: *ordinary, claimant_category: non_beneficiary, weekly_income: null}
+    expected: *needs_review

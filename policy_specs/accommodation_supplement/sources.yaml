@@ -32,6 +32,20 @@ sources:
       user-agent) 403s on this site; this is the same access pattern the
       project already established for the Income Tax Act 2007 during
       WFF's Task 10/17 work.
+    task_24_1_independent_check: Independently fetched both the official
+      point-in-time Act version operative on the 2026-06-01 modelled date
+      (Schedule 4 in the 2026-03-11 version; the site also identifies the
+      2026-04-01 version) and the latest consolidation on 2026-09-23, using the
+      recorded browser user-agent method. Schedule 4 Part 7 clauses 1-3 state
+      the twelve weekly caps exactly as populated in policy.yaml
+      ($305/$220/$160/$120,
+      $235/$155/$105/$80, and $165/$105/$80/$70), the 70% subsidy, and the
+      25%-of-base-rate rent/board entry threshold. Section 423(3) still states
+      $1 weekly income for every $100 of cash assets over $5,400 for a person
+      in a relationship or single person with dependent children, and over
+      $2,700 for any other person. No discrepancy found across the 17 values
+      sourced to this Act entry (12 caps, entry fraction, 2 thresholds, step,
+      and amount per step).
   - id: as-social-security-regulations
     kind: regulations
     title: Social Security Regulations 2018
@@ -51,6 +65,16 @@ sources:
       response -- same single-session-author caveat as the Act entry
       above applies; a fresh-context reviewer should independently
       re-confirm r 18(2)'s exact wording, not take this citation on trust.
+    task_24_1_independent_check: Independently fetched the official 2026-03-02
+      point-in-time Regulations version operative on the 2026-06-01 modelled
+      date, and the latest consolidation, on 2026-09-23 using the recorded
+      browser user-agent method. Regulation 15(1) states $16,200 for a person in a
+      relationship or single person with dependent children and $8,100 in any
+      other case. Regulation 18(2) still states a reduction of 25 cents for
+      every $1 of relevant weekly income above the subclause (3) income level,
+      with no intermediate-rounding instruction. No discrepancy found across
+      the 3 values sourced to this Regulations entry (2 ceilings and reduction
+      rate).
   - id: as-2025-amendment
     kind: amending_legislation
     title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025
@@ -178,6 +202,11 @@ sources:
     title: Example - calculating income changes - non-beneficiaries
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/example-calculating-income-changes-non-beneficiari-01.html
     covers: Income reduction and final rounding using 2026-04-01 thresholds.
+  - id: as-msd-overseas-examples
+    kind: agency_worked_examples
+    title: Accommodation Supplement - overseas payment examples
+    url: https://map.workandincome.govt.nz/map/to-or-from-overseas/payments-from-overseas/accommodation-supplement-examples-01.html
+    covers: Beneficiary and non-beneficiary examples involving overseas payments; the non-beneficiary example uses an integral $57.00 income excess.
   - id: as-ird-other-income
     kind: agency_guidance
     title: Other income for Working for Families
@@ -190,3 +219,16 @@ review_notes:
   - Resolve the fractional-income discrepancy between the general worksheet and student-partner example before implementation.
   - MSD excludes IRD-paid WFF credits from non-beneficiary chargeable income; verify the MSD-paid route separately.
   - Do not infer an address's area from a suburb name; MSD uses Statistical Area Units.
+  - >-
+    Task 24.1 benchmark search, 2026-09-23: independently checked
+    as-msd-rent-board-examples, as-msd-qualifying-costs,
+    as-msd-income-example, as-msd-student-partner-example, and
+    as-msd-income-method, then searched MSD's official MAP and publication
+    domains for another Accommodation Supplement income-reduction example.
+    The ordinary income example and the additional overseas-payment example
+    both use an integral $57.00 excess; rent/board and qualifying-cost examples
+    do not exercise r 18(2). No second published fractional-excess example or
+    direct MSD confirmation was found. DEC-001 therefore remains medium
+    confidence and its convention is not promoted to an official numeric
+    benchmark. The additional example is catalogued as
+    as-msd-overseas-examples.

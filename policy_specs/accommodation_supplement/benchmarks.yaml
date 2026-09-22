@@ -1,3 +1,97 @@
-# Task 5 scaffold only. Task 24 adds independently verified official examples.
+# Task 24.1: official MSD examples. Numeric matches are conditional on the
+# listed scenario facts and dated table inputs; they are not unconditional
+# entitlement determinations. DEC-001 remains unpromoted because no second
+# published fractional-income-excess example was found.
 status: pending_review
-benchmarks: []
+benchmarks:
+  - id: msd_nadiya_supported_living_rent
+    msd_source: as-msd-rent-board-examples
+    outcome_kind: conditional_arithmetic_match
+    benchmarked_components: [accommodation_supplement]
+    source_note: MSD publishes $104 per week from $375 rent less a $227 entry threshold, multiplied by 70%; the $220 Area 2 cap does not bind.
+    assumed_facts:
+      - No household exclusion or discretionary ground applies.
+      - Cash assets are $0 and no exempt-asset issue applies.
+      - The published $227 entry threshold is represented as an assumed $908 base rate solely for this arithmetic check.
+    parameter_assumptions: {base_rate: '908'}
+    scenario:
+      household_eligibility: verified
+      claimant_category: supported_living_payment
+      tenure_type: rent_contributions_or_board
+      partner_status: ordinary_couple
+      statistical_area_unit: area2
+      weekly_accommodation_costs: '375'
+      dependent_children_count: 2
+      cash_assets: '0'
+      exempt_cash_asset_status: verified
+      weekly_income: null
+    expected: {accommodation_supplement: {outcome: calculated, value: '104'}}
+
+  - id: msd_lev_sole_parent_board
+    msd_source: as-msd-rent-board-examples
+    outcome_kind: conditional_arithmetic_match
+    benchmarked_components: [accommodation_supplement]
+    source_note: MSD first converts $400 board to $248 qualifying costs, then publishes $56 per week from the $168 entry threshold; the $235 Area 1 cap does not bind.
+    assumed_facts:
+      - No household exclusion or discretionary ground applies.
+      - Cash assets are $0 and no exempt-asset issue applies.
+      - The already-derived $248 weekly qualifying-cost figure is supplied to the scoped calculator.
+      - The published $168 entry threshold is represented as an assumed $672 base rate solely for this arithmetic check.
+    parameter_assumptions: {base_rate: '672'}
+    scenario:
+      household_eligibility: verified
+      claimant_category: sole_parent_support
+      tenure_type: rent_contributions_or_board
+      partner_status: single
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '248'
+      dependent_children_count: 1
+      cash_assets: '0'
+      exempt_cash_asset_status: verified
+      weekly_income: null
+    expected: {accommodation_supplement: {outcome: calculated, value: '56'}}
+
+  - id: msd_single_non_beneficiary_income_reduction
+    msd_source: as-msd-income-example
+    outcome_kind: conditional_arithmetic_match
+    benchmarked_components: [accommodation_supplement]
+    source_note: MSD publishes $47 per week from $180 rent, a $93 entry threshold, $693 income level, $750 income, 25% reduction, and final upward rounding. Its $57 excess is integral and does not test DEC-001.
+    assumed_facts:
+      - No household exclusion or discretionary ground applies.
+      - Cash assets are $0 and no exempt-asset issue applies.
+      - The published $93 entry threshold is represented as an assumed $372 base rate solely for this arithmetic check.
+    parameter_assumptions: {base_rate: '372', income_level: '693'}
+    scenario:
+      household_eligibility: verified
+      claimant_category: non_beneficiary
+      tenure_type: rent_contributions_or_board
+      partner_status: single
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '180'
+      dependent_children_count: 0
+      cash_assets: '0'
+      exempt_cash_asset_status: verified
+      weekly_income: '750'
+    expected: {accommodation_supplement: {outcome: calculated, value: '47'}}
+
+  - id: msd_student_partner_fractional_example_outside_scope
+    msd_source: as-msd-student-partner-example
+    outcome_kind: scope_boundary
+    benchmarked_components: [accommodation_supplement]
+    source_note: MSD's $61 example uses an exact $54.14 income excess but also deducts a $60 Student Accommodation Benefit; the scoped v0.1 branch does not model that student-partner exception, so the published number is not promoted as a benchmark.
+    assumed_facts:
+      - household_eligibility is marked excluded solely to represent the known out-of-scope student-partner branch.
+      - Cash assets are $0 and no exempt-asset issue applies.
+    parameter_assumptions: {}
+    scenario:
+      household_eligibility: excluded
+      claimant_category: non_beneficiary
+      tenure_type: rent_contributions_or_board
+      partner_status: ordinary_couple
+      statistical_area_unit: area2
+      weekly_accommodation_costs: '350'
+      dependent_children_count: 0
+      cash_assets: '0'
+      exempt_cash_asset_status: verified
+      weekly_income: '1171.14'
+    expected: {accommodation_supplement: {outcome: unsupported}}
