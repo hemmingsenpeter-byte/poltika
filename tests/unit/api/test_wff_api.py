@@ -27,9 +27,32 @@ import yaml
 from fastapi.testclient import TestClient
 
 from poltika.api.main import app
+from poltika.api.wff import _wff_policy_dir
 from tests.conftest import load_wff_spec_case
 
 client = TestClient(app)
+
+
+def test_policy_dir_env_var_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """ADR-0011's deploy-time mount convention: POLTIKA_POLICY_SPECS_DIR,
+    when set, wins over the source-checkout-relative default."""
+    monkeypatch.setenv("POLTIKA_POLICY_SPECS_DIR", str(tmp_path))
+
+    resolved = _wff_policy_dir()
+
+    assert resolved == tmp_path / "working_for_families"
+
+
+def test_policy_dir_defaults_without_env_var(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Unset (the normal case for local development and existing
+    deployments): falls back to Task 21's original source-checkout-
+    relative path, unchanged."""
+    monkeypatch.delenv("POLTIKA_POLICY_SPECS_DIR", raising=False)
+
+    resolved = _wff_policy_dir()
+
+    assert resolved.name == "working_for_families"
+    assert resolved.parent.name == "policy_specs"
 
 
 def _request_payload(case_id: str) -> dict[str, Any]:

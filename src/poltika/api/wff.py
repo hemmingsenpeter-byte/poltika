@@ -24,6 +24,7 @@ never a JSON number that risks float rounding.
 
 from __future__ import annotations
 
+import os
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -43,7 +44,26 @@ from poltika.engines.simulator.wff import (
     run_wff_module,
 )
 
-WFF_POLICY_DIR = Path(__file__).resolve().parents[3] / "policy_specs" / "working_for_families"
+
+def _wff_policy_dir() -> Path:
+    """Resolve the WFF `policy_specs/` directory.
+
+    Deploy-time mount convention (ADR-0011, Task 21's deployment gate): if
+    `POLTIKA_POLICY_SPECS_DIR` is set, WFF's directory is `<that path>/
+    working_for_families` -- `policy_specs/` is deploy-time configuration,
+    supplied by whoever runs the installed artifact, never baked into the
+    wheel itself (confirmed absent from a built wheel, PR #22 review
+    finding). Falls back to the source-checkout-relative path for local
+    development, unchanged from Task 21's original behaviour -- most
+    contributors never need to set the environment variable at all.
+    """
+    override = os.environ.get("POLTIKA_POLICY_SPECS_DIR")
+    if override:
+        return Path(override) / "working_for_families"
+    return Path(__file__).resolve().parents[3] / "policy_specs" / "working_for_families"
+
+
+WFF_POLICY_DIR = _wff_policy_dir()
 
 router = APIRouter(prefix="/wff", tags=["wff"])
 

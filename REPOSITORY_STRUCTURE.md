@@ -53,7 +53,9 @@ poltika/
 │                            the one WFF calculation route, wrapping
 │                            run_wff_module() directly — no scenarios/ or
 │                            llm/ layer yet, per ARCHITECTURE.md's request
-│                            path)
+│                            path; _wff_policy_dir() resolves
+│                            POLTIKA_POLICY_SPECS_DIR at deploy time,
+│                            ADR-0011)
 │
 └── tests/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
@@ -64,6 +66,11 @@ poltika/
     │   │                        module-integration tests (Task 20),
     │   │                        AS calculator unit tests (Task 23)
     │   └── api/             — FastAPI TestClient tests (Task 21)
+    ├── installed_artifact/ — builds and installs the real wheel into a
+    │                          throwaway venv, confirms the API works
+    │                          standalone (ADR-0011); marked
+    │                          installed_artifact, excluded from the
+    │                          default fast suite (pyproject.toml addopts)
     └── regression/         — known-historical-issue tests (Task 15)
 ```
 
@@ -159,7 +166,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | `src/poltika/engines/simulator/` | `semantics/`, `policy/`, `scenarios/`, `common/` | Stats NZ (or any) API, source CSV structures, LLM output |
 | `src/poltika/engines/assurance/` | `semantics/`, `policy/`, `scenarios/`, `engines/simulator/`, `common/` | source-specific formats/APIs |
 | `src/poltika/llm/` | `scenarios/` (to build/read a `ScenarioRequest`) | `engines/simulator/` internals, raw/processed data |
-| `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly, no `scenarios/` layer yet) | `data/` (raw or processed), source-specific formats, a caller-supplied policy directory path |
+| `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly, no `scenarios/` layer yet); `POLTIKA_POLICY_SPECS_DIR` at deploy time (ADR-0011 -- an operator-set deployment variable, not a per-request caller input) | `data/` (raw or processed), source-specific formats, a *request*-supplied policy directory path (still prohibited -- no HTTP caller may choose the policy directory) |
 
 Concretely: the simulator must never do
 
