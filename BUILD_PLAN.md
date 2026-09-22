@@ -1050,7 +1050,55 @@ twin of the New Zealand policy system.
     re-verification of the 20 populated parameter values remain correctly
     open per PR #25's own framing -- not closed by this review, tracked
     for Task 24/25.
-24. Repeat test/review process
+24. Repeat test/review process — broken into subtasks 24.1-24.8 below (23
+    September 2026), mirroring WFF's Task 13-20 sequence one-for-one,
+    since AS's single-component structure makes the same granularity
+    tractable as one task's worth of subtasks rather than eight separate
+    numbered tasks the way WFF needed. **Owner/status per subtask below
+    -- check this before starting any AS work, so Claude Code and
+    GPT/Codex don't edit the same scope concurrently** (`review_packets/
+    README.md`: "Do not have both models edit the same checkout
+    concurrently").
+
+24.1. Independent verification + spec/benchmark tests (spec_cases.yaml,
+    benchmarks.yaml) — mirrors WFF's Tasks 13-14 combined into one
+    subtask, since AS has one component, not four. **In progress,
+    assigned to GPT/Codex, 23 September 2026** (Pete sent the goal
+    directly). Scope: (a) independently re-verify all 20 statutory
+    values already in `policy.yaml` against the Act/Regulations text --
+    a genuine second look, not a re-read of Task 22/23's own prior work;
+    (b) write `spec_cases.yaml` -- hand-calculated cases derived
+    independently from specification.md's calculation sequence, covering
+    the household gate's unsupported/needs_review triggers and both the
+    beneficiary (no income test) and non-beneficiary (DEC-001 unrounded
+    excess) paths; (c) search MSD's published worked examples for a
+    second fractional-income-excess case to corroborate DEC-001's
+    reading (Pete's explicit ask, PR #25 review) -- if found,
+    independently recalculate and record in `benchmarks.yaml`; if not
+    found, record that negative result in DEC-001's own "Confidence"
+    section rather than leaving the gap silent. Does not touch
+    `accommodation_supplement.py` or its existing unit tests. **Claude
+    Code: do not edit `policy_specs/accommodation_supplement/` (any
+    file, including `decisions/`) or `spec_cases.yaml`/`benchmarks.yaml`
+    while this is in progress.**
+24.2. Regression tests for known historical issues (regression fixture
+    parity with WFF's Task 15) — not started. Owner: unassigned.
+24.3. External coverage-gap check (OpenFisca Aotearoa / PolicyEngine NZ,
+    per ADR-0004, strictly after 24.1-24.2 complete) — not started.
+    Owner: unassigned.
+24.4. Independent adversarial review (fresh-context, no implementer
+    explanation) of the completed AS vertical slice — not started.
+    Owner: unassigned; whichever model did not do 24.1-24.3's
+    implementation work, per the Roles section.
+24.5. Classify discrepancies from 24.4 — not started.
+24.6. Resolve ambiguities, record decision artifacts (where genuine
+    ambiguity exists) — not started.
+24.7. Integrate `calculate_accommodation_supplement()` into a module
+    entry point, mirroring Task 20's `run_wff_module()` pattern
+    (validation_checks for policy identity, reference-period coverage,
+    full rate coverage) — not started.
+24.8. Add an AS API route, mirroring Task 21's `run_wff_module()` ->
+    FastAPI pattern (ADR-0010) — not started; gated on 24.1-24.7.
 25. Stress-test POLICY_SPECS schema against AS's different structure
     (housing costs, asset test, geography)
 26. Revise schema → v0.2
