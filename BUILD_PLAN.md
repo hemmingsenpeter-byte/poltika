@@ -768,9 +768,11 @@ twin of the New Zealand policy system.
     ARCHITECTURE_ISSUE finding (full-year rate binding)** — the three
     blocking acceptance tests it required now exist and pass.
 21. Add API — gated on the pure calculator passing acceptance (now true:
-    the Task 17-20 loop closed for WFF). **Implemented for WFF, pending
-    review.** Introduces FastAPI + Pydantic v2 directly rather than a
-    placeholder, per ADR-0010, which documents this as its own decision
+    the Task 17-20 loop closed for WFF). **Complete, merged 22 September
+    2026 for WFF (PR #22, commit `9e84864`), scoped to a source-checkout
+    deployment -- see the future gate recorded below.** Introduces
+    FastAPI + Pydantic v2 directly rather than a placeholder, per
+    ADR-0010, which documents this as its own decision
     citing ARCHITECTURE.md's recorded long-term stack (commit `21dc905`)
     and the Streamlit-to-Next.js "go straight to the target" precedent.
     `fastapi`/`pydantic` added to `pyproject.toml`'s main dependencies;
@@ -879,6 +881,11 @@ twin of the New Zealand policy system.
     Until both exist, this API must not be presented as deployable beyond
     a source checkout, regardless of what `pytest`/`ruff`/`mypy --strict`
     report -- none of those currently run against an installed artifact.
+
+    Immediately before merging, Claude Code independently re-verified
+    `pytest` (132/132), `ruff`, and `mypy --strict` all pass, and that
+    CI's `check-protected-paths` check was green, at the reviewed commit
+    (`910c37b`). Merged as commit `9e84864`.
 
 ### Week 3 — Accommodation Supplement
 22. Complete AS specification
