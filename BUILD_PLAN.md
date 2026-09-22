@@ -1021,10 +1021,13 @@ twin of the New Zealand policy system.
     architecture-boundary schema change -- both categories Pete's
     Codex-review-reserve plan (22 September 2026) names as high-risk,
     warranting the one consolidated review, not self-review alone. Author
-    preflight done per `.claude/skills/pr-review-preflight/SKILL.md`
-    (findings below); PR opened and held for Pete's own review or the
-    reserved Codex pass, whichever Pete prefers, not merged on
-    self-review.
+    preflight done per `.claude/skills/pr-review-preflight/SKILL.md`,
+    found and fixed two self-flagged (not independently verified)
+    judgment calls plus one test-coverage gap before requesting review
+    (commit `9eac0c8`) -- see PR #25 for the full packet, including a
+    "Deferred Codex audit" section. PR #25 opened and held for Pete's own
+    review or the reserved Codex pass, whichever Pete prefers, not merged
+    on self-review.
 24. Repeat test/review process
 25. Stress-test POLICY_SPECS schema against AS's different structure
     (housing costs, asset test, geography)
