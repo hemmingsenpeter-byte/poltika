@@ -671,9 +671,47 @@ twin of the New Zealand policy system.
     Must be repeated independently for Accommodation Supplement once AS's
     own test suite is complete.
 17. Independent adversarial review (fresh-context, no implementer explanation)
-18. Classify discrepancies
-19. Resolve ambiguities, record decision artifacts (where genuine ambiguity exists)
-20. Integrate into simulator
+    — **In progress for WFF (PR #19, `review_packets/wff_task17.md`):**
+    GPT/Codex reviewed the complete WFF vertical slice (Tasks 11-16, PRs
+    #13-18) fresh-context, deriving expected behaviour from sources and
+    specification.md before reading any implementer explanation, per the
+    Roles section (Claude Code was the Tasks 11-16 implementer, so could
+    not itself perform this review). Two findings recorded.
+18. Classify discrepancies — **Complete for both Task 17 findings.** Pete
+    confirmed: **CODE_ERROR + TEST_ERROR** for the MFTC input gap;
+    **ARCHITECTURE_ISSUE** for full-year rate binding. Neither required a
+    policy-interpretation decision.
+19. Resolve ambiguities, record decision artifacts (where genuine ambiguity
+    exists) — No interpretation ambiguity in either Task 17 finding, so no
+    ambiguity decision artifact for those. One scoping decision was
+    recorded instead: the fix PR (#20) initially added a generic
+    reference-period-coverage guard directly to Task 11's loader, but this
+    silently conflicted with `tests/unit/policy/test_loader.py`'s own
+    already-reviewed design (`test_open_ended_final_interval_resolves`
+    explicitly tests that Task 11 deliberately has no hardcoded date
+    boundary at the loader level). Pete decided (22 September 2026): keep
+    Task 11's open-ended-interval design as-is; the annual-period,
+    policy/version, and rate-coverage checks move to Task 20 as **blocking
+    acceptance tests** instead of a generic loader guard. The
+    ARCHITECTURE_ISSUE finding stays open until those tests exist and
+    pass — not resolved by PR #20.
+20. Integrate into simulator — **Blocked on acceptance tests, not yet
+    started.** Per Pete's Task 19 decision above, integration must not be
+    accepted until tests exist proving, at the integration boundary (not
+    inside Task 11's generic loader): (a) the requested calculation's
+    modelled date/interval falls within the policy's reviewed
+    `reference_period` — a foreign or mismatched date must not silently
+    produce an annual result; (b) the loaded `PolicyParameterSet`'s
+    `policy_id`/`policy_version` matches what the integration caller
+    actually requested, not an unrelated or stale parameter set; (c) every
+    parameter the calculation depends on is actually rate-covered for the
+    complete period being calculated, not just individually resolved for a
+    single point-in-time date. These are integration-boundary
+    responsibilities specifically because Task 11's loader itself
+    deliberately stays general-purpose (no hardcoded assessment-period
+    assumption, per its own tested design) — Task 20 is where a specific
+    caller's assumptions about "this is a full 2026-27 WFF calculation"
+    actually apply.
 21. Add API — gated on the pure calculator passing acceptance
 
 ### Week 3 — Accommodation Supplement
