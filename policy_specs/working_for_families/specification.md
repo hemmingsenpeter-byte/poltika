@@ -746,3 +746,55 @@ present in the merged state, not just claimed. This assigns
 `status: approved` to `benchmarks.yaml`'s 9 cases. It changes no test
 values or calculation behaviour -- per the file's own header, this status
 field records review acceptance, nothing else.
+
+## Task 17-18 acceptance (Pete recommended; Claude Code decided, 22 September 2026)
+
+Task 17's independent adversarial review (GPT/Codex, `review_packets/
+wff_task17.md`, PR #19) found two discrepancies in the completed WFF
+vertical slice, independently re-verified by Claude Code before fixing
+(never taken on the reviewer's word alone), and classified by Pete per
+Task 18: **CODE_ERROR + TEST_ERROR** for a minimum family tax credit
+input gap, **ARCHITECTURE_ISSUE** for full-year rate binding.
+
+`_minimum_family_tax_credit()` in `wff.py` was missing the
+`family_scheme_income` verification gate `_family_tax_credit()` and
+`_best_start()` both already had. Confirmed against the operative Income
+Tax Act 2007 s ME 3 text (legislation.govt.nz, checked 2026-09-22):
+ME 3(3)(a)(i)'s "adjusted income" item is explicitly "the amount of the
+person's family scheme income", so net family scheme income is legally
+derived from family scheme income, not independently suppliable --
+matching this file's own accepted Task 10.4 input boundary ("a separately
+verified family-scheme-income input"), which was not scoped away from
+minimum family tax credit. Fixed; three `benchmarks.yaml` MFTC cases and
+one `spec_cases.yaml` partnered case corrected to match (the partnered
+case's prior "minimum family tax credit doesn't use combined
+family_scheme_income" reasoning no longer holds now that the component
+requires the income verified at all, not just its arithmetic-relevant
+net figure).
+
+Two GPT/Codex review rounds on the fix PR (#20): round 1 found the
+Jeremy MFTC benchmark's assumed gross family-scheme-income figure omitted
+the $1,000 child support IRD's own example states he receives (fixed,
+confirmed against IRD's family-income guidance stating received child
+support is included in family income); round 2 reported no remaining
+discrepancies in the narrowed MFTC scope.
+
+The ARCHITECTURE_ISSUE finding (full-year rate binding -- a resolved
+parameter's interval was never checked against the policy's complete
+`reference_period`, only against the single requested `modelled_date`) is
+**not resolved by this acceptance**. An initial fix added a generic guard
+to Task 11's loader, but this conflicted with `tests/unit/policy/
+test_loader.py`'s own already-reviewed design (`test_open_ended_final_
+interval_resolves` deliberately tests no hardcoded assessment-period
+boundary at the loader level). Pete decided to keep Task 11's design
+as-is rather than revisit it, and moved the annual-period,
+policy/version, and rate-coverage checks to Task 20 as blocking
+acceptance tests instead (see `BUILD_PLAN.md` Task 20). This finding
+stays open until those tests exist and pass.
+
+Pete recommended merging the fix PR "as the MFTC fix, not as closure of
+the Task 20 architecture requirement" and delegated the final merge
+decision to Claude Code, matching Tasks 13/14/16's pattern. Immediately
+before merging, Claude Code re-verified `pytest` (119/119), `ruff`, and
+`mypy --strict` all pass at the reviewed commit (`7ddf5f4`). Merged as
+commit `ec61213`.

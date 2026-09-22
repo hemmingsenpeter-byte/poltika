@@ -671,16 +671,32 @@ twin of the New Zealand policy system.
     Must be repeated independently for Accommodation Supplement once AS's
     own test suite is complete.
 17. Independent adversarial review (fresh-context, no implementer explanation)
-    — **In progress for WFF (PR #19, `review_packets/wff_task17.md`):**
+    — **Complete for WFF (PR #19, `review_packets/wff_task17.md`):**
     GPT/Codex reviewed the complete WFF vertical slice (Tasks 11-16, PRs
     #13-18) fresh-context, deriving expected behaviour from sources and
     specification.md before reading any implementer explanation, per the
     Roles section (Claude Code was the Tasks 11-16 implementer, so could
-    not itself perform this review). Two findings recorded.
-18. Classify discrepancies — **Complete for both Task 17 findings.** Pete
-    confirmed: **CODE_ERROR + TEST_ERROR** for the MFTC input gap;
-    **ARCHITECTURE_ISSUE** for full-year rate binding. Neither required a
-    policy-interpretation decision.
+    not itself perform this review). Two findings recorded and classified
+    (Task 18 below); PR #19 remains open as the standing review record, per
+    Pete's instruction to keep it separate from the fix PR.
+18. Classify discrepancies — **Complete for both Task 17 findings, MFTC fix
+    merged 22 September 2026 (PR #20, commit `ec61213`).** Pete confirmed:
+    **CODE_ERROR + TEST_ERROR** for the MFTC input gap; **ARCHITECTURE_ISSUE**
+    for full-year rate binding. Neither required a policy-interpretation
+    decision. `_minimum_family_tax_credit()` now gates on
+    `family_scheme_income` (and partnered-income verification), matching
+    `_family_tax_credit()`/`_best_start()`, confirmed against the operative
+    Income Tax Act 2007 s ME 3 text (net family scheme income is legally
+    derived from family scheme income). Three benchmark cases and one spec
+    case corrected to match. Two review rounds on PR #20 (GPT/Codex): round
+    1 found Jeremy's assumed family-scheme-income figure omitted IRD-stated
+    child support (fixed, confirmed against IRD's family-income guidance);
+    round 2 reported no remaining discrepancies in the narrowed MFTC scope.
+    119/119 tests pass, Ruff and strict mypy clean. Pete recommended
+    merging PR #20 "as the MFTC fix, not as closure of the Task 20
+    architecture requirement"; Claude Code independently re-verified tests
+    at the reviewed commit (`7ddf5f4`) and merged. The ARCHITECTURE_ISSUE
+    finding is **not** resolved by this merge -- see Task 19/20 below.
 19. Resolve ambiguities, record decision artifacts (where genuine ambiguity
     exists) — No interpretation ambiguity in either Task 17 finding, so no
     ambiguity decision artifact for those. One scoping decision was
