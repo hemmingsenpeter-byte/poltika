@@ -736,17 +736,37 @@ twin of the New Zealand policy system.
     module-boundary logic.
 
     Deliberately single-module: no cross-module `dependencies`
-    (ARCHITECTURE.md notes those are v0.3's job). Six new tests in
-    `tests/unit/engines/simulator/test_wff_module.py` cover all three
-    invariants (including the mirror-direction interval case) plus a
-    behaviour-preservation smoke test (`run_wff_module()` against the real
-    approved policy must exactly match calling `load_policy_parameters()`
-    + `calculate_wff()` directly) and confirm the pre-existing
-    `policy_version` mismatch raise is untouched. 125/125 tests pass
-    (up from 119), `ruff`, and `mypy --strict` clean. These are the three
-    blocking acceptance tests the Task 17 ARCHITECTURE_ISSUE finding
-    required — pending GPT/Codex fresh-context review before Pete accepts
-    and the finding is closed.
+    (ARCHITECTURE.md notes those are v0.3's job).
+
+    **Complete, merged 22 September 2026 (PR #21, commit `f0566e6`).**
+    GPT/Codex's fresh-context review (two rounds) caught two further gaps
+    in the first implementation, both independently reproduced before
+    fixing: (1) the three module-boundary invariants above did not check
+    that every parameter `calculate_wff()` needs is actually *declared* in
+    `policy.yaml` at all — a policy.yaml missing one could pass all three
+    invariants and then crash with a bare `KeyError` partway through a
+    component calculation, reproduced directly against a synthetic
+    single-parameter fixture; fixed by adding
+    `_WFF_REQUIRED_PARAMETER_IDS` and a fourth module-boundary check
+    confirming every one resolves before `calculate_wff()` runs, naming
+    whichever are missing rather than crashing. (2)
+    `requested_policy_version` defaulted to `None`, so an integration
+    caller could silently omit it and bypass the policy_version half of
+    the "matches what the caller requested" guarantee entirely (Task 11's
+    `load_policy_parameters()` only checks a *supplied* version); fixed by
+    making it a required keyword argument on `run_wff_module()` — no
+    implicit "whatever's in the directory" fallback. Second review round
+    reported no remaining discrepancies. Seven tests in
+    `tests/unit/engines/simulator/test_wff_module.py` (all three original
+    invariants including the mirror-direction interval case, the new
+    missing-required-parameter regression, a behaviour-preservation smoke
+    test, and confirmation the pre-existing `policy_version` mismatch
+    raise is untouched). 126/126 tests pass (up from 119), `ruff`, and
+    `mypy --strict` clean. Pete recommended merging, then recording
+    acceptance; Claude Code independently re-verified tests at the
+    reviewed commit (`ae8ac13`) and merged. **This closes the Task 17
+    ARCHITECTURE_ISSUE finding (full-year rate binding)** — the three
+    blocking acceptance tests it required now exist and pass.
 21. Add API — gated on the pure calculator passing acceptance
 
 ### Week 3 — Accommodation Supplement

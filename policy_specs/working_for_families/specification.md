@@ -798,3 +798,37 @@ decision to Claude Code, matching Tasks 13/14/16's pattern. Immediately
 before merging, Claude Code re-verified `pytest` (119/119), `ruff`, and
 `mypy --strict` all pass at the reviewed commit (`7ddf5f4`). Merged as
 commit `ec61213`.
+
+## Task 20 acceptance -- Task 17 ARCHITECTURE_ISSUE finding closed (Pete recommended; Claude Code decided, 22 September 2026)
+
+`run_wff_module()` (`src/poltika/engines/simulator/wff.py`) implements
+Task 20's module integration entry point per ARCHITECTURE.md's Simulation
+module contract, combining Task 11's `load_policy_parameters()` and Task
+12's `calculate_wff()` and enforcing the three module-boundary invariants
+Task 19 assigned here rather than to Task 11's general-purpose loader:
+requested-date-within-reference-period, `policy_id` module-identity
+match, and full reference-period rate coverage for every parameter used.
+
+GPT/Codex's fresh-context review (PR #21, two rounds) independently found
+and Claude Code independently reproduced two further gaps before fixing:
+a policy.yaml missing one of `calculate_wff()`'s required parameter ids
+could pass all three original invariants and then crash with a bare
+`KeyError` partway through a component calculation (fixed with a fourth
+check confirming every required parameter is declared before
+`calculate_wff()` runs); and `requested_policy_version` defaulting to
+`None` let a caller silently bypass the policy_version half of the
+module-identity guarantee (fixed by making it a required keyword
+argument). Second review round reported no remaining discrepancies.
+126/126 tests pass, `ruff`, and `mypy --strict` clean.
+
+Pete recommended merging, then recording acceptance, and delegated the
+final merge decision to Claude Code, matching the pattern established
+since Task 13. Immediately before merging, Claude Code re-verified
+`pytest` (126/126), `ruff`, and `mypy --strict` all pass at the reviewed
+commit (`ae8ac13`). Merged as commit `f0566e6`.
+
+This closes the Task 17 ARCHITECTURE_ISSUE finding (full-year rate
+binding): the three blocking acceptance tests `BUILD_PLAN.md`'s Task 20
+entry required now exist and pass. Both Task 17 findings are now fully
+resolved -- the MFTC CODE_ERROR/TEST_ERROR (Task 18, PR #20) and this
+ARCHITECTURE_ISSUE (Task 20, PR #21).
