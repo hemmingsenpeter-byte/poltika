@@ -132,10 +132,62 @@ external-engine code or test logic.
 
 ## Author response
 
-(add assumptions and rationale only after the independent review is
-recorded)
+Independent review recorded by GPT/Codex 22 September 2026 (`be24947`),
+two proposed discrepancies. Both independently re-verified before this
+response, per `CLAUDE.md`'s "never trust a review claim blindly."
+
+**1. MFTC input gap (reviewer-proposed CODE_ERROR / TEST_ERROR) —
+confirmed.** Fetched the operative ME 3 text directly
+(legislation.govt.nz, browser user-agent, since a bare fetch still 403s;
+checked 2026-09-22): "adjusted income is— (i) the amount of **the
+person's family scheme income** for the tax year ... attributable to the
+number of weeks in which the person is a full-time earner, adjusted to an
+annualised amount..." Net family scheme income is legally *derived from*
+family scheme income, not an independently suppliable figure. The
+accepted Task 10.4 contract text (specification.md, "Approved Task 10
+scoped calculation contract") lists "a separately verified
+family-scheme-income input" as part of the whole accepted v0.1 domain
+boundary, not scoped away from MFTC specifically. In code,
+`_minimum_family_tax_credit()` (`wff.py` lines 579-618) checks
+`net_family_scheme_income_me3_attested` and `net_family_scheme_income`
+but never checks `scenario.family_scheme_income is not None`, unlike
+`_family_tax_credit()` and `_best_start()`, which both gate on it. Not
+hypothetical: `benchmarks.yaml`'s three already-approved MFTC cases
+(`ird_mftc_jeremy_salary_only`, `ird_mftc_casey_self_employed_plus_salary`,
+`ird_mftc_casey_zero_over_income_limit`) currently supply
+`family_scheme_income: null` and still resolve to `calculated`.
+
+Proposed classification: **CODE_ERROR** for `wff.py`'s missing gate, plus
+a linked **TEST_ERROR** for the three benchmark cases, which will need
+`family_scheme_income` supplied (or an explicit documented reason it's
+absent) once the gate exists. Not an INTERPRETATION_AMBIGUITY -- the
+statute and the already-accepted specification text agree.
+
+**2. Full-year rate binding (reviewer-proposed ARCHITECTURE_ISSUE /
+CODE_ERROR) -- confirmed, latent not live.** `_resolve_parameter()`
+(`loader.py` lines 205-247) matches whichever single interval covers
+`modelled_date` and returns it as `resolved`, with no check that the
+interval spans the full assessment/reference period the calculator's
+annual formulas assume. specification.md's accepted contract (calculation
+sequence, step 1) requires exactly this ("Select the law and parameter
+interval for the complete assessment period... A point-in-time Order
+check cannot verify a future full-year rate"), but it is currently
+enforced only for `in_work_base` via its `review_status` gate, not
+structurally for any parameter via interval coverage. No wrong value
+results today: every approved `policy.yaml` parameter's current interval
+(2026-04-01 to 2027-04-01) already spans the full 2026-27 reference
+period exactly.
+
+Proposed classification: **ARCHITECTURE_ISSUE** -- a genuine design gap,
+not a present-day wrong output under the currently approved parameter
+set, but needing a structural guard before Task 20/21 integration, where
+a mid-year or mismatched parameter interval could otherwise be silently
+treated as a full-year result.
+
+Requesting Pete's confirmation of both classifications (per the Roles
+section, Pete confirms discrepancy classification) before proceeding to
+fix.
 
 ## Resolution
 
-(what happened to each discrepancy — fixed, escalated, recorded as a Pete
-decision artifact, etc.)
+Pending Pete's classification confirmation.
