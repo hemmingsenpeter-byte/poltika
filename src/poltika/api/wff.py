@@ -144,6 +144,14 @@ def _scenario_from_request(request: WffCalculationRequest) -> WffScenario:
 def calculate(request: WffCalculationRequest) -> WffCalculationResponse:
     """Calculate WFF entitlement for one scenario.
 
+    **This is a conditional simulation, not a verified entitlement
+    determination.** Every `"verified"` fact in the request (e.g.
+    `household_eligibility: "verified"`) is the caller's own assertion --
+    Poltika does not independently confirm it against any government
+    record. A `calculated` result is only as reliable as the caller's own
+    verification of the facts it supplied (see the app-level description
+    in `poltika.api.main` for the full statement; PR #22 review finding).
+
     Wraps `run_wff_module()` directly against the internally-pinned
     `policy_specs/working_for_families` directory. A `PoltikaError` raised
     by the loader (e.g. a `requested_policy_version` mismatch) is not

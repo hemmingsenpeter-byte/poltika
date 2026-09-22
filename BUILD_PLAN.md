@@ -822,6 +822,35 @@ twin of the New Zealand policy system.
     error handling, schema correctness) is the stated, deliberate depth
     for this task, not a silently skipped decision.
 
+    **PR #22 review round (GPT/Codex), two findings, both fixed:**
+    (1) `WFF_POLICY_DIR` locates `policy_specs/` relative to this source
+    file, which only resolves inside a source checkout --
+    `pyproject.toml`'s `[tool.setuptools.packages.find]` only packages
+    `src/`, so a normally `pip install`-ed wheel (confirmed by actually
+    building one: `poltika/**` only, no `policy_specs/`) would fail to
+    load `policy.yaml`. Fixing the packaging itself (e.g. moving
+    `policy_specs/` under `src/poltika/`) is a deployment/packaging
+    architecture decision beyond this task's single-module HTTP-wrapper
+    scope, touching every existing reference to `policy_specs/`'s
+    repo-root location -- **left open, explicitly documented as a known
+    limitation** in `poltika/api/main.py`'s module docstring, not silently
+    fixed. What this PR does add: a FastAPI `lifespan` startup check that
+    fails loudly and immediately if `policy_specs/` is missing, rather
+    than a confusing failure on the first request.
+    (2) The 500 handler returned `str(exc)` verbatim, and
+    `InvalidSourceCatalogError` in particular embeds absolute resolved
+    filesystem paths -- confirmed directly. Fixed: the exception is now
+    logged server-side (with traceback) but the response carries a fixed,
+    generic detail message with no exception text.
+    A third, non-bug scope finding was also addressed: the API's OpenAPI
+    `description` and the route's docstring now state explicitly that
+    every `"verified"` fact is the caller's own assertion, not
+    independently confirmed by Poltika, and that a result is a
+    conditional simulation, not a verified entitlement determination.
+    Two new regression tests added (the leak fix, the startup-failure
+    behaviour). 132/132 tests pass (up from 126), `ruff`, and
+    `mypy --strict` clean.
+
 ### Week 3 — Accommodation Supplement
 22. Complete AS specification
 22a. Identify and freeze the minimum authoritative external statistical

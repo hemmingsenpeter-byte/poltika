@@ -19,8 +19,11 @@ from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
+import pytest
+import yaml
 from fastapi.testclient import TestClient
 
 from poltika.api.main import app
@@ -114,3 +117,60 @@ def test_calculate_maps_policy_version_mismatch_to_409_not_200() -> None:
 
     assert response.status_code == 409
     assert "9.9.9" in response.json()["detail"]
+
+
+def test_500_handler_does_not_leak_exception_detail(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Historical issue: PR #22's review finding. A `PoltikaError` other
+    than `PolicyVersionMismatchError` (here, an unsupported
+    schema_version) previously returned `str(exc)` verbatim as the 500
+    response's `detail` -- and `InvalidSourceCatalogError` in particular
+    embeds absolute resolved filesystem paths, which must never reach an
+    untrusted caller. The response must now carry a fixed, generic
+    message with no exception text."""
+    broken_policy_dir = tmp_path / "policy"
+    broken_policy_dir.mkdir()
+    (broken_policy_dir / "policy.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": "99.9",  # unsupported -- triggers UnsupportedSchemaVersionError
+                "policy_id": "working_for_families",
+                "policy_version": "0.1.0",
+                "status": "approved",
+                "reference_period": {"from": "2026-04-01", "to": "2027-04-01"},
+                "source_catalog": "sources.yaml",
+                "assessment": {},
+                "inputs": [],
+                "parameters": [],
+                "components": [],
+                "outputs": {},
+            }
+        )
+    )
+    (broken_policy_dir / "sources.yaml").write_text(yaml.safe_dump({"sources": []}))
+    monkeypatch.setattr("poltika.api.wff.WFF_POLICY_DIR", broken_policy_dir)
+
+    payload = _request_payload("single_ordinary_low_income")
+
+    response = client.post("/wff/calculate", json=payload)
+
+    assert response.status_code == 500
+    detail = response.json()["detail"]
+    assert detail == "Internal server error: the deployed policy configuration is invalid."
+    assert "99.9" not in detail
+    assert str(broken_policy_dir) not in detail
+    assert "/" not in detail  # no filesystem path fragment of any kind
+
+
+def test_startup_fails_loudly_if_policy_directory_is_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The known packaging limitation (`poltika.api.main`'s module
+    docstring, PR #22 review finding): `WFF_POLICY_DIR` only resolves
+    inside a source checkout. If it's ever missing -- e.g. a `pip
+    install`-ed deployment that doesn't carry `policy_specs/` -- the app
+    must fail immediately at startup with a clear error, not confusingly
+    on the first request."""
+    monkeypatch.setattr("poltika.api.main.WFF_POLICY_DIR", tmp_path / "does_not_exist")
+
+    with pytest.raises(RuntimeError, match="has no policy.yaml"), TestClient(app):
+        pass
