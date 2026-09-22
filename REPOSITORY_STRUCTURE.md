@@ -43,7 +43,9 @@ poltika/
 │   │                        run_wff_module(), the module integration
 │   │                        entry point over Task 11's loader + Task 12's
 │   │                        calculator, per ARCHITECTURE.md's Simulation
-│   │                        module contract)
+│   │                        module contract); accommodation_supplement.py
+│   │                        (Task 23 calculate_accommodation_supplement(),
+│   │                        same pure-function/ComponentResult pattern)
 │   └── api/               — Task 21: FastAPI app (ADR-0010). main.py (app
 │                            instance, exception handling for
 │                            common.errors.PoltikaError subclasses) and
@@ -59,7 +61,8 @@ poltika/
     │   ├── policy/         — loader tests (Task 11)
     │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
     │   │                        benchmark-case loader/runners (Tasks 13-14),
-    │   │                        module-integration tests (Task 20)
+    │   │                        module-integration tests (Task 20),
+    │   │                        AS calculator unit tests (Task 23)
     │   └── api/             — FastAPI TestClient tests (Task 21)
     └── regression/         — known-historical-issue tests (Task 15)
 ```

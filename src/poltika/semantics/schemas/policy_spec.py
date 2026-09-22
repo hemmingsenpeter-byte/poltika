@@ -60,12 +60,31 @@ class ParameterValueType(str, Enum):
 class ParameterUnit(str, Enum):
     """`unit` values observed in the approved WFF policy.yaml -- same rationale
     as `ParameterValueType`.
+
+    `NZD`, `NZD_PER_WEEK`, and `FRACTION` were added for Task 23
+    (Accommodation Supplement, per Pete's decision 23 September 2026) --
+    a narrow, additive extension, not a schema_version bump or a v0.1
+    redesign. AS's parameters are weekly-basis and include stock amounts
+    (asset ceilings) WFF never needed a unit for; its r 18(2) income-
+    reduction rate also must NOT carry `NZD_PER_COMPLETE_NZD_ABOVE_
+    THRESHOLD`'s baked-in complete-dollar-flooring semantics, per DEC-001
+    (`policy_specs/accommodation_supplement/decisions/
+    DEC-001-income-excess-rounding.md`) -- whether and how flooring
+    applies is calculator logic, not something the unit type should
+    encode. `FRACTION` is deliberately more general than the WFF-specific
+    unit for exactly that reason. Task 25's later systematic schema
+    stress-test should consider whether WFF's own units could be
+    simplified toward this same general pattern -- an observation for
+    that task, not acted on here.
     """
 
     NZD_PER_TAX_YEAR = "NZD_per_tax_year"
     NZD_PER_TAX_YEAR_AFTER_TAX = "NZD_per_tax_year_after_tax"
     NZD_PER_CHILD_PER_TAX_YEAR = "NZD_per_child_per_tax_year"
     NZD_PER_COMPLETE_NZD_ABOVE_THRESHOLD = "NZD_per_complete_NZD_above_threshold"
+    NZD = "NZD"
+    NZD_PER_WEEK = "NZD_per_week"
+    FRACTION = "fraction"
 
 
 # SCHEMA.md: "Currency must state NZD and its annual or weekly basis; rates
@@ -79,9 +98,13 @@ _VALID_UNITS_BY_VALUE_TYPE: dict[ParameterValueType, frozenset[ParameterUnit]] =
             ParameterUnit.NZD_PER_TAX_YEAR,
             ParameterUnit.NZD_PER_TAX_YEAR_AFTER_TAX,
             ParameterUnit.NZD_PER_CHILD_PER_TAX_YEAR,
+            ParameterUnit.NZD,
+            ParameterUnit.NZD_PER_WEEK,
         }
     ),
-    ParameterValueType.FRACTION: frozenset({ParameterUnit.NZD_PER_COMPLETE_NZD_ABOVE_THRESHOLD}),
+    ParameterValueType.FRACTION: frozenset(
+        {ParameterUnit.NZD_PER_COMPLETE_NZD_ABOVE_THRESHOLD, ParameterUnit.FRACTION}
+    ),
 }
 
 

@@ -976,6 +976,58 @@ twin of the New Zealand policy system.
     table (already a cited source) and possibly a Stats NZ SAU boundary/
     concordance dataset for address-level resolution.
 23. Implement pure AS calculator (consumes canonical Poltika variables only)
+    — **Implemented, pending review, 23 September 2026.** Per Pete's
+    decision (23 September 2026): resolved Task 22's flagged
+    `ParameterUnit` gap with a narrow, additive schema extension inside
+    this task rather than pulling Task 25/26 forward. Added exactly three
+    new `ParameterUnit` members (`NZD`, `NZD_per_week`, `fraction`) --
+    purely additive, no `schema_version` bump, WFF's existing
+    `policy.yaml` still validates byte-for-byte unchanged (confirmed: all
+    132 pre-existing tests still pass, plus 4 new tests asserting the new
+    units resolve correctly and the dimension check still rejects a
+    mismatch). `policy.yaml`'s `parameters` list populated with the 20
+    values Task 22 independently verified (12 area caps, 2 asset
+    ceilings, 2 asset-imputation thresholds, the imputation step/rate, the
+    entry-threshold fraction, the income-reduction rate) -- deliberately
+    still excludes the claimant-category base rates and the r 18(3) income
+    level, which depend on dated MSD tables not yet independently
+    recalculated (Task 24's job).
+
+    `src/poltika/engines/simulator/accommodation_supplement.py`:
+    `calculate_accommodation_supplement()`, mirroring `calculate_wff()`'s
+    pure-function/`ComponentResult` pattern exactly (imports
+    `ComponentResult`/`FactStatus` from `wff.py` rather than duplicating
+    them, per Architecture Doctrine's "minimum abstraction demanded by two
+    real policies" -- a plain import, no `wff.py` changes). Implements
+    specification.md's approved 6-step sequence: household gate first
+    (every named unsupported case), plain-case qualifying costs, the 25%
+    entry threshold, the capped 70% cost-based amount, the DEC-001
+    unrounded income reduction (non-beneficiary route only, per AS-08),
+    and r 19's round-up-to-complete-dollar as the only rounding step.
+    A parameter genuinely undeclared in `policy.yaml` (the normal, expected
+    v0.1 state for the base rates/income level right now, unlike WFF's PR
+    #21 bug) resolves `needs_review`, not `KeyError` -- built defensively
+    from the start this time, per that earlier finding.
+
+    21 new unit tests in `tests/unit/engines/simulator/
+    test_accommodation_supplement.py`, mirroring `test_wff.py`'s Task 12
+    scope: hand-calculated ordinary/capped/zero/non-beneficiary-reduction
+    cases, every unsupported household-gate trigger, every unverified-fact
+    needs_review case, and confirmation the real (not yet fully populated)
+    policy.yaml resolves `needs_review` rather than crashing. 157/157
+    tests pass (up from 132), `ruff`, and `mypy --strict` clean.
+
+    **Review depth:** this task is calculator behaviour and an
+    architecture-boundary schema change -- both categories Pete's
+    Codex-review-reserve plan (22 September 2026) names as high-risk,
+    warranting the one consolidated review, not self-review alone. Author
+    preflight done per `.claude/skills/pr-review-preflight/SKILL.md`,
+    found and fixed two self-flagged (not independently verified)
+    judgment calls plus one test-coverage gap before requesting review
+    (commit `9eac0c8`) -- see PR #25 for the full packet, including a
+    "Deferred Codex audit" section. PR #25 opened and held for Pete's own
+    review or the reserved Codex pass, whichever Pete prefers, not merged
+    on self-review.
 24. Repeat test/review process
 25. Stress-test POLICY_SPECS schema against AS's different structure
     (housing costs, asset test, geography)
