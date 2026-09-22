@@ -1082,8 +1082,15 @@ twin of the New Zealand policy system.
     file, including `decisions/`) or `spec_cases.yaml`/`benchmarks.yaml`
     while this is in progress.**
 
-    **Implementation note, 23 September 2026:** the independent statutory
-    pass found no discrepancy across the 20 populated values. The dated MSD
+    **Implemented, pending independent review, 23 September 2026.** The
+    independent statutory pass found no discrepancy across the 20 populated
+    values. Added 22 hand-calculated spec cases and 4 official-example
+    benchmark/scope cases, each with an explicit single-component expected
+    block and assumptions separated from published facts. The second-example
+    search found no further fractional income excess: the additional official
+    example found also uses an integral $57.00 excess. DEC-001 now records that
+    negative result and remains medium confidence; its student-partner amount
+    is not promoted to a protected numeric benchmark. The dated MSD
     benchmark tables exposed a Task 25 schema issue: entry thresholds vary by
     household category within a claimant category (for example, Supported
     Living Payment has different single/couple/parent thresholds), while the
@@ -1094,6 +1101,8 @@ twin of the New Zealand policy system.
     real policy can produce those ordinary numeric paths without assumptions.
     This is recorded, not fixed here, because 24.1 explicitly must not modify
     `calculate_accommodation_supplement()` or its existing unit tests.
+    Isolated verification: 187/187 tests pass and Ruff is clean; strict mypy
+    is clean when run against `src` and the two new runners.
 24.2. Regression tests for known historical issues (regression fixture
     parity with WFF's Task 15) — not started. Owner: unassigned.
 24.3. External coverage-gap check (OpenFisca Aotearoa / PolicyEngine NZ,
