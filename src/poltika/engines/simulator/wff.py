@@ -602,6 +602,18 @@ def _minimum_family_tax_credit(scenario: WffScenario, parameters: PolicyParamete
         )
     if scenario.mc6b_disqualifying_payment == FactStatus.UNKNOWN:
         return ComponentResult(outcome="needs_review", reason="MC 6(b) disqualifying-payment status unverified")
+    if scenario.family_scheme_income is None:
+        # ME 3(3)(a)(i): the net family-scheme-income formula's own
+        # "adjusted income" item starts from the person's family scheme
+        # income -- net income is derived from it, not an independently
+        # suppliable figure. specification.md's accepted input boundary
+        # names a separately verified family-scheme-income input as part
+        # of the whole domain, not scoped away from this component (Task
+        # 17 review finding).
+        return ComponentResult(outcome="needs_review", reason="family_scheme_income not verified")
+    partner_income_gap = _partner_income_gap_reason(scenario)
+    if partner_income_gap is not None:
+        return ComponentResult(outcome="needs_review", reason=partner_income_gap)
     if not scenario.net_family_scheme_income_me3_attested:
         return ComponentResult(
             outcome="needs_review",

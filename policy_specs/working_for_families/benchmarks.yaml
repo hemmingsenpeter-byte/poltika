@@ -252,12 +252,13 @@ benchmarks:
       household_eligibility: verified
       extra_instalment_status: verified
       partner_status: single
-      family_scheme_income: null
+      family_scheme_income:
+        claimant_amount: "27000"
       net_family_scheme_income: "24367"
       net_family_scheme_income_me3_attested: true
       in_work_eligibility: unknown
       ftc_iwtc_protected_or_direct_abatement: verified
-      mc6a_veterans_payment: verified
+      mc6a_veterans_payment: unknown
       mc6b_disqualifying_payment: verified
       minimum_family_full_time_earner_weeks: verified
       best_start_no_shared_care: verified
@@ -269,11 +270,11 @@ benchmarks:
       - "household_eligibility"
       - "extra_instalment_status"
       - "ftc_iwtc_protected_or_direct_abatement"
-      - "mc6a_veterans_payment"
       - "mc6b_disqualifying_payment"
       - "best_start_no_shared_care"
       - "best_start_protected_credit"
       - "children[].qualifies_whole_year"
+      - "family_scheme_income"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -287,11 +288,22 @@ benchmarks:
       year: $12,237." Jeremy's 22 weekly hours exceed MA 7's 20-hour single
       threshold; his $24,367 figure is IRD's own worked ME 3-style
       derivation (salary after tax plus child support received), matching
-      `net_family_scheme_income_me3_attested: true`. family_tax_credit/
-      in_work_tax_credit are needs_review: this example verifies net
+      `net_family_scheme_income_me3_attested: true`. `family_tax_credit`/
+      `in_work_tax_credit` are needs_review: this example verifies net
       (after-tax) income for minimum family tax credit specifically, not a
       separate gross family-scheme income figure or employment status for
-      the other credits.
+      the other credits. `family_scheme_income.claimant_amount: 27000` is
+      IRD's stated before-tax salary, added as an `assumed_fact` (Task 17
+      review finding) to satisfy the calculator's family-scheme-income
+      input gate -- it is not asserted as ME 3's precise legal
+      family-scheme-income figure (which may carry further subpart MB
+      adjustments IRD's plain-language example doesn't itemise), and it
+      does not feed the benchmarked $12,237 arithmetic, which uses only
+      the separately verified net figure above. `mc6a_veterans_payment` is
+      left `unknown` (not IRD-stated either way) precisely so that adding
+      `family_scheme_income` above does not inadvertently unlock
+      `family_tax_credit`'s own calculation, which this example was never
+      meant to benchmark.
 
   - id: ird_mftc_casey_self_employed_plus_salary
     ird_source: wff-ird-minimum-family-tax-credit
@@ -303,12 +315,13 @@ benchmarks:
       household_eligibility: verified
       extra_instalment_status: verified
       partner_status: single
-      family_scheme_income: null
+      family_scheme_income:
+        claimant_amount: "33000"
       net_family_scheme_income: "28317"
       net_family_scheme_income_me3_attested: true
       in_work_eligibility: unknown
       ftc_iwtc_protected_or_direct_abatement: verified
-      mc6a_veterans_payment: verified
+      mc6a_veterans_payment: unknown
       mc6b_disqualifying_payment: verified
       minimum_family_full_time_earner_weeks: verified
       best_start_no_shared_care: verified
@@ -321,11 +334,11 @@ benchmarks:
       - "household_eligibility"
       - "extra_instalment_status"
       - "ftc_iwtc_protected_or_direct_abatement"
-      - "mc6a_veterans_payment"
       - "mc6b_disqualifying_payment"
       - "best_start_no_shared_care"
       - "best_start_protected_credit"
       - "children[].qualifies_whole_year"
+      - "family_scheme_income"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -348,6 +361,15 @@ benchmarks:
       is in scope. Casey's salaried 22 hours alone satisfies the single
       20-hour MA 7 test; her self-employment income only enters the net
       income total IRD already worked out.
+      `family_scheme_income.claimant_amount: 33000` (self-employed $2,000
+      + salary $31,000, both IRD-stated) is added as an `assumed_fact`
+      (Task 17 review finding) to satisfy the calculator's family-scheme-
+      income input gate; it does not feed the benchmarked $8,287
+      arithmetic, which uses only the separately verified net figure
+      above. `mc6a_veterans_payment` is left `unknown` (not IRD-stated
+      either way) precisely so that adding `family_scheme_income` above
+      does not inadvertently unlock `family_tax_credit`'s own calculation,
+      which this example was never meant to benchmark.
 
   - id: ird_mftc_casey_zero_over_income_limit
     ird_source: wff-ird-minimum-family-tax-credit
@@ -359,12 +381,13 @@ benchmarks:
       household_eligibility: verified
       extra_instalment_status: verified
       partner_status: single
-      family_scheme_income: null
+      family_scheme_income:
+        claimant_amount: "44400"
       net_family_scheme_income: "37280"
       net_family_scheme_income_me3_attested: true
       in_work_eligibility: unknown
       ftc_iwtc_protected_or_direct_abatement: verified
-      mc6a_veterans_payment: verified
+      mc6a_veterans_payment: unknown
       mc6b_disqualifying_payment: verified
       minimum_family_full_time_earner_weeks: verified
       best_start_no_shared_care: verified
@@ -377,11 +400,11 @@ benchmarks:
       - "household_eligibility"
       - "extra_instalment_status"
       - "ftc_iwtc_protected_or_direct_abatement"
-      - "mc6a_veterans_payment"
       - "mc6b_disqualifying_payment"
       - "best_start_no_shared_care"
       - "best_start_protected_credit"
       - "children[].qualifies_whole_year"
+      - "family_scheme_income"
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
@@ -404,6 +427,15 @@ benchmarks:
       Task 13's `mftc_zero_at_prescribed_amount` spec case already covers
       with a self-derived figure -- this is the same rule's real,
       independently published confirmation.
+      `family_scheme_income.claimant_amount: 44400` (self-employed $2,000
+      + salary $42,400, both IRD-stated) is added as an `assumed_fact`
+      (Task 17 review finding) to satisfy the calculator's family-scheme-
+      income input gate; it does not feed the benchmarked $0 arithmetic,
+      which uses only the separately verified net figure above.
+      `mc6a_veterans_payment` is left `unknown` (not IRD-stated either
+      way) precisely so that adding `family_scheme_income` above does not
+      inadvertently unlock `family_tax_credit`'s own calculation, which
+      this example was never meant to benchmark.
 
   - id: ird_ftc_rahui_partnered_combined_income_not_individually_verified
     ird_source: wff-ird-family-tax-credit

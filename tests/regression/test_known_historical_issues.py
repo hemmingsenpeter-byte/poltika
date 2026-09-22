@@ -28,9 +28,12 @@ first one.
 
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
+import yaml
 
 from poltika.engines.simulator.wff import (
     BestStartCohort,
@@ -41,6 +44,7 @@ from poltika.engines.simulator.wff import (
     WffScenario,
     calculate_wff,
 )
+from poltika.policy.loader import load_policy_parameters
 from tests.conftest import (
     load_wff_benchmark_case,
     load_wff_spec_case,
@@ -164,6 +168,137 @@ def test_unknown_partner_status_blocks_minimum_family_tax_credit(real_wff_parame
     assert result.minimum_family_tax_credit.outcome == "needs_review"
     assert result.minimum_family_tax_credit.value is None
     assert "full-time-earner" in (result.minimum_family_tax_credit.reason or "")
+
+
+def test_mftc_missing_family_scheme_income_is_not_calculated_without_it(
+    wff_synthetic_all_approved_parameters,
+) -> None:
+    """Historical issue: Task 17's independent adversarial review.
+    `_minimum_family_tax_credit()` checked `net_family_scheme_income_me3_
+    attested` and `net_family_scheme_income`, but never
+    `scenario.family_scheme_income is not None` -- unlike
+    `_family_tax_credit()` and `_best_start()`, which both gate on it. ME
+    3(3)(a)(i)'s own net-family-scheme-income formula starts from the
+    person's family scheme income, so a household without a verified
+    family-scheme-income input could still produce a `calculated` minimum
+    family tax credit result (reproduced against the real approved
+    parameter set: net income 30,000 and `family_scheme_income=None`
+    returned `calculated: 6604`)."""
+    scenario = _single_claimant_one_child(family_scheme_income=None)
+
+    result = calculate_wff(scenario, wff_synthetic_all_approved_parameters)
+
+    assert result.minimum_family_tax_credit.outcome == "needs_review"
+    assert result.minimum_family_tax_credit.value is None
+    assert "family_scheme_income" in (result.minimum_family_tax_credit.reason or "")
+
+
+def test_mftc_partnered_missing_partner_income_blocks_mftc(
+    wff_synthetic_all_approved_parameters,
+) -> None:
+    """Historical issue: Task 17's independent adversarial review, same
+    root cause as the missing-family-scheme-income case above. A
+    partnered claimant's own family-scheme-income verification must show
+    each person's amount (specification.md's accepted domain boundary) --
+    before this fix, minimum family tax credit had no family-scheme-income
+    gate at all, so a partnered household with only the claimant's amount
+    verified would silently produce a numeric minimum family tax credit
+    result using an unverified combined figure, exactly the gap
+    `test_partnered_missing_partner_income_is_not_treated_as_single`
+    above already closed for family tax credit."""
+    scenario = _single_claimant_one_child(
+        partner_status=PartnerStatus.PARTNERED,
+        family_scheme_income=VerifiedIncome(claimant_amount=Decimal(30000)),
+    )
+
+    result = calculate_wff(scenario, wff_synthetic_all_approved_parameters)
+
+    assert result.minimum_family_tax_credit.outcome == "needs_review"
+    assert result.minimum_family_tax_credit.value is None
+    assert "partner" in (result.minimum_family_tax_credit.reason or "").lower()
+
+
+def _policy_dir_with_one_parameter(
+    tmp_path: Path, *, effective_from: str, effective_to: str | None
+) -> Path:
+    policy_dir = tmp_path / "policy"
+    policy_dir.mkdir()
+    policy = {
+        "schema_version": "0.1",
+        "policy_id": "interval_regression_wff",
+        "policy_version": "0.1.0",
+        "status": "approved",
+        "reference_period": {"from": "2026-04-01", "to": "2027-04-01"},
+        "source_catalog": "sources.yaml",
+        "assessment": {},
+        "inputs": [],
+        "parameters": [
+            {
+                "id": "family_tax_credit_eldest_child",
+                "value_type": "money",
+                "unit": "NZD_per_tax_year",
+                "values": [
+                    {
+                        "effective_from": effective_from,
+                        "effective_to": effective_to,
+                        "value": "7921",
+                        "source_id": "test-source",
+                        "locator": "s 1",
+                        "review_status": "approved",
+                    }
+                ],
+            }
+        ],
+        "components": [],
+        "outputs": {},
+    }
+    (policy_dir / "policy.yaml").write_text(yaml.safe_dump(policy))
+    (policy_dir / "sources.yaml").write_text(
+        yaml.safe_dump({"sources": [{"id": "test-source", "kind": "legislation"}]})
+    )
+    return policy_dir
+
+
+def test_parameter_interval_ending_before_reference_period_is_needs_review(tmp_path: Path) -> None:
+    """Historical issue: Task 17's independent adversarial review.
+    `_resolve_parameter()` matched whichever single interval covered the
+    requested `modelled_date` and returned it `resolved` without checking
+    that the interval spans the *complete* reference period the annual
+    formulas assume -- specification.md's accepted contract explicitly
+    requires selecting "the law and parameter interval for the complete
+    assessment period", not a point-in-time match. Here the parameter's
+    approved interval ends 2027-01-01, before the reference period's
+    2027-04-01 end, even though it covers the requested 2026-06-01
+    modelled date."""
+    policy_dir = _policy_dir_with_one_parameter(
+        tmp_path, effective_from="2026-04-01", effective_to="2027-01-01"
+    )
+
+    parameters = load_policy_parameters(policy_dir, date(2026, 6, 1))
+    resolution = parameters.get("family_tax_credit_eldest_child")
+
+    assert resolution.outcome == "needs_review"
+    assert resolution.value is None
+    assert "complete reference period" in (resolution.reason or "")
+
+
+def test_parameter_interval_starting_after_reference_period_is_needs_review(tmp_path: Path) -> None:
+    """Historical issue: Task 17's independent adversarial review, the
+    mirror case of the test above -- a mismatched parameter whose approved
+    interval starts 2026-07-01, after the reference period's 2026-04-01
+    start, even though it covers the requested 2026-08-01 modelled date.
+    Both directions must be caught: a point-in-time match alone cannot
+    verify a full-year rate in either direction."""
+    policy_dir = _policy_dir_with_one_parameter(
+        tmp_path, effective_from="2026-07-01", effective_to="2027-04-01"
+    )
+
+    parameters = load_policy_parameters(policy_dir, date(2026, 8, 1))
+    resolution = parameters.get("family_tax_credit_eldest_child")
+
+    assert resolution.outcome == "needs_review"
+    assert resolution.value is None
+    assert "complete reference period" in (resolution.reason or "")
 
 
 # --- Missing/incomplete fixture defects (reuse the existing case by id) --------

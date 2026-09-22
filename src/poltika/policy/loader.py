@@ -30,6 +30,7 @@ from poltika.semantics.schemas.policy_spec import (
     ParameterSpec,
     PolicySpec,
     PolicyStatus,
+    ReferencePeriod,
 )
 
 # Task 11.2: reject any schema_version outside this set before interpreting
@@ -183,7 +184,8 @@ def load_policy_parameters(
     _resolve_source_ids(spec, sources_yaml_path)
 
     resolutions = {
-        param.id: _resolve_parameter(param, modelled_date) for param in spec.parameters
+        param.id: _resolve_parameter(param, modelled_date, spec.reference_period)
+        for param in spec.parameters
     }
 
     return PolicyParameterSet(
@@ -202,7 +204,26 @@ def _covers(value_effective_from: date, value_effective_to: date | None, modelle
     return value_effective_to is None or modelled_date < value_effective_to
 
 
-def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterResolution:
+def _covers_full_period(
+    value_effective_from: date, value_effective_to: date | None, reference_period: ReferencePeriod
+) -> bool:
+    """Whether a value's effective interval [from, to) fully contains the
+    policy's reference_period [from, to) -- not merely a single modelled
+    date within it. specification.md's accepted contract requires selecting
+    "the law and parameter interval for the complete assessment period", not
+    a point-in-time check: a value whose interval starts partway through the
+    reference period, or ends before it, must not be treated as a verified
+    full-year rate even though it covers one requested `modelled_date`
+    (Task 17 review finding).
+    """
+    if value_effective_from > reference_period.from_:
+        return False
+    return value_effective_to is None or value_effective_to >= reference_period.to
+
+
+def _resolve_parameter(
+    param: ParameterSpec, modelled_date: date, reference_period: ReferencePeriod
+) -> ParameterResolution:
     matching = [
         v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)
     ]
@@ -222,6 +243,21 @@ def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterRe
         "should have been rejected at load time"
     )
     value = matching[0]
+
+    if not _covers_full_period(value.effective_from, value.effective_to, reference_period):
+        return ParameterResolution(
+            parameter_id=param.id,
+            outcome="needs_review",
+            reason=(
+                f"parameter '{param.id}' value effective {value.effective_from}"
+                f"-{value.effective_to} covers the requested {modelled_date} but does not "
+                f"span the complete reference period {reference_period.from_}-"
+                f"{reference_period.to} -- a point-in-time match cannot verify a full-year "
+                "rate"
+            ),
+            source_id=value.source_id,
+            locator=value.locator,
+        )
 
     if value.review_status is not ParameterReviewStatus.APPROVED:
         return ParameterResolution(
