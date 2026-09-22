@@ -221,6 +221,15 @@ spec_cases:
     description: >
       Partnered claimant whose partner's income was never separately
       verified -- must not silently use the claimant's amount alone.
+      Corrected (Task 17 review finding): minimum family tax credit was
+      previously expected to resolve regardless, on the reasoning that it
+      "doesn't use combined family_scheme_income at all". That reasoning no
+      longer holds -- ME 3(3)(a)(i)'s own net-family-scheme-income formula
+      starts from the person's family scheme income, and
+      specification.md's accepted domain requires each partner's amount
+      individually verified before the combined figure is trusted, for the
+      whole household, not just family tax credit. Minimum family tax
+      credit now shares that gate.
     modelled_date: 2026-06-01
     policy_version: "0.1.0"
     scenario:
@@ -244,7 +253,7 @@ spec_cases:
     expected:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
-      minimum_family_tax_credit: {outcome: calculated, value: "6604"}
+      minimum_family_tax_credit: {outcome: needs_review}
       best_start: {outcome: calculated, value: "0"}
     source_note: >
       specification.md requires each partner's individually verified
@@ -252,11 +261,16 @@ spec_cases:
       unexplained claimant-only figure for a partnered household is not
       enough, so family tax credit is needs_review (and in-work tax credit
       inherits that via MD 2(2)(c)'s abatement-carryover dependency).
-      Minimum family tax credit doesn't use combined family_scheme_income
-      at all (it uses the separately verified net_family_scheme_income),
-      so it is unaffected. Best Start has no eligible child in this
-      scenario, so it resolves to a genuine zero before its own income
-      check is ever reached.
+      Minimum family tax credit does not use combined family_scheme_income
+      in its own arithmetic (it uses the separately verified
+      net_family_scheme_income), but it does now require family_scheme_income
+      to be verified at all before proceeding, since ME 3's net-income
+      formula is itself derived from family scheme income (Task 17 review
+      finding) -- so the same partnered-income verification gap that blocks
+      family tax credit also blocks minimum family tax credit here, even
+      though the two components' arithmetic remains independent. Best Start
+      has no eligible child in this scenario, so it resolves to a genuine
+      zero before its own income check is ever reached.
 
   - id: unknown_partner_status_blocks_ftc_iwtc_and_mftc
     description: >
