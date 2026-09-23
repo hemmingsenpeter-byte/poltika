@@ -10,7 +10,8 @@ boundary for `src/poltika/policy/`.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import hashlib
+from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -57,6 +58,12 @@ class ParameterResolution:
     reason: str | None = None
     source_id: str | None = None
     locator: str | None = None
+    # Task 31: the matched value's own interval and review status, carried
+    # through so a provenance trace can say exactly which dated value was
+    # used. `None` when no interval matched (outcome "unsupported").
+    effective_from: date | None = None
+    effective_to: date | None = None
+    review_status: str | None = None
 
 
 @dataclass(frozen=True)
@@ -68,6 +75,12 @@ class PolicyParameterSet:
     schema_version: str
     modelled_date: date
     resolutions: dict[str, ParameterResolution]
+    # Task 31: SHA-256 of the exact bytes this set was resolved from, keyed
+    # by file name relative to the policy directory ("policy.yaml" and the
+    # declared source_catalog). A provenance report verifies these before
+    # resolving anything, so a later edit to either file cannot silently
+    # stand in for what a run actually used. Empty for a hand-built set.
+    artifact_sha256: dict[str, str] = field(default_factory=dict)
 
     def get(self, parameter_id: str) -> ParameterResolution:
         try:
@@ -80,8 +93,16 @@ class PolicyParameterSet:
 
 def load_policy_spec(policy_yaml_path: Path) -> PolicySpec:
     """Parse and validate policy.yaml in isolation. Raises on any structural problem."""
-    raw = yaml.safe_load(policy_yaml_path.read_text())
+    return _parse_policy_spec(policy_yaml_path.read_bytes())
+
+
+def _parse_policy_spec(policy_yaml_bytes: bytes) -> PolicySpec:
+    raw = yaml.safe_load(policy_yaml_bytes)
     return PolicySpec.model_validate(raw)
+
+
+def _sha256(content: bytes) -> str:
+    return hashlib.sha256(content).hexdigest()
 
 
 def _resolve_source_catalog_path(policy_dir: Path, source_catalog: str) -> Path:
@@ -111,8 +132,8 @@ def _resolve_source_catalog_path(policy_dir: Path, source_catalog: str) -> Path:
     return resolved
 
 
-def _resolve_source_ids(spec: PolicySpec, sources_yaml_path: Path) -> None:
-    raw = yaml.safe_load(sources_yaml_path.read_text())
+def _resolve_source_ids(spec: PolicySpec, sources_yaml_bytes: bytes, sources_yaml_path: Path) -> None:
+    raw = yaml.safe_load(sources_yaml_bytes)
     known_ids = {entry["id"] for entry in raw.get("sources", [])}
     for param in spec.parameters:
         for value in param.values:
@@ -148,7 +169,10 @@ def load_policy_parameters(
     """
     policy_yaml_path = policy_dir / "policy.yaml"
 
-    spec = load_policy_spec(policy_yaml_path)
+    # Each file is read once and parsed from those same bytes, so the
+    # recorded hash is of exactly what was used, not a second read.
+    policy_yaml_bytes = policy_yaml_path.read_bytes()
+    spec = _parse_policy_spec(policy_yaml_bytes)
 
     if spec.schema_version not in SUPPORTED_SCHEMA_VERSIONS:
         raise UnsupportedSchemaVersionError(
@@ -180,7 +204,8 @@ def load_policy_parameters(
         )
 
     sources_yaml_path = _resolve_source_catalog_path(policy_dir, spec.source_catalog)
-    _resolve_source_ids(spec, sources_yaml_path)
+    sources_yaml_bytes = sources_yaml_path.read_bytes()
+    _resolve_source_ids(spec, sources_yaml_bytes, sources_yaml_path)
 
     resolutions = {
         param.id: _resolve_parameter(param, modelled_date) for param in spec.parameters
@@ -192,6 +217,10 @@ def load_policy_parameters(
         schema_version=spec.schema_version,
         modelled_date=modelled_date,
         resolutions=resolutions,
+        artifact_sha256={
+            "policy.yaml": _sha256(policy_yaml_bytes),
+            spec.source_catalog: _sha256(sources_yaml_bytes),
+        },
     )
 
 
@@ -235,6 +264,9 @@ def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterRe
             ),
             source_id=value.source_id,
             locator=value.locator,
+            effective_from=value.effective_from,
+            effective_to=value.effective_to,
+            review_status=value.review_status.value,
         )
 
     return ParameterResolution(
@@ -244,4 +276,7 @@ def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterRe
         unit=param.unit.value,
         source_id=value.source_id,
         locator=value.locator,
+        effective_from=value.effective_from,
+        effective_to=value.effective_to,
+        review_status=value.review_status.value,
     )

@@ -32,13 +32,22 @@ out of v0.1 scope and not modelled.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date
 from decimal import ROUND_FLOOR, Decimal
 from enum import Enum
 from pathlib import Path
 from typing import Literal
 
+from poltika.engines.simulator.trace import (
+    ComponentTrace,
+    input_uses,
+    merge_ids,
+    parameter_uses,
+    recording_copy,
+    recording_parameters,
+    trace_header,
+)
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
 from poltika.semantics.schemas.policy_spec import ReferencePeriod
 
@@ -307,6 +316,9 @@ class ComponentResult:
     outcome: ComponentOutcome
     value: Decimal | None = None
     reason: str | None = None
+    # Task 31: what this result was computed from. Excluded from equality,
+    # so attaching a trace never changes whether two results compare equal.
+    trace: ComponentTrace | None = field(default=None, compare=False)
 
 
 @dataclass(frozen=True)
@@ -727,26 +739,133 @@ def calculate_wff(scenario: WffScenario, parameters: PolicyParameterSet) -> WffR
     independently to `calculated`, `needs_review`, or `unsupported`; see
     `WffResult.total_annual_entitlement()` for the one place a total may be
     computed, and only when every component is `calculated`.
+
+    Each component's result carries a `ComponentTrace` (Task 31) recording
+    the parameters and scenario facts it consulted. Recording wraps each
+    component call; the component functions themselves are unchanged.
     """
-    gate_failure = _household_gate_failure(scenario)
+    gate_scenario, gate_reads = recording_copy(scenario)
+    gate_failure = _household_gate_failure(gate_scenario)
     if gate_failure is not None:
         return WffResult(
-            family_tax_credit=gate_failure,
-            in_work_tax_credit=gate_failure,
-            minimum_family_tax_credit=gate_failure,
-            best_start=gate_failure,
+            **{
+                component_id: _traced(gate_failure, component_id, scenario, parameters, gate_reads, [])
+                for component_id in _WFF_COMPONENT_IDS
+            }
         )
 
-    ftc_result, remaining_abatement = _family_tax_credit(scenario, parameters)
-    iwtc_result = _in_work_tax_credit(scenario, parameters, ftc_result, remaining_abatement)
-    mftc_result = _minimum_family_tax_credit(scenario, parameters)
-    best_start_result = _best_start(scenario, parameters)
+    ftc_scenario, ftc_reads = recording_copy(scenario)
+    ftc_parameters, ftc_params = recording_parameters(parameters)
+    ftc_result, remaining_abatement = _family_tax_credit(ftc_scenario, ftc_parameters)
+
+    iwtc_scenario, iwtc_reads = recording_copy(scenario)
+    iwtc_parameters, iwtc_params = recording_parameters(parameters)
+    # Recording copy of FTC's result: if in-work tax credit reads it, it has
+    # reached MD 2(2)(c)'s dependency on FTC's remaining abatement, so FTC's
+    # own parameters and inputs become part of its trace too.
+    ftc_seen_by_iwtc, ftc_result_reads = recording_copy(ftc_result)
+    iwtc_result = _in_work_tax_credit(iwtc_scenario, iwtc_parameters, ftc_seen_by_iwtc, remaining_abatement)
+    iwtc_used_ftc = bool(ftc_result_reads)
+
+    mftc_scenario, mftc_reads = recording_copy(scenario)
+    mftc_parameters, mftc_params = recording_parameters(parameters)
+    mftc_result = _minimum_family_tax_credit(mftc_scenario, mftc_parameters)
+
+    best_start_scenario, best_start_reads = recording_copy(scenario)
+    best_start_parameters, best_start_params = recording_parameters(parameters)
+    best_start_result = _best_start(best_start_scenario, best_start_parameters)
 
     return WffResult(
-        family_tax_credit=ftc_result,
-        in_work_tax_credit=iwtc_result,
-        minimum_family_tax_credit=mftc_result,
-        best_start=best_start_result,
+        family_tax_credit=_traced(
+            ftc_result, "family_tax_credit", scenario, parameters, merge_ids(gate_reads, ftc_reads), ftc_params
+        ),
+        in_work_tax_credit=_traced(
+            iwtc_result,
+            "in_work_tax_credit",
+            scenario,
+            parameters,
+            merge_ids(gate_reads, iwtc_reads, ftc_reads if iwtc_used_ftc else []),
+            merge_ids(iwtc_params, ftc_params if iwtc_used_ftc else []),
+            upstream=("family_tax_credit",) if iwtc_used_ftc else (),
+        ),
+        minimum_family_tax_credit=_traced(
+            mftc_result, "minimum_family_tax_credit", scenario, parameters, merge_ids(gate_reads, mftc_reads), mftc_params
+        ),
+        best_start=_traced(
+            best_start_result,
+            "best_start",
+            scenario,
+            parameters,
+            merge_ids(gate_reads, best_start_reads),
+            best_start_params,
+        ),
+    )
+
+
+_WFF_COMPONENT_IDS = ("family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start")
+
+# Task 31: the rounding and ordering rules a `calculated` component's path
+# applies, keyed by component. Each rule is attached only when the parameter
+# named with it was consulted -- i.e. the formula step it governs was reached.
+# Citations are the ones this file's own implementation already carries
+# (`_complete_dollar_excess()`, `_in_work_tax_credit()`), not new policy text.
+_WFF_CALCULATION_RULES: dict[str, tuple[tuple[str, str], ...]] = {
+    "family_tax_credit": (
+        (
+            "family_tax_credit_abatement_rate",
+            (
+                "MD 13(3)(a): the abatement rate applies to complete dollars of family scheme income over "
+                "the threshold (excess floored to a whole dollar)"
+            ),
+        ),
+        (
+            "family_tax_credit_abatement_rate",
+            "MD 2(2)(c): abatement applies to family tax credit first; any remainder passes to in-work tax credit",
+        ),
+    ),
+    "in_work_tax_credit": (
+        (
+            "in_work_base",
+            "MD 2(2)(c): reduced only by the abatement remaining after family tax credit",
+        ),
+    ),
+    "best_start": (
+        (
+            "best_start_abatement_rate",
+            (
+                "MG 3(2)(a): the abatement rate applies to complete dollars of family scheme income over "
+                "the threshold (excess floored to a whole dollar)"
+            ),
+        ),
+    ),
+}
+
+
+def _traced(
+    result: ComponentResult,
+    component_id: str,
+    scenario: WffScenario,
+    parameters: PolicyParameterSet,
+    input_names: list[str],
+    parameter_ids: list[str],
+    *,
+    upstream: tuple[str, ...] = (),
+) -> ComponentResult:
+    rules: tuple[str, ...] = ()
+    if result.outcome == "calculated":
+        rules = tuple(
+            rule for parameter_id, rule in _WFF_CALCULATION_RULES.get(component_id, ()) if parameter_id in parameter_ids
+        )
+    return replace(
+        result,
+        trace=ComponentTrace(
+            component_id=component_id,
+            **trace_header(parameters),
+            parameters=parameter_uses(parameters, parameter_ids),
+            inputs=input_uses(scenario, input_names),
+            upstream_components=upstream,
+            calculation_rules=rules,
+        ),
     )
 
 
@@ -946,11 +1065,16 @@ def run_wff_module(
 
     validation_failure = _wff_module_validation_failure(policy_dir, modelled_date, parameters)
     if validation_failure is not None:
+        # No component ran, so the trace carries only the policy identity
+        # and artifact hashes; the reason says which invariant failed.
         return WffResult(
-            family_tax_credit=validation_failure,
-            in_work_tax_credit=validation_failure,
-            minimum_family_tax_credit=validation_failure,
-            best_start=validation_failure,
+            **{
+                component_id: replace(
+                    validation_failure,
+                    trace=ComponentTrace(component_id=component_id, **trace_header(parameters)),
+                )
+                for component_id in _WFF_COMPONENT_IDS
+            }
         )
 
     return calculate_wff(scenario, parameters)

@@ -33,12 +33,20 @@ equivalent concepts.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 from enum import Enum
 from pathlib import Path
 
+from poltika.engines.simulator.trace import (
+    ComponentTrace,
+    input_uses,
+    parameter_uses,
+    recording_copy,
+    recording_parameters,
+    trace_header,
+)
 from poltika.engines.simulator.wff import ComponentResult, FactStatus
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
 from poltika.semantics.schemas.policy_spec import ReferencePeriod
@@ -436,7 +444,60 @@ def calculate_accommodation_supplement(
     arithmetic of its own and makes no network or file access. Returns
     the single `accommodation_supplement` component's outcome; unlike
     WFF's four components, AS has exactly one.
+
+    The result carries a `ComponentTrace` (Task 31) recording the
+    parameters and scenario facts consulted. Recording wraps the
+    calculation; `_accommodation_supplement()` itself is unchanged.
     """
+    recorded_scenario, input_names = recording_copy(scenario)
+    recorded_parameters, parameter_ids = recording_parameters(parameters)
+    result = _accommodation_supplement(recorded_scenario, recorded_parameters)
+
+    rules: tuple[str, ...] = ()
+    decisions: tuple[str, ...] = ()
+    if result.outcome == "calculated":
+        rules = tuple(
+            rule
+            for parameter_id, rule in _AS_CALCULATION_RULES
+            if parameter_id is None or parameter_id in parameter_ids
+        )
+        decisions = tuple(
+            decision for parameter_id, decision in _AS_DECISIONS if parameter_id in parameter_ids
+        )
+    return replace(
+        result,
+        trace=ComponentTrace(
+            component_id=_AS_MODULE_ID,
+            **trace_header(parameters),
+            parameters=parameter_uses(parameters, parameter_ids),
+            inputs=input_uses(scenario, input_names),
+            calculation_rules=rules,
+            decisions=decisions,
+        ),
+    )
+
+
+# Task 31: the rounding rules a `calculated` result's path applies. A rule
+# keyed by a parameter id is attached only when that parameter was consulted
+# (its formula step was reached); `None` means every calculated path. The
+# wording restates this file's own implementation comments below.
+_AS_CALCULATION_RULES: tuple[tuple[str | None, str], ...] = (
+    (
+        "asset_imputation_step_size",
+        "s 423(3): imputed income counts only complete steps of cash assets over the threshold (floored)",
+    ),
+    (
+        "income_reduction_rate",
+        "r 18(2): the reduction rate applies to the exact, unrounded income excess (DEC-001)",
+    ),
+    (None, "r 19: a positive final amount is rounded up to the complete dollar; no earlier step rounds"),
+)
+_AS_DECISIONS: tuple[tuple[str, str], ...] = (("income_reduction_rate", "DEC-001"),)
+
+
+def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterSet) -> ComponentResult:
+    """The calculation itself, unchanged from Task 23 -- see
+    `calculate_accommodation_supplement()` for the contract."""
     gate_failure = _household_gate_failure(scenario, parameters)
     if gate_failure is not None:
         return gate_failure
@@ -700,6 +761,11 @@ def run_as_module(
 
     validation_failure = _as_module_validation_failure(policy_dir, modelled_date, parameters)
     if validation_failure is not None:
-        return validation_failure
+        # No calculation ran, so the trace carries only the policy identity
+        # and artifact hashes; the reason says which invariant failed.
+        return replace(
+            validation_failure,
+            trace=ComponentTrace(component_id=_AS_MODULE_ID, **trace_header(parameters)),
+        )
 
     return calculate_accommodation_supplement(scenario, parameters)

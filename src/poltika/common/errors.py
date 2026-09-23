@@ -45,3 +45,17 @@ class InvalidSourceCatalogError(PoltikaError):
     the declared value is never silently substituted with a hardcoded
     "sources.yaml" guess.
     """
+
+
+class ProvenanceError(PoltikaError):
+    """A provenance report cannot be built faithfully -- e.g. a result has
+    no trace, or a cited source, rule, or decision does not resolve. The
+    report is refused rather than built with gaps (Task 31)."""
+
+
+class ArtifactHashMismatchError(ProvenanceError):
+    """A file a run used no longer matches the hash its trace recorded.
+
+    A report must describe what the run actually used; resolving sources or
+    rules against a since-edited file would silently substitute current
+    content for historical content (BUILD_PLAN.md Task 31.3)."""
