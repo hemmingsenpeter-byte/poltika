@@ -1251,16 +1251,25 @@ twin of the New Zealand policy system.
     fix applied in this PR -- findings-only, kept as the standing review
     record per Task 17/PR #19's pattern. Awaiting Pete's classification
     (Task 24.5).
-24.5. Classify discrepancies from 24.4 — **Complete, 23 September 2026.**
-    All 4 of PR #31's findings classified as proposed (Claude Code fix PR,
-    Pete's final classification confirmation pending on merge):
-    finding 1 **MISSING_SOURCE + CODE_ERROR** (uncited "s 65(1)(b)"
-    citation), finding 2 **CODE_ERROR** (asset-ceiling precedence gap),
-    findings 3-4 **SPEC_ERROR** (policy.yaml list drift; stale
-    decisions/README.md). None required a policy-interpretation decision
-    -- all four are mechanical (a wrong citation string, a precedence
-    ordering bug, and two internal-document drift issues), so Task 24.6
-    below has nothing to resolve.
+24.5. Classify discrepancies from 24.4 — **Complete, 23 September 2026,
+    classification and fix accepted by Pete (PR #32, commit `14eea09`).**
+    All 4 of PR #31's findings classified: finding 1 **MISSING_SOURCE +
+    CODE_ERROR** (uncited "s 65(1)(b)" citation), finding 2 **CODE_ERROR**
+    (asset-ceiling precedence gap), findings 3-4 **SPEC_ERROR** (policy.yaml
+    list drift; stale decisions/README.md). None required a
+    policy-interpretation decision -- all four are mechanical (a wrong
+    citation string, a precedence ordering bug, and two internal-document
+    drift issues), so Task 24.6 below has nothing to resolve. Fixed in PR
+    #32: citation corrected to r 15 in both code and test; the r 15
+    asset-ceiling `unsupported` check moved inside
+    `_household_gate_failure()` so it can actually pre-empt an unrelated
+    `needs_review` trigger, with a new regression test reproducing the
+    previously-unexercised combination; `policy.yaml`'s
+    `assessment.unsupported` list and `decisions/README.md` both
+    corrected. 202 tests pass (201 + 1 new), Ruff clean, strict mypy
+    clean; no numeric outcome changed anywhere. Author fix, not
+    independently re-reviewed by a separate party before merge -- Pete
+    explicitly accepted proceeding on that basis.
 24.6. Resolve ambiguities, record decision artifacts (where genuine
     ambiguity exists) — **Complete, 23 September 2026: no genuine
     ambiguity found in any of Task 24.4's 4 findings**, so no decision
