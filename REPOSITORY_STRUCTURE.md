@@ -50,16 +50,21 @@ poltika/
 │   │                        integration entry point mirroring
 │   │                        run_wff_module() for AS's single-component
 │   │                        shape)
-│   └── api/               — Task 21: FastAPI app (ADR-0010). main.py (app
-│                            instance, exception handling for
-│                            common.errors.PoltikaError subclasses) and
-│                            wff.py (request/response Pydantic models +
-│                            the one WFF calculation route, wrapping
-│                            run_wff_module() directly — no scenarios/ or
-│                            llm/ layer yet, per ARCHITECTURE.md's request
-│                            path; _wff_policy_dir() resolves
-│                            POLTIKA_POLICY_SPECS_DIR at deploy time,
-│                            ADR-0011)
+│   └── api/               — Task 21/24.8: FastAPI app (ADR-0010). main.py
+│                            (app instance, exception handling for
+│                            common.errors.PoltikaError subclasses,
+│                            startup check for both policy directories),
+│                            wff.py (WFF calculation route, wrapping
+│                            run_wff_module() directly), and
+│                            accommodation_supplement.py (Task 24.8: AS
+│                            calculation route, wrapping run_as_module()
+│                            directly, mirroring wff.py's pattern exactly
+│                            for AS's single-component response shape) —
+│                            no scenarios/ or llm/ layer yet, per
+│                            ARCHITECTURE.md's request path;
+│                            _wff_policy_dir()/_as_policy_dir() each
+│                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
+│                            time, ADR-0011)
 │
 └── tests/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
@@ -71,7 +76,8 @@ poltika/
     │   │                        AS calculator unit tests (Task 23),
     │   │                        AS spec/benchmark tests (Task 24.1),
     │   │                        AS module-integration tests (Task 24.7)
-    │   └── api/             — FastAPI TestClient tests (Task 21)
+    │   └── api/             — FastAPI TestClient tests (Task 21 WFF,
+    │                          Task 24.8 AS)
     ├── installed_artifact/ — builds and installs the real wheel into a
     │                          throwaway venv, confirms the API works
     │                          standalone (ADR-0011); marked
