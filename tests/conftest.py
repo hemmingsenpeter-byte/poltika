@@ -1,4 +1,4 @@
-"""Shared pytest fixtures and helpers for Task 15's regression suite.
+"""Shared pytest fixtures and policy-case helpers.
 
 Extracted here rather than copy-pasted a fourth time: `test_wff.py` (Task
 12), `test_wff_spec_cases.py` (Task 13), and `test_wff_benchmarks.py`
@@ -9,11 +9,13 @@ them isn't what Task 15 is for -- but a fourth copy for
 `tests/regression/` would cross from "three similar lines is fine" into
 real, avoidable duplication. This module is pytest-root-level so any test
 file under `tests/` can use its fixtures without an explicit import
-(pytest's ordinary `conftest.py` discovery).
+(pytest's ordinary `conftest.py` discovery). The AS YAML helpers moved
+here at their third consumer for Task 24.2, following the same rule.
 """
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -22,6 +24,13 @@ from typing import Any
 import pytest
 import yaml
 
+from poltika.engines.simulator.accommodation_supplement import (
+    Area,
+    AsScenario,
+    ClaimantCategory,
+    PartnerType,
+    TenureType,
+)
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
@@ -30,10 +39,13 @@ from poltika.engines.simulator.wff import (
     VerifiedIncome,
     WffScenario,
 )
-from poltika.policy.loader import PolicyParameterSet, load_policy_parameters
+from poltika.policy.loader import ParameterResolution, PolicyParameterSet, load_policy_parameters
 
 WFF_POLICY_DIR = Path(__file__).resolve().parent.parent / "policy_specs" / "working_for_families"
 WFF_MODELLED_DATE = date(2026, 6, 1)
+AS_POLICY_DIR = Path(__file__).resolve().parent.parent / "policy_specs" / "accommodation_supplement"
+AS_MODELLED_DATE = date(2026, 6, 1)
+AS_ALLOWED_PARAMETER_ASSUMPTIONS = {"base_rate", "income_level"}
 
 
 def _param(param_id: str, value_type: str, unit: str, value: str) -> dict[str, Any]:
@@ -64,7 +76,9 @@ def real_wff_parameters() -> PolicyParameterSet:
 
 
 @pytest.fixture(scope="session")
-def wff_synthetic_all_approved_parameters(tmp_path_factory: pytest.TempPathFactory) -> PolicyParameterSet:
+def wff_synthetic_all_approved_parameters(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> PolicyParameterSet:
     """Same statutory rates as the real approved WFF `policy.yaml`, but
     with every parameter -- including `in_work_base` -- approved. Same
     design `test_wff.py` (Task 12) and `test_wff_benchmarks.py` (Task 14)
@@ -149,12 +163,18 @@ def wff_scenario_from_yaml(raw: dict[str, Any]) -> WffScenario:
         partner_status=PartnerStatus(raw["partner_status"]),
         family_scheme_income=wff_income_from_yaml(raw.get("family_scheme_income")),
         net_family_scheme_income=Decimal(net_income) if net_income is not None else None,
-        net_family_scheme_income_me3_attested=raw.get("net_family_scheme_income_me3_attested", False),
+        net_family_scheme_income_me3_attested=raw.get(
+            "net_family_scheme_income_me3_attested", False
+        ),
         in_work_eligibility=FactStatus(raw["in_work_eligibility"]),
-        ftc_iwtc_protected_or_direct_abatement=FactStatus(raw["ftc_iwtc_protected_or_direct_abatement"]),
+        ftc_iwtc_protected_or_direct_abatement=FactStatus(
+            raw["ftc_iwtc_protected_or_direct_abatement"]
+        ),
         mc6a_veterans_payment=FactStatus(raw["mc6a_veterans_payment"]),
         mc6b_disqualifying_payment=FactStatus(raw["mc6b_disqualifying_payment"]),
-        minimum_family_full_time_earner_weeks=FactStatus(raw["minimum_family_full_time_earner_weeks"]),
+        minimum_family_full_time_earner_weeks=FactStatus(
+            raw["minimum_family_full_time_earner_weeks"]
+        ),
         best_start_no_shared_care=FactStatus(raw["best_start_no_shared_care"]),
         best_start_protected_credit=FactStatus(raw["best_start_protected_credit"]),
     )
@@ -176,3 +196,65 @@ def load_wff_benchmark_case(case_id: str) -> dict[str, Any]:
         if case["id"] == case_id:
             return case
     raise KeyError(f"no benchmarks.yaml case with id {case_id!r}")
+
+
+def load_as_cases(path: Path, key: str) -> list[dict[str, Any]]:
+    raw = yaml.safe_load(path.read_text())
+    cases: list[dict[str, Any]] = raw[key]
+    return cases
+
+
+def as_scenario_from_yaml(raw: dict[str, Any]) -> AsScenario:
+    def optional_decimal(key: str) -> Decimal | None:
+        value = raw.get(key)
+        return Decimal(value) if value is not None else None
+
+    return AsScenario(
+        household_eligibility=FactStatus(raw["household_eligibility"]),
+        claimant_category=(
+            ClaimantCategory(raw["claimant_category"]) if raw.get("claimant_category") else None
+        ),
+        tenure_type=TenureType(raw["tenure_type"]) if raw.get("tenure_type") else None,
+        partner_status=(PartnerType(raw["partner_status"]) if raw.get("partner_status") else None),
+        statistical_area_unit=(
+            Area(raw["statistical_area_unit"]) if raw.get("statistical_area_unit") else None
+        ),
+        weekly_accommodation_costs=optional_decimal("weekly_accommodation_costs"),
+        dependent_children_count=raw.get("dependent_children_count"),
+        cash_assets=optional_decimal("cash_assets"),
+        exempt_cash_asset_status=FactStatus(raw["exempt_cash_asset_status"]),
+        weekly_income=optional_decimal("weekly_income"),
+    )
+
+
+def as_parameters_for_case(case: dict[str, Any]) -> PolicyParameterSet:
+    """Load real AS parameters and add only a case's explicit test assumptions."""
+    base = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version="0.1.0")
+    assumptions = case.get("parameter_assumptions", {})
+    assert set(assumptions) <= AS_ALLOWED_PARAMETER_ASSUMPTIONS, (
+        f"{case['id']}: unknown parameter assumption(s) "
+        f"{set(assumptions) - AS_ALLOWED_PARAMETER_ASSUMPTIONS}"
+    )
+    resolutions = dict(base.resolutions)
+    category = case["scenario"].get("claimant_category")
+    if "base_rate" in assumptions and category is not None:
+        parameter_id = f"as_base_rate_{category}"
+        resolutions[parameter_id] = ParameterResolution(
+            parameter_id=parameter_id,
+            outcome="resolved",
+            value=Decimal(assumptions["base_rate"]),
+            unit="NZD_per_week",
+            source_id="test-case-assumption",
+            locator=case["id"],
+        )
+    if "income_level" in assumptions and category is not None:
+        parameter_id = f"as_income_level_{category}"
+        resolutions[parameter_id] = ParameterResolution(
+            parameter_id=parameter_id,
+            outcome="resolved",
+            value=Decimal(assumptions["income_level"]),
+            unit="NZD_per_week",
+            source_id="test-case-assumption",
+            locator=case["id"],
+        )
+    return replace(base, resolutions=resolutions)
