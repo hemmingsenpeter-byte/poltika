@@ -1313,9 +1313,27 @@ twin of the New Zealand policy system.
     policy's actual current behaviour end-to-end (a clear `needs_review`
     naming the undeclared parameter) plus a real, fully-resolved
     `unsupported` outcome (the r 15 asset ceiling). 9 new tests
-    (211 total), Ruff clean, strict mypy clean. Author preflight only --
-    pending independent (non-implementer) review and Pete's acceptance
-    before merge, same as PR #29.
+    (211 total), Ruff clean, strict mypy clean. Author preflight only at
+    implementation time, same as PR #29.
+
+    **Accepted and merged 24 September 2026 (PR #33, merge commit
+    `e03e8f8`, merged after PR #34).** Independent review by GPT/Codex
+    found two low-severity `TEST_ERROR`s -- the code was already correct,
+    but the tests did not lock the claims in: no route-level test proved a
+    fractional `Decimal` serializes as a JSON string, and the 500-handler
+    test's fixture actually triggered `UnsupportedSchemaVersionError`
+    before reaching the `InvalidSourceCatalogError` its docstring claimed
+    to exercise. **Fix commit `79441c2` was written and pushed to the PR
+    branch by GPT/Codex, the reviewer** (Pete confirmed authorship, 24
+    September 2026) -- the commit's own git author (`GitHub Copilot`) and
+    `Co-Authored-By: Claude Sonnet 5` trailer are inaccurate and do not
+    reflect who wrote it; this entry is the authoritative record. Because
+    the reviewer authored that commit, Claude Code checked it separately
+    rather than treating it as covered by Codex's own review: raised the
+    real `InvalidSourceCatalogError` directly (confirmed it fires and
+    embeds the absolute path the 500 handler guards against leaking) and
+    ran the full suite. Re-verified on `main` after merge: 212 passed (1
+    deselected), Ruff clean, strict mypy clean. Pete accepted and merged.
 25. Stress-test POLICY_SPECS schema against AS's different structure
     (housing costs, asset test, geography). **Complete, 23 September
     2026, Pete's decision on scope.** Checked all three named areas
@@ -1339,7 +1357,8 @@ twin of the New Zealand policy system.
 26. **Re-scoped by Pete's Task 25 decision: rename `as_base_rate_*`'s
     parameter-id convention to carry the household-category dimension,
     not a schema (`PolicySpec`/`ParameterSpec`) revision.** Complete,
-    Claude Code, isolated worktree, 23 September 2026 (PR pending).
+    Claude Code, isolated worktree, 23 September 2026 (PR #34, which
+    also carries Task 25's `specification.md` resolution note).
     `_base_rate_parameter_id(claimant_category, household_category)`
     replaces the single-dimension `as_base_rate_<claimant_category>`
     construction in `calculate_accommodation_supplement()`, mirroring
@@ -1363,6 +1382,19 @@ twin of the New Zealand policy system.
     202 tests pass (no new test -- existing coverage already exercises
     the fix through the `calculated` outcomes it depends on), Ruff clean,
     strict mypy clean.
+
+    **Accepted and merged 24 September 2026 (PR #34, merge commit
+    `91c6faa`, merged before PR #33).** Independent review by GPT/Codex:
+    clean, no findings. Claude Code additionally reproduced the
+    highest-risk claim -- a partial-interval parameter under the new
+    compound id -- and confirmed `run_as_module()`'s reference-period
+    invariant resolves it to `needs_review` with the correct reason. The
+    regression-test edits were checked against `doctrine/test-doctrine.md`:
+    they change only parameter-assumption fixtures and the expected
+    parameter-id string, no protected expected value or outcome
+    assertion. No file overlap with PR #33. Re-verified on `main` after
+    merge: 202 passed (1 deselected), Ruff clean, strict mypy clean. Pete
+    accepted and merged.
 27. Migrate WFF's spec files to v0.2
 28. Test WFF + AS interaction
     (API/integration path reused from WFF — no re-litigating the pre-API gate
