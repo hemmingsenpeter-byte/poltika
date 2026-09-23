@@ -1395,19 +1395,350 @@ twin of the New Zealand policy system.
     assertion. No file overlap with PR #33. Re-verified on `main` after
     merge: 202 passed (1 deselected), Ruff clean, strict mypy clean. Pete
     accepted and merged.
-27. Migrate WFF's spec files to v0.2
-28. Test WFF + AS interaction
-    (API/integration path reused from WFF — no re-litigating the pre-API gate
-    now that the path is validated)
+### Refinement of Tasks 26a-35 (approved by Pete, 24 September 2026)
 
-### Weeks 4–5 — Poltika v0.1
-29. Golden household test suite across both policies
-30. Cross-policy deterministic scenarios
-31. Full calculation provenance report
-32. Scenario/version persistence
-33. API integration
-34. End-to-end acceptance testing
-35. Demo: one real policy question, answered end-to-end
+Tasks 27-35 were one-line placeholders written before either vertical
+slice existed. This refinement breaks them into subtasks and adds two
+prerequisite tasks (26a, 26b) that the end-to-end Definition of Done
+cannot pass without. It changes no completed task, approved value, or
+doctrine. Every subtask names its owner. "Pete decides" marks a scope or
+interpretation call that the implementer must not resolve.
+
+**Carried-forward open items** (tracked here so they are not lost; each
+is owned by the task named):
+
+- AS base rates (`as_base_rate_<claimant>_<household>`) and the r 18(3)
+  income level are still undeclared in `policy.yaml`, so the real AS
+  policy cannot currently produce a `calculated` result for any
+  household -- Task 26a.
+- WFF's `in_work_base` was last recorded `needs_review` (Tasks 10.2, 13);
+  Task 10.2's contract requires Order evidence covering the whole
+  completed modelled tax year, not a single date -- Task 26b. WFF's
+  reference period is 2026-27 only (to 1 April 2027). Annual in-work
+  calculations requiring `in_work_base` remain `needs_review` until the
+  full-interval evidence requirement is met. That is not expected before
+  the 2026-27 tax year completes. A scenario can still resolve
+  `unsupported` earlier, for example when in-work eligibility fails.
+  Tasks 29 and 35 plan around this; they do not assume it will clear.
+- DEC-001 (AS income-excess rounding) remains medium confidence with no
+  second fractional-excess example found (Task 24.1). Any golden
+  household that depends on a fractional non-beneficiary excess must say
+  so explicitly -- Task 29.
+- ADR-0012's header still reads `Status: proposed` although PR #30 merged,
+  and its four opaque OpenFisca names (`_benefit_me`, `cutout`, `rebate`,
+  `situation`) await Pete's disposition; Task 24.3's entry above still
+  says "pending independent review and Pete's acceptance" --
+  Pete decides whether to accept ADR-0012 and what to do with the four
+  names; Claude Code then records it (a docs-only change).
+- Task 22a's revisit condition (a raw SAU code or address input would
+  reintroduce a dataset need) stays live for any scenario-input design in
+  Tasks 28-33.
+
+**Work split.** This follows the Roles section: GPT/Codex does source
+work, specification text, and hand-calculated expected values; Claude
+Code does repo implementation. Every slice is reviewed by the model that
+did not author it, so the reviewer changes slice by slice rather than
+per task.
+
+| Owner | Authors | Reviews |
+| --- | --- | --- |
+| GPT/Codex | 26a (values plus the tests they change), 26b, 28.1, 28.3, 28.5's interaction spec cases, 29.1's proposed list, 29.2's hand calculations; research for 28.2 and 35.1 | 27, 28.4-28.5 code, 30, 31 (including 31.1's rule-ID mapping), 32, 33, 34.1's evidence, 35.3's wording; the Claude Code-authored slices in 34.3 |
+| Claude Code | 27.2-27.3, 28.4, 28.5's runners and regression tests, 29.3, 30, 31, the 32.1 ADR draft, 32.2-32.4, 33, 34.1-34.2, 35.3-35.4; the ADR-0012 record | 26a, 26b, 28.1, 28.3, 29.2 (via a fresh-context subagent, per the Task 24.4 precedent); the GPT/Codex-authored slices in 34.3 |
+| Pete | 27.1, 28.2, 29.1 approval, 32.1, 35.1, 35.2, ADR-0012, 34.4 classifications, every acceptance | -- |
+
+**File ownership, so the two models never edit the same scope at once**
+(`review_packets/README.md`): GPT/Codex owns `policy_specs/*/` policy
+content (`policy.yaml`, `specification.md`, `sources.yaml`,
+`spec_cases.yaml`, `benchmarks.yaml`, `decisions/`, and the golden
+household file). Claude Code owns `src/`, the test runners,
+`tests/regression/`, `REPOSITORY_STRUCTURE.md`, and
+`policy_specs/SCHEMA.md` (27.2). There are two deliberate exceptions.
+26a.3 lets GPT/Codex edit existing tests whose assertions the new values
+change. 28.3 lets GPT/Codex edit both `specification.md` files. Each
+model works in its own worktree. This file (BUILD_PLAN.md) is edited
+only for status records, one PR at a time.
+
+**Sequencing.** After approval of this refinement, 26a and 28.1 can
+proceed independently (GPT/Codex source work, subject to the Codex review
+reserve until 27 September 2026). The date/interval decision in 28.2
+must precede 26b; 26b records the outcome even if the rate remains gated.
+28.3-28.4 need only 28.1 and 28.2. 28.5's cases that expect a
+`calculated` AS result against the real policy, and all of 29, also need
+26a and 26b. Then 29 → 30 → 31.6 → 32 → 33 → 34 → 35. Claude Code can prepare the
+following work before 27 September; each merge still requires the
+named independent review and Pete's acceptance:
+
+- 27.2-27.3, once Pete decides 27.1;
+- 31.1-31.5, the per-policy trace, its tests and independent review.
+  Because it changes calculator return types, merge it before 26a's
+  test edits if review is available. Otherwise defer it until 26a merges;
+  source research can proceed independently. Do not overlap test edits
+  or bypass review to meet the calendar. Complete this slice before 30;
+- the 32.1 ADR draft;
+- the ADR-0012 record, once Pete decides.
+
+26a. **Populate AS base-rate and income-level parameters (new, prerequisite
+    to 29-35).**
+    - **26a.1 — GPT/Codex.** Independently recalculate, from the dated MSD tables
+      already catalogued in `sources.yaml` (`as-msd-*-rates-2026`), the
+      base-rate value for every supported claimant category × household
+      category combination, plus the r 18(3) income level, citing the
+      operative source for each. Where a table and the Act/Regulations
+      disagree or a value is not published for a supported combination,
+      stop and flag it (INTERPRETATION_AMBIGUITY or MISSING_SOURCE), never
+      infer.
+    - **26a.2 — GPT/Codex.** Add them to `policy.yaml` under the Task 26 compound-id
+      convention, with effective intervals, units, and `source_id`s. This
+      changes a protected path, so it goes through `doctrine/test-doctrine.md`'s
+      statutory-value process, and the guard workflow result is checked
+      before merge.
+    - **26a.3 — GPT/Codex, same PR as 26a.2 so values and tests land together.** Update the tests that currently assert the real policy's
+      base rate is undeclared (e.g. the Task 23/24.2 `needs_review`
+      regressions, Task 24.8's API tests) so they record the new
+      behaviour deliberately rather than just being flipped to pass. Add
+      at least one spec case that produces `calculated` against the real
+      approved policy with no parameter assumptions.
+    - **26a.4 — Claude Code reviews (fresh-context subagent); Pete accepts.** Independent review of every new value against its source
+      (not the author's workings); Pete accepts.
+26b. **Recheck `in_work_base` for the v0.1 modelled interval(s) (new).** GPT/Codex;
+    Claude Code reviews. Depends on 28.2's date/interval decision. Apply
+    Task 10.2's existing rate-status contract in WFF's specification:
+    record the dated Order check and the interval its evidence covers in
+    `sources.yaml`'s `order_check` notes. An as-of check does not establish
+    a rate for the rest of an unfinished tax year. Approve an ordinary
+    full-year base only when evidence covers the entire completed,
+    supported tax year, through the statutory-value process. An interval
+    extending beyond the check remains `needs_review`; an Order commencing
+    within it invokes the existing `unsupported` split-period path.
+    A no-future-Order assumption cannot clear the gate or enter the
+    assumption-free golden suite. Completion means a reviewed disposition,
+    not necessarily rate approval. Task 35's question must respect it.
+27. **Re-scoped: settle the schema-version question (was "Migrate WFF's
+    spec files to v0.2").** Task 25 concluded that no `PolicySpec`/
+    `ParameterSpec` revision is needed for AS; both `policy.yaml` files and
+    the loader are still `schema_version: "0.1"`, so there is no v0.2
+    schema to migrate to. The Definition of Done still says "schema v0.2".
+    - **27.1 — Pete decides. Decided 24 September 2026: option (a).**
+      Schema stays `"0.1"`; the Definition of Done is amended below. The
+      options were: (a) close the migration as moot and
+      amend the Definition of Done to "schema v0.1, stress-tested by two
+      structurally different policies (Task 25)"; or (b) define v0.2 as
+      the stress-tested schema (Task 23's additive units plus the Task 26
+      compound-id convention), bump both policies and the loader to
+      `"0.2"`, and keep `"0.1"` loadable or reject it deliberately.
+      Recommendation: (a). A bump would mark a change that already
+      shipped without one, and "v0.2" already names a product release in
+      ROADMAP.md, which invites confusion.
+    - **27.2 — Claude Code (documents its own Task 23/26 changes); GPT/Codex reviews.** Whichever is chosen, bring `policy_specs/SCHEMA.md` up to
+      date with what the code already accepts: the `NZD`,
+      `NZD_per_week` and `fraction` units (Task 23), the compound
+      parameter-id convention (`area_cap_*`, `as_base_rate_*`, Tasks
+      25/26), and `assessment.membership_period` values in use
+      (`tax_year`, `assessment_week`).
+    - **27.3 — Claude Code; GPT/Codex reviews.** Apply the Definition of Done wording from 27.1. **Done
+      in the refinement PR itself (24 September 2026).** Option (a) needs
+      no migration.
+28. **Cross-policy interaction: WFF + AS (refined).** The API/integration
+    path is reused from WFF; the pre-API gate is not re-litigated.
+    - **28.1 — GPT/Codex, primary sources only. Source-verify the
+      interaction rules.** Starting from AS-10 and both specifications'
+      cross-policy sections: (a) confirm, with operative citations, how
+      Accommodation Supplement is treated in WFF family scheme income;
+      (b) confirm how WFF is treated in AS chargeable income, separating
+      the IRD-paid route (Schedule 3 cl 8, `as-msd-chargeable-income`)
+      from any MSD-paid route, which both specifications say must not be
+      collapsed; (c) establish from source which payment route applies
+      to households in both supported domains (e.g. the AS beneficiary
+      categories); (d) identify any other interaction that touches the
+      supported domains, or record that none was found. Each unresolved
+      point becomes an explicit `needs_review` gate or a DEC-00x decision
+      artifact for Pete, never an assumption.
+    - **28.2 — Pete decides; GPT/Codex supplies the source research. Period and date reconciliation.** WFF is
+      assessed per tax year (annual amounts) and AS per assessment week
+      (weekly amounts). Decide how a combined result reports both: side by
+      side in their native periods (recommended: no conversion rule is
+      invented) or converted, in which case the conversion rule needs a
+      source. Record the WFF tax-year interval, AS assessment week and
+      applicable parameter lookup date(s) explicitly. Make this decision
+      before 26b; it does not depend on the in-work rate being cleared.
+      The dates must fall inside each policy's supported reference period,
+      with the AS week before its 1 April 2027 amendment. Keeping annual
+      and weekly results separate does not shorten WFF's evidence interval.
+    - **28.3 — GPT/Codex; Claude Code reviews against the 28.1 sources.** Write the interaction contract into both
+      `specification.md` files: which facts are shared (e.g. partner
+      status and dependent children must agree between the two inputs),
+      which outputs are excluded from the other policy's income, and
+      which routes are gated.
+    - **28.4 — Claude Code; GPT/Codex reviews.** Implement a combined household scenario runner: one set of
+      canonical household facts in; `run_wff_module()` and
+      `run_as_module()` results out; shared-fact consistency checks that
+      return `needs_review` on disagreement, never pick one silently.
+      This is the first `src/poltika/scenarios/` code, so update
+      `REPOSITORY_STRUCTURE.md` before creating it. No dependency graph:
+      that is v0.3.
+    - **28.5 — split -- GPT/Codex hand-calculates the interaction spec cases (independent of the implementer); Claude Code writes the runners and regression tests.** Tests: hand-calculated interaction spec cases (e.g. a
+      non-beneficiary household receiving both, proving neither
+      payment enters the other's income; a gated route resolving
+      `needs_review`), plus regression tests named for the specific
+      leak each one prevents. Decide where cross-policy fixtures live
+      and add that path to the statutory-value guard if it holds
+      protected values.
+    - **28.6 — cross-review -- Claude Code reviews 28.1/28.3 (sources, contract), GPT/Codex reviews 28.4/28.5 code; Pete accepts.** Fresh-context review by the non-implementer; Pete accepts.
+29. **Golden household test suite across both policies.** Unlike the
+    per-policy spec cases, golden households run against the real
+    approved policies with no parameter assumptions. Depends on 26a and 28.
+    - **29.1 — GPT/Codex proposes the list; Pete approves.** Choose roughly 8-12 households
+      spanning the supported domains, including: both policies
+      `calculated`; one `calculated` and one excluded; the Schedule 4
+      1-child/2-child household-category boundary; the partnered-income
+      verification gates; one non-beneficiary with an income reduction.
+      State for each why it is in the set.
+    - **29.2 — GPT/Codex (independent of the 28.4/29.3 implementer).** Hand-calculate expected results independently of the
+      implementation (author ≠ implementer, standalone workings as in Task
+      13), in a protected YAML file watched by the statutory-value guard.
+      Flag any case that relies on DEC-001's medium-confidence convention.
+    - **29.3 — Claude Code.** A thin runner through the 28.4 scenario runner, with the
+      same completeness guards (unique IDs, every component expected) as
+      the per-policy suites.
+    - **29.4 — Claude Code reviews the hand calculations via a fresh-context subagent (Task 24.4 precedent); Pete accepts.** Independent review of the hand calculations; Pete accepts.
+30. **Cross-policy deterministic scenarios.** A scenario is a golden or
+    ad hoc household plus modelled date plus requested policy versions.
+    This task makes running one reproducible and identifiable. It adds no
+    what-if parameter changes (v0.4).
+    - **30.1 — Claude Code.** Define the scenario record: household facts,
+      assessment periods and lookup dates from 28.2, requested
+      `policy_version` per module, and an artifact manifest. Identify by
+      content hash each policy file, source catalogue, applicable
+      specification and decision artifact, plus the executable build and
+      its dependency lock. Retain their bytes or retrievable immutable
+      references with an explicit retention contract; a hash or version
+      label alone is insufficient. A retained build or retained source
+      revision with a reproducible build must support historical replay.
+      For v0.1, a git commit SHA reachable from `main` (protected against
+      force-push and deletion since Task 9), together with `uv.lock` at
+      that commit, is an acceptable immutable reference for code and
+      repository files. A separate artifact store is needed only for
+      content not in git. The implementation must verify that the
+      recorded hashes match the committed files actually used. A run
+      made from an uncommitted or modified working tree cannot claim
+      reproducibility from its HEAD commit alone. It must either retain
+      those files or be recorded as non-reproducible.
+    - **30.2 — Claude Code.** Canonical result serialization (stable key order,
+      `Decimal` as string), and a scenario/result identity derived from
+      the content hash of inputs plus the complete artifact manifest.
+      Operational run IDs and timestamps sit outside the deterministic
+      result payload. Source-only changes must change the manifest identity.
+    - **30.3 — Claude Code.** Determinism tests: repeated runs and separate processes
+      yield byte-identical output. Reordering inputs does not change the
+      result.
+    - **30.4 — Claude Code; GPT/Codex reviews all of Task 30.** Freeze the golden-household results as regression
+      fixtures. An output change must be attributable to a named cause
+      (parameter, rule, or code change), per ARCHITECTURE.md's
+      change-attribution rule. No external dataset exists for v0.1
+      (10a/22a); the retained artifacts and their hashes support replay.
+      Hashes identify retained content; they do not replace snapshots.
+31. **Full calculation provenance report.** Today a result carries its
+    outcome, value and reason, but not which parameters and sources
+    produced it (`ParameterResolution.source_id` exists in the loader but
+    is not surfaced).
+    - **31.1 — Claude Code drafts; GPT/Codex checks the rule-ID and source mapping against both specifications.** Define the provenance trace for each component: policy
+      id, version and schema version; hashes identifying the artifacts
+      used (the manifest later assembled in 30.1); every parameter
+      used (id, value, unit, effective interval, `source_id`,
+      `review_status`); every input used, with its verification status
+      shown as the caller's assertion; specification rule IDs
+      (`WFF-xx`, `AS-xx`) and any `DEC-xxx` applied; rounding steps; code
+      version.
+    - **31.2 — Claude Code.** Have the calculators emit that trace without changing any
+      value or outcome. Preserve existing numerical and gating assertions;
+      document any necessary response-shape changes. Existing tests check
+      behavioural compatibility; 31.5 separately verifies trace correctness.
+    - **31.3 — Claude Code.** Resolve each `source_id` against `sources.yaml` (title,
+      URL, retrieval/check date), identifying the exact catalogue content
+      used. Resolve rule IDs and decisions against the identified artifacts
+      too; replay must not substitute current files. Location: `engines/assurance/`, per
+      REPOSITORY_STRUCTURE.md ("provenance, regression, change
+      attribution (v0.1)").
+    - **31.4 — Claude Code.** Render the trace as machine-readable JSON plus a readable
+      Markdown report. A UI is not required for v0.1.
+    - **31.5 — Claude Code; GPT/Codex reviews; Pete accepts.** Per-policy tests
+      and review land with 31.1-31.4, before that slice merges. Verify
+      representative calculation paths record the actual parameters,
+      inputs, sources, rules and rounding steps used, including calculated
+      zero and gated paths. Every `calculated` value traces to a source;
+      every used parameter has a resolvable `source_id`; every
+      `needs_review`/`unsupported` result carries its reason. Check JSON and
+      Markdown consistency and preservation of numerical/gating behaviour.
+    - **31.6 — Claude Code; GPT/Codex reviews; Pete accepts.** After 30, extend
+      provenance tests to combined scenarios and their artifact manifests.
+      Verify both assessment periods, interaction gates and report content
+      are preserved. This adds combined coverage to the reviewed per-policy
+      slice; it does not defer that slice's tests or review.
+32. **Scenario/version persistence.**
+    - **32.1 — Pete decides; Claude Code drafts the ADR.** Storage: (a) PostgreSQL + SQLAlchemy 2
+      + Alembic now, per ARCHITECTURE.md's recorded long-term stack and
+      ADR-0010's go-straight-to-target precedent; or (b) an append-only,
+      content-addressed file store behind a small repository interface,
+      with Postgres deferred. The trade-off: (a) adds a database to local
+      development, CI, and the ADR-0011 deployment convention; (b) is
+      leaner but will be replaced.
+    - **32.2 — Claude Code.** Model the immutable records: scenario, run (inputs,
+      assessment periods, artifact manifest, result, provenance trace).
+      Persist the artifacts from 30.1 or their retained immutable references
+      and verify their hashes on retrieval. A run is never edited in place.
+    - **32.3 — Claude Code.** Implement the store and migrations (if (a)).
+    - **32.4 — Claude Code.** Tests: after current policy, source catalogue,
+      specification/decision and code artifacts change, replay using the
+      retained original artifacts reproduces the stored deterministic
+      result and provenance exactly. Missing or hash-mismatched artifacts
+      fail explicitly. A run requested against current artifacts creates a
+      separate immutable run and reports drift, identifying changed
+      artifacts even if monetary values stay equal. Never silently replace
+      historical artifacts or overwrite the original run. Replaying after
+      a *code* change means building the retained revision. The fast suite
+      covers policy, source catalogue and specification changes. Code-change
+      replay runs as an opt-in test, like `installed_artifact`, and is
+      exercised at least once in 34.2.
+    - **32.5 — GPT/Codex reviews.** Review; Pete accepts.
+33. **API integration.** The per-policy routes (Tasks 21, 24.8) stay.
+    - **33.1 — Claude Code.** A combined household route running the 28.4 runner and
+      returning both modules' results plus the provenance trace, with
+      the same caller-asserted-facts disclaimer as Task 21.
+    - **33.2 — Claude Code.** Scenario routes: create, fetch, re-run (32).
+    - **33.3 — Claude Code.** Consistent 422/409/500 mapping and no path or exception
+      text in 500s (Task 21's finding), with tests at route level.
+    - **33.4 — Claude Code; GPT/Codex reviews all of Task 33.** Extend the installed-artifact test (ADR-0011) to cover the
+      combined route and persistence.
+34. **End-to-end acceptance testing.**
+    - **34.1 — Claude Code drafts; GPT/Codex verifies each row's evidence.** A traceability matrix: each Definition of Done bullet and
+      the ROADMAP.md v0.1 exit gate, mapped to the test, review record, or
+      decision artifact that evidences it. Any unevidenced bullet is a
+      blocking gap.
+    - **34.2 — Claude Code.** An end-to-end test through the installed artifact:
+      request → both modules → persistence → provenance report.
+    - **34.3 — cross-review -- GPT/Codex reviews the Claude Code-authored slices (28.4, 29.3, 30-33), a Claude Code fresh-context subagent reviews the GPT/Codex-authored slices (26a, 26b, 28.1, 28.3, 29.2).** A fresh-context adversarial review of the whole v0.1
+      (both policies, the interaction, scenarios, and provenance) by the
+      non-implementer, as in Tasks 17 and 24.4.
+      Both reviewers inspect the complete end-to-end workflow and shared
+      contracts as well as their assigned slices. A finding or fix touching
+      a reviewer's own authored work requires the other model's independent
+      check; ownership boundaries must not leave integration gaps unreviewed.
+    - **34.4 — Pete confirms classifications; each fix routes to the slice's author.** Classify and resolve the findings under the Review
+      Doctrine.
+    - **34.5 — Pete.** Pete's acceptance of v0.1.
+35. **Demo: one real policy question, answered end-to-end.**
+    - **35.1 — Pete decides; GPT/Codex proposes candidate questions inside both domains.** The question. It must sit inside both
+      supported domains, and it must be chosen knowing 26b's outcome for
+      the in-work tax credit.
+    - **35.2 — Pete decides.** The demo surface: API plus the 31.4 report
+      (recommended for v0.1), or a first Next.js screen per
+      ARCHITECTURE.md's target stack.
+    - **35.3 — Claude Code runs and writes the walkthrough; GPT/Codex checks its limitations wording against both specifications.** Run it as a persisted scenario and produce its provenance
+      report. Write a short walkthrough that states the result's
+      limitations: conditional on caller-asserted facts, supported domain
+      only.
+    - **35.4 — Claude Code.** Release: CHANGELOG, tag `v0.1.0`. The deferred v0.1.5 repo
+      taxonomy rework starts after the tag, not before.
 
 ---
 
@@ -1416,8 +1747,10 @@ twin of the New Zealand policy system.
 - WFF + Accommodation Supplement both correctly modelled and benchmarked
   independently
 - Cross-policy interaction verified
-- Effective-dated, provenance-tagged POLICY_SPECS (schema v0.2, stress-tested
-  by two structurally different policies)
+- Effective-dated, provenance-tagged POLICY_SPECS (schema v0.1, stress-tested
+  by two structurally different policies -- Task 25 found no schema
+  revision needed; amended from "schema v0.2" by Pete's Task 27.1(a)
+  decision, 24 September 2026)
 - Three-layer testing in place, statutory values CI-protected
 - Any interpretation ambiguity encountered has a recorded decision artifact
   with evidence considered, rationale, decision owner and date
@@ -1425,4 +1758,8 @@ twin of the New Zealand policy system.
   with provenance
 - Minimum required external statistical datasets frozen as versioned,
   provenance-tagged raw snapshots and registered as regression fixtures, with
-  no live statistical API dependency (Data Acquisition Doctrine)
+  no live statistical API dependency (Data Acquisition Doctrine) -- or,
+  where a vertical needs none, a recorded determination to that effect
+  (Tasks 10a and 22a both closed N/A; retained policy/evidence/build artifacts
+  and their hashes support deterministic replay, Tasks 30 and 32) --
+  amended by the Tasks 26a-35 refinement Pete approved on 24 September 2026
