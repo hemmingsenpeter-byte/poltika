@@ -8,6 +8,11 @@ handoff. Claude Code's Task 7 repo-feasibility review is recorded below;
 WFF policy content was separately approved at Task 10, while Accommodation
 Supplement remains unapproved pending Task 22.
 
+*Update (Task 27.2, 24 September 2026):* the header above is historical.
+Both policies are now approved (Tasks 10 and 22), and the schema is
+implemented and stays at `"0.1"`. See "Schema as implemented" below for
+what the code accepts today.
+
 ## Boundary
 
 `policy.yaml` will describe one policy's supported input domain, assessment
@@ -114,6 +119,63 @@ requires a dated legal instrument check for each modelled interval, while AS's
 2027 homeowner
 change must not affect September 2026 cases. The Task 2 maps' listed figures
 are observations, not approved parameter values or benchmark expectations.
+
+## Schema as implemented (Task 27.2, 24 September 2026)
+
+This section records what `src/poltika/semantics/schemas/policy_spec.py`
+and the two approved `policy.yaml` files actually accept today. The design
+text above predates Tasks 11-26. Where they differ, the code and this
+section are authoritative, and each change below traces to the task that
+made it.
+
+**Schema version stays `"0.1"`.** Task 25 stress-tested this schema against
+Accommodation Supplement and found no `PolicySpec`/`ParameterSpec` revision
+needed. Pete decided Task 27.1(a) on 24 September 2026: no v0.2 bump and no
+migration, and the v0.1 Definition of Done now reads "schema v0.1". The
+Task 7 response below still mentions a "Task 26 `v0.2` bump and Task 27 WFF
+migration". That was the plan at the time and neither happened. The loader
+accepts only `"0.1"` (`SUPPORTED_SCHEMA_VERSIONS`).
+
+**Parameter `value_type` and `unit`** are closed enums, not free text (Task
+11, per the Task 7 response). Each `value_type` admits only its own units:
+
+| `value_type` | Allowed `unit` | Added by |
+| --- | --- | --- |
+| `money` | `NZD_per_tax_year`, `NZD_per_tax_year_after_tax`, `NZD_per_child_per_tax_year` | Task 11 (WFF) |
+| `money` | `NZD` (a stock amount, e.g. an asset ceiling), `NZD_per_week` | Task 23 (AS) |
+| `fraction` | `NZD_per_complete_NZD_above_threshold` (carries WFF's complete-dollar flooring) | Task 11 (WFF) |
+| `fraction` | `fraction` (a plain rate; any rounding is calculator logic, per DEC-001) | Task 23 (AS) |
+
+The Task 23 units were a narrow, additive extension that Pete approved on 23
+September 2026. WFF's `policy.yaml` validates unchanged. Adding a unit
+means adding an enum member and its row in `_VALID_UNITS_BY_VALUE_TYPE`; the
+field is never widened back to `str`.
+
+**Parameter-id convention for keyed tables.** The first draft said area and
+household tables "need explicit keys". Tasks 23-26 implemented this with a
+compound parameter-id convention, not a new schema field:
+`<parameter>_<key>_<key>...`, where each key is a closed enum value the
+calculator derives from verified facts. Each combination is its own
+parameter with its own effective intervals and `source_id`. A missing
+combination resolves to `needs_review`, never a default.
+
+| Pattern | Keys | Task |
+| --- | --- | --- |
+| `area_cap_<household_category>_<area>` | household category × `area1`-`area4` | 23 |
+| `as_base_rate_<claimant_category>_<household_category>` | claimant category × household category | 25/26 |
+| `asset_ceiling_{relationship_or_dependent_children,other}`, `asset_imputation_threshold_{...}` | a fixed two-way split, spelled out in the id | 23 |
+
+The AS household categories are `single_no_dependent_children`,
+`no_dependent_children_couple_or_sole_parent_one_child`, and
+`with_dependent_children` (Schedule 4 Part 7 cl 1-3). The claimant categories
+are those of AS's `claimant_category` input. `as_base_rate_*` values are not
+yet declared in `policy.yaml`; populating them is Task 26a.
+
+**`assessment.membership_period`** is stored in the schema's untyped
+`assessment` mapping. Values in use are `tax_year` (WFF) and
+`assessment_week` (AS). Task 25 confirmed the untyped field is sufficient for
+two policies. Typing it is a candidate for a later schema version once a
+third policy needs it, not before.
 
 ## Dataset provenance boundary
 

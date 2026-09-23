@@ -1534,7 +1534,9 @@ named independent review and Pete's acceptance:
       `NZD_per_week` and `fraction` units (Task 23), the compound
       parameter-id convention (`area_cap_*`, `as_base_rate_*`, Tasks
       25/26), and `assessment.membership_period` values in use
-      (`tax_year`, `assessment_week`).
+      (`tax_year`, `assessment_week`). **Implemented 24 September 2026**
+      (SCHEMA.md's "Schema as implemented" section). Docs only; pending
+      GPT/Codex review.
     - **27.3 — Claude Code; GPT/Codex reviews.** Apply the Definition of Done wording from 27.1. **Done
       in the refinement PR itself (24 September 2026).** Option (a) needs
       no migration.
