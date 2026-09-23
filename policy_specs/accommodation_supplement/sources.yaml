@@ -80,12 +80,27 @@ sources:
     title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025
     url: https://www.legislation.govt.nz/act/public/2025/27/en/latest/sections/LMS1443018/
     covers: Changes to accommodation costs and qualifying costs effective 2026-03-02.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      url: https://www.legislation.govt.nz/act/public/2025/0027/latest/whole.html
+      source_version: Official 2025 No 27 text retrieved on the check date.
+      locator: Section 2; Schedule 1 inserting Social Security Act Schedule 1 Part 11 clauses 104-105.
+      effective_from: 2026-03-02
+      claim: Commencement is 2 March 2026; clause 105 addresses weeks starting on or after that date for existing recipients, subject to clause 104's pending-application exception.
+      scope: Do not treat a calendar date alone as proof that every transitional case falls within the ordinary scoped calculation.
   - id: as-2026-amendment
     kind: amending_legislation
     title: Social Security (Jobseeker Support and Accommodation Supplement) Amendment Act 2026
     url: https://www.legislation.govt.nz/act/public/2026/54/en/latest/
     covers: Future homeowner entry-threshold changes and transitional provisions.
     date_note: Check commencement and application; Schedule 1 Part 18 says the accommodation amendments apply from 2027-04-01.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      url: https://www.legislation.govt.nz/act/public/2026/0054/latest/whole.html
+      source_version: As enacted, 3 September 2026; official page labels the Act not yet in force.
+      locator: Section 2(1)-(2); Part 2; Schedule 2 inserting Schedule 1 Part 18 clauses 131-132.
+      claim: Part 2's homeowner threshold changes commence and apply on 1 April 2027. Part 1 separately commences on 2 November 2026 and concerns Jobseeker eligibility; the two dates must not be conflated.
+      scope: The approved AS domain excludes homeowners and ends before 1 April 2027. Later candidate weeks still require verification of relevant claimant-category facts and operative law; this check does not approve them.
   - id: as-msd-overview
     kind: agency_guidance
     title: Accommodation Supplement
@@ -141,17 +156,34 @@ sources:
     title: Calculating rate - general formula
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/calculating-rate-general-formula-01.html
     covers: Qualifying costs, entry threshold, subsidy, and regional cap.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Live MSD MAP guidance; no historical page version or revision date displayed in retrieved content.
+      locator: Opening paragraph; Legislation link to Schedule 4 Part 7.
+      claim: AS is assessed using weekly qualifying accommodation costs. This supports retaining a weekly amount, not annualising it from one observed week.
   - id: as-msd-qualifying-costs
     kind: agency_guidance_and_example
     title: Weekly qualifying accommodation costs
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/weekly-qualifying-accommodation-costs.html
     covers: Property-use deductions, accommodation income, and a worked example.
     date_note: MSD says these rules apply from 2026-03-02.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Live MSD MAP guidance with explicit 2 March 2026 application statement.
+      locator: Opening paragraph.
+      claim: Guidance separates the weekly-cost rules from 2 March 2026 from the previous settings. Statutory transitional qualifications remain in as-2025-amendment.
   - id: as-msd-rates-2026
     kind: agency_rates
     title: Non-beneficiaries - entry thresholds and maximum rates
     url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/non-beneficiaries-current-01.html
     covers: Weekly thresholds by household and tenure, and caps by area, at 2026-04-01.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Live MSD MAP table explicitly labelled at 1 April 2026.
+      locator: Opening sentence above the table.
+      effective_from: 2026-04-01
+      claim: The table labels its amounts as weekly and applicable at 1 April 2026. It does not substantiate backdating these entries to the policy reference-period start of 2 March 2026.
+      scope: Date and unit checked only. Base-rate derivation, other claimant tables and parameter approval remain Task 26a.
   - id: as-msd-jobseeker-rates-2026
     kind: agency_rates
     title: Jobseeker Support - Accommodation Supplement thresholds and maxima
