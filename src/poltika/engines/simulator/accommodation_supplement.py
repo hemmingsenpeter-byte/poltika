@@ -270,6 +270,34 @@ def _area_cap_parameter_id(household_category: _HouseholdCategory, area: Area) -
     return f"area_cap_{household_category.value}_{area.value}"
 
 
+def _base_rate_parameter_id(
+    claimant_category: ClaimantCategory, household_category: _HouseholdCategory
+) -> str:
+    """Task 25/26: the compound-ID convention for the claimant-category
+    base rate, extended to also carry the household-category dimension --
+    mirroring `_area_cap_parameter_id()`'s already-established
+    `<primary>_<household_category>_<...>` pattern rather than introducing
+    a new one.
+
+    Task 24.1's independent verification pass found that MSD's dated rate
+    tables select the base rate (and its derived 25%-of-base-rate entry
+    threshold) by claimant category *and* household category together --
+    e.g. Supported Living Payment has separate single/couple/parent
+    thresholds -- while Task 23's original `as_base_rate_<claimant_
+    category>` parameter id had no room for that second dimension. Task
+    25's schema stress-test concluded the `ParameterSpec`/`PolicySpec`
+    Pydantic schema itself needs no revision for this (`id` is already a
+    free-form string, and the compound-id pattern already works for area
+    caps) -- only this naming convention needed extending, which is what
+    this function does. No real values are populated under either the old
+    or the new id yet (`as_base_rate_*` remains entirely undeclared,
+    Task 22/23's documented gap, pending Task 24's independent
+    recalculation of the dated MSD tables) -- this changes what string id
+    is looked up, not any approved numeric fact.
+    """
+    return f"as_base_rate_{claimant_category.value}_{household_category.value}"
+
+
 def _household_gate_failure(
     scenario: AsScenario, parameters: PolicyParameterSet
 ) -> ComponentResult | None:
@@ -433,17 +461,21 @@ def calculate_accommodation_supplement(
     # already excluded by the household gate above).
     qualifying_costs = scenario.weekly_accommodation_costs
 
+    # Household category is needed for both the base rate (Task 25/26's
+    # compound-id fix) and the area cap below -- computed once, up front.
+    household_category = _household_category(scenario.partner_status, scenario.dependent_children_count)
+
     # Step 3: entry threshold = 25% of the claimant's base rate.
     entry_threshold_fraction = _param_value(parameters, "entry_threshold_rent_board_fraction")
     if isinstance(entry_threshold_fraction, ComponentResult):
         return entry_threshold_fraction
-    base_rate = _param_value(parameters, f"as_base_rate_{scenario.claimant_category.value}")
+    base_rate_id = _base_rate_parameter_id(scenario.claimant_category, household_category)
+    base_rate = _param_value(parameters, base_rate_id)
     if isinstance(base_rate, ComponentResult):
         return base_rate
     entry_threshold = entry_threshold_fraction * base_rate
 
     # Step 4: 70% of the positive excess, capped by household/area.
-    household_category = _household_category(scenario.partner_status, scenario.dependent_children_count)
     area_cap_id = _area_cap_parameter_id(household_category, scenario.statistical_area_unit)
     area_cap = _param_value(parameters, area_cap_id)
     if isinstance(area_cap, ComponentResult):

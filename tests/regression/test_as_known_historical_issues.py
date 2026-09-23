@@ -53,14 +53,25 @@ def _assumed_parameters(
     *,
     base_rate: str = "300",
     income_level: str | None = None,
+    partner_status: PartnerType = PartnerType.SINGLE,
+    dependent_children_count: int = 0,
 ) -> PolicyParameterSet:
+    """`partner_status`/`dependent_children_count` default to
+    `_ordinary_as_scenario()`'s own defaults -- pass the same values a
+    test's scenario actually uses whenever they differ, so
+    `as_parameters_for_case()` builds the base-rate assumption under the
+    matching household-category id (Task 25/26)."""
     assumptions = {"base_rate": base_rate}
     if income_level is not None:
         assumptions["income_level"] = income_level
     return as_parameters_for_case(
         {
             "id": case_id,
-            "scenario": {"claimant_category": claimant_category.value},
+            "scenario": {
+                "claimant_category": claimant_category.value,
+                "partner_status": partner_status.value,
+                "dependent_children_count": dependent_children_count,
+            },
             "parameter_assumptions": assumptions,
         }
     )
@@ -73,10 +84,20 @@ def test_single_claimant_household_category_changes_at_two_dependent_children() 
     private `_household_category()` helper directly -- a large
     `weekly_accommodation_costs` pushes the cost-based amount to saturate
     whichever area cap applies, so the resulting AS amount alone reveals
-    which household category the claimant fell into."""
-    parameters = _assumed_parameters(
-        "regression-household-category-boundary",
+    which household category the claimant fell into. Two separate
+    parameter sets, one per household category (Task 25/26: as_base_rate_*
+    is keyed by household category too, so the one-child and two-child
+    scenarios need their own matching compound-id assumption, not one
+    shared parameters object)."""
+    one_child_parameters = _assumed_parameters(
+        "regression-household-category-boundary-one-child",
         ClaimantCategory.JOBSEEKER_SUPPORT,
+        dependent_children_count=1,
+    )
+    two_children_parameters = _assumed_parameters(
+        "regression-household-category-boundary-two-children",
+        ClaimantCategory.JOBSEEKER_SUPPORT,
+        dependent_children_count=2,
     )
 
     one_child = calculate_accommodation_supplement(
@@ -85,7 +106,7 @@ def test_single_claimant_household_category_changes_at_two_dependent_children() 
             cash_assets=Decimal(10000),
             weekly_accommodation_costs=Decimal(2000),
         ),
-        parameters,
+        one_child_parameters,
     )
     two_children = calculate_accommodation_supplement(
         _ordinary_as_scenario(
@@ -93,7 +114,7 @@ def test_single_claimant_household_category_changes_at_two_dependent_children() 
             cash_assets=Decimal(10000),
             weekly_accommodation_costs=Decimal(2000),
         ),
-        parameters,
+        two_children_parameters,
     )
 
     assert one_child.outcome == "calculated"
@@ -108,6 +129,7 @@ def test_one_child_single_uses_higher_asset_ceiling_but_cl2_area_cap() -> None:
     parameters = _assumed_parameters(
         "regression-r15-versus-cl2",
         ClaimantCategory.JOBSEEKER_SUPPORT,
+        dependent_children_count=1,
     )
     scenario = _ordinary_as_scenario(
         dependent_children_count=1,
@@ -168,16 +190,19 @@ def test_non_beneficiary_reduction_cannot_make_the_result_negative() -> None:
 
 def test_real_policy_undeclared_base_rate_and_income_level_need_review() -> None:
     """Task 23 defensive fix: parameters genuinely absent from the real
-    approved policy return needs_review rather than raising KeyError."""
+    approved policy return needs_review rather than raising KeyError. The
+    base-rate id includes the household category (Task 25/26's compound-id
+    fix) -- `_ordinary_as_scenario()`'s default (single, no dependent
+    children) maps to `single_no_dependent_children`."""
     real_parameters = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE)
 
     missing_base = calculate_accommodation_supplement(_ordinary_as_scenario(), real_parameters)
     assert missing_base.outcome == "needs_review"
-    assert "as_base_rate_jobseeker_support" in (missing_base.reason or "")
+    assert "as_base_rate_jobseeker_support_single_no_dependent_children" in (missing_base.reason or "")
 
     resolutions = dict(real_parameters.resolutions)
-    resolutions["as_base_rate_non_beneficiary"] = ParameterResolution(
-        parameter_id="as_base_rate_non_beneficiary",
+    resolutions["as_base_rate_non_beneficiary_single_no_dependent_children"] = ParameterResolution(
+        parameter_id="as_base_rate_non_beneficiary_single_no_dependent_children",
         outcome="resolved",
         value=Decimal(300),
         unit="NZD_per_week",

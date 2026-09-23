@@ -30,6 +30,8 @@ from poltika.engines.simulator.accommodation_supplement import (
     ClaimantCategory,
     PartnerType,
     TenureType,
+    _base_rate_parameter_id,
+    _household_category,
 )
 from poltika.engines.simulator.wff import (
     BestStartCohort,
@@ -238,7 +240,22 @@ def as_parameters_for_case(case: dict[str, Any]) -> PolicyParameterSet:
     resolutions = dict(base.resolutions)
     category = case["scenario"].get("claimant_category")
     if "base_rate" in assumptions and category is not None:
-        parameter_id = f"as_base_rate_{category}"
+        # Task 25/26: as_base_rate_* is keyed by claimant category AND
+        # household category (see _base_rate_parameter_id()'s docstring),
+        # so a base_rate assumption needs both scenario facts to build the
+        # right compound id -- fail loudly if either is missing, rather
+        # than silently guessing a household category.
+        partner_status_raw = case["scenario"].get("partner_status")
+        dependent_children_count = case["scenario"].get("dependent_children_count")
+        assert partner_status_raw is not None and dependent_children_count is not None, (
+            f"{case['id']}: a base_rate parameter_assumption needs partner_status and "
+            "dependent_children_count in the case's scenario to build the compound "
+            "as_base_rate_<claimant_category>_<household_category> id (Task 25/26)"
+        )
+        household_category = _household_category(
+            PartnerType(partner_status_raw), dependent_children_count
+        )
+        parameter_id = _base_rate_parameter_id(ClaimantCategory(category), household_category)
         resolutions[parameter_id] = ParameterResolution(
             parameter_id=parameter_id,
             outcome="resolved",

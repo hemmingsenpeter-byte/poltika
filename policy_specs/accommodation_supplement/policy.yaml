@@ -114,9 +114,12 @@ inputs:
 # section) -- review_status: approved reflects that direct statutory
 # verification, not a dated MSD table (none of these values come from one).
 #
-# Deliberately NOT included: a base-rate-by-claimant-category parameter
-# and the r 18(3) jobseeker-equivalent income level. Both come from dated
-# MSD tables (as-msd-jobseeker-rates-2026 etc.) this project has not yet
+# Deliberately NOT included: the base rate (id shape:
+# as_base_rate_<claimant_category>_<household_category> -- Task 25/26,
+# see accommodation_supplement.py's _base_rate_parameter_id() docstring
+# for why the household-category dimension was added to the id) and the
+# r 18(3) jobseeker-equivalent income level. Both come from dated MSD
+# tables (as-msd-jobseeker-rates-2026 etc.) this project has not yet
 # independently recalculated -- Task 24's job, matching WFF's in_work_base
 # precedent. ParameterSpec.values requires at least one value (SCHEMA.md:
 # "no matching interval means unsupported... not zero"), so a parameter
