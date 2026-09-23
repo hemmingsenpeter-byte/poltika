@@ -11,7 +11,7 @@
 - Implementation to inspect: both module validation functions, especially
   AS's `_spans_reference_period()` and `_as_module_validation_failure()`.
 - Author research artifact, to read after independent derivation:
-  `policy_specs/task_28_2_period_reconciliation.md`.
+  `docs/research/task_28_2_period_reconciliation.md`.
 - Validation: both source catalogues parse as YAML; source IDs are unique;
   both unchanged policy files validate and all parameter source references
   resolve. `git diff --check` passes. No numerical fixtures or application
@@ -19,10 +19,16 @@
 
 ## Independent review
 
-Reviewer: pending (Claude Code).
-Derive expected periods and constraints from the primary sources and
-approved contracts before reading the author's conclusions. Record any
-discrepancies using the Review Doctrine classifications.
+Reviewer: Claude Code, independent review on PR #41.
+Claude independently checked both AS amending Acts and the MSD table,
+then confirmed the research constraints and reproduced the AS validation
+finding. WFF MD 3/MF 4 and the IR271 heading were not independently
+refetched; their source verification remains the author's.
+
+Author follow-up: removed the obsolete usage-reserve restriction, moved
+the research note into the existing docs/research location, and recorded
+the additional eligibility-fact check needed for a week on or after
+2 November 2026. No dates or reporting mode have been selected.
 
 ## Owner decision and acceptance
 

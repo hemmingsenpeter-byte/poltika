@@ -2,13 +2,13 @@
 
 Research author: GPT/Codex. Checked: 24 September 2026 (NZST).
 Base revision: `499f54d` (PR #37 merged).
-Status: research for independent review; Pete's decision not yet recorded.
+Status: independently reviewed by Claude Code on PR #41; Pete's decision not yet recorded.
 
 This note supplies the evidence and outstanding choices for Task 28.2.
 It does not select a demo date, approve a reporting mode, complete Task
 26b, change a parameter, or resolve Task 28.1's income interactions.
-The user authorised this research now; the other source tasks remain
-subject to the recorded reserve and their own prerequisites.
+Pete has removed the usage reserve. Source tasks remain subject to their
+own prerequisites, including the 28.2 decision before 26b.
 
 ## 1. Distinguish the periods
 
@@ -67,6 +67,12 @@ design choice, not a statutory rule. The current fixtures' 1 June 2026
 lookup date is a possible anchor, not an approved assessment week.
 Any other selection needs the same dated-source checks. No exact week or
 lookup dates are selected by this note.
+
+A week wholly before 2 November 2026 avoids the additional check of
+Jobseeker eligibility facts against the changes commencing that day.
+This is a sequencing consideration, not a new limit on AS policy scope:
+on or after that boundary, the asserted claimant category needs checking
+against the amended eligibility rules.
 
 | Reporting choice for Pete | Consequence |
 | --- | --- |
@@ -133,11 +139,18 @@ no calculator code is changed in this research handoff.
 | Identify compatible intervals and lookup-date requirements | Recorded; exact AS week and lookup dates not selected |
 | Document reporting choices and conversion requirements | Recorded |
 | Explain consequences for 26b, golden households and demo | Recorded |
-| Claude independently reviews research and the AS finding | Pending |
+| Claude independently reviews research and the AS finding | Reviewed on PR #41; source-check scope recorded below |
 | Pete selects assessment periods, lookup dates and reporting | Pending |
 | Codex records Pete's decision and any selected-date follow-up | Pending |
 | Claude checks the recorded contract and feasibility | Pending |
 | Pete accepts 28.2 | Pending; 26b not started |
+
+Claude independently fetched both AS amending Acts and the MSD table,
+confirmed the date constraints, and reproduced the AS validation finding.
+The review did not independently refetch WFF MD 3/MF 4 or the IR271 heading;
+those checks remain author-verified, not independently source-verified.
+The review's reserve-wording and file-location corrections are incorporated
+here. Claude owns the AS implementation fix after Pete selects the week.
 
 Decision fields to complete after review: WFF interval; AS week start and
 exclusive end; WFF and AS lookup dates; reporting mode; source-check date
