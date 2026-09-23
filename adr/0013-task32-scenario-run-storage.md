@@ -1,8 +1,8 @@
 # ADR-0013: Task 32 storage for scenarios and runs
 
 **Date:** 24 September 2026
-**Status:** proposed. Pete decides (BUILD_PLAN.md Task 32.1). Drafted by
-Claude Code.
+**Status:** accepted. Pete decided option (a), PostgreSQL, on 24 September
+2026 (BUILD_PLAN.md Task 32.1). Drafted by Claude Code.
 
 ## Context
 
@@ -96,12 +96,29 @@ stored.
 
 ## Decision
 
-*Pending Pete.*
+**Option (a): PostgreSQL with SQLAlchemy 2 and Alembic**, for Task 32's
+scenario and run storage. Pete decided on 24 September 2026.
+
+The decision covers the storage technology only. The record shapes
+(scenario, run, artifact) are defined by Tasks 30.1 and 32.2, so
+implementation starts with Task 32 in the approved sequence, after Task
+30. No database scaffolding is added ahead of those records.
 
 ## Consequences
 
-*To be completed once decided.* If (a) is chosen: add `sqlalchemy`,
-a Postgres driver, and `alembic` to `pyproject.toml`. Add
-`docker-compose.yml` and a CI Postgres service. Add `POLTIKA_DATABASE_URL`
-to the ADR-0011 deployment convention. Add the new store directory to
-`REPOSITORY_STRUCTURE.md` before creating it.
+- `sqlalchemy`, a Postgres driver and `alembic` become runtime
+  dependencies when Task 32 starts, not before.
+- Local development gains `docker-compose.yml` for Postgres. CI gains a
+  Postgres service container, and storage tests run against real
+  Postgres, not SQLite.
+- ADR-0011's deployment convention gains `POLTIKA_DATABASE_URL`, an
+  operator-set variable like `POLTIKA_POLICY_SPECS_DIR`. The
+  installed-artifact test (33.4) needs a database.
+- Rows are append-only: the repository layer has no update path. A
+  database-level guard is added if review asks for one.
+- Content held in git is referenced by commit SHA (Task 30.1). Postgres
+  stores only content not in git.
+- The store's directory is added to `REPOSITORY_STRUCTURE.md` before it
+  is created.
+- Later v0.2+ storage (datasets, parameters) extends this database rather
+  than replacing it.
