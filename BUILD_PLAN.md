@@ -1170,7 +1170,8 @@ twin of the New Zealand policy system.
     deselected by default) before merging PR #26 too -- both workstreams
     confirmed to coexist with zero interference, not merely assumed from
     the file-level non-overlap.
-24.2. **Complete (23 September 2026):** regression tests for six known
+24.2. **Complete, accepted and merged 23 September 2026 (PR #28, GPT/Codex
+    implementation, commit `06c8b78`).** Regression tests for six known
     historical issues from Tasks 22-24.1, matching WFF Task 15's discipline:
     the single-claimant 1-child/2-child Schedule 4 category boundary; r 15's
     deliberately different any-child asset threshold; UNKNOWN exempt-asset
@@ -1181,8 +1182,31 @@ twin of the New Zealand policy system.
     facts rather than importing a spec/benchmark case. AS YAML conversion and
     assumption helpers moved to `tests/conftest.py` at their third consumer.
     195 tests pass (plus the separately-invoked installed-artifact test),
-    Ruff clean, strict mypy clean. Implementation PR pending independent
-    review and Pete's acceptance.
+    Ruff clean, strict mypy clean.
+
+    **Pete's independent review** (own worktree, not from Claude Code's
+    account): file-overlap claim checked directly against `gh pr diff`;
+    195/1-deselected, Ruff, and strict mypy reproduced independently, not
+    taken on trust; two of the six regressions hand-recomputed
+    independently (`$74` DEC-001 exact-excess vs. the rejected `$75`
+    floor-first figure; `$235` cl 2 area cap for a 1-child single
+    claimant vs. cl 1's `$305`) -- both confirmed correct. **One finding:**
+    `test_single_claimant_household_category_changes_at_two_dependent_
+    children` asserted only on the private `_household_category()`
+    helper's return value, never calling `calculate_accommodation_
+    supplement()` -- the one test in the file (and, checked, the only one
+    in the whole suite) not exercising behaviour through the public
+    calculator, contrary to this file's own "make a previously observed
+    mistake fail under its own durable, searchable name" purpose.
+    Classified fixable-before-merge, not blocking.
+
+    **Fix, Claude Code, isolated worktree, pushed to the PR branch same
+    day:** converted the test to compare the resulting AS amount for a
+    single claimant with 1 vs 2 dependent children against the correct
+    Area 1 caps (`$235` cl 2, `$305` cl 1), the same way its neighbour
+    (`test_one_child_single_uses_higher_asset_ceiling_but_cl2_area_cap`)
+    already does. Re-verified independently after the fix: 195 passed,
+    Ruff clean, strict mypy clean. Pete accepted and merged.
 24.3. External coverage-gap check (OpenFisca Aotearoa / PolicyEngine NZ,
     per ADR-0004, strictly after 24.1-24.2 complete) — not started.
     Owner: unassigned.
@@ -1196,7 +1220,20 @@ twin of the New Zealand policy system.
 24.7. Integrate `calculate_accommodation_supplement()` into a module
     entry point, mirroring Task 20's `run_wff_module()` pattern
     (validation_checks for policy identity, reference-period coverage,
-    full rate coverage) — not started.
+    full rate coverage). **Implemented, Claude Code, isolated worktree,
+    23 September 2026 (PR #29).** Adds `run_as_module()`; enforces the
+    policy-identity, reference-period, and full-rate-coverage invariants
+    generically over `spec.parameters` (no hardcoded AS parameter ids);
+    deliberately does not duplicate WFF's "missing required parameter"
+    invariant, since `calculate_accommodation_supplement()`'s own
+    `_param_value()` already resolves an undeclared parameter to
+    `needs_review` one layer down (Task 23's documented design). New
+    `tests/unit/engines/simulator/test_as_module.py` mirrors
+    `test_wff_module.py`'s Task 20 scope. 195 tests pass, Ruff clean,
+    strict mypy clean. No file overlap with Task 24.2 (PR #28). Author
+    preflight only (`.claude/skills/pr-review-preflight/SKILL.md`) --
+    still pending independent (non-implementer) review and Pete's
+    acceptance before merge.
 24.8. Add an AS API route, mirroring Task 21's `run_wff_module()` ->
     FastAPI pattern (ADR-0010) — not started; gated on 24.1-24.7.
 25. Stress-test POLICY_SPECS schema against AS's different structure
