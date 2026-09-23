@@ -1207,9 +1207,19 @@ twin of the New Zealand policy system.
     (`test_one_child_single_uses_higher_asset_ceiling_but_cl2_area_cap`)
     already does. Re-verified independently after the fix: 195 passed,
     Ruff clean, strict mypy clean. Pete accepted and merged.
-24.3. External coverage-gap check (OpenFisca Aotearoa / PolicyEngine NZ,
-    per ADR-0004, strictly after 24.1-24.2 complete) — not started.
-    Owner: unassigned.
+24.3. **Implemented 23 September 2026; proposed ADR-0012 pending independent
+    review and Pete's acceptance.** Repeated ADR-0009's corrected WFF method
+    after PR #28 merged: structural names only at pinned commits, with no
+    external contents, test logic, values, or formulas read. Compared both
+    OpenFisca Aotearoa (`9d77ea7`) and `PolicyEngine/policyengine-nz`
+    (`fbd186b`). Every unambiguous AS category name maps to an existing
+    Poltika spec, benchmark, regression, or calculator-test category. Four
+    OpenFisca names (`_benefit_me`, `cutout`, `rebate`, `situation`) are too
+    opaque to map from names alone and are recorded as candidates for Pete,
+    not asserted as gaps. **Conclusion: no confirmed named-category gap
+    found; no code or test changes needed.** No comparative-depth claim is
+    made. See `adr/0012-task24-3-as-coverage-gap-check.md` for pinned URLs
+    and the category table. Task 24.4 was not started here.
 24.4. Independent adversarial review (fresh-context, no implementer
     explanation) of the completed AS vertical slice — not started.
     Owner: unassigned; whichever model did not do 24.1-24.3's
