@@ -262,12 +262,18 @@ false zero or a silent default):
    verified weekly accommodation costs, unreduced.
 3. Select the entry threshold: 25% of the claimant's base rate (rent/board
    tenure, cl 1-3). The base rate itself is set per claimant category
-   (Jobseeker/Sole Parent/Supported Living/non-beneficiary) by the
+   (Jobseeker/Sole Parent/Supported Living/non-beneficiary) **and**
+   household category (Task 24.1's independent verification found MSD's
+   dated tables select by both together, e.g. Supported Living Payment
+   has separate single/couple/parent thresholds -- `as_base_rate_
+   <claimant_category>_<household_category>`, Task 25/26's compound-id
+   fix, resolving the gap Task 25's schema stress-test recorded) by the
    relevant dated MSD table (`as-msd-jobseeker-rates-2026`,
    `as-msd-sole-parent-rates-2026`, `as-msd-supported-living-rates-2026`,
    `as-msd-rates-2026`) -- Task 22 does not independently recalculate or
-   promote these dated tables to protected values; that is Tasks 23-24's
-   job. The parameter carries `review_status: needs_review` until then.
+   promote these dated tables to protected values; that remains Task 24's
+   job (still pending; only the parameter id shape changed here). The
+   parameter carries `review_status: needs_review` until then.
 4. The cost-based amount is 70% of the positive excess of qualifying costs
    over the entry threshold, capped at the applicable Area 1-4 maximum for
    the claimant's household category. These caps are **statutory, not
@@ -313,6 +319,23 @@ already anticipated this. `reference_period` (below, tracking which
 they weren't clearly distinguished for WFF -- flagging this now as
 specification.md's own contribution to Task 25, not solving the schema
 question here.
+
+**Task 25 resolution (23 September 2026, Pete's decision on scope):**
+Checked directly against `policy.yaml`: `assessment.membership_period:
+assessment_week` (distinct from WFF's `tax_year`) was already set
+correctly, stored in `PolicySpec`'s pre-existing untyped `assessment:
+dict[str, object]` field -- no schema change was needed here after all,
+this note's concern was already resolved by the schema's own genericity.
+Checked the other two areas Task 25 names (housing costs, asset test):
+housing costs are a scenario input, not a parameter, no schema
+interaction; the asset test already uses the `ParameterUnit` values Task
+23 added for exactly this purpose. The one confirmed gap was Task 24.1's
+base-rate finding (the household-category dimension) -- fixed via a
+compound parameter-id convention within the *existing* schema (mirroring
+`area_cap_<household_category>_<area>`'s already-established pattern),
+not a `ParameterSpec`/`PolicySpec` model revision. Pete decided: close
+Task 25 on this finding; re-scope Task 26 from "revise schema → v0.2" to
+this targeted id-convention change, rather than a broader schema pass.
 
 ### Source checks and implementation obligations
 

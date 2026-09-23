@@ -138,10 +138,26 @@ def parameters(tmp_path: Path):
             _param("asset_imputation_amount_per_step", "money", "NZD_per_week", "1"),
             _param("income_reduction_rate", "fraction", "fraction", "0.25"),
             # Test-only figures, NOT statutory values -- see module docstring.
-            _param("as_base_rate_jobseeker_support", "money", "NZD_per_week", "300"),
-            _param("as_base_rate_sole_parent_support", "money", "NZD_per_week", "300"),
-            _param("as_base_rate_supported_living_payment", "money", "NZD_per_week", "300"),
-            _param("as_base_rate_non_beneficiary", "money", "NZD_per_week", "300"),
+            # Task 25/26: as_base_rate_* is keyed by claimant category AND
+            # household category (_base_rate_parameter_id()'s docstring) --
+            # every combination this file's tests can reach is declared
+            # here, all at the same round test value, so no test's choice
+            # of partner_status/dependent_children_count needs to line up
+            # with which combinations happen to be declared.
+            *(
+                _param(f"as_base_rate_{claimant_category}_{household_category}", "money", "NZD_per_week", "300")
+                for claimant_category in (
+                    "jobseeker_support",
+                    "sole_parent_support",
+                    "supported_living_payment",
+                    "non_beneficiary",
+                )
+                for household_category in (
+                    "with_dependent_children",
+                    "no_dependent_children_couple_or_sole_parent_one_child",
+                    "single_no_dependent_children",
+                )
+            ),
             _param("as_income_level_non_beneficiary", "money", "NZD_per_week", "200"),
         ],
         "components": [],
@@ -321,13 +337,16 @@ def test_non_beneficiary_missing_weekly_income_is_needs_review(parameters) -> No
 
 def test_real_policy_undeclared_base_rate_is_needs_review_not_a_crash(real_as_parameters) -> None:
     """The real, approved policy.yaml does not yet declare
-    as_base_rate_jobseeker_support (pending Task 24) -- this must resolve
-    needs_review, not raise KeyError, unlike WFF's PR #21 bug (which was a
-    malformed-fixture edge case, not the normal state of a real
-    policy.yaml)."""
+    as_base_rate_jobseeker_support_single_no_dependent_children (pending
+    Task 24) -- this must resolve needs_review, not raise KeyError, unlike
+    WFF's PR #21 bug (which was a malformed-fixture edge case, not the
+    normal state of a real policy.yaml). The id includes the household
+    category (Task 25/26's compound-id fix) -- `_ordinary_scenario()`'s
+    default (single, no dependent children) maps to
+    `single_no_dependent_children`."""
     result = calculate_accommodation_supplement(_ordinary_scenario(), real_as_parameters)
 
     assert result.outcome == "needs_review"
     assert result.value is None
-    assert "as_base_rate_jobseeker_support" in (result.reason or "")
+    assert "as_base_rate_jobseeker_support_single_no_dependent_children" in (result.reason or "")
     assert "not yet declared" in (result.reason or "")

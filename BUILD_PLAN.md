@@ -1300,13 +1300,69 @@ twin of the New Zealand policy system.
     isolated worktree against the post-#30/#31 `main` before merging:
     201 tests pass (195 + 6 new), Ruff clean, strict mypy clean.
 24.8. Add an AS API route, mirroring Task 21's `run_wff_module()` ->
-    FastAPI pattern (ADR-0010) — not started; gated on 24.1-24.7.
+    FastAPI pattern (ADR-0010). **Implemented, Claude Code, isolated
+    worktree, 23 September 2026 (PR #33).** Adds
+    `src/poltika/api/accommodation_supplement.py`, mirroring
+    `poltika.api.wff` exactly (`_as_policy_dir()`, same ADR-0011
+    deploy-time mount convention; same 422/409/500 error mapping);
+    registers alongside the WFF router in `main.py`, whose startup
+    `_lifespan` check now covers both policy directories. Since the real
+    deployed policy doesn't yet declare the base rates (see Task 25/26
+    below), there is no request that legitimately produces `calculated`
+    against the real policy yet -- tests instead confirm the real
+    policy's actual current behaviour end-to-end (a clear `needs_review`
+    naming the undeclared parameter) plus a real, fully-resolved
+    `unsupported` outcome (the r 15 asset ceiling). 9 new tests
+    (211 total), Ruff clean, strict mypy clean. Author preflight only --
+    pending independent (non-implementer) review and Pete's acceptance
+    before merge, same as PR #29.
 25. Stress-test POLICY_SPECS schema against AS's different structure
-    (housing costs, asset test, geography). **Open finding from Task 24.1:**
-    replace the single base-rate-per-claimant-category shape with a sourced
-    representation that also selects the applicable household category; do not
-    populate globally misleading `as_base_rate_*` values in the meantime.
-26. Revise schema → v0.2
+    (housing costs, asset test, geography). **Complete, 23 September
+    2026, Pete's decision on scope.** Checked all three named areas
+    against the current `PolicySpec`/`ParameterSpec` schema: geography
+    (`area_cap_<household_category>_<area>`) and the asset test
+    (Task 23's `ParameterUnit` extension) already work within the
+    existing schema; `assessment.membership_period: assessment_week`
+    (distinct from WFF's `tax_year`, specification.md's own flagged
+    concern) was already set correctly, stored in the schema's
+    pre-existing untyped `assessment: dict[str, object]` field. The one
+    confirmed gap was Task 24.1's base-rate finding (needs a
+    household-category dimension) -- fixable with a compound
+    parameter-id convention within the *existing* schema, mirroring
+    `area_cap`'s already-established pattern, not a Pydantic model
+    revision. **Conclusion: no `PolicySpec`/`ParameterSpec` schema
+    revision is needed for AS.** Recorded in
+    `policy_specs/accommodation_supplement/specification.md`'s "Note for
+    Task 25" section (resolution appended, original note kept intact).
+    Pete decided: close Task 25 on this finding; re-scope Task 26 from a
+    schema revision to the targeted id-convention fix below.
+26. **Re-scoped by Pete's Task 25 decision: rename `as_base_rate_*`'s
+    parameter-id convention to carry the household-category dimension,
+    not a schema (`PolicySpec`/`ParameterSpec`) revision.** Complete,
+    Claude Code, isolated worktree, 23 September 2026 (PR pending).
+    `_base_rate_parameter_id(claimant_category, household_category)`
+    replaces the single-dimension `as_base_rate_<claimant_category>`
+    construction in `calculate_accommodation_supplement()`, mirroring
+    `_area_cap_parameter_id()`'s already-established
+    `<primary>_<household_category>_<...>` pattern; `household_category`
+    is now computed once, before the base-rate lookup, and reused for
+    the area cap below it (previously computed separately, later). No
+    real values are populated under either the old or new id -- both
+    remain entirely undeclared, Task 22/23's documented gap, pending
+    Task 24's independent recalculation of the dated MSD tables; this
+    changes what string id is looked up, not any approved numeric fact.
+    `policy.yaml`'s comment and `specification.md`'s calculation-sequence
+    step 3 updated to describe the new id shape.
+    `tests/conftest.py::as_parameters_for_case()`'s `base_rate`
+    parameter-assumption mechanism updated to derive the compound id from
+    a case's own `partner_status`/`dependent_children_count` (fails
+    loudly if either is missing, rather than guessing); three regression
+    tests and one unit-test fixture updated to match, including
+    splitting one regression test that reused a single parameters object
+    across two different household categories into two explicit ones.
+    202 tests pass (no new test -- existing coverage already exercises
+    the fix through the `calculated` outcomes it depends on), Ruff clean,
+    strict mypy clean.
 27. Migrate WFF's spec files to v0.2
 28. Test WFF + AS interaction
     (API/integration path reused from WFF — no re-litigating the pre-API gate
