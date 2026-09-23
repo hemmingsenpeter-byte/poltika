@@ -1,4 +1,4 @@
-"""Task 21: the Poltika API's FastAPI app instance.
+"""Task 21/24.8: the Poltika API's FastAPI app instance.
 
 Per ADR-0010: FastAPI introduced directly, not a placeholder. Registers
 explicit exception handlers for `common.errors.PoltikaError` subclasses so
@@ -19,9 +19,11 @@ way this project already treats `data/`'s raw snapshots as external to
 the code package. Local development is unaffected -- the environment
 variable is optional and falls back to the source-checkout-relative path
 Task 21 originally used. `_lifespan` below still fails loudly and
-immediately at startup if the resolved directory has no `policy.yaml`,
-whichever way it was resolved -- the safety net Task 21 built is
-unchanged, only what feeds `WFF_POLICY_DIR` changed.
+immediately at startup if either resolved policy directory has no
+`policy.yaml`, whichever way it was resolved -- the safety net Task 21
+built is unchanged and now also covers Task 24.8's AS route
+(`poltika.api.accommodation_supplement._as_policy_dir()`), the same
+convention, not a second one.
 """
 
 from __future__ import annotations
@@ -33,6 +35,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from poltika.api.accommodation_supplement import AS_POLICY_DIR
+from poltika.api.accommodation_supplement import router as as_router
 from poltika.api.wff import WFF_POLICY_DIR
 from poltika.api.wff import router as wff_router
 from poltika.common.errors import PolicyVersionMismatchError, PoltikaError
@@ -40,19 +44,26 @@ from poltika.common.errors import PolicyVersionMismatchError, PoltikaError
 logger = logging.getLogger("poltika.api")
 
 
+def _missing_policy_dir_error(name: str, policy_dir: object, module_name: str) -> RuntimeError:
+    return RuntimeError(
+        f"{name} ({policy_dir}) has no policy.yaml -- set POLTIKA_POLICY_SPECS_DIR to "
+        f"the directory containing {module_name}/policy.yaml if running from an "
+        "installed artifact rather than a source checkout (see poltika.api.main's "
+        "module docstring, ADR-0011)"
+    )
+
+
 @asynccontextmanager
 async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Fail loudly and immediately at startup if `policy_specs/` isn't
-    where `WFF_POLICY_DIR` expects it -- whether that's the source-
-    checkout-relative default or a `POLTIKA_POLICY_SPECS_DIR` override
-    (ADR-0011, see this module's docstring)."""
+    """Fail loudly and immediately at startup if either policy directory
+    isn't where it's expected -- whether that's the source-checkout-
+    relative default or a `POLTIKA_POLICY_SPECS_DIR` override (ADR-0011,
+    see this module's docstring)."""
     if not (WFF_POLICY_DIR / "policy.yaml").is_file():
-        raise RuntimeError(
-            f"WFF_POLICY_DIR ({WFF_POLICY_DIR}) has no policy.yaml -- set "
-            "POLTIKA_POLICY_SPECS_DIR to the directory containing "
-            "working_for_families/policy.yaml if running from an installed "
-            "artifact rather than a source checkout (see poltika.api.main's "
-            "module docstring, ADR-0011)"
+        raise _missing_policy_dir_error("WFF_POLICY_DIR", WFF_POLICY_DIR, "working_for_families")
+    if not (AS_POLICY_DIR / "policy.yaml").is_file():
+        raise _missing_policy_dir_error(
+            "AS_POLICY_DIR", AS_POLICY_DIR, "accommodation_supplement"
         )
     yield
 
@@ -74,6 +85,7 @@ app = FastAPI(
     lifespan=_lifespan,
 )
 app.include_router(wff_router)
+app.include_router(as_router)
 
 
 @app.exception_handler(PolicyVersionMismatchError)
