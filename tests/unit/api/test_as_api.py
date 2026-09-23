@@ -16,6 +16,7 @@ real policy) end-to-end through the API.
 
 from __future__ import annotations
 
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -23,8 +24,10 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
+import poltika.api.accommodation_supplement as as_api
 from poltika.api.accommodation_supplement import _as_policy_dir
 from poltika.api.main import app
+from poltika.engines.simulator.wff import ComponentResult
 
 client = TestClient(app)
 
@@ -102,6 +105,35 @@ def test_calculate_real_policy_asset_ceiling_is_unsupported() -> None:
     assert "r 15" in (component["reason"] or "")
 
 
+def test_calculate_serializes_fractional_decimal_value_as_json_string(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """PR #33 review finding: no request against the real deployed policy
+    yet produces a `calculated` outcome (see this module's docstring), so
+    nothing exercised this module's own docstring claim that a fractional
+    `Decimal` `value` serializes as a JSON string, never a JSON number
+    that risks float rounding. Stubs `run_as_module()` at the route
+    boundary -- the claim under test is Pydantic's serialization of the
+    response model, not the calculator's arithmetic, so this does not
+    need a real policy.yaml capable of a `calculated` result."""
+    monkeypatch.setattr(
+        as_api,
+        "run_as_module",
+        lambda *args, **kwargs: ComponentResult(outcome="calculated", value=Decimal("129.5500")),
+    )
+
+    response = client.post("/accommodation-supplement/calculate", json=_request_payload())
+
+    assert response.status_code == 200
+    raw_value = response.json()["accommodation_supplement"]["value"]
+    assert isinstance(raw_value, str), (
+        "value must be a JSON string, not a JSON number -- a JSON number "
+        "would have been parsed back as a float/int here, not a str"
+    )
+    assert Decimal(raw_value) == Decimal("129.5500")
+    assert '"value":"129.5500"' in response.text.replace(" ", "")
+
+
 def test_calculate_rejects_malformed_request_body() -> None:
     """A malformed request body (missing a required field, and an invalid
     enum value for another) must return a 4xx with a clear validation
@@ -150,18 +182,26 @@ def test_500_handler_does_not_leak_exception_detail(tmp_path: Path, monkeypatch:
     a `PoltikaError` other than `PolicyVersionMismatchError` must never
     return `str(exc)` verbatim as the 500 response's `detail` --
     `InvalidSourceCatalogError` in particular embeds absolute resolved
-    filesystem paths, which must never reach an untrusted caller."""
+    filesystem paths, which must never reach an untrusted caller.
+
+    The fixture's `schema_version` is deliberately a supported one and its
+    `source_catalog` deliberately names a file that does not exist --
+    PR #33 review finding: a schema_version of "99.9" here raises
+    `UnsupportedSchemaVersionError` first (`load_policy_parameters()`
+    checks schema_version before resolving source_catalog), never
+    reaching `InvalidSourceCatalogError` at all. This must actually
+    exercise the path-bearing error the docstring describes."""
     broken_policy_dir = tmp_path / "policy"
     broken_policy_dir.mkdir()
     (broken_policy_dir / "policy.yaml").write_text(
         yaml.safe_dump(
             {
-                "schema_version": "99.9",  # unsupported -- triggers UnsupportedSchemaVersionError
+                "schema_version": "0.1",
                 "policy_id": "accommodation_supplement",
                 "policy_version": "0.1.0",
                 "status": "approved",
                 "reference_period": {"from": "2026-03-02", "to": "2027-04-01"},
-                "source_catalog": "sources.yaml",
+                "source_catalog": "does_not_exist.yaml",  # triggers InvalidSourceCatalogError
                 "assessment": {},
                 "inputs": [],
                 "parameters": [],
@@ -170,7 +210,6 @@ def test_500_handler_does_not_leak_exception_detail(tmp_path: Path, monkeypatch:
             }
         )
     )
-    (broken_policy_dir / "sources.yaml").write_text(yaml.safe_dump({"sources": []}))
     monkeypatch.setattr("poltika.api.accommodation_supplement.AS_POLICY_DIR", broken_policy_dir)
 
     response = client.post("/accommodation-supplement/calculate", json=_request_payload())
@@ -178,7 +217,7 @@ def test_500_handler_does_not_leak_exception_detail(tmp_path: Path, monkeypatch:
     assert response.status_code == 500
     detail = response.json()["detail"]
     assert detail == "Internal server error: the deployed policy configuration is invalid."
-    assert "99.9" not in detail
+    assert "does_not_exist.yaml" not in detail
     assert str(broken_policy_dir) not in detail
     assert "/" not in detail  # no filesystem path fragment of any kind
 
