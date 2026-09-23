@@ -32,6 +32,7 @@ assessment:
     - s69_discretionary_refusal_reduction_cancellation
     - homeowner_tenure
     - unverified_statistical_area_unit
+    - asset_ceiling_exceeded
     - exempt_cash_asset_unverified
     - accommodation_income_or_business_use_qualifying_costs
 

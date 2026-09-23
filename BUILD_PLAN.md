@@ -1251,9 +1251,23 @@ twin of the New Zealand policy system.
     fix applied in this PR -- findings-only, kept as the standing review
     record per Task 17/PR #19's pattern. Awaiting Pete's classification
     (Task 24.5).
-24.5. Classify discrepancies from 24.4 — not started.
+24.5. Classify discrepancies from 24.4 — **Complete, 23 September 2026.**
+    All 4 of PR #31's findings classified as proposed (Claude Code fix PR,
+    Pete's final classification confirmation pending on merge):
+    finding 1 **MISSING_SOURCE + CODE_ERROR** (uncited "s 65(1)(b)"
+    citation), finding 2 **CODE_ERROR** (asset-ceiling precedence gap),
+    findings 3-4 **SPEC_ERROR** (policy.yaml list drift; stale
+    decisions/README.md). None required a policy-interpretation decision
+    -- all four are mechanical (a wrong citation string, a precedence
+    ordering bug, and two internal-document drift issues), so Task 24.6
+    below has nothing to resolve.
 24.6. Resolve ambiguities, record decision artifacts (where genuine
-    ambiguity exists) — not started.
+    ambiguity exists) — **Complete, 23 September 2026: no genuine
+    ambiguity found in any of Task 24.4's 4 findings**, so no decision
+    artifact is needed (see 24.5). Distinct from Task 24.4's own two
+    already-flagged, already-decided judgment calls (sole-parent reading;
+    exempt-asset UNKNOWN handling), which the review confirmed remain
+    correctly labelled and were not reopened.
 24.7. Integrate `calculate_accommodation_supplement()` into a module
     entry point, mirroring Task 20's `run_wff_module()` pattern
     (validation_checks for policy identity, reference-period coverage,

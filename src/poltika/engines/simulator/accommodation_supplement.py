@@ -270,12 +270,25 @@ def _area_cap_parameter_id(household_category: _HouseholdCategory, area: Area) -
     return f"area_cap_{household_category.value}_{area.value}"
 
 
-def _household_gate_failure(scenario: AsScenario) -> ComponentResult | None:
+def _household_gate_failure(
+    scenario: AsScenario, parameters: PolicyParameterSet
+) -> ComponentResult | None:
     """Checks that apply before any calculation step. Returns the shared
     failure result, or `None` if the household may proceed. `unsupported`
     (a known structural exclusion) takes precedence over `needs_review`
     (an unverified fact) when both are present, matching `wff.py`'s
-    `_household_gate_failure()` precedence discipline exactly.
+    `_household_gate_failure()` precedence discipline -- including the r 15
+    assets-ceiling exclusion below, which (unlike every other check here)
+    needs `parameters` as well as `scenario`: it cannot be evaluated at all
+    until `cash_assets`, `partner_status`, and `dependent_children_count`
+    are known and the ceiling parameter itself resolves. Those three facts'
+    own `needs_review` checks therefore run immediately before the ceiling
+    check, ahead of every other `needs_review` trigger in this gate -- not
+    because they matter more, but because the ceiling check has no way to
+    run without them (Task 24.4 review finding: the ceiling check
+    previously lived entirely outside this function, after it returned
+    `None`, so it could never actually pre-empt an unrelated `needs_review`
+    trigger the way this docstring already claimed it did).
     """
     # --- unsupported / EXCLUDED conditions first ---
     if scenario.household_eligibility == FactStatus.EXCLUDED:
@@ -338,7 +351,33 @@ def _household_gate_failure(scenario: AsScenario) -> ComponentResult | None:
             ),
         )
 
-    # --- needs_review / unverified conditions next ---
+    # --- needs_review: the three facts the r 15 assets-ceiling check below
+    # itself depends on, checked first so that check can run at all ---
+    if scenario.cash_assets is None:
+        return ComponentResult(outcome="needs_review", reason="cash_assets unverified")
+    if scenario.partner_status is None:
+        return ComponentResult(outcome="needs_review", reason="partner_status unverified")
+    if scenario.dependent_children_count is None:
+        return ComponentResult(outcome="needs_review", reason="dependent_children_count unverified")
+
+    # --- assets requirement (r 15): a genuine, evidenced exclusion, not a
+    # scope limitation -- evaluated as soon as the facts above make it
+    # possible, so it can actually pre-empt every needs_review trigger
+    # below, not just the ones textually after it.
+    ceiling_id = _asset_ceiling_parameter_id(scenario.partner_status, scenario.dependent_children_count)
+    ceiling = _param_value(parameters, ceiling_id)
+    if isinstance(ceiling, ComponentResult):
+        return ceiling
+    if scenario.cash_assets >= ceiling:
+        return ComponentResult(
+            outcome="unsupported",
+            reason=(
+                f"cash assets ({scenario.cash_assets}) meet or exceed the r 15 ceiling "
+                f"({ceiling}) -- the assets requirement (r 15) fails"
+            ),
+        )
+
+    # --- remaining needs_review / unverified conditions ---
     if scenario.household_eligibility == FactStatus.UNKNOWN:
         return ComponentResult(
             outcome="needs_review",
@@ -348,8 +387,6 @@ def _household_gate_failure(scenario: AsScenario) -> ComponentResult | None:
         return ComponentResult(outcome="needs_review", reason="claimant_category unverified")
     if scenario.tenure_type is None:
         return ComponentResult(outcome="needs_review", reason="tenure_type unverified")
-    if scenario.partner_status is None:
-        return ComponentResult(outcome="needs_review", reason="partner_status unverified")
     if scenario.statistical_area_unit is None:
         return ComponentResult(
             outcome="needs_review",
@@ -357,10 +394,6 @@ def _household_gate_failure(scenario: AsScenario) -> ComponentResult | None:
         )
     if scenario.weekly_accommodation_costs is None:
         return ComponentResult(outcome="needs_review", reason="weekly_accommodation_costs unverified")
-    if scenario.dependent_children_count is None:
-        return ComponentResult(outcome="needs_review", reason="dependent_children_count unverified")
-    if scenario.cash_assets is None:
-        return ComponentResult(outcome="needs_review", reason="cash_assets unverified")
 
     return None
 
@@ -376,7 +409,7 @@ def calculate_accommodation_supplement(
     the single `accommodation_supplement` component's outcome; unlike
     WFF's four components, AS has exactly one.
     """
-    gate_failure = _household_gate_failure(scenario)
+    gate_failure = _household_gate_failure(scenario, parameters)
     if gate_failure is not None:
         return gate_failure
 
@@ -393,21 +426,6 @@ def calculate_accommodation_supplement(
     assert scenario.cash_assets is not None
 
     zero = Decimal(0)
-
-    # Assets requirement (s 65(1)(b)): a genuine, evidenced exclusion, not
-    # a scope limitation -- checked before any amount is calculated.
-    ceiling_id = _asset_ceiling_parameter_id(scenario.partner_status, scenario.dependent_children_count)
-    ceiling = _param_value(parameters, ceiling_id)
-    if isinstance(ceiling, ComponentResult):
-        return ceiling
-    if scenario.cash_assets >= ceiling:
-        return ComponentResult(
-            outcome="unsupported",
-            reason=(
-                f"cash assets ({scenario.cash_assets}) meet or exceed the r 15 ceiling "
-                f"({ceiling}) -- the assets requirement (s 65(1)(b)) fails"
-            ),
-        )
 
     # Step 2 (plain case): qualifying costs are the claimant's verified
     # weekly accommodation costs, unreduced (Schedule 4 Part 7 cl 7,

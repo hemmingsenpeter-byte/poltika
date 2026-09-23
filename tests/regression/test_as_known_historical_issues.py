@@ -215,3 +215,27 @@ def test_dec001_uses_exact_fractional_income_excess_not_floor_first() -> None:
     assert result.outcome == "calculated"
     assert result.value == Decimal(74)
     assert result.value != Decimal(75), "the rejected floor-first convention yields $75"
+
+
+def test_r15_asset_ceiling_preempts_an_unrelated_needs_review_trigger() -> None:
+    """Task 24.4 review finding (PR #31): the r 15 assets-ceiling
+    `unsupported` exclusion previously lived entirely outside
+    `_household_gate_failure()`, reached only after that function had
+    already returned `None` -- so it could never actually pre-empt an
+    unrelated `needs_review` trigger, contrary to the gate's own
+    precedence-discipline docstring. Reproduced against the real approved
+    policy: cash_assets at the r 15 ceiling ($8,100, single claimant, no
+    dependent children) together with an unrelated unverified fact
+    (household_eligibility) must resolve `unsupported` for the evidenced
+    asset exclusion, not `needs_review` for the unrelated unverified fact."""
+    parameters = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE)
+    scenario = _ordinary_as_scenario(
+        household_eligibility=FactStatus.UNKNOWN,
+        cash_assets=Decimal(8100),
+    )
+
+    result = calculate_accommodation_supplement(scenario, parameters)
+
+    assert result.outcome == "unsupported"
+    assert "r 15" in (result.reason or "")
+    assert "household_eligibility" not in (result.reason or "")

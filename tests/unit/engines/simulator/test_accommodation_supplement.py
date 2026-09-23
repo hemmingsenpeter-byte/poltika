@@ -275,8 +275,8 @@ def test_unsupported_household_gate_triggers(
 
 def test_asset_ceiling_exceeded_is_unsupported_not_zero(parameters) -> None:
     """cash_assets at/above the r 15 ceiling ($8,100 for a single claimant
-    with no dependent children) fails the assets requirement (s 65(1)(b))
-    -- a genuine, evidenced exclusion, not a calculated zero."""
+    with no dependent children) fails the assets requirement (r 15) -- a
+    genuine, evidenced exclusion, not a calculated zero."""
     scenario = _ordinary_scenario(cash_assets=Decimal(8100))
 
     result = calculate_accommodation_supplement(scenario, parameters)
