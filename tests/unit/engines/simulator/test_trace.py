@@ -115,8 +115,10 @@ def test_trace_header_matches_the_loaded_policy_and_its_file_hashes() -> None:
     assert ftc.trace.modelled_date == WFF_MODELLED_DATE
     assert dict(ftc.trace.artifact_sha256) == {
         name: hashlib.sha256((WFF_POLICY_DIR / name).read_bytes()).hexdigest()
-        for name in ("policy.yaml", "sources.yaml")
+        # WFF has no DEC-*.md decision files yet, so these three are all.
+        for name in ("policy.yaml", "sources.yaml", "specification.md")
     }
+    assert len(ftc.trace.scenario_sha256) == 64
 
 
 def test_iwtc_reaching_md_2_2_c_includes_ftc_as_upstream() -> None:

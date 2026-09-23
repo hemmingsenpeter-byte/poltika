@@ -75,11 +75,13 @@ class PolicyParameterSet:
     schema_version: str
     modelled_date: date
     resolutions: dict[str, ParameterResolution]
-    # Task 31: SHA-256 of the exact bytes this set was resolved from, keyed
-    # by file name relative to the policy directory ("policy.yaml" and the
-    # declared source_catalog). A provenance report verifies these before
-    # resolving anything, so a later edit to either file cannot silently
-    # stand in for what a run actually used. Empty for a hand-built set.
+    # Task 31: SHA-256 of the files this set was resolved from, keyed by
+    # path relative to the policy directory: "policy.yaml" and the declared
+    # source_catalog (hashed from the exact bytes parsed), plus
+    # "specification.md" and each decisions/DEC-*.md present when the set
+    # was loaded. A provenance report verifies all of them before resolving
+    # anything, so a later edit to any of them cannot silently stand in for
+    # what the run used. Empty for a hand-built set.
     artifact_sha256: dict[str, str] = field(default_factory=dict)
 
     def get(self, parameter_id: str) -> ParameterResolution:
@@ -220,8 +222,23 @@ def load_policy_parameters(
         artifact_sha256={
             "policy.yaml": _sha256(policy_yaml_bytes),
             spec.source_catalog: _sha256(sources_yaml_bytes),
+            **_specification_and_decision_hashes(policy_dir),
         },
     )
+
+
+def _specification_and_decision_hashes(policy_dir: Path) -> dict[str, str]:
+    """Hashes of the rule and decision texts a provenance report resolves
+    against (Task 31.3), bound when the parameters are loaded rather than
+    when a report is later built. Only files that exist are bound; a report
+    refuses a run that did not bind what it needs."""
+    hashes = {}
+    specification = policy_dir / "specification.md"
+    if specification.is_file():
+        hashes["specification.md"] = _sha256(specification.read_bytes())
+    for decision in sorted((policy_dir / "decisions").glob("DEC-*.md")):
+        hashes[f"decisions/{decision.name}"] = _sha256(decision.read_bytes())
+    return hashes
 
 
 def _covers(value_effective_from: date, value_effective_to: date | None, modelled_date: date) -> bool:

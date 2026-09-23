@@ -468,7 +468,7 @@ def calculate_accommodation_supplement(
         result,
         trace=ComponentTrace(
             component_id=_AS_MODULE_ID,
-            **trace_header(parameters),
+            **trace_header(parameters, scenario),
             parameters=parameter_uses(parameters, parameter_ids),
             inputs=input_uses(scenario, input_names),
             calculation_rules=rules,
@@ -490,7 +490,7 @@ _AS_CALCULATION_RULES: tuple[tuple[str | None, str], ...] = (
         "income_reduction_rate",
         "r 18(2): the reduction rate applies to the exact, unrounded income excess (DEC-001)",
     ),
-    (None, "r 19: a positive final amount is rounded up to the complete dollar; no earlier step rounds"),
+    (None, "r 19: a positive final weekly amount is rounded up to the complete dollar"),
 )
 _AS_DECISIONS: tuple[tuple[str, str], ...] = (("income_reduction_rate", "DEC-001"),)
 
@@ -765,7 +765,7 @@ def run_as_module(
         # and artifact hashes; the reason says which invariant failed.
         return replace(
             validation_failure,
-            trace=ComponentTrace(component_id=_AS_MODULE_ID, **trace_header(parameters)),
+            trace=ComponentTrace(component_id=_AS_MODULE_ID, **trace_header(parameters, scenario)),
         )
 
     return calculate_accommodation_supplement(scenario, parameters)

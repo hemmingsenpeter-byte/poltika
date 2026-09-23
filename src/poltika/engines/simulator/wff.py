@@ -860,7 +860,7 @@ def _traced(
         result,
         trace=ComponentTrace(
             component_id=component_id,
-            **trace_header(parameters),
+            **trace_header(parameters, scenario),
             parameters=parameter_uses(parameters, parameter_ids),
             inputs=input_uses(scenario, input_names),
             upstream_components=upstream,
@@ -1071,7 +1071,7 @@ def run_wff_module(
             **{
                 component_id: replace(
                     validation_failure,
-                    trace=ComponentTrace(component_id=component_id, **trace_header(parameters)),
+                    trace=ComponentTrace(component_id=component_id, **trace_header(parameters, scenario)),
                 )
                 for component_id in _WFF_COMPONENT_IDS
             }

@@ -28,9 +28,13 @@ artifact hashes is `engines/assurance/`'s job, not the simulator's.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, fields, replace
+import hashlib
+import json
+from collections.abc import Mapping
+from dataclasses import dataclass, fields, is_dataclass, replace
 from datetime import date
 from decimal import Decimal
+from enum import Enum
 from typing import Any, Literal, TypeVar, cast
 
 from poltika.policy.loader import PolicyParameterSet
@@ -84,6 +88,10 @@ class ComponentTrace:
     # (file name, sha256) pairs, sorted by file name -- copied from the
     # parameter set, so the trace names the exact bytes the run used.
     artifact_sha256: tuple[tuple[str, str], ...]
+    # SHA-256 of the whole scenario's canonical JSON (`scenario_sha256()`).
+    # Two components belong to the same calculation only if this matches:
+    # the same policy and date with a different household is a different run.
+    scenario_sha256: str
     parameters: tuple[ParameterUse, ...] = ()
     inputs: tuple[InputUse, ...] = ()
     # Components whose result this one depended on, e.g. in-work tax credit
@@ -209,13 +217,48 @@ def merge_ids(*id_lists: list[str]) -> list[str]:
     return merged
 
 
-def trace_header(parameters: PolicyParameterSet) -> dict[str, Any]:
-    """The policy-identity fields every `ComponentTrace` for this parameter
-    set shares, as keyword arguments."""
+def trace_header(parameters: PolicyParameterSet, scenario: object) -> dict[str, Any]:
+    """The run-identity fields every `ComponentTrace` from one calculation
+    shares -- policy, lookup date, artifacts, and scenario -- as keyword
+    arguments."""
     return {
         "policy_id": parameters.policy_id,
         "policy_version": parameters.policy_version,
         "schema_version": parameters.schema_version,
         "modelled_date": parameters.modelled_date,
         "artifact_sha256": tuple(sorted(parameters.artifact_sha256.items())),
+        "scenario_sha256": scenario_sha256(scenario),
     }
+
+
+def plain(value: Any) -> Any:
+    """A JSON-safe rendering of a trace or scenario value: `Decimal` as a
+    string (never a float), dates as ISO strings, enums by value,
+    dataclasses as dicts (omitting any `trace` field)."""
+    if value is None or isinstance(value, (bool, int, str)):
+        return value
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, Enum):
+        return plain(value.value)
+    if is_dataclass(value) and not isinstance(value, type):
+        return {f.name: plain(getattr(value, f.name)) for f in fields(value) if f.name != "trace"}
+    if isinstance(value, (list, tuple)):
+        return [plain(item) for item in value]
+    if isinstance(value, Mapping):
+        return {str(key): plain(item) for key, item in value.items()}
+    raise TypeError(f"cannot render value of type {type(value).__name__}")
+
+
+def scenario_sha256(scenario: object) -> str:
+    """SHA-256 of the scenario's canonical JSON, including its type name,
+    so equal facts give an equal identity and any changed fact does not."""
+    canonical = json.dumps(
+        {"type": type(scenario).__name__, "facts": plain(scenario)},
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

@@ -118,9 +118,12 @@ def test_wff_report_resolves_every_parameter_source_and_rule_from_the_files() ->
         for rule in component["source_rules"]:
             assert f"| {rule['id']} | {rule['summary']}" in spec_text
         for parameter in component["parameters"]:
-            source = sources[parameter["source"]["id"]]
-            assert parameter["source"]["title"] == source["title"]
-            assert parameter["source"]["url"] == source["url"]
+            assert parameter["source_id"] in sources
+    cited = {s["id"]: s for s in report["sources"]}
+    assert set(cited) == {p["source_id"] for c in report["components"] for p in c["parameters"]}
+    for source_id, entry in cited.items():
+        assert entry["title"] == sources[source_id]["title"]
+        assert entry["url"] == sources[source_id]["url"]
 
     ftc = report["components"][0]
     assert ftc["outcome"] == "calculated"
@@ -128,14 +131,27 @@ def test_wff_report_resolves_every_parameter_source_and_rule_from_the_files() ->
 
 
 def test_report_artifacts_are_the_exact_file_hashes() -> None:
-    report = build_provenance_report(WFF_POLICY_DIR, _wff_components(_wff_run(WFF_POLICY_DIR)))
-    by_path = {a["path"]: a for a in report["artifacts"]}
-    for name, bound_at in (("policy.yaml", "run"), ("sources.yaml", "run"), ("specification.md", "report")):
-        assert by_path[name]["sha256"] == hashlib.sha256((WFF_POLICY_DIR / name).read_bytes()).hexdigest()
-        assert by_path[name]["bound_at"] == bound_at
+    report = build_provenance_report(AS_POLICY_DIR, {"accommodation_supplement": _as_real_run()})
+    expected = {
+        name: hashlib.sha256((AS_POLICY_DIR / name).read_bytes()).hexdigest()
+        for name in (
+            "policy.yaml",
+            "sources.yaml",
+            "specification.md",
+            "decisions/DEC-001-income-excess-rounding.md",
+        )
+    }
+    assert {a["path"]: a["sha256"] for a in report["artifacts"]} == expected
 
 
-@pytest.mark.parametrize("changed_file", ["policy.yaml", "sources.yaml"])
+def _as_real_run() -> ComponentResult:
+    case = _as_case("ordinary_uncapped_jobseeker")
+    return run_as_module(
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0"
+    )
+
+
+@pytest.mark.parametrize("changed_file", ["policy.yaml", "sources.yaml", "specification.md"])
 def test_report_refuses_a_run_whose_artifacts_have_since_changed(tmp_path: Path, changed_file: str) -> None:
     policy_dir = _copy_policy_dir(WFF_POLICY_DIR, tmp_path)
     components = _wff_components(_wff_run(policy_dir))
@@ -143,6 +159,34 @@ def test_report_refuses_a_run_whose_artifacts_have_since_changed(tmp_path: Path,
         f.write("\n# edited after the run\n")
     with pytest.raises(ArtifactHashMismatchError, match=changed_file):
         build_provenance_report(policy_dir, components)
+
+
+def test_report_refuses_a_changed_rule_summary(tmp_path: Path) -> None:
+    # Codex's PR #40 reproduction: editing WFF-03's wording after the run
+    # must not reach the report.
+    policy_dir = _copy_policy_dir(WFF_POLICY_DIR, tmp_path)
+    components = _wff_components(_wff_run(policy_dir))
+    spec = policy_dir / "specification.md"
+    text = spec.read_text()
+    assert "| WFF-03 | " in text
+    spec.write_text(text.replace("| WFF-03 | ", "| WFF-03 | EDITED ", 1))
+    with pytest.raises(ArtifactHashMismatchError, match="specification.md"):
+        build_provenance_report(policy_dir, components)
+
+
+def test_report_refuses_a_changed_decision_file(as_policy_with_assumed_rates: Path) -> None:
+    case = _as_case("non_beneficiary_fractional_income_excess_unrounded")
+    result = run_as_module(
+        as_policy_with_assumed_rates,
+        AS_MODELLED_DATE,
+        as_scenario_from_yaml(case["scenario"]),
+        requested_policy_version="0.1.0",
+    )
+    decision = as_policy_with_assumed_rates / "decisions" / "DEC-001-income-excess-rounding.md"
+    with decision.open("a") as f:
+        f.write("\nEdited after the run.\n")
+    with pytest.raises(ArtifactHashMismatchError, match="DEC-001"):
+        build_provenance_report(as_policy_with_assumed_rates, {"accommodation_supplement": result})
 
 
 def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assumed_rates: Path) -> None:
@@ -160,7 +204,6 @@ def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assum
     component = report["components"][0]
     assert component["decisions"] == [{"id": "DEC-001", "path": "decisions/DEC-001-income-excess-rounding.md"}]
     decision = next(a for a in report["artifacts"] if a["path"].startswith("decisions/"))
-    assert decision["bound_at"] == "report"
     assert (
         decision["sha256"]
         == hashlib.sha256(
@@ -180,7 +223,7 @@ def test_as_undeclared_parameter_is_reported_without_a_source() -> None:
     assert component["outcome"] == "needs_review"
     undeclared = [p for p in component["parameters"] if p["outcome"] == "undeclared"]
     assert [p["parameter_id"] for p in undeclared] == ["as_base_rate_jobseeker_support_single_no_dependent_children"]
-    assert undeclared[0]["source"] is None
+    assert undeclared[0]["source_id"] is None
 
 
 def test_report_refuses_an_unresolvable_source_id() -> None:
@@ -210,20 +253,54 @@ def test_report_refuses_a_hand_built_parameter_set(
         build_provenance_report(WFF_POLICY_DIR, _wff_components(calculate_wff(scenario, parameters)))
 
 
-def test_report_refuses_mixed_runs() -> None:
-    wff = _wff_run(WFF_POLICY_DIR)
-    other = _wff_run(WFF_POLICY_DIR, "partnered_combined_income_drives_abatement")
-    # Same policy and files, so these do share a header; a different policy's
-    # result must not.
-    case = _as_case("ordinary_uncapped_jobseeker")
-    as_result = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0"
-    )
-    build_provenance_report(WFF_POLICY_DIR, {"family_tax_credit": wff.family_tax_credit, "best_start": other.best_start})
+def test_report_refuses_components_from_different_households() -> None:
+    # Codex's PR #40 reproduction: same policy, same date, different
+    # household. IWTC's trace names FTC as upstream, so pairing it with
+    # another household's FTC would assert a false dependency.
+    single = _wff_run(WFF_POLICY_DIR)
+    partnered = _wff_run(WFF_POLICY_DIR, "partnered_combined_income_drives_abatement")
+    assert partnered.in_work_tax_credit.trace is not None
+    assert partnered.in_work_tax_credit.trace.upstream_components == ("family_tax_credit",)
     with pytest.raises(ProvenanceError, match="different runs"):
         build_provenance_report(
-            WFF_POLICY_DIR, {"family_tax_credit": wff.family_tax_credit, "accommodation_supplement": as_result}
+            WFF_POLICY_DIR,
+            {"family_tax_credit": single.family_tax_credit, "in_work_tax_credit": partnered.in_work_tax_credit},
         )
+
+
+def test_report_refuses_components_from_different_policies() -> None:
+    wff = _wff_run(WFF_POLICY_DIR)
+    with pytest.raises(ProvenanceError, match="different runs"):
+        build_provenance_report(
+            WFF_POLICY_DIR, {"family_tax_credit": wff.family_tax_credit, "accommodation_supplement": _as_real_run()}
+        )
+
+
+def test_components_of_one_run_share_a_scenario_identity() -> None:
+    first = _wff_run(WFF_POLICY_DIR)
+    again = _wff_run(WFF_POLICY_DIR)
+    other = _wff_run(WFF_POLICY_DIR, "partnered_combined_income_drives_abatement")
+    ids = {c.trace.scenario_sha256 for c in _wff_components(first).values() if c.trace is not None}
+    assert len(ids) == 1
+    assert first.best_start.trace is not None and again.best_start.trace is not None
+    assert first.best_start.trace.scenario_sha256 == again.best_start.trace.scenario_sha256
+    assert other.best_start.trace is not None
+    assert other.best_start.trace.scenario_sha256 not in ids
+
+
+def test_sources_carry_their_own_check_evidence_not_the_catalogue_date() -> None:
+    report = build_provenance_report(WFF_POLICY_DIR, _wff_components(_wff_run(WFF_POLICY_DIR)))
+    catalogue = {s["id"]: s for s in yaml.safe_load((WFF_POLICY_DIR / "sources.yaml").read_text())["sources"]}
+    for source in report["sources"]:
+        # No catalogue entry has a structured check date; never borrow as_of.
+        assert source["check_date"] is None
+        raw = catalogue[source["id"]]
+        evidence_fields = {e["field"] for e in source["check_evidence"]}
+        for key in raw:
+            if key not in {"id", "kind", "title", "url", "audit_version_url", "covers", "locator"}:
+                assert key in evidence_fields
+    tax_credit_order = next(s for s in report["sources"] if s["id"] == "wff-tax-credit-order-2025")
+    assert tax_credit_order["check_evidence"], "a cited source with recorded check notes must carry them"
 
 
 def test_json_is_canonical_and_deterministic() -> None:
@@ -251,7 +328,13 @@ def test_markdown_carries_the_same_content_as_json() -> None:
             assert f"`{parameter['parameter_id']}`" in section
             if parameter["value"] is not None:
                 assert f"| {parameter['value']} |" in section
-            if parameter["source"] is not None:
-                assert f"(`{parameter['source']['id']}`)" in section
+            if parameter["source_id"] is not None:
+                assert f"`{parameter['source_id']}`" in section
         for item in component["inputs"]:
             assert f"`{item['name']}`" in section
+    sources_section = markdown.split("## Sources cited\n", 1)[1].split("\n## ", 1)[0]
+    for source in report["sources"]:
+        assert f"(`{source['id']}`)" in sources_section
+        assert source["url"] in sources_section
+        for note in source["check_evidence"]:
+            assert f"- {note['field']}: " in sources_section
