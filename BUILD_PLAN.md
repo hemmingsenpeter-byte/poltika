@@ -1211,9 +1211,36 @@ twin of the New Zealand policy system.
     per ADR-0004, strictly after 24.1-24.2 complete) — not started.
     Owner: unassigned.
 24.4. Independent adversarial review (fresh-context, no implementer
-    explanation) of the completed AS vertical slice — not started.
-    Owner: unassigned; whichever model did not do 24.1-24.3's
-    implementation work, per the Roles section.
+    explanation) of the completed AS vertical slice. Owner: whichever
+    model did not do 24.1-24.3's implementation work, per the Roles
+    section -- Codex did 24.1-24.3, so Claude Code, via a genuinely
+    fresh-context subagent given only mechanical inputs (sources, spec,
+    diffs, tests; no accumulated session context on the implementation),
+    performed this one, mirroring Task 17's WFF precedent. **Complete,
+    23 September 2026 (PR #31, `review_packets/as_task24_4.md`).**
+    Covers Tasks 22-24.3 plus open PR #29 (reviewed here as its
+    independent-review pass). 4 findings, none affecting any numeric
+    calculation outcome: (1) MISSING_SOURCE/CODE_ERROR -- an uncited
+    "s 65(1)(b)" citation in the asset-ceiling `ComponentResult.reason`
+    text and a test docstring, where every other reference to the same
+    rule cites r 15; (2) CODE_ERROR -- the asset-ceiling `unsupported`
+    check sits outside `_household_gate_failure()`, so it cannot
+    pre-empt an unrelated `needs_review` trigger the way the function's
+    own docstring claims; (3) SPEC_ERROR -- `policy.yaml`'s
+    `assessment.unsupported` list omits `asset_ceiling_exceeded`, which
+    `components[0].validation_checks` includes (metadata drift, not read
+    by the calculator at runtime); (4) SPEC_ERROR (cosmetic) --
+    `decisions/README.md` still claims no decisions are recorded despite
+    DEC-001 existing in the same directory. Both self-flagged judgment
+    calls confirmed still correctly labelled; DEC-001's convention
+    confirmed applied only at its one correct site; all spec/benchmark
+    arithmetic independently re-derived and matches; `run_as_module()`
+    (PR #29) confirmed structurally sound against `run_wff_module()`,
+    no gap found. Findings #1 and #2 independently spot-checked by
+    Claude Code (grep + direct reproduction) before opening the PR. No
+    fix applied in this PR -- findings-only, kept as the standing review
+    record per Task 17/PR #19's pattern. Awaiting Pete's classification
+    (Task 24.5).
 24.5. Classify discrepancies from 24.4 — not started.
 24.6. Resolve ambiguities, record decision artifacts (where genuine
     ambiguity exists) — not started.
