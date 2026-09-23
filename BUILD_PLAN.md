@@ -1459,21 +1459,21 @@ model works in its own worktree. This file (BUILD_PLAN.md) is edited
 only for status records, one PR at a time.
 
 **Sequencing.** After approval of this refinement, 26a and 28.1 can
-proceed independently (GPT/Codex source work, subject to the Codex review
-reserve until 27 September 2026). The date/interval decision in 28.2
+proceed independently (GPT/Codex source work; the earlier Codex usage
+reserve was lifted by Pete on 24 September 2026). The date/interval decision in 28.2
 must precede 26b; 26b records the outcome even if the rate remains gated.
 28.3-28.4 need only 28.1 and 28.2. 28.5's cases that expect a
 `calculated` AS result against the real policy, and all of 29, also need
-26a and 26b. Then 29 → 30 → 31.6 → 32 → 33 → 34 → 35. Claude Code can prepare the
-following work before 27 September; each merge still requires the
-named independent review and Pete's acceptance:
+26a and 26b. Then 29 → 30 → 31.6 → 32 → 33 → 34 → 35. Claude Code work that needs no
+GPT/Codex input (each merge still requires the named independent review
+and Pete's acceptance):
 
 - 27.2-27.3, once Pete decides 27.1;
 - 31.1-31.5, the per-policy trace, its tests and independent review.
   Because it changes calculator return types, merge it before 26a's
   test edits if review is available. Otherwise defer it until 26a merges;
   source research can proceed independently. Do not overlap test edits
-  or bypass review to meet the calendar. Complete this slice before 30;
+  or bypass review. Complete this slice before 30;
 - the 32.1 ADR draft;
 - the ADR-0012 record, once Pete decides.
 
