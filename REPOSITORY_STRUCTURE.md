@@ -45,7 +45,11 @@ poltika/
 │   │                        calculator, per ARCHITECTURE.md's Simulation
 │   │                        module contract); accommodation_supplement.py
 │   │                        (Task 23 calculate_accommodation_supplement(),
-│   │                        same pure-function/ComponentResult pattern)
+│   │                        same pure-function/ComponentResult pattern;
+│   │                        Task 24.7 run_as_module(), the AS module
+│   │                        integration entry point mirroring
+│   │                        run_wff_module() for AS's single-component
+│   │                        shape)
 │   └── api/               — Task 21: FastAPI app (ADR-0010). main.py (app
 │                            instance, exception handling for
 │                            common.errors.PoltikaError subclasses) and
@@ -64,7 +68,9 @@ poltika/
     │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
     │   │                        benchmark-case loader/runners (Tasks 13-14),
     │   │                        module-integration tests (Task 20),
-    │   │                        AS calculator unit tests (Task 23)
+    │   │                        AS calculator unit tests (Task 23),
+    │   │                        AS spec/benchmark tests (Task 24.1),
+    │   │                        AS module-integration tests (Task 24.7)
     │   └── api/             — FastAPI TestClient tests (Task 21)
     ├── installed_artifact/ — builds and installs the real wheel into a
     │                          throwaway venv, confirms the API works
