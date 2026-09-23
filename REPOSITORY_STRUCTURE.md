@@ -49,7 +49,14 @@ poltika/
 │   │                        Task 24.7 run_as_module(), the AS module
 │   │                        integration entry point mirroring
 │   │                        run_wff_module() for AS's single-component
-│   │                        shape)
+│   │                        shape); trace.py (Task 31: per-component
+│   │                        provenance trace types, and the recording
+│   │                        helpers that capture which parameters and
+│   │                        scenario facts each component consulted)
+│   ├── engines/assurance/ — provenance.py (Task 31: builds the provenance
+│   │                        report from traced results -- verifies the
+│   │                        run's artifact hashes, resolves source/rule/
+│   │                        decision ids, renders JSON and Markdown)
 │   └── api/               — Task 21/24.8: FastAPI app (ADR-0010). main.py
 │                            (app instance, exception handling for
 │                            common.errors.PoltikaError subclasses,
@@ -70,12 +77,14 @@ poltika/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
     ├── unit/
     │   ├── policy/         — loader tests (Task 11)
+    │   ├── engines/assurance/ — provenance report tests (Task 31)
     │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
     │   │                        benchmark-case loader/runners (Tasks 13-14),
     │   │                        module-integration tests (Task 20),
     │   │                        AS calculator unit tests (Task 23),
     │   │                        AS spec/benchmark tests (Task 24.1),
-    │   │                        AS module-integration tests (Task 24.7)
+    │   │                        AS module-integration tests (Task 24.7),
+    │   │                        per-component trace tests (Task 31)
     │   └── api/             — FastAPI TestClient tests (Task 21 WFF,
     │                          Task 24.8 AS)
     ├── installed_artifact/ — builds and installs the real wheel into a
@@ -94,8 +103,9 @@ tasks that need them are reached, not all at once. `docs/` is partially
 instantiated: `docs/research/` (above) already holds two files; the
 target tree's `docs/{data_model.md,policy_model.md,provenance.md,
 assurance.md,glossary.md}` specification files do not exist yet.
-`src/poltika/engines/{assurance,discovery,hypothesis}` are correctly still
-empty placeholders; see below.
+`src/poltika/engines/{discovery,hypothesis}` are correctly still empty
+placeholders; see below. `engines/assurance/` was instantiated by Task 31
+(provenance only; regression and change attribution arrive with Task 30).
 
 ## Target architecture (create on demand, per task)
 
