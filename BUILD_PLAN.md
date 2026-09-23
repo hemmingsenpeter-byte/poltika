@@ -1266,11 +1266,16 @@ twin of the New Zealand policy system.
     `_param_value()` already resolves an undeclared parameter to
     `needs_review` one layer down (Task 23's documented design). New
     `tests/unit/engines/simulator/test_as_module.py` mirrors
-    `test_wff_module.py`'s Task 20 scope. 195 tests pass, Ruff clean,
-    strict mypy clean. No file overlap with Task 24.2 (PR #28). Author
-    preflight only (`.claude/skills/pr-review-preflight/SKILL.md`) --
-    still pending independent (non-implementer) review and Pete's
-    acceptance before merge.
+    `test_wff_module.py`'s Task 20 scope. No file overlap with Task 24.2
+    (PR #28). **Complete, merged 23 September 2026 (PR #29, commit
+    `e4deed1`).** Independent (non-implementer) review satisfied by Task
+    24.4's fresh-context pass (PR #31, `review_packets/as_task24_4.md`),
+    which explicitly scoped `run_as_module()`'s diff into its review and
+    found it structurally sound against `run_wff_module()`, no gap --
+    author preflight alone was not treated as sufficient, per
+    `.claude/skills/pr-review-preflight/SKILL.md`. Re-verified in an
+    isolated worktree against the post-#30/#31 `main` before merging:
+    201 tests pass (195 + 6 new), Ruff clean, strict mypy clean.
 24.8. Add an AS API route, mirroring Task 21's `run_wff_module()` ->
     FastAPI pattern (ADR-0010) — not started; gated on 24.1-24.7.
 25. Stress-test POLICY_SPECS schema against AS's different structure
