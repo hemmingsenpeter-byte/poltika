@@ -3,7 +3,7 @@
 beyond `httpx` (needed for `TestClient`). Deliberately self-contained: no
 import of `tests.conftest` or anything else from the checkout that ran
 this script, since the whole point is proving the *installed artifact*
-works standalone. The request payload below is a hand-copied literal
+works standalone. The WFF request payload below is a hand-copied literal
 matching `spec_cases.yaml`'s `single_ordinary_low_income` case, not loaded
 from that YAML file (which isn't installed -- `policy_specs/` is supplied
 via `POLTIKA_POLICY_SPECS_DIR`, set by the parent test before this script
@@ -77,10 +77,33 @@ PAYLOAD = {
     ],
 }
 
+# The Accommodation Supplement route (Task 24.8) is probed too. This case
+# fails the r 15 cash-asset ceiling, a gate that needs a real parameter from
+# the mounted policy files (`asset_ceiling_other`) and stays `unsupported`
+# whatever base rates Task 26a later adds -- so the probe proves the AS
+# policy directory is read, without depending on unpopulated values. The
+# week is a test week, not Task 28.2's selection.
+AS_PAYLOAD = {
+    "modelled_date": "2026-06-01",
+    "assessment_week_start": "2026-06-01",
+    "assessment_week_end": "2026-06-08",
+    "requested_policy_version": "0.1.0",
+    "household_eligibility": "verified",
+    "claimant_category": "jobseeker_support",
+    "tenure_type": "rent_contributions_or_board",
+    "partner_status": "single",
+    "statistical_area_unit": "area1",
+    "weekly_accommodation_costs": "200",
+    "dependent_children_count": 0,
+    "cash_assets": "20000",
+    "exempt_cash_asset_status": "verified",
+}
+
 
 def main() -> int:
     with TestClient(app) as client:
         response = client.post("/wff/calculate", json=PAYLOAD)
+        as_response = client.post("/accommodation-supplement/calculate", json=AS_PAYLOAD)
 
     if response.status_code != 200:
         print(f"PROBE_FAILED: status {response.status_code}: {response.text}")
@@ -90,6 +113,14 @@ def main() -> int:
     ftc = body.get("family_tax_credit", {})
     if ftc.get("outcome") != "calculated" or ftc.get("value") is None:
         print(f"PROBE_FAILED: unexpected family_tax_credit shape: {ftc}")
+        return 1
+
+    if as_response.status_code != 200:
+        print(f"PROBE_FAILED: AS status {as_response.status_code}: {as_response.text}")
+        return 1
+    supplement = as_response.json().get("accommodation_supplement", {})
+    if supplement.get("outcome") != "unsupported" or "r 15" not in (supplement.get("reason") or ""):
+        print(f"PROBE_FAILED: unexpected accommodation_supplement shape: {supplement}")
         return 1
 
     print("PROBE_OK")
