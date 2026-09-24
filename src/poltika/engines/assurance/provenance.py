@@ -39,6 +39,7 @@ import hashlib
 import json
 import re
 from collections.abc import Mapping
+from dataclasses import fields
 from datetime import date, datetime
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as package_version
@@ -49,7 +50,8 @@ import yaml
 
 from poltika.common.errors import ArtifactHashMismatchError, ProvenanceError
 from poltika.engines.simulator.trace import ComponentTrace, ParameterUse, plain
-from poltika.engines.simulator.wff import ComponentResult
+from poltika.engines.simulator.wff import ComponentResult, WffResult
+from poltika.scenarios.record import ScenarioRun
 
 REPORT_FORMAT = "poltika-provenance/0.1"
 
@@ -427,3 +429,84 @@ def _period_text(period: Mapping[str, str] | None) -> str:
 def _cell(value: Any) -> str:
     text = "" if value is None else str(value)
     return text.replace("|", "\\|").replace("\n", " ")
+
+
+COMBINED_REPORT_FORMAT = "poltika-combined-provenance/0.1"
+
+
+def build_combined_provenance_report(
+    run: ScenarioRun, wff_policy_dir: Path, as_policy_dir: Path
+) -> dict[str, Any]:
+    """Task 31.6: provenance for a combined household run (Task 28.4/30).
+
+    Holds the run's scenario and result identities, reproducibility, artifact
+    manifest and shared-fact disagreements, plus each policy's own provenance
+    report built from the run's final results -- a `needs_review`
+    replacement keeps its module trace, so its parameters and inputs are
+    still reported. Each policy report verifies its bound files as usual; the
+    combined report then requires the manifest to name exactly the files the
+    two reports verified, so the manifest cannot drift from what was used.
+    """
+    wff_results = {f.name: getattr(run.result.wff, f.name) for f in fields(WffResult)}
+    wff_report = build_provenance_report(wff_policy_dir, wff_results)
+    as_report = build_provenance_report(
+        as_policy_dir, {"accommodation_supplement": run.result.accommodation_supplement}
+    )
+
+    verified = {
+        f"{report['policy']['policy_id']}/{artifact['path']}": artifact["sha256"]
+        for report in (wff_report, as_report)
+        for artifact in report["artifacts"]
+    }
+    if verified != dict(run.manifest.policy_files):
+        raise ProvenanceError(
+            "the run's artifact manifest does not match the files its policy reports verified"
+        )
+
+    code = run.manifest.code
+    return {
+        "format": COMBINED_REPORT_FORMAT,
+        "scenario_id": run.scenario_id,
+        "result_id": run.result_id,
+        "reproducible": run.manifest.reproducible,
+        "code": {
+            "package_version": code.package_version,
+            "source_commit": code.source_commit,
+            "source_tree_clean": code.source_tree_clean,
+            "dependency_lock_sha256": code.dependency_lock_sha256,
+        },
+        "policy_files": [{"path": path, "sha256": sha} for path, sha in run.manifest.policy_files],
+        "contradictions": list(run.result.contradictions),
+        "working_for_families": wff_report,
+        "accommodation_supplement": as_report,
+    }
+
+
+def render_combined_markdown(report: Mapping[str, Any]) -> str:
+    """Both policies' reports under one header. Periods stay native: WFF
+    annual, AS weekly; there is no combined total."""
+    code = report["code"]
+    lines = [
+        "# Combined household provenance report",
+        "",
+        f"- Scenario id: `{report['scenario_id']}`",
+        f"- Result id: `{report['result_id']}`",
+        f"- Reproducible from a committed source tree: {'yes' if report['reproducible'] else 'no'}",
+        (
+            f"- Code: {code['package_version']}, commit {code['source_commit'] or 'unknown'}, "
+            f"clean tree {code['source_tree_clean'] if code['source_tree_clean'] is not None else 'unknown'}"
+        ),
+        "- Each policy is reported in its own period; there is no combined total.",
+        "",
+        "## Shared-fact disagreements",
+        "",
+    ]
+    lines += [f"- {c}" for c in report["contradictions"]] or ["None."]
+    for key, title in (
+        ("working_for_families", "Working for Families (annual)"),
+        ("accommodation_supplement", "Accommodation Supplement (weekly)"),
+    ):
+        body = render_markdown(report[key]).replace("\n# ", "\n### ").replace("\n## ", "\n#### ")
+        body = body.replace("# Provenance report:", "### Provenance report:", 1)
+        lines += ["", f"## {title}", "", body.rstrip("\n")]
+    return "\n".join(lines) + "\n"
