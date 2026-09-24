@@ -56,11 +56,42 @@ def test_as_spec_cases_are_complete_and_unique() -> None:
         )
 
 
-def test_real_policy_contains_exactly_the_20_independently_verified_parameters() -> None:
+# Task 26a.2: the published MSD table values (DEC-002), one per supported
+# claimant x rate-household row, plus the four non-beneficiary income levels.
+# Sole Parent Support publishes only sole-parent rows, so it has one id.
+_PUBLISHED_TABLE_PARAMETER_IDS = {
+    *(
+        f"as_entry_threshold_{claimant}_{household}"
+        for claimant in ("jobseeker_support", "supported_living_payment", "non_beneficiary")
+        for household in (
+            "single_no_dependent_children",
+            "sole_parent",
+            "couple_no_dependent_children",
+            "couple_with_dependent_children",
+        )
+    ),
+    "as_entry_threshold_sole_parent_support_sole_parent",
+    *(
+        f"as_income_level_non_beneficiary_{household}"
+        for household in (
+            "single_no_dependent_children",
+            "sole_parent",
+            "couple_no_dependent_children",
+            "couple_with_dependent_children",
+        )
+    ),
+}
+
+
+def test_real_policy_contains_exactly_the_approved_parameters() -> None:
+    """The 20 statutory values (Task 22/24.1) plus the 17 published-table
+    values (Task 26a.2). A deliberate list: an unexpected or missing id
+    fails here rather than silently changing what the policy declares."""
     parameters = load_policy_parameters(
         AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version="0.1.1"
     )
-    assert set(parameters.resolutions) == _INDEPENDENTLY_VERIFIED_PARAMETER_IDS
+    assert len(_PUBLISHED_TABLE_PARAMETER_IDS) == 17
+    assert set(parameters.resolutions) == _INDEPENDENTLY_VERIFIED_PARAMETER_IDS | _PUBLISHED_TABLE_PARAMETER_IDS
     assert all(resolution.outcome == "resolved" for resolution in parameters.resolutions.values())
 
 

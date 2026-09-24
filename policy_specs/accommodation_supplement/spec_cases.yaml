@@ -131,3 +131,48 @@ spec_cases:
     parameter_assumptions: {entry_threshold: '75', income_level: '200'}
     scenario: {<<: *ordinary, claimant_category: non_beneficiary, weekly_income: null}
     expected: *needs_review
+
+  # Task 26a.3 (24 September 2026): cases run against the real approved
+  # policy (0.1.1) with NO parameter assumptions, using the published
+  # thresholds populated in Task 26a.2. Hand-calculated independently of the
+  # implementation; cases B and C reproduce MSD's own published worked
+  # examples (benchmarks msd_nadiya_supported_living_rent and
+  # msd_single_non_beneficiary_income_reduction) without any assumption.
+  - id: real_policy_jobseeker_single_published_threshold
+    derivation: >-
+      Published Jobseeker single threshold $93 (as-msd-jobseeker-rates-2026). 70% x ($200 - $93) = $74.90,
+      below the Area 1 single cap of $165; r 19 rounds up to $75.
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary}
+    expected: {accommodation_supplement: {outcome: calculated, value: '75'}}
+
+  - id: real_policy_supported_living_couple_with_children
+    derivation: >-
+      Published Supported Living Payment couple-with-children threshold $227
+      (as-msd-supported-living-rates-2026). 70% x ($375 - $227) = $103.60, below the Area 2 cl 1 cap of
+      $220; r 19 rounds up to $104, matching MSD's published Nadiya example.
+    parameter_assumptions: {}
+    scenario:
+      <<: *ordinary
+      claimant_category: supported_living_payment
+      partner_status: ordinary_couple
+      dependent_children_count: 2
+      eldest_dependent_child_under_16: verified
+      statistical_area_unit: area2
+      weekly_accommodation_costs: '375'
+      cash_assets: '0'
+    expected: {accommodation_supplement: {outcome: calculated, value: '104'}}
+
+  - id: real_policy_non_beneficiary_single_income_reduction
+    derivation: >-
+      Published non-beneficiary single threshold $93 (as-msd-rates-2026) and income level $693
+      (as-msd-income-2026). Cash assets $1,000 are below the $2,700 imputation threshold, so no imputed
+      income. Cost amount 70% x ($180 - $93) = $60.90; reduction 25% x ($750 - $693) = $14.25 (DEC-001,
+      exact excess); $60.90 - $14.25 = $46.65, rounded up to $47, matching MSD's published example.
+    parameter_assumptions: {}
+    scenario:
+      <<: *ordinary
+      claimant_category: non_beneficiary
+      weekly_accommodation_costs: '180'
+      weekly_income: '750'
+    expected: {accommodation_supplement: {outcome: calculated, value: '47'}}

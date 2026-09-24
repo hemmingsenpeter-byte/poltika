@@ -40,6 +40,7 @@ from poltika.engines.simulator.accommodation_supplement import (
 )
 from poltika.engines.simulator.wff import FactStatus
 from poltika.policy.loader import load_policy_parameters
+from tests.conftest import real_as_parameters_without
 
 AS_POLICY_DIR = Path(__file__).resolve().parents[4] / "policy_specs" / "accommodation_supplement"
 MODELLED_DATE = date(2026, 6, 1)
@@ -345,12 +346,16 @@ def test_non_beneficiary_missing_weekly_income_is_needs_review(parameters) -> No
 
 
 def test_real_policy_undeclared_base_rate_is_needs_review_not_a_crash(real_as_parameters) -> None:
-    """The real, approved policy.yaml does not yet declare
-    as_entry_threshold_jobseeker_support_single_no_dependent_children
-    (pending Task 26a.2) -- this must resolve needs_review, not raise
+    """A policy that does not declare
+    as_entry_threshold_jobseeker_support_single_no_dependent_children (the
+    real policy with that id removed) -- this must resolve needs_review, not raise
     KeyError. `_ordinary_scenario()`'s default (single, no dependent
     children) maps to the `single_no_dependent_children` rate row."""
-    result = calculate_accommodation_supplement(_ordinary_scenario(), real_as_parameters)
+    # Task 26a.2 declares the real thresholds; remove the one exercised here.
+    result = calculate_accommodation_supplement(
+        _ordinary_scenario(),
+        real_as_parameters_without("as_entry_threshold_jobseeker_support_single_no_dependent_children"),
+    )
 
     assert result.outcome == "needs_review"
     assert result.value is None
