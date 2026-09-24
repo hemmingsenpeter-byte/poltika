@@ -15,6 +15,7 @@ here at their third consumer for Task 24.2, following the same rule.
 
 from __future__ import annotations
 
+import os
 import shutil
 import socket
 import subprocess
@@ -312,6 +313,9 @@ def pg_bin_dir() -> Path | None:
 def database_url(tmp_path_factory: pytest.TempPathFactory) -> Iterator[str]:
     bin_dir = pg_bin_dir()
     if bin_dir is None:
+        if os.environ.get("POLTIKA_REQUIRE_POSTGRES"):
+            # CI sets this, so a missing server fails instead of skipping to green.
+            pytest.fail("POLTIKA_REQUIRE_POSTGRES is set but PostgreSQL server binaries are not installed")
         pytest.skip("PostgreSQL server binaries not installed")
     data = tmp_path_factory.mktemp("pgdata")
     with socket.socket() as s:
