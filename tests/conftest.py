@@ -185,7 +185,8 @@ def wff_scenario_from_yaml(raw: dict[str, Any]) -> WffScenario:
 def load_wff_spec_case(case_id: str) -> dict[str, Any]:
     """Load one named case from `spec_cases.yaml` by id (Task 13)."""
     raw = yaml.safe_load((WFF_POLICY_DIR / "spec_cases.yaml").read_text())
-    for case in raw["spec_cases"]:
+    cases: list[dict[str, Any]] = raw["spec_cases"]
+    for case in cases:
         if case["id"] == case_id:
             return case
     raise KeyError(f"no spec_cases.yaml case with id {case_id!r}")
@@ -194,7 +195,8 @@ def load_wff_spec_case(case_id: str) -> dict[str, Any]:
 def load_wff_benchmark_case(case_id: str) -> dict[str, Any]:
     """Load one named case from `benchmarks.yaml` by id (Task 14)."""
     raw = yaml.safe_load((WFF_POLICY_DIR / "benchmarks.yaml").read_text())
-    for case in raw["benchmarks"]:
+    cases: list[dict[str, Any]] = raw["benchmarks"]
+    for case in cases:
         if case["id"] == case_id:
             return case
     raise KeyError(f"no benchmarks.yaml case with id {case_id!r}")
