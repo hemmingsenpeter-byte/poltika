@@ -139,6 +139,8 @@ def test_report_artifacts_are_the_exact_file_hashes() -> None:
             "sources.yaml",
             "specification.md",
             "decisions/DEC-001-income-excess-rounding.md",
+            "decisions/DEC-002-published-thresholds-and-rate-scope.md",
+            "decisions/DEC-003-msd-paid-wff-income-exclusion.md",
         )
     }
     assert {a["path"]: a["sha256"] for a in report["artifacts"]} == expected
