@@ -1433,6 +1433,17 @@ is owned by the task named):
 - Task 22a's revisit condition (a raw SAU code or address input would
   reintroduce a dataset need) stays live for any scenario-input design in
   Tasks 28-33.
+- **AS module validation requires coverage of the whole reference period
+  (CODE_ERROR, found in GPT/Codex's Task 28.2 research, PR #41; reproduced
+  independently by Claude Code).** `_as_module_validation_failure()` copied
+  WFF's annual rule, requiring each parameter value to span the whole
+  `[2026-03-02, 2027-04-01)` reference period. AS is assessed per week, so
+  a genuinely April-effective rate (the 1 April 2026 MSD tables) returns
+  `needs_review` for every week. Owner: Claude Code. The fix checks
+  coverage of the selected assessment week, and a boundary inside the week
+  is never silently picked. WFF's full-year rule stays. The fix depends on
+  28.2's week definition and must merge before 26a's rates run through the
+  module.
 
 **Work split.** This follows the Roles section: GPT/Codex does source
 work, specification text, and hand-calculated expected values; Claude
@@ -1534,9 +1545,10 @@ and Pete's acceptance):
       `NZD_per_week` and `fraction` units (Task 23), the compound
       parameter-id convention (`area_cap_*`, `as_base_rate_*`, Tasks
       25/26), and `assessment.membership_period` values in use
-      (`tax_year`, `assessment_week`). **Implemented 24 September 2026**
-      (SCHEMA.md's "Schema as implemented" section). Docs only; pending
-      GPT/Codex review.
+      (`tax_year`, `assessment_week`). **Complete, merged 24 September
+      2026 (PR #38, merge commit `7b3f9c8`).** SCHEMA.md's "Schema as
+      implemented" section. GPT/Codex review found no blocking issue; Pete
+      accepted.
     - **27.3 — Claude Code; GPT/Codex reviews.** Apply the Definition of Done wording from 27.1. **Done
       in the refinement PR itself (24 September 2026).** Option (a) needs
       no migration.
@@ -1671,13 +1683,39 @@ and Pete's acceptance):
       every used parameter has a resolvable `source_id`; every
       `needs_review`/`unsupported` result carries its reason. Check JSON and
       Markdown consistency and preservation of numerical/gating behaviour.
+
+      **31.1-31.5 complete, merged 24 September 2026 (PR #40, merge commit
+      `18e1ca5`).** Each `ComponentResult` carries a `ComponentTrace`
+      (`engines/simulator/trace.py`). Recording wraps each component call,
+      and the component functions are unchanged. `engines/assurance/
+      provenance.py` builds the JSON and Markdown report. The loader binds
+      hashes of `policy.yaml`, the source catalogue, `specification.md` and
+      each `decisions/DEC-*.md` when it loads parameters. The report
+      refuses a run whose bound files have changed, and refuses components
+      from different scenarios. GPT/Codex's review found four issues, all
+      fixed in `d3ed5d4` and confirmed on re-review:
+      - F1: specification and decision files were read at report time
+        rather than bound to the run.
+      - F2: the report accepted components from different households.
+      - F3: the r 19 wording overclaimed that no earlier step rounds.
+      - F4: source-specific check evidence was omitted.
+
+      Sources have no structured check-date field today, so the report
+      shows `check_date` as not recorded rather than parsing free text. PR
+      #41's `task_28_2_check.checked_on` fields are a follow-up for the
+      report to read. Verified on merged `main`: 249 passed, the
+      installed-artifact test passed, Ruff and strict mypy clean.
     - **31.6 — Claude Code; GPT/Codex reviews; Pete accepts.** After 30, extend
       provenance tests to combined scenarios and their artifact manifests.
       Verify both assessment periods, interaction gates and report content
       are preserved. This adds combined coverage to the reviewed per-policy
       slice; it does not defer that slice's tests or review.
 32. **Scenario/version persistence.**
-    - **32.1 — Pete decides; Claude Code drafts the ADR.** Storage: (a) PostgreSQL + SQLAlchemy 2
+    - **32.1 — Pete decides; Claude Code drafts the ADR. Decided 24
+      September 2026: option (a), PostgreSQL (ADR-0013, accepted; PR #39,
+      merge commit `62884e5`).** Implementation starts with 32.2 in the
+      approved sequence, after Task 30; no database scaffolding is added
+      earlier. Storage: (a) PostgreSQL + SQLAlchemy 2
       + Alembic now, per ARCHITECTURE.md's recorded long-term stack and
       ADR-0010's go-straight-to-target precedent; or (b) an append-only,
       content-addressed file store behind a small repository interface,
