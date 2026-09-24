@@ -7,6 +7,16 @@ sources:
     title: Social Security Act 2018
     url: https://www.legislation.govt.nz/act/public/2018/32/en/latest/
     covers: Sections 65AAA to 69 and Schedule 4 Part 7; eligibility, costs, and rates.
+    task_26a_check:
+      checked_on: 2026-09-24
+      versions_checked: [2026-04-01, 2026-09-04]
+      audit_version_url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-04-01/
+      locator: Schedule 4 Part 1 clause 1(d); Part 7 clauses 1-3
+      finding: The single ordinary Jobseeker rate is 372.55, while Part 7
+        uses 25 percent of the regulation 17 base rate for rent or board.
+        The statutory cap categories combine couples and sole parents;
+        this does not establish that their base rates are equal.
+      limitation: Research only. No new runtime value or date selection approved.
     task_22_check: Official "latest" consolidated text checked directly
       2026-09-22 (browser user-agent, bare fetch 403s). ss 65AAA, 66, 67,
       68, 69, 423, and Schedule 4 Part 7 (cl 1-8) reviewed in full for
@@ -51,6 +61,20 @@ sources:
     title: Social Security Regulations 2018
     url: https://www.legislation.govt.nz/regulation/public/2018/0202/latest/
     covers: Asset requirement, income thresholds, and income-based reductions.
+    task_26a_check:
+      checked_on: 2026-09-24
+      versions_checked: [2026-03-02, 2026-09-04]
+      audit_version_url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-03-02/
+      locator: Regulations 17(1)-(2), 18(3)(a)-(c), 19
+      finding: Base-rate construction depends on benefit and relationship
+        circumstances, including a statutory maximum family-tax-credit
+        term for specified parents. The non-beneficiary income level is
+        household-dependent. Regulation 19 governs final AS rounding;
+        no rule authorising inversion of rounded table thresholds into
+        statutory base rates was established in these provisions.
+      limitation: The entry-threshold precision question remains unresolved;
+        see docs/research/task_26a_as_rate_audit.md. DEC-001 addresses a
+        different issue, rounding the income excess.
     task_22_check: Official "latest" consolidated text checked directly
       2026-09-22 (browser user-agent, same method as the Act entry above;
       this URL redirects to
@@ -152,21 +176,56 @@ sources:
     title: Non-beneficiaries - entry thresholds and maximum rates
     url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/non-beneficiaries-current-01.html
     covers: Weekly thresholds by household and tenure, and caps by area, at 2026-04-01.
+    task_26a_check:
+      checked_on: 2026-09-24
+      table_as_at: 2026-04-01
+      locator: Rent or board column, all five ordinary household rows
+      finding: Published entry thresholds are 93 (single without children),
+        158 (couple without children), 205 (couple with children), and
+        168 (sole parent with one or multiple children). These are entry
+        thresholds, not published regulation 17 base rates.
+      limitation: Live current page; not evidence for March rates or a
+        future unchanged interval. Values not promoted to policy.yaml.
   - id: as-msd-jobseeker-rates-2026
     kind: agency_rates
     title: Jobseeker Support - Accommodation Supplement thresholds and maxima
     url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/jobseeker-support-current-01.html
     covers: Jobseeker Support household thresholds and area caps at 2026-04-01.
+    task_26a_check:
+      checked_on: 2026-09-24
+      table_as_at: 2026-04-01
+      locator: Rent or board column, ordinary and protected woman-alone rows
+      finding: Ordinary thresholds are 93, 158, 205 and 168 by single,
+        childless couple, couple with children and sole parent respectively.
+        The protected pre-15-July-2013 woman-alone row instead publishes 96.
+      limitation: The current scenario cannot identify the protected row;
+        do not apply the ordinary single rate to every Jobseeker claimant.
   - id: as-msd-sole-parent-rates-2026
     kind: agency_rates
     title: Sole Parent Support - Accommodation Supplement thresholds and maxima
     url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/sole-parent-support-current-01.html
     covers: Sole Parent Support thresholds and area caps at 2026-04-01.
+    task_26a_check:
+      checked_on: 2026-09-24
+      table_as_at: 2026-04-01
+      locator: Both sole-parent rows, rent or board column
+      finding: Both rows publish a 168 entry threshold. No childless or
+        ordinary-couple Sole Parent Support row is published here.
+      limitation: Do not manufacture values for the Cartesian product of
+        claimant and cap categories; benefit qualification is still required.
   - id: as-msd-supported-living-rates-2026
     kind: agency_rates
     title: Supported Living Payment - Accommodation Supplement thresholds and maxima
     url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/supported-living-payment-current-01.html
     covers: Supported Living Payment thresholds and area caps at 2026-04-01.
+    task_26a_check:
+      checked_on: 2026-09-24
+      table_as_at: 2026-04-01
+      locator: Rent or board column, ordinary household rows
+      finding: Thresholds are 106 for single, 180 for childless couple,
+        227 for couple with children, and 184 for sole parent. A cap
+        category combining couples and sole parents cannot select these.
+      limitation: Published thresholds are not statutory base-rate amounts.
   - id: as-msd-mixed-benefit-rates-2026
     kind: agency_rates
     title: Couples on different benefits - Accommodation Supplement thresholds
@@ -182,6 +241,30 @@ sources:
     title: Income cut-out points for non-beneficiaries
     url: https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/income-cut-out-points-for-non-beneficiaries-curren.html
     covers: Income thresholds and cut-out points at 2026-04-01.
+    task_26a_check:
+      checked_on: 2026-09-24
+      table_as_at: 2026-04-01
+      locator: Income threshold column in each of Areas 1-4
+      finding: The same four household-specific thresholds occur in every
+        area, 693 (single), 1066 (childless couple), 1117 (couple with
+        children), and 906 (sole parent). The income cut-out columns are
+        separate and must not be loaded as these thresholds.
+      limitation: The single as_income_level_non_beneficiary ID cannot
+        represent all these rows. No value promoted pending selector repair
+        and the regulation 18(3) precision check.
+  - id: as-msd-main-jobseeker-rates-2026
+    kind: agency_rates
+    title: Jobseeker Support main-benefit rates at 1 April 2026
+    url: https://map.workandincome.govt.nz/map/deskfile/main-benefits-rates/jobseeker-support-current.html
+    covers: Distinguishes actual benefit rates from AS entry thresholds.
+    task_26a_check:
+      checked_on: 2026-09-24
+      table_as_at: 2026-04-01
+      locator: Single 25+ years, Net column
+      finding: The net weekly rate is 372.55, matching Schedule 4 Part 1
+        clause 1(d), not 372 obtained by multiplying the AS threshold by four.
+      limitation: The source separately labels net and gross; no gross
+        value is substituted into the base-rate calculation.
   - id: as-msd-income-method
     kind: agency_guidance
     title: Income - non-beneficiaries
