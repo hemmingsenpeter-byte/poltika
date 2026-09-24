@@ -8,7 +8,7 @@
 # has been independently recalculated -- that remains Tasks 23-24's job.
 schema_version: "0.1"
 policy_id: accommodation_supplement
-policy_version: "0.1.0"
+policy_version: "0.1.1"
 status: approved
 reference_period:
   from: 2026-03-02
@@ -79,7 +79,22 @@ inputs:
     period: assessment_week
     source_rule_ids: [AS-04]
     missing_outcome: needs_review
-    note: Selects the Schedule 4 Part 7 cl 1-3 household category (1+ dependent children in a relationship or a sole parent with 2+; no dependent children in a relationship or a sole parent with 1; any other person).
+    note: Selects two separate household groupings (Task 26a repair, DEC-002) -- the Schedule 4 Part 7 cl 1-3 cap category (1+ dependent children in a relationship or a sole parent with 2+; no dependent children in a relationship or a sole parent with 1; any other person) and the published-table rate row (single, sole parent, couple without children, couple with children).
+  - id: ordinary_rate_status
+    owner: assessment_unit
+    type: verified_fact_status
+    period: assessment_week
+    source_rule_ids: [AS-04]
+    missing_outcome: needs_review
+    note: Task 26a repair (DEC-002). verified means the ordinary published rate row applies for the whole week -- no protected Jobseeker woman-alone rate, mixed-benefit rate, special care/residential rate or other unrepresented subtype; for a single beneficiary under 25 it includes applicability of r 17(2)(a)'s age-25 rate. excluded (a known subtype outside this branch) is unsupported. General household eligibility does not imply it.
+  - id: eldest_dependent_child_under_16
+    owner: assessment_unit
+    type: verified_fact_status
+    period: assessment_week
+    required_for: accommodation_supplement
+    source_rule_ids: [AS-04]
+    missing_outcome: needs_review
+    note: Task 26a repair (DEC-002). Parent rate rows only (one or more dependent children) -- the eldest qualifying dependent child is under 16 throughout the week. excluded is unsupported as a conservative scope restriction, not a finding of no entitlement. Not consulted when the count is zero; never inferred from a count or a WFF child list.
   - id: statistical_area_unit
     owner: claimant
     type: verified_area_1_to_4_classification
@@ -114,14 +129,13 @@ inputs:
 # section) -- review_status: approved reflects that direct statutory
 # verification, not a dated MSD table (none of these values come from one).
 #
-# Deliberately NOT included: the base rate (id shape:
-# as_base_rate_<claimant_category>_<household_category> -- Task 25/26,
-# see accommodation_supplement.py's _base_rate_parameter_id() docstring
-# for why the household-category dimension was added to the id) and the
-# r 18(3) jobseeker-equivalent income level. Both come from dated MSD
-# tables (as-msd-jobseeker-rates-2026 etc.) this project has not yet
-# independently recalculated -- Task 24's job, matching WFF's in_work_base
-# precedent. ParameterSpec.values requires at least one value (SCHEMA.md:
+# Deliberately NOT included yet: the published rent/board entry thresholds
+# (as_entry_threshold_<claimant_category>_<rate_household>) and the
+# non-beneficiary income levels (as_income_level_non_beneficiary_<rate_
+# household>), per the Task 26a selector repair and DEC-002 (policy 0.1.1).
+# They come from the dated MSD tables and are populated by Task 26a.2 after
+# the repaired code is reviewed. The Task 25/26 as_base_rate_* ids were a
+# SPEC_ERROR (PR #46) and are not aliases or fallbacks. ParameterSpec.values requires at least one value (SCHEMA.md:
 # "no matching interval means unsupported... not zero"), so a parameter
 # cannot be declared with no sourced value at all; run_as_module() (Task
 # 23's module-boundary entry point, mirroring wff.py's

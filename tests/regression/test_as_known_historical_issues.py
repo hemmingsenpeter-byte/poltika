@@ -42,6 +42,8 @@ def _ordinary_as_scenario(**overrides: object) -> AsScenario:
         "cash_assets": Decimal(1000),
         "exempt_cash_asset_status": FactStatus.VERIFIED,
         "weekly_income": None,
+        "ordinary_rate_status": FactStatus.VERIFIED,
+        "eldest_dependent_child_under_16": FactStatus.VERIFIED,
     }
     base.update(overrides)
     return AsScenario(**base)  # type: ignore[arg-type]
@@ -51,7 +53,7 @@ def _assumed_parameters(
     case_id: str,
     claimant_category: ClaimantCategory,
     *,
-    base_rate: str = "300",
+    entry_threshold: str = "75",
     income_level: str | None = None,
     partner_status: PartnerType = PartnerType.SINGLE,
     dependent_children_count: int = 0,
@@ -59,9 +61,11 @@ def _assumed_parameters(
     """`partner_status`/`dependent_children_count` default to
     `_ordinary_as_scenario()`'s own defaults -- pass the same values a
     test's scenario actually uses whenever they differ, so
-    `as_parameters_for_case()` builds the base-rate assumption under the
-    matching household-category id (Task 25/26)."""
-    assumptions = {"base_rate": base_rate}
+    `as_parameters_for_case()` builds the entry-threshold assumption under
+    the matching rate-household id (Task 26a repair). The $75 default is the
+    threshold these regressions previously reached as 25% of an assumed $300
+    base, so every expected amount is unchanged."""
+    assumptions = {"entry_threshold": entry_threshold}
     if income_level is not None:
         assumptions["income_level"] = income_level
     return as_parameters_for_case(
@@ -85,8 +89,8 @@ def test_single_claimant_household_category_changes_at_two_dependent_children() 
     `weekly_accommodation_costs` pushes the cost-based amount to saturate
     whichever area cap applies, so the resulting AS amount alone reveals
     which household category the claimant fell into. Two separate
-    parameter sets, one per household category (Task 25/26: as_base_rate_*
-    is keyed by household category too, so the one-child and two-child
+    parameter sets, one per household (the entry threshold is keyed by the
+    rate household and the cap by the cl 1-3 category, so the one-child and two-child
     scenarios need their own matching compound-id assumption, not one
     shared parameters object)."""
     one_child_parameters = _assumed_parameters(
@@ -190,21 +194,21 @@ def test_non_beneficiary_reduction_cannot_make_the_result_negative() -> None:
 
 def test_real_policy_undeclared_base_rate_and_income_level_need_review() -> None:
     """Task 23 defensive fix: parameters genuinely absent from the real
-    approved policy return needs_review rather than raising KeyError. The
-    base-rate id includes the household category (Task 25/26's compound-id
-    fix) -- `_ordinary_as_scenario()`'s default (single, no dependent
-    children) maps to `single_no_dependent_children`."""
+    approved policy return needs_review rather than raising KeyError. Ids
+    follow the Task 26a repair: `_ordinary_as_scenario()`'s default (single,
+    no dependent children) maps to the `single_no_dependent_children` rate
+    row for both the entry threshold and the income level."""
     real_parameters = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE)
 
     missing_base = calculate_accommodation_supplement(_ordinary_as_scenario(), real_parameters)
     assert missing_base.outcome == "needs_review"
-    assert "as_base_rate_jobseeker_support_single_no_dependent_children" in (missing_base.reason or "")
+    assert "as_entry_threshold_jobseeker_support_single_no_dependent_children" in (missing_base.reason or "")
 
     resolutions = dict(real_parameters.resolutions)
-    resolutions["as_base_rate_non_beneficiary_single_no_dependent_children"] = ParameterResolution(
-        parameter_id="as_base_rate_non_beneficiary_single_no_dependent_children",
+    resolutions["as_entry_threshold_non_beneficiary_single_no_dependent_children"] = ParameterResolution(
+        parameter_id="as_entry_threshold_non_beneficiary_single_no_dependent_children",
         outcome="resolved",
-        value=Decimal(300),
+        value=Decimal(75),
         unit="NZD_per_week",
         source_id="test-case-assumption",
         locator="Task 24.2 undeclared-income-level regression",
@@ -217,7 +221,7 @@ def test_real_policy_undeclared_base_rate_and_income_level_need_review() -> None
         replace(real_parameters, resolutions=resolutions),
     )
     assert missing_income_level.outcome == "needs_review"
-    assert "as_income_level_non_beneficiary" in (missing_income_level.reason or "")
+    assert "as_income_level_non_beneficiary_single_no_dependent_children" in (missing_income_level.reason or "")
 
 
 def test_dec001_uses_exact_fractional_income_excess_not_floor_first() -> None:

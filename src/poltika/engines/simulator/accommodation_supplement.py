@@ -115,6 +115,22 @@ class _HouseholdCategory(str, Enum):
     SINGLE_NO_DEPENDENT_CHILDREN = "single_no_dependent_children"
 
 
+class _RateHousehold(str, Enum):
+    """Internal: the household row of MSD's published entry-threshold and
+    income-level tables (DEC-002; specification.md's "Task 26a selector and
+    threshold repair"). Deliberately separate from `_HouseholdCategory`,
+    the Schedule 4 Part 7 cl 1-3 cap grouping: the tables split households
+    differently -- e.g. a childless couple and a sole parent with one child
+    share a cap row but not a threshold row (PR #46 finding). Derived from
+    verified `partner_status` and `dependent_children_count`; never a
+    caller-selected input."""
+
+    SINGLE_NO_DEPENDENT_CHILDREN = "single_no_dependent_children"
+    SOLE_PARENT = "sole_parent"
+    COUPLE_NO_DEPENDENT_CHILDREN = "couple_no_dependent_children"
+    COUPLE_WITH_DEPENDENT_CHILDREN = "couple_with_dependent_children"
+
+
 @dataclass(frozen=True)
 class AsScenario:
     """The v0.1 supported-domain scenario facts
@@ -169,6 +185,21 @@ class AsScenario:
     # income of claimant and partner, before the s 423(3) asset-imputation
     # addition (r 18(2A)).
     weekly_income: Decimal | None = None
+
+    # Task 26a repair (specification.md, DEC-002): the ordinary published
+    # rate row applies for the whole week -- no protected Jobseeker
+    # woman-alone rate, mixed-benefit rate, special care/residential rate or
+    # other unrepresented subtype. For a single beneficiary under 25,
+    # VERIFIED includes applicability of r 17(2)(a)'s age-25 rate. EXCLUDED
+    # (a known subtype outside this branch) is unsupported; UNKNOWN is
+    # needs_review. General household eligibility does not imply it.
+    ordinary_rate_status: FactStatus = FactStatus.UNKNOWN
+
+    # Parent rows only (one or more dependent children): the eldest
+    # qualifying dependent child is under 16 throughout the week. A
+    # conservative scope restriction, not a finding that older-child
+    # households lack entitlement. Not consulted when the count is zero.
+    eldest_dependent_child_under_16: FactStatus = FactStatus.UNKNOWN
 
     def __post_init__(self) -> None:
         if self.weekly_accommodation_costs is not None and self.weekly_accommodation_costs < 0:
@@ -277,32 +308,32 @@ def _area_cap_parameter_id(household_category: _HouseholdCategory, area: Area) -
     return f"area_cap_{household_category.value}_{area.value}"
 
 
-def _base_rate_parameter_id(
-    claimant_category: ClaimantCategory, household_category: _HouseholdCategory
-) -> str:
-    """Task 25/26: the compound-ID convention for the claimant-category
-    base rate, extended to also carry the household-category dimension --
-    mirroring `_area_cap_parameter_id()`'s already-established
-    `<primary>_<household_category>_<...>` pattern rather than introducing
-    a new one.
+def _rate_household(partner_status: PartnerType, dependent_children_count: int) -> _RateHousehold:
+    """The published-table household row (specification.md's Task 26a
+    repair). Unlike `_household_category()`, a sole parent's row does not
+    change with a second child, and a couple's row does."""
+    if partner_status == PartnerType.ORDINARY_COUPLE:
+        if dependent_children_count >= 1:
+            return _RateHousehold.COUPLE_WITH_DEPENDENT_CHILDREN
+        return _RateHousehold.COUPLE_NO_DEPENDENT_CHILDREN
+    if dependent_children_count >= 1:
+        return _RateHousehold.SOLE_PARENT
+    return _RateHousehold.SINGLE_NO_DEPENDENT_CHILDREN
 
-    Task 24.1's independent verification pass found that MSD's dated rate
-    tables select the base rate (and its derived 25%-of-base-rate entry
-    threshold) by claimant category *and* household category together --
-    e.g. Supported Living Payment has separate single/couple/parent
-    thresholds -- while Task 23's original `as_base_rate_<claimant_
-    category>` parameter id had no room for that second dimension. Task
-    25's schema stress-test concluded the `ParameterSpec`/`PolicySpec`
-    Pydantic schema itself needs no revision for this (`id` is already a
-    free-form string, and the compound-id pattern already works for area
-    caps) -- only this naming convention needed extending, which is what
-    this function does. No real values are populated under either the old
-    or the new id yet (`as_base_rate_*` remains entirely undeclared,
-    Task 22/23's documented gap, pending Task 24's independent
-    recalculation of the dated MSD tables) -- this changes what string id
-    is looked up, not any approved numeric fact.
-    """
-    return f"as_base_rate_{claimant_category.value}_{household_category.value}"
+
+def _entry_threshold_parameter_id(claimant_category: ClaimantCategory, rate_household: _RateHousehold) -> str:
+    """The published rent/board entry threshold, NZD per week, subtracted
+    directly from qualifying costs (DEC-002). Replaces the Task 25/26
+    `as_base_rate_<claimant>_<cap household>` id, which conflated distinct
+    table rows (SPEC_ERROR, PR #46); there is no fallback to it."""
+    return f"as_entry_threshold_{claimant_category.value}_{rate_household.value}"
+
+
+def _income_level_parameter_id(rate_household: _RateHousehold) -> str:
+    """r 18(3) sets the non-beneficiary income level by household; the
+    published income-threshold column supplies it (DEC-002). There is no
+    claimant-only fallback id."""
+    return f"as_income_level_non_beneficiary_{rate_household.value}"
 
 
 def _household_gate_failure(
@@ -365,6 +396,15 @@ def _household_gate_failure(
                 "specification, not the ordinary single-or-couple branch"
             ),
         )
+    if scenario.ordinary_rate_status == FactStatus.EXCLUDED:
+        return ComponentResult(
+            outcome="unsupported",
+            reason=(
+                "a rate subtype outside the ordinary published row applies (e.g. the protected "
+                "Jobseeker woman-alone rate, a mixed-benefit or special care/residential rate) -- "
+                "not modelled in this branch (DEC-002)"
+            ),
+        )
     if scenario.exempt_cash_asset_status != FactStatus.VERIFIED:
         # Self-review flag (author preflight): this maps BOTH EXCLUDED
         # (an exemption verified to apply) AND UNKNOWN (unverified either
@@ -395,6 +435,26 @@ def _household_gate_failure(
     if scenario.dependent_children_count is None:
         return ComponentResult(outcome="needs_review", reason="dependent_children_count unverified")
 
+    # --- unsupported conditions that need partner status and child count ---
+    if scenario.claimant_category == ClaimantCategory.SOLE_PARENT_SUPPORT and not (
+        scenario.partner_status == PartnerType.SINGLE and scenario.dependent_children_count >= 1
+    ):
+        return ComponentResult(
+            outcome="unsupported",
+            reason=(
+                "Sole Parent Support with a partner or without a dependent child has no published "
+                "ordinary rate row in this branch (DEC-002)"
+            ),
+        )
+    if scenario.dependent_children_count >= 1 and scenario.eldest_dependent_child_under_16 == FactStatus.EXCLUDED:
+        return ComponentResult(
+            outcome="unsupported",
+            reason=(
+                "the eldest dependent child is not under 16 throughout the week -- outside this "
+                "branch's parent rows (a scope restriction, not a finding of no entitlement; DEC-002)"
+            ),
+        )
+
     # --- assets requirement (r 15): a genuine, evidenced exclusion, not a
     # scope limitation -- evaluated as soon as the facts above make it
     # possible, so it can actually pre-empt every needs_review trigger
@@ -420,6 +480,16 @@ def _household_gate_failure(
         )
     if scenario.claimant_category is None:
         return ComponentResult(outcome="needs_review", reason="claimant_category unverified")
+    if scenario.ordinary_rate_status == FactStatus.UNKNOWN:
+        return ComponentResult(
+            outcome="needs_review",
+            reason="ordinary_rate_status unverified -- the ordinary published rate row is not established",
+        )
+    if scenario.dependent_children_count >= 1 and scenario.eldest_dependent_child_under_16 == FactStatus.UNKNOWN:
+        return ComponentResult(
+            outcome="needs_review",
+            reason="eldest_dependent_child_under_16 unverified for a parent rate row",
+        )
     if scenario.tenure_type is None:
         return ComponentResult(outcome="needs_review", reason="tenure_type unverified")
     if scenario.statistical_area_unit is None:
@@ -457,11 +527,15 @@ def calculate_accommodation_supplement(
     if result.outcome == "calculated":
         rules = tuple(
             rule
-            for parameter_id, rule in _AS_CALCULATION_RULES
-            if parameter_id is None or parameter_id in parameter_ids
+            for prefix, rule in _AS_CALCULATION_RULES
+            if prefix is None or any(parameter_id.startswith(prefix) for parameter_id in parameter_ids)
         )
         decisions = tuple(
-            decision for parameter_id, decision in _AS_DECISIONS if parameter_id in parameter_ids
+            dict.fromkeys(
+                decision
+                for prefix, decision in _AS_DECISIONS
+                if any(parameter_id.startswith(prefix) for parameter_id in parameter_ids)
+            )
         )
     return replace(
         result,
@@ -476,11 +550,22 @@ def calculate_accommodation_supplement(
     )
 
 
-# Task 31: the rounding rules a `calculated` result's path applies. A rule
-# keyed by a parameter id is attached only when that parameter was consulted
-# (its formula step was reached); `None` means every calculated path. The
-# wording restates this file's own implementation comments below.
+# Task 31: the rules a `calculated` result's path applies. A rule keyed by a
+# parameter-id prefix is attached only when a matching parameter was
+# consulted (its formula step was reached); `None` means every calculated
+# path. The wording restates this file's own implementation comments below.
 _AS_CALCULATION_RULES: tuple[tuple[str | None, str], ...] = (
+    (
+        "as_entry_threshold_",
+        (
+            "DEC-002: the published MSD rent/board entry threshold is subtracted directly "
+            "(no base rate or 25% multiplication is computed)"
+        ),
+    ),
+    (
+        "as_income_level_non_beneficiary_",
+        "DEC-002: the published non-beneficiary income threshold for the household row is the r 18(3) level",
+    ),
     (
         "asset_imputation_step_size",
         "s 423(3): imputed income counts only complete steps of cash assets over the threshold (floored)",
@@ -491,12 +576,17 @@ _AS_CALCULATION_RULES: tuple[tuple[str | None, str], ...] = (
     ),
     (None, "r 19: a positive final weekly amount is rounded up to the complete dollar"),
 )
-_AS_DECISIONS: tuple[tuple[str, str], ...] = (("income_reduction_rate", "DEC-001"),)
+_AS_DECISIONS: tuple[tuple[str, str], ...] = (
+    ("as_entry_threshold_", "DEC-002"),
+    ("as_income_level_non_beneficiary_", "DEC-002"),
+    ("income_reduction_rate", "DEC-001"),
+)
 
 
 def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterSet) -> ComponentResult:
-    """The calculation itself, unchanged from Task 23 -- see
-    `calculate_accommodation_supplement()` for the contract."""
+    """The calculation itself -- see `calculate_accommodation_supplement()`
+    for the contract. Step 3 and the r 18(3) income level follow the Task
+    26a selector repair (specification.md, DEC-002)."""
     gate_failure = _household_gate_failure(scenario, parameters)
     if gate_failure is not None:
         return gate_failure
@@ -521,19 +611,19 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
     # already excluded by the household gate above).
     qualifying_costs = scenario.weekly_accommodation_costs
 
-    # Household category is needed for both the base rate (Task 25/26's
-    # compound-id fix) and the area cap below -- computed once, up front.
+    # Two separate household selectors (Task 26a repair): the published
+    # table row for the entry threshold and income level, and the Schedule
+    # 4 Part 7 cl 1-3 grouping for the cap.
+    rate_household = _rate_household(scenario.partner_status, scenario.dependent_children_count)
     household_category = _household_category(scenario.partner_status, scenario.dependent_children_count)
 
-    # Step 3: entry threshold = 25% of the claimant's base rate.
-    entry_threshold_fraction = _param_value(parameters, "entry_threshold_rent_board_fraction")
-    if isinstance(entry_threshold_fraction, ComponentResult):
-        return entry_threshold_fraction
-    base_rate_id = _base_rate_parameter_id(scenario.claimant_category, household_category)
-    base_rate = _param_value(parameters, base_rate_id)
-    if isinstance(base_rate, ComponentResult):
-        return base_rate
-    entry_threshold = entry_threshold_fraction * base_rate
+    # Step 3: the published rent/board entry threshold, subtracted directly
+    # (DEC-002) -- never a base rate multiplied by the entry fraction.
+    entry_threshold = _param_value(
+        parameters, _entry_threshold_parameter_id(scenario.claimant_category, rate_household)
+    )
+    if isinstance(entry_threshold, ComponentResult):
+        return entry_threshold
 
     # Step 4: 70% of the positive excess, capped by household/area.
     area_cap_id = _area_cap_parameter_id(household_category, scenario.statistical_area_unit)
@@ -555,9 +645,7 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
                 outcome="needs_review",
                 reason="weekly_income unverified -- required for the non-beneficiary income-reduction step",
             )
-        income_level = _param_value(
-            parameters, f"as_income_level_{scenario.claimant_category.value}"
-        )
+        income_level = _param_value(parameters, _income_level_parameter_id(rate_household))
         if isinstance(income_level, ComponentResult):
             return income_level
 

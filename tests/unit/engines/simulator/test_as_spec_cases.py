@@ -58,7 +58,7 @@ def test_as_spec_cases_are_complete_and_unique() -> None:
 
 def test_real_policy_contains_exactly_the_20_independently_verified_parameters() -> None:
     parameters = load_policy_parameters(
-        AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version="0.1.0"
+        AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version="0.1.1"
     )
     assert set(parameters.resolutions) == _INDEPENDENTLY_VERIFIED_PARAMETER_IDS
     assert all(resolution.outcome == "resolved" for resolution in parameters.resolutions.values())

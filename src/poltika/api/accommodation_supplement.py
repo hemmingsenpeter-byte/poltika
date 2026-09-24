@@ -92,6 +92,10 @@ class AsCalculationRequest(BaseModel):
     cash_assets: Decimal | None = Field(default=None, ge=0)
     exempt_cash_asset_status: FactStatus = FactStatus.UNKNOWN
     weekly_income: Decimal | None = Field(default=None, ge=0)
+    # Task 26a repair (DEC-002): omitted means unverified -> needs_review,
+    # never a silent pass.
+    ordinary_rate_status: FactStatus = FactStatus.UNKNOWN
+    eldest_dependent_child_under_16: FactStatus = FactStatus.UNKNOWN
 
 
 class AsComponentResultResponse(BaseModel):
@@ -126,6 +130,8 @@ def _scenario_from_request(request: AsCalculationRequest) -> AsScenario:
         cash_assets=request.cash_assets,
         exempt_cash_asset_status=request.exempt_cash_asset_status,
         weekly_income=request.weekly_income,
+        ordinary_rate_status=request.ordinary_rate_status,
+        eldest_dependent_child_under_16=request.eldest_dependent_child_under_16,
     )
 
 

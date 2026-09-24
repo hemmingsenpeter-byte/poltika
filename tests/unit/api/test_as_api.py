@@ -43,7 +43,7 @@ def _request_payload(**overrides: Any) -> dict[str, Any]:
         "modelled_date": MODELLED_DATE,
         "assessment_week_start": ASSESSMENT_WEEK_START,
         "assessment_week_end": ASSESSMENT_WEEK_END,
-        "requested_policy_version": "0.1.0",
+        "requested_policy_version": "0.1.1",
         "household_eligibility": "verified",
         "claimant_category": "jobseeker_support",
         "tenure_type": "rent_contributions_or_board",
@@ -53,6 +53,7 @@ def _request_payload(**overrides: Any) -> dict[str, Any]:
         "dependent_children_count": 0,
         "cash_assets": "1000",
         "exempt_cash_asset_status": "verified",
+        "ordinary_rate_status": "verified",
     }
     payload.update(overrides)
     return payload
@@ -79,7 +80,7 @@ def test_policy_dir_defaults_without_env_var(monkeypatch: pytest.MonkeyPatch) ->
     assert resolved.parent.name == "policy_specs"
 
 
-def test_calculate_real_policy_undeclared_base_rate_is_needs_review() -> None:
+def test_calculate_real_policy_undeclared_entry_threshold_is_needs_review() -> None:
     """The real, approved policy.yaml does not yet declare
     as_base_rate_jobseeker_support (Task 22's documented gap, pending
     Task 25's parameter-shape fix) -- must serialize as a clear
@@ -90,7 +91,7 @@ def test_calculate_real_policy_undeclared_base_rate_is_needs_review() -> None:
     component = response.json()["accommodation_supplement"]
     assert component["outcome"] == "needs_review"
     assert component["value"] is None
-    assert "as_base_rate_jobseeker_support" in (component["reason"] or "")
+    assert "as_entry_threshold_jobseeker_support_single_no_dependent_children" in (component["reason"] or "")
 
 
 def test_calculate_real_policy_asset_ceiling_is_unsupported() -> None:
@@ -204,7 +205,7 @@ def test_500_handler_does_not_leak_exception_detail(tmp_path: Path, monkeypatch:
             {
                 "schema_version": "0.1",
                 "policy_id": "accommodation_supplement",
-                "policy_version": "0.1.0",
+                "policy_version": "0.1.1",
                 "status": "approved",
                 "reference_period": {"from": "2026-03-02", "to": "2027-04-01"},
                 "source_catalog": "does_not_exist.yaml",  # triggers InvalidSourceCatalogError

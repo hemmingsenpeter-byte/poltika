@@ -50,22 +50,25 @@ def _write(policy_dir: Path, policy: dict[str, Any]) -> None:
     (policy_dir / "policy.yaml").write_text(yaml.safe_dump(policy, sort_keys=False))
 
 
-def test_april_effective_base_rate_calculates_for_a_june_week(tmp_path: Path) -> None:
-    """Claude Code's reproduction: the same base rate calculated when
-    effective from 2 March but returned `needs_review` when effective from
-    1 April. It must calculate the spec case's own expected amount."""
+def test_april_effective_entry_threshold_calculates_for_a_june_week(tmp_path: Path) -> None:
+    """Claude Code's reproduction: the same rate calculated when effective
+    from 2 March but returned `needs_review` when effective from 1 April.
+    It must calculate the spec case's own expected amount. (The original
+    reproduction used the pre-repair `as_base_rate_*` id; the Task 26a
+    repair replaced it with the published entry threshold, which is what
+    genuinely takes effect on 1 April 2026.)"""
     case = _case("ordinary_uncapped_jobseeker")
     policy_dir, policy = _policy_copy(tmp_path)
     policy["parameters"].append(
         {
-            "id": "as_base_rate_jobseeker_support_single_no_dependent_children",
+            "id": "as_entry_threshold_jobseeker_support_single_no_dependent_children",
             "value_type": "money",
             "unit": "NZD_per_week",
             "values": [
                 {
                     "effective_from": date(2026, 4, 1),
                     "effective_to": date(2027, 4, 1),
-                    "value": case["parameter_assumptions"]["base_rate"],
+                    "value": case["parameter_assumptions"]["entry_threshold"],
                     "source_id": policy["parameters"][0]["values"][0]["source_id"],
                     "locator": "test assumption only -- not a statutory value",
                     "review_status": "approved",
@@ -79,7 +82,7 @@ def test_april_effective_base_rate_calculates_for_a_june_week(tmp_path: Path) ->
         policy_dir,
         LOOKUP_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.0",
+        requested_policy_version="0.1.1",
         assessment_week=JUNE_WEEK,
     )
 
@@ -99,11 +102,11 @@ def test_april_effective_area_cap_passes_module_validation(tmp_path: Path) -> No
     scenario = as_scenario_from_yaml(case["scenario"])
 
     result = run_as_module(
-        policy_dir, LOOKUP_DATE, scenario, requested_policy_version="0.1.0", assessment_week=JUNE_WEEK
+        policy_dir, LOOKUP_DATE, scenario, requested_policy_version="0.1.1", assessment_week=JUNE_WEEK
     )
 
     direct = calculate_accommodation_supplement(
-        scenario, load_policy_parameters(policy_dir, LOOKUP_DATE, requested_policy_version="0.1.0")
+        scenario, load_policy_parameters(policy_dir, LOOKUP_DATE, requested_policy_version="0.1.1")
     )
     assert result == direct
     assert "full-year" not in (result.reason or "")

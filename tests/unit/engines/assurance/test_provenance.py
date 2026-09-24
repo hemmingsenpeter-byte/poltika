@@ -73,7 +73,7 @@ def _copy_policy_dir(source: Path, tmp_path: Path) -> Path:
 @pytest.fixture()
 def as_policy_with_assumed_rates(tmp_path: Path) -> Path:
     """A copy of the real AS policy directory with the non-beneficiary
-    base rate and income level declared, so a real-file run can reach the
+    entry threshold and income level declared, so a real-file run can reach the
     DEC-001 path. The two values are the spec case's own test assumptions,
     not statutory figures (Task 26a has not populated real ones)."""
     case = _as_case("non_beneficiary_fractional_income_excess_unrounded")
@@ -81,8 +81,8 @@ def as_policy_with_assumed_rates(tmp_path: Path) -> Path:
     policy = yaml.safe_load((policy_dir / "policy.yaml").read_text())
     source_id = policy["parameters"][0]["values"][0]["source_id"]
     for parameter_id, value in (
-        ("as_base_rate_non_beneficiary_single_no_dependent_children", case["parameter_assumptions"]["base_rate"]),
-        ("as_income_level_non_beneficiary", case["parameter_assumptions"]["income_level"]),
+        ("as_entry_threshold_non_beneficiary_single_no_dependent_children", case["parameter_assumptions"]["entry_threshold"]),
+        ("as_income_level_non_beneficiary_single_no_dependent_children", case["parameter_assumptions"]["income_level"]),
     ):
         policy["parameters"].append(
             {
@@ -158,7 +158,7 @@ def test_report_artifacts_are_the_exact_file_hashes() -> None:
 def _as_real_run() -> ComponentResult:
     case = _as_case("ordinary_uncapped_jobseeker")
     return run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
     )
 
 
@@ -191,7 +191,7 @@ def test_report_refuses_a_changed_decision_file(as_policy_with_assumed_rates: Pa
         as_policy_with_assumed_rates,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK,
+        requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK,
     )
     decision = as_policy_with_assumed_rates / "decisions" / "DEC-001-income-excess-rounding.md"
     with decision.open("a") as f:
@@ -206,34 +206,39 @@ def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assum
         as_policy_with_assumed_rates,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK,
+        requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK,
     )
     assert result.outcome == "calculated"
     assert result.value == 74  # the spec case's own expected value, unchanged by tracing
 
     report = build_provenance_report(as_policy_with_assumed_rates, {"accommodation_supplement": result})
     component = report["components"][0]
-    assert component["decisions"] == [{"id": "DEC-001", "path": "decisions/DEC-001-income-excess-rounding.md"}]
-    decision = next(a for a in report["artifacts"] if a["path"].startswith("decisions/"))
+    assert component["decisions"] == [
+        {"id": "DEC-002", "path": "decisions/DEC-002-published-thresholds-and-rate-scope.md"},
+        {"id": "DEC-001", "path": "decisions/DEC-001-income-excess-rounding.md"},
+    ]
+    decision = next(a for a in report["artifacts"] if a["path"].startswith("decisions/DEC-001"))
     assert (
         decision["sha256"]
         == hashlib.sha256(
             (as_policy_with_assumed_rates / "decisions" / "DEC-001-income-excess-rounding.md").read_bytes()
         ).hexdigest()
     )
-    assert "as_income_level_non_beneficiary" in [p["parameter_id"] for p in component["parameters"]]
+    assert "as_income_level_non_beneficiary_single_no_dependent_children" in [
+        p["parameter_id"] for p in component["parameters"]
+    ]
 
 
 def test_as_undeclared_parameter_is_reported_without_a_source() -> None:
     case = _as_case("ordinary_uncapped_jobseeker")
     result = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
     )
     report = build_provenance_report(AS_POLICY_DIR, {"accommodation_supplement": result})
     component = report["components"][0]
     assert component["outcome"] == "needs_review"
     undeclared = [p for p in component["parameters"] if p["outcome"] == "undeclared"]
-    assert [p["parameter_id"] for p in undeclared] == ["as_base_rate_jobseeker_support_single_no_dependent_children"]
+    assert [p["parameter_id"] for p in undeclared] == ["as_entry_threshold_jobseeker_support_single_no_dependent_children"]
     assert undeclared[0]["source_id"] is None
 
 
@@ -413,11 +418,11 @@ def test_report_refuses_the_same_household_for_different_weeks() -> None:
     case = _as_case("ordinary_uncapped_jobseeker")
     scenario = as_scenario_from_yaml(case["scenario"])
     first = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
+        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
     )
     other_week = AssessmentWeek(start=date(2026, 5, 29), end=date(2026, 6, 5))
     second = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.0", assessment_week=other_week
+        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.1", assessment_week=other_week
     )
     assert first.trace is not None and second.trace is not None
     assert first.trace.scenario_sha256 == second.trace.scenario_sha256

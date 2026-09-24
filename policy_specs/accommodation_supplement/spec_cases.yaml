@@ -1,15 +1,17 @@
 # Task 24.1: independently hand-calculated Accommodation Supplement cases.
 #
 # Each case uses the 20 approved statutory parameters in policy.yaml. The
-# claimant-category base rate and r 18(3) income level remain undeclared there;
-# where arithmetic needs them, parameter_assumptions names the synthetic input
-# explicitly. These assumptions isolate the approved calculation sequence and
-# are not asserted to be statutory rates.
+# published entry threshold and r 18(3) income level (Task 26a repair,
+# DEC-002, policy 0.1.1) remain undeclared there; where arithmetic needs
+# them, parameter_assumptions names the synthetic input explicitly. These
+# assumptions isolate the approved calculation sequence and are not asserted
+# to be statutory rates. The $75 threshold was previously expressed as 25% of
+# an assumed $300 base; each case's arithmetic and expected value is unchanged.
 status: pending_review
 spec_cases:
   - id: ordinary_uncapped_jobseeker
-    derivation: 25% of assumed $300 base = $75; 70% of ($200 - $75) = $87.50; r 19 rounds up to $88.
-    parameter_assumptions: {base_rate: '300'}
+    derivation: Assumed entry threshold $75; 70% of ($200 - $75) = $87.50; r 19 rounds up to $88.
+    parameter_assumptions: {entry_threshold: '75'}
     scenario: &ordinary
       household_eligibility: verified
       claimant_category: jobseeker_support
@@ -21,11 +23,12 @@ spec_cases:
       cash_assets: '1000'
       exempt_cash_asset_status: verified
       weekly_income: null
+      ordinary_rate_status: verified
     expected: {accommodation_supplement: {outcome: calculated, value: '88'}}
 
   - id: ordinary_area_cap_binds
     derivation: 70% of ($2,000 - $75) exceeds the Area 4 single cap of $70; final amount is $70.
-    parameter_assumptions: {base_rate: '300'}
+    parameter_assumptions: {entry_threshold: '75'}
     scenario:
       <<: *ordinary
       statistical_area_unit: area4
@@ -34,7 +37,7 @@ spec_cases:
 
   - id: exact_entry_threshold_is_zero
     derivation: $75 qualifying costs minus the $75 entry threshold leaves no positive excess.
-    parameter_assumptions: {base_rate: '300'}
+    parameter_assumptions: {entry_threshold: '75'}
     scenario:
       <<: *ordinary
       weekly_accommodation_costs: '75'
@@ -46,7 +49,7 @@ spec_cases:
       Exact excess $54.80 x 25% = $13.70. Cost amount is 70% x ($200.25 - $75) = $87.675;
       $87.675 - $13.70 = $73.975, rounded up to $74. Flooring the excess first would produce
       $74.175 and $75, so this case distinguishes DEC-001's convention.
-    parameter_assumptions: {base_rate: '300', income_level: '200'}
+    parameter_assumptions: {entry_threshold: '75', income_level: '200'}
     scenario:
       <<: *ordinary
       claimant_category: non_beneficiary
@@ -125,6 +128,6 @@ spec_cases:
     scenario: {<<: *ordinary, cash_assets: null}
     expected: *needs_review
   - id: non_beneficiary_income_unverified
-    parameter_assumptions: {base_rate: '300', income_level: '200'}
+    parameter_assumptions: {entry_threshold: '75', income_level: '200'}
     scenario: {<<: *ordinary, claimant_category: non_beneficiary, weekly_income: null}
     expected: *needs_review

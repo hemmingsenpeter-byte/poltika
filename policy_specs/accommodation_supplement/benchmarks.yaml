@@ -12,8 +12,10 @@ benchmarks:
     assumed_facts:
       - No household exclusion or discretionary ground applies.
       - Cash assets are $0 and no exempt-asset issue applies.
-      - The published $227 entry threshold is represented as an assumed $908 base rate solely for this arithmetic check.
-    parameter_assumptions: {base_rate: '908'}
+      - The published $227 entry threshold is supplied directly as the entry-threshold assumption (DEC-002).
+      - The ordinary published rate row applies (no excluded rate subtype).
+      - The eldest dependent child is under 16 throughout the week (not stated by MSD; assumed for this arithmetic check).
+    parameter_assumptions: {entry_threshold: '227'}
     scenario:
       household_eligibility: verified
       claimant_category: supported_living_payment
@@ -24,6 +26,8 @@ benchmarks:
       dependent_children_count: 2
       cash_assets: '0'
       exempt_cash_asset_status: verified
+      ordinary_rate_status: verified
+      eldest_dependent_child_under_16: verified
       weekly_income: null
     expected: {accommodation_supplement: {outcome: calculated, value: '104'}}
 
@@ -36,8 +40,10 @@ benchmarks:
       - No household exclusion or discretionary ground applies.
       - Cash assets are $0 and no exempt-asset issue applies.
       - The already-derived $248 weekly qualifying-cost figure is supplied to the scoped calculator.
-      - The published $168 entry threshold is represented as an assumed $672 base rate solely for this arithmetic check.
-    parameter_assumptions: {base_rate: '672'}
+      - The published $168 entry threshold is supplied directly as the entry-threshold assumption (DEC-002).
+      - The ordinary published rate row applies (no excluded rate subtype).
+      - The eldest dependent child is under 16 throughout the week (not stated by MSD; assumed for this arithmetic check).
+    parameter_assumptions: {entry_threshold: '168'}
     scenario:
       household_eligibility: verified
       claimant_category: sole_parent_support
@@ -48,6 +54,8 @@ benchmarks:
       dependent_children_count: 1
       cash_assets: '0'
       exempt_cash_asset_status: verified
+      ordinary_rate_status: verified
+      eldest_dependent_child_under_16: verified
       weekly_income: null
     expected: {accommodation_supplement: {outcome: calculated, value: '56'}}
 
@@ -59,8 +67,9 @@ benchmarks:
     assumed_facts:
       - No household exclusion or discretionary ground applies.
       - Cash assets are $0 and no exempt-asset issue applies.
-      - The published $93 entry threshold is represented as an assumed $372 base rate solely for this arithmetic check.
-    parameter_assumptions: {base_rate: '372', income_level: '693'}
+      - The published $93 entry threshold is supplied directly as the entry-threshold assumption (DEC-002).
+      - The ordinary published rate row applies (no excluded rate subtype).
+    parameter_assumptions: {entry_threshold: '93', income_level: '693'}
     scenario:
       household_eligibility: verified
       claimant_category: non_beneficiary
@@ -71,6 +80,7 @@ benchmarks:
       dependent_children_count: 0
       cash_assets: '0'
       exempt_cash_asset_status: verified
+      ordinary_rate_status: verified
       weekly_income: '750'
     expected: {accommodation_supplement: {outcome: calculated, value: '47'}}
 
