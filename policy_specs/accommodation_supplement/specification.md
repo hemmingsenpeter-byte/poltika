@@ -417,6 +417,128 @@ and parameter provenance, and full assessment-week interval validation.
 Use synthetic values for selector isolation, clearly labelled; independent
 source-derived expectations for the populated policy follow in 26a.
 
+### Task 28.3 WFF-AS interaction contract
+
+**Status: accepted 24 September 2026.** Drafted by Claude Code on Pete's
+instruction to proceed without GPT/Codex input, and revised after a
+fresh-context (Claude) review. Pete then accepted it: "find the most
+obvious solution for these, accept and proceed". That instruction settled
+the three open decisions below and waived the cross-model review rotation
+for this contract. BUILD_PLAN assigns 28.3 to GPT/Codex, and a GPT/Codex
+review remains welcome afterwards; it is not a gate. This is the canonical
+contract; the WFF specification's matching section points here. Sources:
+Task 28.1 research (PR #48, `docs/research/task_28_1_wff_as_interactions.md`),
+DEC-002, DEC-003, the Task 28.2 decisions (PR #49), and the provisions cited.
+
+#### Input and preconditions
+
+- The combined input is the two policies' own scenarios (`WffScenario`,
+  `AsScenario`), because each defines its facts for its own period and
+  purpose; BUILD_PLAN 28.4's "one set of canonical household facts" is
+  therefore not literally met. **Decided (Pete, 24 September 2026): two
+  scenarios.** A single merged fact set would have to choose one policy's
+  definition of partner, child or main benefit over the other's.
+- Precondition, as a verified fact the caller supplies
+  (`as_claimant_is_wff_claimant_or_partner`): the AS claimant is the WFF
+  claimant or their partner. Neither scenario type carries it; `unknown`
+  makes every component `needs_review`, `excluded` makes the combined run
+  `unsupported`.
+- Income attestation: each policy's income input is supplied already
+  derived under that policy's own definition (see "Income" below). This
+  cannot be checked at runtime; a caller who cannot attest it supplies the
+  input as unverified (`None`), and each policy's existing gate applies.
+
+#### Periods (Task 28.2)
+
+- WFF: the full 2026-27 tax year `[2026-04-01, 2027-04-01)`, lookup
+  2026-06-01, annual components. AS: the week `[2026-06-01, 2026-06-08)`,
+  lookup 2026-06-01, weekly component. These are the recorded 28.2 choices;
+  the runner takes the week and lookup dates as explicit inputs and each
+  module enforces its own reference period (for AS, weeks end on or before
+  1 April 2027).
+- Native periods only: no sum, no conversion. The AS week must lie wholly
+  inside the WFF year, or every component is `needs_review`.
+
+#### Income: no coupling in either direction
+
+- **AS does not enter WFF family scheme income.** CW 33(1)(a) makes Social
+  Security Act monetary benefits exempt income except a main benefit, NZ
+  superannuation equivalent assistance and veteran's pension equivalent
+  assistance; AS is none of those (the Act's main-benefit definition does
+  not include it); MB 13(2)(l) excludes an exempt Social Security Act
+  monetary benefit from family scheme income (`wff-income-tax-act-part-c`,
+  `wff-income-tax-act`; corroborated by `wff-ird-other-income`).
+- **An identified WFF tax credit does not enter AS chargeable income,
+  whichever agency pays it.** Schedule 3 cl 8(1)(l) excludes tax credits
+  received under Income Tax Act subparts MA to MG and MZ with no payer
+  qualifier; that an MSD-paid credit under TAA s 80KN-80KO is such a credit
+  is DEC-003's recorded inference, not a statutory statement. As DEC-003
+  says, this does not apply to every MSD payment or to unidentified
+  amounts, and payment identity and income-derivation verification remain
+  required.
+- The runner never derives, adds or subtracts one policy's output into the
+  other's income input.
+- MSD-paid WFF can reach AS chargeable income through a non-beneficiary's
+  own transitional MSD payments (TAA s 80KP) and, because r 18(2A) combines
+  a partner's income, through a partner's; it is excluded there too
+  (DEC-003). No runtime gate is added: the caller's `weekly_income` must
+  already exclude identified WFF credits.
+- AS's r 17 base-rate paragraphs (b), (d) and (h) refer to a maximum annual
+  family tax credit rate; paragraph (f) says "the annual rate ... that is
+  payable", and whether that means the maximum rate is unresolved (DEC-002).
+  The DEC-002 table path computes none of these terms, and no WFF output is
+  passed into AS.
+
+#### Shared-fact checks
+
+The runner compares only the facts below and never repairs one input from
+the other. None is a certainty in every legitimate household: relationship,
+main-benefit and child definitions differ between the policies. Each check
+is a deliberately **conservative** gate: a disagreement the model cannot
+resolve is escalated, not guessed. A field that is unverified on either
+side (`None` in AS, `unknown` in WFF) is not compared; that policy's own
+gates handle it.
+
+| Check | Flagged disagreement | Why conservative, not certain |
+| --- | --- | --- |
+| Partner status | WFF `single` with an AS couple (`ordinary_couple`, `joint_tenancy`, or claimant category `mixed_benefit_couple`); or WFF `partnered` with AS `single` | The Social Security Act's "in a relationship" and MSD's s 8(2) power to regard a married person living apart as single differ from the Income Tax Act's exclusion of a "separated person" from "spouse", so the statuses can legitimately differ. **Decided (Pete, 24 September 2026):** AS `community_spouse_or_partner` is not compared. AS already returns `unsupported` for it, so comparing could only flag a WFF household that may legitimately be single or partnered under the Income Tax Act's separated-person test. |
+| Main benefit, in-work | AS main-benefit category (Jobseeker Support, Sole Parent Support, Supported Living Payment) with WFF `in_work_eligibility` asserted `verified` | WFF-04 requires a full year with no main-benefit period, and MD 8 covers the person and their spouse, so a main benefit paid in the AS week contradicts it. |
+| Main benefit, MC 6(b) | The same AS categories with WFF `mc6b_disqualifying_payment` asserted `verified` | MC 6(b) applies when "they receive" a main benefit, i.e. the person. For a single household the contradiction is certain; for a couple the AS category may describe the partner's benefit, so flagging it is conservative. |
+| Dependent children | The WFF child list length differs from AS `dependent_children_count` | Different definitions (AS cl 7 excludes children with an orphan's or unsupported child's benefit; WFF has whole-year qualification and its own tests), so a difference may be legitimate. The 28.1 research asks for child identities to be verified under each policy; neither scenario type carries identities, so v0.1 compares counts only. Equal counts do not establish the same children. |
+
+A mixed-benefit couple is not added to the main-benefit check: whether an
+MSD mixed-benefit couple necessarily includes a main-benefit recipient has
+not been sourced (MISSING_SOURCE). Receiving AS is never treated as
+receiving a main benefit.
+
+#### Outcome on disagreement
+
+- Both modules always run, so their traces exist.
+- **Precedence (decided, Pete, 24 September 2026)**, following the 28.1
+  research gate "preserve existing component/domain `unsupported` outcome":
+  a component already `unsupported` stays `unsupported`, since both outcomes
+  are non-numeric and the exclusion is the more specific fact. Every other
+  component becomes
+  `needs_review` with a reason listing every disagreement found, in the
+  order of the table above, each naming both assertions.
+- The original module results are kept alongside the replacements
+  ("preserve the conflicting evidence"); a replaced component keeps its
+  original trace.
+- A structural error a module raises (e.g. a policy-version mismatch)
+  propagates unchanged; the runner does not convert it.
+
+#### Output and provenance
+
+The combined result carries the (possibly replaced) WFF and AS results, the
+originals, both periods, and the disagreements found. There is no combined
+total. Combined provenance is Task 31.6.
+
+#### Not in this contract
+
+Payment schedules or instalments; cash-assets treatment of WFF receipts
+(r 16 and Schedule 8 are separate); child identity matching; and any
+dependency-graph behaviour (v0.3).
+
 ### Historical Task 25 schema stress-test note
 
 AS is assessed on an ongoing weekly basis, reassessed on a change of
