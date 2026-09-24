@@ -18,10 +18,12 @@ All components in one report must come from one calculation: the same
 policy, lookup date, artifacts and scenario (`ComponentTrace.scenario_sha256`).
 Components from different households are refused even under the same policy.
 
-Source entries carry their catalogue check evidence verbatim. The catalogues
-record check dates only in free-text notes, so the report does not parse a
-date out of them or relabel the catalogue's `as_of` as a source's check date:
-`check_date` is reported as not recorded.
+Source entries carry their catalogue check evidence verbatim. A check
+recorded as a mapping with a structured `checked_on` date (e.g. Task 28.2's
+`task_28_2_check`) is reported in `checked_on`, naming the check it came
+from. Dates inside free-text notes are never parsed, and the catalogue's
+`as_of` is never relabelled as a source's check date: a source with no
+structured check reports `checked_on` as empty.
 
 Any citation that cannot be resolved (a parameter's `source_id`, a
 component's rule id, a decision id) raises `ProvenanceError`. A report with
@@ -37,6 +39,7 @@ import hashlib
 import json
 import re
 from collections.abc import Mapping
+from datetime import date, datetime
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as package_version
 from pathlib import Path, PurePosixPath
@@ -175,7 +178,10 @@ def render_markdown(report: Mapping[str, Any]) -> str:
         ]
         if source["audit_version_url"]:
             lines.append(f"- Audit version URL: {source['audit_version_url']}")
-        lines.append(f"- Check date: {source['check_date'] or 'not recorded as a structured field'}")
+        if source["checked_on"]:
+            lines += [f"- Checked on: {c['date']} ({c['field']})" for c in source["checked_on"]]
+        else:
+            lines.append("- Checked on: not recorded as a structured field")
         for note in source["check_evidence"]:
             lines.append(f"- {note['field']}: {_cell(note['text'])}")
         lines.append("")
@@ -332,16 +338,40 @@ def _source_entry(source_id: str, entry: Mapping[str, Any]) -> dict[str, Any]:
         "title": entry.get("title"),
         "url": entry.get("url"),
         "audit_version_url": entry.get("audit_version_url"),
-        # No catalogue entry records its check date as a structured field;
-        # dates appear only inside the free-text notes below. Reported as
-        # unknown rather than parsed or borrowed from the catalogue's as_of.
-        "check_date": None,
+        "checked_on": _structured_check_dates(entry),
         "check_evidence": [
-            {"field": key, "text": str(plain(value))}
+            {"field": key, "text": _evidence_text(value)}
             for key, value in entry.items()
             if key not in _SOURCE_IDENTITY_FIELDS
         ],
     }
+
+
+def _structured_check_dates(entry: Mapping[str, Any]) -> list[dict[str, str]]:
+    """Each check recorded as a mapping with a `checked_on` date, oldest
+    first. Only a real date (YAML date or ISO-format string) counts; any
+    other `checked_on` value stays in the evidence text, unparsed."""
+    checks = []
+    for key, value in entry.items():
+        if not isinstance(value, Mapping) or "checked_on" not in value:
+            continue
+        checked_on = value["checked_on"]
+        if isinstance(checked_on, str):
+            try:
+                checked_on = date.fromisoformat(checked_on)
+            except ValueError:
+                continue
+        if isinstance(checked_on, date) and not isinstance(checked_on, datetime):
+            checks.append({"field": key, "date": checked_on.isoformat()})
+    return sorted(checks, key=lambda c: (c["date"], c["field"]))
+
+
+def _evidence_text(value: Any) -> str:
+    """Free text as given; a structured check as canonical JSON."""
+    rendered = plain(value)
+    if isinstance(rendered, str):
+        return rendered
+    return json.dumps(rendered, sort_keys=True, ensure_ascii=False)
 
 
 def _parameter_entry(use: ParameterUse, sources: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
