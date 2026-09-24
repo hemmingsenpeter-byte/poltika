@@ -59,3 +59,12 @@ class ArtifactHashMismatchError(ProvenanceError):
     A report must describe what the run actually used; resolving sources or
     rules against a since-edited file would silently substitute current
     content for historical content (BUILD_PLAN.md Task 31.3)."""
+
+
+class StoreError(PoltikaError):
+    """The scenario store cannot save or replay faithfully (Task 32)."""
+
+
+class ImmutableRecordError(StoreError):
+    """An id already stored with different content: runs are never edited in
+    place (ADR-0013, BUILD_PLAN Task 32.2)."""
