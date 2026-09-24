@@ -40,6 +40,7 @@ from tests.conftest import (
     as_scenario_from_yaml,
     load_as_cases,
     load_wff_spec_case,
+    real_as_parameters_without,
     wff_scenario_from_yaml,
 )
 
@@ -252,19 +253,40 @@ def test_recording_parameters_logs_membership_tests_too() -> None:
 # --- Accommodation Supplement ---
 
 
-def test_as_real_policy_records_undeclared_entry_threshold() -> None:
-    case = _as_case("ordinary_uncapped_jobseeker")
+def test_as_real_policy_records_the_published_threshold_and_its_source() -> None:
+    """Since Task 26a.2 the real policy declares the published threshold; the
+    trace must carry the value, source and interval straight from policy.yaml."""
+    case = _as_case("real_policy_jobseeker_single_published_threshold")
     result = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
+        AS_POLICY_DIR,
+        AS_MODELLED_DATE,
+        as_scenario_from_yaml(case["scenario"]),
+        requested_policy_version="0.1.1",
+        assessment_week=TEST_ASSESSMENT_WEEK,
     )
-    # The real policy does not declare base rates yet (Task 26a).
-    assert result.outcome == "needs_review"
+    assert result.outcome == "calculated"
     assert result.trace is not None
     threshold = next(p for p in result.trace.parameters if p.parameter_id.startswith("as_entry_threshold_"))
+    entry = _policy_values(AS_POLICY_DIR)[threshold.parameter_id]
     assert threshold.parameter_id == "as_entry_threshold_jobseeker_support_single_no_dependent_children"
+    assert threshold.outcome == "resolved"
+    assert threshold.value == Decimal(str(entry["value"]))
+    assert threshold.source_id == entry["source_id"]
+    assert threshold.effective_from == entry["effective_from"]
+    assert not any(p.parameter_id.startswith("as_base_rate_") for p in result.trace.parameters)
+
+
+def test_as_undeclared_entry_threshold_is_recorded_as_undeclared() -> None:
+    threshold_id = "as_entry_threshold_jobseeker_support_single_no_dependent_children"
+    case = _as_case("ordinary_uncapped_jobseeker")
+    result = calculate_accommodation_supplement(
+        as_scenario_from_yaml(case["scenario"]), real_as_parameters_without(threshold_id)
+    )
+    assert result.outcome == "needs_review"
+    assert result.trace is not None
+    threshold = next(p for p in result.trace.parameters if p.parameter_id == threshold_id)
     assert threshold.outcome == "undeclared"
     assert threshold.source_id is None
-    assert not any(p.parameter_id.startswith("as_base_rate_") for p in result.trace.parameters)
     assert result.trace.calculation_rules == ()
 
 

@@ -28,6 +28,7 @@ import poltika.api.accommodation_supplement as as_api
 from poltika.api.accommodation_supplement import _as_policy_dir
 from poltika.api.main import app
 from poltika.engines.simulator.wff import ComponentResult
+from tests.conftest import AS_POLICY_DIR, load_as_cases
 
 client = TestClient(app)
 
@@ -80,18 +81,23 @@ def test_policy_dir_defaults_without_env_var(monkeypatch: pytest.MonkeyPatch) ->
     assert resolved.parent.name == "policy_specs"
 
 
-def test_calculate_real_policy_undeclared_entry_threshold_is_needs_review() -> None:
-    """The real, approved policy.yaml does not yet declare
-    as_base_rate_jobseeker_support (Task 22's documented gap, pending
-    Task 25's parameter-shape fix) -- must serialize as a clear
-    `needs_review`, never a crash and never a guessed number."""
+def test_calculate_real_policy_uses_the_published_threshold() -> None:
+    """End-to-end against the real approved policy (0.1.1), which declares
+    the published thresholds since Task 26a.2. The request matches the
+    `real_policy_jobseeker_single_published_threshold` spec case, whose
+    independently hand-calculated value is the expectation -- loaded from
+    the protected YAML, not restated here."""
+    case = next(
+        c
+        for c in load_as_cases(AS_POLICY_DIR / "spec_cases.yaml", "spec_cases")
+        if c["id"] == "real_policy_jobseeker_single_published_threshold"
+    )
     response = client.post("/accommodation-supplement/calculate", json=_request_payload())
 
     assert response.status_code == 200
     component = response.json()["accommodation_supplement"]
-    assert component["outcome"] == "needs_review"
-    assert component["value"] is None
-    assert "as_entry_threshold_jobseeker_support_single_no_dependent_children" in (component["reason"] or "")
+    assert component["outcome"] == "calculated"
+    assert component["value"] == case["expected"]["accommodation_supplement"]["value"]
 
 
 def test_calculate_real_policy_asset_ceiling_is_unsupported() -> None:

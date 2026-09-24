@@ -8,7 +8,6 @@ fail under its own durable, searchable name.
 
 from __future__ import annotations
 
-from dataclasses import replace
 from decimal import Decimal
 
 from poltika.engines.simulator.accommodation_supplement import (
@@ -23,11 +22,15 @@ from poltika.engines.simulator.accommodation_supplement import (
 )
 from poltika.engines.simulator.wff import FactStatus
 from poltika.policy.loader import (
-    ParameterResolution,
     PolicyParameterSet,
     load_policy_parameters,
 )
-from tests.conftest import AS_MODELLED_DATE, AS_POLICY_DIR, as_parameters_for_case
+from tests.conftest import (
+    AS_MODELLED_DATE,
+    AS_POLICY_DIR,
+    as_parameters_for_case,
+    real_as_parameters_without,
+)
 
 
 def _ordinary_as_scenario(**overrides: object) -> AsScenario:
@@ -193,32 +196,26 @@ def test_non_beneficiary_reduction_cannot_make_the_result_negative() -> None:
 
 
 def test_real_policy_undeclared_base_rate_and_income_level_need_review() -> None:
-    """Task 23 defensive fix: parameters genuinely absent from the real
-    approved policy return needs_review rather than raising KeyError. Ids
-    follow the Task 26a repair: `_ordinary_as_scenario()`'s default (single,
-    no dependent children) maps to the `single_no_dependent_children` rate
-    row for both the entry threshold and the income level."""
-    real_parameters = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE)
-
-    missing_base = calculate_accommodation_supplement(_ordinary_as_scenario(), real_parameters)
-    assert missing_base.outcome == "needs_review"
-    assert "as_entry_threshold_jobseeker_support_single_no_dependent_children" in (missing_base.reason or "")
-
-    resolutions = dict(real_parameters.resolutions)
-    resolutions["as_entry_threshold_non_beneficiary_single_no_dependent_children"] = ParameterResolution(
-        parameter_id="as_entry_threshold_non_beneficiary_single_no_dependent_children",
-        outcome="resolved",
-        value=Decimal(75),
-        unit="NZD_per_week",
-        source_id="test-case-assumption",
-        locator="Task 24.2 undeclared-income-level regression",
+    """Task 23 defensive fix: a parameter absent from the policy returns
+    needs_review rather than raising KeyError. Task 26a.2 now declares the
+    real table values, so each case removes the one id it exercises from the
+    real policy (`real_as_parameters_without()`). Ids follow the Task 26a
+    repair's `single_no_dependent_children` rate row."""
+    threshold_id = "as_entry_threshold_jobseeker_support_single_no_dependent_children"
+    missing_base = calculate_accommodation_supplement(
+        _ordinary_as_scenario(), real_as_parameters_without(threshold_id)
     )
+    assert missing_base.outcome == "needs_review"
+    assert threshold_id in (missing_base.reason or "")
+    assert "not yet declared" in (missing_base.reason or "")
+
+    income_id = "as_income_level_non_beneficiary_single_no_dependent_children"
     missing_income_level = calculate_accommodation_supplement(
         _ordinary_as_scenario(
             claimant_category=ClaimantCategory.NON_BENEFICIARY,
             weekly_income=Decimal(250),
         ),
-        replace(real_parameters, resolutions=resolutions),
+        real_as_parameters_without(income_id),
     )
     assert missing_income_level.outcome == "needs_review"
     assert "as_income_level_non_beneficiary_single_no_dependent_children" in (missing_income_level.reason or "")

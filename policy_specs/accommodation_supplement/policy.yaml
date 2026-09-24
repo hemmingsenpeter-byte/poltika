@@ -86,7 +86,7 @@ inputs:
     period: assessment_week
     source_rule_ids: [AS-04]
     missing_outcome: needs_review
-    note: Task 26a repair (DEC-002). verified means the ordinary published rate row applies for the whole week -- no protected Jobseeker woman-alone rate, mixed-benefit rate, special care/residential rate or other unrepresented subtype; for a single beneficiary under 25 it includes applicability of r 17(2)(a)'s age-25 rate. excluded (a known subtype outside this branch) is unsupported. General household eligibility does not imply it.
+    note: Task 26a repair (DEC-002). verified means the ordinary published rate row applies for the whole week -- no protected Jobseeker woman-alone rate, mixed-benefit rate, special care/residential rate or other unrepresented subtype; for a single beneficiary under 25 it includes applicability of r 17(2)(a)'s age-25 rate. A couple with a non-qualified partner and dependent children uses the ordinary couple-with-children row (MSD publishes identical values for it); a non-qualified-partner couple without children has no published row and is an unrepresented subtype, so excluded. excluded (a known subtype outside this branch) is unsupported. General household eligibility does not imply it.
   - id: eldest_dependent_child_under_16
     owner: assessment_unit
     type: verified_fact_status
@@ -264,6 +264,101 @@ parameters:
     unit: fraction
     values:
       - {effective_from: 2026-03-02, effective_to: 2027-04-01, value: 0.25, source_id: as-social-security-regulations, locator: 'r 18(2)', review_status: approved}
+
+  # Task 26a.2 (24 September 2026): published MSD rent/board entry thresholds
+  # and non-beneficiary income levels, per DEC-002 and the Task 26a selector
+  # repair. Values generated from the fetched tables (all labelled "at 1 April
+  # 2026"), not re-typed. The protected Jobseeker woman-alone row has no id
+  # (ordinary_rate_status excludes it). Non-qualified-partner couple rows
+  # with children publish the same values as the ordinary couple-with-
+  # children row and share its id; without children no row is published,
+  # so ordinary_rate_status excludes them (see that input's note). No value
+  # exists before 1 April 2026, so March weeks stay gated.
+  - id: as_entry_threshold_non_beneficiary_single_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 93, source_id: as-msd-rates-2026, locator: 'Rent or board entry threshold, row(s): Single, 16+ years', review_status: approved}
+  - id: as_entry_threshold_non_beneficiary_couple_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 158, source_id: as-msd-rates-2026, locator: 'Rent or board entry threshold, row(s): Married, civil union or de facto couple (without children)', review_status: approved}
+  - id: as_entry_threshold_non_beneficiary_couple_with_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 205, source_id: as-msd-rates-2026, locator: 'Rent or board entry threshold, row(s): Married, civil union or de facto couple, 1+ children', review_status: approved}
+  - id: as_entry_threshold_non_beneficiary_sole_parent
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 168, source_id: as-msd-rates-2026, locator: 'Rent or board entry threshold, row(s): Sole parent, 1 child; Sole parent, 2+ children', review_status: approved}
+  - id: as_entry_threshold_jobseeker_support_single_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 93, source_id: as-msd-jobseeker-rates-2026, locator: 'Rent or board entry threshold, row(s): Single, 18+ years, at home; Single, 18+ years, away from home', review_status: approved}
+  - id: as_entry_threshold_jobseeker_support_couple_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 158, source_id: as-msd-jobseeker-rates-2026, locator: 'Rent or board entry threshold, row(s): Married, civil union or de facto couple ( without children)', review_status: approved}
+  - id: as_entry_threshold_jobseeker_support_couple_with_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 205, source_id: as-msd-jobseeker-rates-2026, locator: 'Rent or board entry threshold, row(s): Married, civil union or de facto couple ( with children)', review_status: approved}
+  - id: as_entry_threshold_jobseeker_support_sole_parent
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 168, source_id: as-msd-jobseeker-rates-2026, locator: 'Rent or board entry threshold, row(s): Sole parent, 1 child; Sole parent, 2+ children', review_status: approved}
+  - id: as_entry_threshold_sole_parent_support_sole_parent
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 168, source_id: as-msd-sole-parent-rates-2026, locator: 'Rent or board entry threshold, row(s): Sole parent, 1 child; Sole parent, 2+ children', review_status: approved}
+  - id: as_entry_threshold_supported_living_payment_single_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 106, source_id: as-msd-supported-living-rates-2026, locator: 'Rent or board entry threshold, row(s): Single, 16+ years', review_status: approved}
+  - id: as_entry_threshold_supported_living_payment_couple_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 180, source_id: as-msd-supported-living-rates-2026, locator: 'Rent or board entry threshold, row(s): Married, civil union or de facto couple ( without children)', review_status: approved}
+  - id: as_entry_threshold_supported_living_payment_couple_with_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 227, source_id: as-msd-supported-living-rates-2026, locator: 'Rent or board entry threshold, row(s): Married, civil union or de facto couple ( with children)', review_status: approved}
+  - id: as_entry_threshold_supported_living_payment_sole_parent
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 184, source_id: as-msd-supported-living-rates-2026, locator: 'Rent or board entry threshold, row(s): Sole parent, 1 child; Sole parent, 2+ children', review_status: approved}
+  - id: as_income_level_non_beneficiary_single_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 693, source_id: as-msd-income-2026, locator: 'Income threshold column (same in Areas 1-4), row(s): Single, 16+ years', review_status: approved}
+  - id: as_income_level_non_beneficiary_couple_no_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 1066, source_id: as-msd-income-2026, locator: 'Income threshold column (same in Areas 1-4), row(s): Married, civil union or de facto couple (without children)', review_status: approved}
+  - id: as_income_level_non_beneficiary_couple_with_dependent_children
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 1117, source_id: as-msd-income-2026, locator: 'Income threshold column (same in Areas 1-4), row(s): Married, civil union or de facto couple, 1+ children', review_status: approved}
+  - id: as_income_level_non_beneficiary_sole_parent
+    value_type: money
+    unit: NZD_per_week
+    values:
+      - {effective_from: 2026-04-01, effective_to: 2027-04-01, value: 906, source_id: as-msd-income-2026, locator: 'Income threshold column (same in Areas 1-4), row(s): Sole parent, 1 child; Sole parent, 2+ children', review_status: approved}
 
 components:
   - id: accommodation_supplement

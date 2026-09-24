@@ -8,9 +8,9 @@ tables start on 1 April 2026, so a genuinely April-effective rate gated
 every week. Each test below is one of the two reproductions, kept under a
 durable name so the mistake cannot return unnoticed.
 
-The values these tests add are the AS spec case's own test assumptions
-and the real policy's existing cap, not new statutory figures (Task 26a
-populates the real base rates).
+The first test uses the real policy's own 1 April 2026 thresholds (Task
+26a.2); the second moves the real policy's first cap start, keeping its
+value, as a synthetic interval diagnostic.
 """
 
 from __future__ import annotations
@@ -50,36 +50,16 @@ def _write(policy_dir: Path, policy: dict[str, Any]) -> None:
     (policy_dir / "policy.yaml").write_text(yaml.safe_dump(policy, sort_keys=False))
 
 
-def test_april_effective_entry_threshold_calculates_for_a_june_week(tmp_path: Path) -> None:
-    """Claude Code's reproduction: the same rate calculated when effective
-    from 2 March but returned `needs_review` when effective from 1 April.
-    It must calculate the spec case's own expected amount. (The original
-    reproduction used the pre-repair `as_base_rate_*` id; the Task 26a
-    repair replaced it with the published entry threshold, which is what
-    genuinely takes effect on 1 April 2026.)"""
-    case = _case("ordinary_uncapped_jobseeker")
-    policy_dir, policy = _policy_copy(tmp_path)
-    policy["parameters"].append(
-        {
-            "id": "as_entry_threshold_jobseeker_support_single_no_dependent_children",
-            "value_type": "money",
-            "unit": "NZD_per_week",
-            "values": [
-                {
-                    "effective_from": date(2026, 4, 1),
-                    "effective_to": date(2027, 4, 1),
-                    "value": case["parameter_assumptions"]["entry_threshold"],
-                    "source_id": policy["parameters"][0]["values"][0]["source_id"],
-                    "locator": "test assumption only -- not a statutory value",
-                    "review_status": "approved",
-                }
-            ],
-        }
-    )
-    _write(policy_dir, policy)
+def test_april_effective_entry_threshold_calculates_for_a_june_week() -> None:
+    """Claude Code's reproduction: a rate effective from 1 April returned
+    `needs_review` for every June week. Since Task 26a.2 the real policy's
+    published thresholds are themselves effective from 1 April 2026, so the
+    real policy is the reproduction: a June week must calculate, using a
+    threshold whose interval starts on 1 April."""
+    case = _case("real_policy_jobseeker_single_published_threshold")
 
     result = run_as_module(
-        policy_dir,
+        AS_POLICY_DIR,
         LOOKUP_DATE,
         as_scenario_from_yaml(case["scenario"]),
         requested_policy_version="0.1.1",
@@ -88,6 +68,9 @@ def test_april_effective_entry_threshold_calculates_for_a_june_week(tmp_path: Pa
 
     assert result.outcome == "calculated", result.reason
     assert str(result.value) == case["expected"]["accommodation_supplement"]["value"]
+    assert result.trace is not None
+    threshold = next(p for p in result.trace.parameters if p.parameter_id.startswith("as_entry_threshold_"))
+    assert threshold.effective_from == date(2026, 4, 1)
 
 
 def test_april_effective_area_cap_passes_module_validation(tmp_path: Path) -> None:

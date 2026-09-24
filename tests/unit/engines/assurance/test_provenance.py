@@ -71,38 +71,11 @@ def _copy_policy_dir(source: Path, tmp_path: Path) -> Path:
 
 
 @pytest.fixture()
-def as_policy_with_assumed_rates(tmp_path: Path) -> Path:
-    """A copy of the real AS policy directory with the non-beneficiary
-    entry threshold and income level declared, so a real-file run can reach the
-    DEC-001 path. The two values are the spec case's own test assumptions,
-    not statutory figures (Task 26a has not populated real ones)."""
-    case = _as_case("non_beneficiary_fractional_income_excess_unrounded")
-    policy_dir = _copy_policy_dir(AS_POLICY_DIR, tmp_path)
-    policy = yaml.safe_load((policy_dir / "policy.yaml").read_text())
-    source_id = policy["parameters"][0]["values"][0]["source_id"]
-    for parameter_id, value in (
-        ("as_entry_threshold_non_beneficiary_single_no_dependent_children", case["parameter_assumptions"]["entry_threshold"]),
-        ("as_income_level_non_beneficiary_single_no_dependent_children", case["parameter_assumptions"]["income_level"]),
-    ):
-        policy["parameters"].append(
-            {
-                "id": parameter_id,
-                "value_type": "money",
-                "unit": "NZD_per_week",
-                "values": [
-                    {
-                        "effective_from": policy["reference_period"]["from"],
-                        "effective_to": policy["reference_period"]["to"],
-                        "value": value,
-                        "source_id": source_id,
-                        "locator": "test assumption only -- not a statutory value",
-                        "review_status": "approved",
-                    }
-                ],
-            }
-        )
-    (policy_dir / "policy.yaml").write_text(yaml.safe_dump(policy, sort_keys=False))
-    return policy_dir
+def as_policy_copy(tmp_path: Path) -> Path:
+    """A file copy of the real AS policy directory. Since Task 26a.2 the real
+    policy declares the published thresholds and income levels, so a
+    real-file run reaches the DEC-001 path without any added assumption."""
+    return _copy_policy_dir(AS_POLICY_DIR, tmp_path)
 
 
 def test_wff_report_resolves_every_parameter_source_and_rule_from_the_files() -> None:
@@ -185,33 +158,33 @@ def test_report_refuses_a_changed_rule_summary(tmp_path: Path) -> None:
         build_provenance_report(policy_dir, components)
 
 
-def test_report_refuses_a_changed_decision_file(as_policy_with_assumed_rates: Path) -> None:
-    case = _as_case("non_beneficiary_fractional_income_excess_unrounded")
+def test_report_refuses_a_changed_decision_file(as_policy_copy: Path) -> None:
+    case = _as_case("real_policy_non_beneficiary_single_income_reduction")
     result = run_as_module(
-        as_policy_with_assumed_rates,
+        as_policy_copy,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
         requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK,
     )
-    decision = as_policy_with_assumed_rates / "decisions" / "DEC-001-income-excess-rounding.md"
+    decision = as_policy_copy / "decisions" / "DEC-001-income-excess-rounding.md"
     with decision.open("a") as f:
         f.write("\nEdited after the run.\n")
     with pytest.raises(ArtifactHashMismatchError, match="DEC-001"):
-        build_provenance_report(as_policy_with_assumed_rates, {"accommodation_supplement": result})
+        build_provenance_report(as_policy_copy, {"accommodation_supplement": result})
 
 
-def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assumed_rates: Path) -> None:
-    case = _as_case("non_beneficiary_fractional_income_excess_unrounded")
+def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_copy: Path) -> None:
+    case = _as_case("real_policy_non_beneficiary_single_income_reduction")
     result = run_as_module(
-        as_policy_with_assumed_rates,
+        as_policy_copy,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
         requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK,
     )
     assert result.outcome == "calculated"
-    assert result.value == 74  # the spec case's own expected value, unchanged by tracing
+    assert str(result.value) == case["expected"]["accommodation_supplement"]["value"]
 
-    report = build_provenance_report(as_policy_with_assumed_rates, {"accommodation_supplement": result})
+    report = build_provenance_report(as_policy_copy, {"accommodation_supplement": result})
     component = report["components"][0]
     assert component["decisions"] == [
         {"id": "DEC-002", "path": "decisions/DEC-002-published-thresholds-and-rate-scope.md"},
@@ -221,7 +194,7 @@ def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assum
     assert (
         decision["sha256"]
         == hashlib.sha256(
-            (as_policy_with_assumed_rates / "decisions" / "DEC-001-income-excess-rounding.md").read_bytes()
+            (as_policy_copy / "decisions" / "DEC-001-income-excess-rounding.md").read_bytes()
         ).hexdigest()
     )
     assert "as_income_level_non_beneficiary_single_no_dependent_children" in [
@@ -229,12 +202,23 @@ def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assum
     ]
 
 
-def test_as_undeclared_parameter_is_reported_without_a_source() -> None:
+def test_as_undeclared_parameter_is_reported_without_a_source(as_policy_copy: Path) -> None:
+    """A parameter the run's policy does not declare is reported as
+    `undeclared` with no source. The real policy now declares every
+    supported threshold (Task 26a.2), so this removes one from a copy."""
+    threshold_id = "as_entry_threshold_jobseeker_support_single_no_dependent_children"
+    policy = yaml.safe_load((as_policy_copy / "policy.yaml").read_text())
+    policy["parameters"] = [p for p in policy["parameters"] if p["id"] != threshold_id]
+    (as_policy_copy / "policy.yaml").write_text(yaml.safe_dump(policy, sort_keys=False))
     case = _as_case("ordinary_uncapped_jobseeker")
     result = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
+        as_policy_copy,
+        AS_MODELLED_DATE,
+        as_scenario_from_yaml(case["scenario"]),
+        requested_policy_version="0.1.1",
+        assessment_week=TEST_ASSESSMENT_WEEK,
     )
-    report = build_provenance_report(AS_POLICY_DIR, {"accommodation_supplement": result})
+    report = build_provenance_report(as_policy_copy, {"accommodation_supplement": result})
     component = report["components"][0]
     assert component["outcome"] == "needs_review"
     undeclared = [p for p in component["parameters"] if p["outcome"] == "undeclared"]

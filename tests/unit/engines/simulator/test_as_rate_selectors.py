@@ -59,10 +59,16 @@ def _resolution(parameter_id: str, value: Decimal) -> ParameterResolution:
 
 
 def _parameters(*, thresholds: bool = True, income_levels: bool = True, extra: dict[str, Decimal] | None = None) -> PolicyParameterSet:
-    """The real approved AS policy (caps, assets, rates) plus synthetic
-    threshold/income values under the repaired ids."""
+    """The real approved AS policy (caps, assets, statutory rates) with its
+    published table values replaced by synthetic threshold/income values."""
     base = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version=AS_POLICY_VERSION)
-    resolutions = dict(base.resolutions)
+    # Drop the real published table values (Task 26a.2) so only the synthetic
+    # selector-isolation values below are present.
+    resolutions = {
+        k: v
+        for k, v in base.resolutions.items()
+        if not k.startswith(("as_entry_threshold_", "as_income_level_"))
+    }
     if thresholds:
         for claimant in CLAIMANTS:
             for household, value in THRESHOLDS.items():

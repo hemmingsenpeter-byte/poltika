@@ -275,3 +275,15 @@ def as_parameters_for_case(case: dict[str, Any]) -> PolicyParameterSet:
                 locator=case["id"],
             )
     return replace(base, resolutions=resolutions)
+
+
+def real_as_parameters_without(*parameter_ids: str) -> PolicyParameterSet:
+    """The real approved AS parameters with the named ids removed, so a test
+    can still exercise the "undeclared parameter -> needs_review, never a
+    crash" path (Task 23) now that Task 26a.2 declares the table values."""
+    base = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version=AS_POLICY_VERSION)
+    for parameter_id in parameter_ids:
+        assert parameter_id in base.resolutions, f"{parameter_id} is not declared; nothing to remove"
+    return replace(
+        base, resolutions={k: v for k, v in base.resolutions.items() if k not in parameter_ids}
+    )
