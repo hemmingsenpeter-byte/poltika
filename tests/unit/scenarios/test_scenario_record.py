@@ -145,3 +145,25 @@ def test_detect_code_identity_outside_git_is_not_reproducible(tmp_path: Path) ->
     code = detect_code_identity(tmp_path)
     assert code.source_commit is None
     assert not code.reproducible
+
+
+def test_policy_files_outside_the_committed_repository_are_not_reproducible(tmp_path: Path) -> None:
+    import shutil
+
+    wff_copy, as_copy = tmp_path / "working_for_families", tmp_path / "accommodation_supplement"
+    shutil.copytree(WFF_POLICY_DIR, wff_copy)
+    shutil.copytree(AS_POLICY_DIR, as_copy)
+    code = detect_code_identity(REPO_ROOT)
+    run = run_scenario(record_from_yaml(_household()), wff_copy, as_copy, code=code)
+    assert not run.manifest.policy_files_committed
+    assert not run.manifest.reproducible
+
+
+def test_committed_policy_files_verify_against_head() -> None:
+    code = detect_code_identity(REPO_ROOT)
+    run = run_scenario(record_from_yaml(_household()), WFF_POLICY_DIR, AS_POLICY_DIR, code=code)
+    # Holds whenever the checkout's policy files equal HEAD (true in CI and in
+    # a clean checkout); a locally edited policy file would make this False.
+    if code.source_tree_clean:
+        assert run.manifest.policy_files_committed
+        assert run.manifest.reproducible

@@ -78,10 +78,15 @@ class ArtifactManifest:
     # module bound when loading its parameters.
     policy_files: tuple[tuple[str, str], ...]
     code: CodeIdentity
+    # True only when every bound policy file equals its committed version at
+    # `code.source_commit` (BUILD_PLAN 30.1: verify the recorded hashes match
+    # the committed files actually used). False for files outside the
+    # repository, e.g. a temporary policy copy.
+    policy_files_committed: bool = False
 
     @property
     def reproducible(self) -> bool:
-        return self.code.reproducible
+        return self.code.reproducible and self.policy_files_committed
 
 
 @dataclass(frozen=True)
@@ -158,6 +163,15 @@ def run_scenario(
         requested_as_policy_version=record.requested_as_policy_version,
     )
     manifest = manifest_from_result(result, code)
+    manifest = ArtifactManifest(
+        policy_files=manifest.policy_files,
+        code=code,
+        policy_files_committed=_files_match_commit(
+            {"working_for_families": wff_policy_dir, "accommodation_supplement": as_policy_dir},
+            manifest.policy_files,
+            code.source_commit,
+        ),
+    )
     sid = scenario_id(record)
     rid = _sha256(
         canonical_json({"scenario_id": sid, "manifest": manifest, "result": result_payload(result)})
@@ -185,3 +199,29 @@ def detect_code_identity(repo_root: Path) -> CodeIdentity:
     except (OSError, subprocess.CalledProcessError):
         return CodeIdentity(pkg, None, None, lock_sha)
     return CodeIdentity(pkg, commit, status.strip() == "", lock_sha)
+
+
+def _files_match_commit(
+    policy_dirs: dict[str, Path], policy_files: tuple[tuple[str, str], ...], commit: str | None
+) -> bool:
+    """Whether each bound file's hash equals that file's content at `commit`
+    in the git repository containing its policy directory."""
+    if commit is None:
+        return False
+    for key, sha in policy_files:
+        policy_id, relative = key.split("/", 1)
+        path = (policy_dirs[policy_id] / relative).resolve()
+        try:
+            top = subprocess.run(
+                ["git", "-C", str(path.parent), "rev-parse", "--show-toplevel"],
+                capture_output=True, text=True, check=True,
+            ).stdout.strip()
+            committed = subprocess.run(
+                ["git", "-C", top, "show", f"{commit}:{path.relative_to(Path(top).resolve()).as_posix()}"],
+                capture_output=True, check=True,
+            ).stdout
+        except (OSError, ValueError, subprocess.CalledProcessError):
+            return False
+        if hashlib.sha256(committed).hexdigest() != sha:
+            return False
+    return True
