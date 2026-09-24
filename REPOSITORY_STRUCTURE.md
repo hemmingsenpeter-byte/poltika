@@ -58,7 +58,9 @@ poltika/
 │   ├── scenarios/         — combined.py (Task 28.4: the combined WFF+AS
 │   │                        household runner -- both module entry points,
 │   │                        native periods, the Task 28.3 shared-fact
-│   │                        contradiction checks; no income coupling)
+│   │                        contradiction checks; no income coupling);
+│   │                        record.py (Task 30: scenario records, artifact
+│   │                        manifests, canonical identity, code identity)
 │   ├── engines/assurance/ — provenance.py (Task 31: builds the provenance
 │   │                        report from traced results -- verifies the
 │   │                        run's artifact hashes, resolves source/rule/
@@ -102,11 +104,14 @@ poltika/
     │                          standalone (ADR-0011); marked
     │                          installed_artifact, excluded from the
     │                          default fast suite (pyproject.toml addopts)
-    └── regression/         — known-historical-issue tests (Task 15)
+    ├── regression/         — known-historical-issue tests (Task 15) and the
+    │                          frozen golden-result snapshot check (Task 30.4)
+    └── fixtures/           — golden_results_v0_1.json (Task 30.4 frozen golden
+                               results with bound policy-file hashes)
 ```
 
 Only `src/poltika/{data,llm}` (`api/` is now instantiated, Task 21;
-`scenarios/` by Task 28.4) and `tests/{integration,fixtures}`,
+`scenarios/` by Task 28.4) and `tests/integration` (`tests/fixtures` by Task 30.4),
 plus everything under `data/`, `config/`, and `scripts/`, remain undone
 from the target tree below — created incrementally as the BUILD_PLAN.md
 tasks that need them are reached, not all at once. `docs/` is partially
