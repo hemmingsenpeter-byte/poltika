@@ -71,8 +71,8 @@ class ClaimantCategory(str, Enum):
 
 
 class TenureType(str, Enum):
-    """Schedule 4 Part 7 cl 1-3 (rent/board, 25%-of-base-rate entry
-    threshold) is the v0.1 supported branch; cl 4-6 (homeowner, 30%,
+    """Schedule 4 Part 7 cl 1-3 (rent/board; the published rent/board entry
+    threshold per DEC-002) is the v0.1 supported branch; cl 4-6 (homeowner,
     mortgage-security "reasonably required" MSD judgment) is not."""
 
     RENT_CONTRIBUTIONS_OR_BOARD = "rent_contributions_or_board"
@@ -228,13 +228,12 @@ def _param_value(parameters: PolicyParameterSet, parameter_id: str) -> Component
     rather than letting `PolicyParameterSet.get()` raise `KeyError`. For
     WFF, an undeclared required parameter was always a malformed-fixture
     bug (PR #21) -- every real parameter has been declared since Task 10.
-    For AS, an undeclared parameter is the *normal, expected* v0.1 state
-    right now: Task 22 deliberately left the claimant-category base rates
-    and the r 18(3) income level undeclared, pending Task 24's independent
-    recalculation of the dated MSD tables they come from (see
-    `policy.yaml`'s own comment above `parameters:`). A bare `KeyError`
-    against the real, approved `policy.yaml` would be the wrong failure
-    mode for an intentional, documented gap.
+    For AS, an undeclared parameter is an expected state: the published
+    entry thresholds and income levels (Task 26a repair, DEC-002) are
+    declared only for supported rows, and until Task 26a.2 populates them
+    none is declared (see `policy.yaml`'s comment above `parameters:`). A
+    bare `KeyError` would be the wrong failure mode for an intentional,
+    documented gap.
     """
     if parameter_id not in parameters.resolutions:
         return ComponentResult(
@@ -426,16 +425,17 @@ def _household_gate_failure(
             ),
         )
 
-    # --- needs_review: the three facts the r 15 assets-ceiling check below
-    # itself depends on, checked first so that check can run at all ---
-    if scenario.cash_assets is None:
-        return ComponentResult(outcome="needs_review", reason="cash_assets unverified")
+    # --- needs_review: partner status and child count, which the unsupported
+    # checks immediately below and the r 15 ceiling check both depend on ---
     if scenario.partner_status is None:
         return ComponentResult(outcome="needs_review", reason="partner_status unverified")
     if scenario.dependent_children_count is None:
         return ComponentResult(outcome="needs_review", reason="dependent_children_count unverified")
 
-    # --- unsupported conditions that need partner status and child count ---
+    # --- unsupported conditions that need partner status and child count.
+    # They run before the cash_assets check, which they do not need, so a
+    # known outside-domain case is never hidden behind an unrelated
+    # unverified fact (PR #50 fresh-context review). ---
     if scenario.claimant_category == ClaimantCategory.SOLE_PARENT_SUPPORT and not (
         scenario.partner_status == PartnerType.SINGLE and scenario.dependent_children_count >= 1
     ):
@@ -454,6 +454,10 @@ def _household_gate_failure(
                 "branch's parent rows (a scope restriction, not a finding of no entitlement; DEC-002)"
             ),
         )
+
+    # --- needs_review: the last fact the r 15 ceiling check needs ---
+    if scenario.cash_assets is None:
+        return ComponentResult(outcome="needs_review", reason="cash_assets unverified")
 
     # --- assets requirement (r 15): a genuine, evidenced exclusion, not a
     # scope limitation -- evaluated as soon as the facts above make it

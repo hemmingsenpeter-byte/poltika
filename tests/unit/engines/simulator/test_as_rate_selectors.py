@@ -305,3 +305,63 @@ def test_trace_records_threshold_cap_new_facts_and_dec_002() -> None:
     assert "eldest_dependent_child_under_16" in inputs
     assert result.trace.decisions == ("DEC-002",)
     assert any(rule.startswith("DEC-002") for rule in result.trace.calculation_rules)
+
+
+# --- Added after PR #50's fresh-context review (surviving mutations M3,
+# M22-M27, and the gate-order CODE_ERROR). ---
+
+
+def test_couple_with_exactly_one_child_uses_the_couple_with_children_row() -> None:
+    result = calculate_accommodation_supplement(
+        _scenario(partner_status=PartnerType.ORDINARY_COUPLE, dependent_children_count=1), _parameters()
+    )
+    assert _consulted(result, "as_entry_threshold_") == [
+        "as_entry_threshold_supported_living_payment_couple_with_dependent_children"
+    ]
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        # Sole Parent Support without a sole-parent household.
+        {"claimant_category": ClaimantCategory.SOLE_PARENT_SUPPORT, "partner_status": PartnerType.ORDINARY_COUPLE, "dependent_children_count": 1},
+        # Eldest child verified not under 16.
+        {"dependent_children_count": 1, "eldest_dependent_child_under_16": FactStatus.EXCLUDED},
+    ],
+)
+def test_known_unsupported_case_is_not_hidden_behind_unverified_cash_assets(overrides: dict[str, Any]) -> None:
+    result = calculate_accommodation_supplement(_scenario(cash_assets=None, **overrides), _parameters())
+    assert result.outcome == "unsupported"
+
+
+def test_ordinary_rate_exclusion_takes_precedence_over_an_unverified_fact() -> None:
+    result = calculate_accommodation_supplement(
+        _scenario(ordinary_rate_status=FactStatus.EXCLUDED, tenure_type=None, weekly_accommodation_costs=None),
+        _parameters(),
+    )
+    assert result.outcome == "unsupported"
+
+
+def test_omitted_new_facts_default_to_unverified() -> None:
+    """Omitted input means unverified, never a silent pass."""
+    minimal = AsScenario(
+        household_eligibility=FactStatus.VERIFIED,
+        claimant_category=ClaimantCategory.SUPPORTED_LIVING_PAYMENT,
+        tenure_type=TenureType.RENT_CONTRIBUTIONS_OR_BOARD,
+        partner_status=PartnerType.SINGLE,
+        statistical_area_unit=Area.AREA_1,
+        weekly_accommodation_costs=Decimal(200),
+        dependent_children_count=1,
+        cash_assets=Decimal(0),
+        exempt_cash_asset_status=FactStatus.VERIFIED,
+    )
+    assert minimal.ordinary_rate_status == FactStatus.UNKNOWN
+    assert minimal.eldest_dependent_child_under_16 == FactStatus.UNKNOWN
+    result = calculate_accommodation_supplement(minimal, _parameters())
+    assert result.outcome == "needs_review"
+    assert "ordinary_rate_status" in (result.reason or "")
+    verified_rate = calculate_accommodation_supplement(
+        replace(minimal, ordinary_rate_status=FactStatus.VERIFIED), _parameters()
+    )
+    assert verified_rate.outcome == "needs_review"
+    assert "eldest_dependent_child_under_16" in (verified_rate.reason or "")
