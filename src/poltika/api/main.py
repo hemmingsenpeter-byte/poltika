@@ -37,6 +37,7 @@ from fastapi.responses import JSONResponse
 
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.accommodation_supplement import router as as_router
+from poltika.api.household import router as household_router
 from poltika.api.wff import WFF_POLICY_DIR
 from poltika.api.wff import router as wff_router
 from poltika.common.errors import PolicyVersionMismatchError, PoltikaError
@@ -86,6 +87,7 @@ app = FastAPI(
 )
 app.include_router(wff_router)
 app.include_router(as_router)
+app.include_router(household_router)
 
 
 @app.exception_handler(PolicyVersionMismatchError)
