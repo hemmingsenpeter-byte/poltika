@@ -419,12 +419,13 @@ source-derived expectations for the populated policy follow in 26a.
 
 ### Task 28.3 WFF-AS interaction contract
 
-**Status:** drafted 24 September 2026 by Claude Code on Pete's instruction to
-proceed without GPT/Codex input, revised after a fresh-context (Claude)
-review. **Not accepted.** BUILD_PLAN assigns 28.3 to GPT/Codex; a Claude
-draft reviewed by a Claude subagent does not meet the cross-model review
-rotation, so this needs GPT/Codex review or Pete's explicit waiver, plus
-Pete's decisions marked **[Pete decides]** below. This is the canonical
+**Status: accepted 24 September 2026.** Drafted by Claude Code on Pete's
+instruction to proceed without GPT/Codex input, and revised after a
+fresh-context (Claude) review. Pete then accepted it: "find the most
+obvious solution for these, accept and proceed". That instruction settled
+the three open decisions below and waived the cross-model review rotation
+for this contract. BUILD_PLAN assigns 28.3 to GPT/Codex, and a GPT/Codex
+review remains welcome afterwards; it is not a gate. This is the canonical
 contract; the WFF specification's matching section points here. Sources:
 Task 28.1 research (PR #48, `docs/research/task_28_1_wff_as_interactions.md`),
 DEC-002, DEC-003, the Task 28.2 decisions (PR #49), and the provisions cited.
@@ -434,8 +435,9 @@ DEC-002, DEC-003, the Task 28.2 decisions (PR #49), and the provisions cited.
 - The combined input is the two policies' own scenarios (`WffScenario`,
   `AsScenario`), because each defines its facts for its own period and
   purpose; BUILD_PLAN 28.4's "one set of canonical household facts" is
-  therefore not literally met. **[Pete decides]** two scenarios (this draft)
-  or a single canonical fact set.
+  therefore not literally met. **Decided (Pete, 24 September 2026): two
+  scenarios.** A single merged fact set would have to choose one policy's
+  definition of partner, child or main benefit over the other's.
 - Precondition, as a verified fact the caller supplies
   (`as_claimant_is_wff_claimant_or_partner`): the AS claimant is the WFF
   claimant or their partner. Neither scenario type carries it; `unknown`
@@ -499,7 +501,7 @@ gates handle it.
 
 | Check | Flagged disagreement | Why conservative, not certain |
 | --- | --- | --- |
-| Partner status | WFF `single` with an AS couple (`ordinary_couple`, `joint_tenancy`, or claimant category `mixed_benefit_couple`); or WFF `partnered` with AS `single` | The Social Security Act's "in a relationship" and MSD's s 8(2) power to regard a married person living apart as single differ from the Income Tax Act's exclusion of a "separated person" from "spouse", so the statuses can legitimately differ. **[Pete decides]** whether AS `community_spouse_or_partner` counts as partnered for this comparison; until then it is not compared. |
+| Partner status | WFF `single` with an AS couple (`ordinary_couple`, `joint_tenancy`, or claimant category `mixed_benefit_couple`); or WFF `partnered` with AS `single` | The Social Security Act's "in a relationship" and MSD's s 8(2) power to regard a married person living apart as single differ from the Income Tax Act's exclusion of a "separated person" from "spouse", so the statuses can legitimately differ. **Decided (Pete, 24 September 2026):** AS `community_spouse_or_partner` is not compared. AS already returns `unsupported` for it, so comparing could only flag a WFF household that may legitimately be single or partnered under the Income Tax Act's separated-person test. |
 | Main benefit, in-work | AS main-benefit category (Jobseeker Support, Sole Parent Support, Supported Living Payment) with WFF `in_work_eligibility` asserted `verified` | WFF-04 requires a full year with no main-benefit period, and MD 8 covers the person and their spouse, so a main benefit paid in the AS week contradicts it. |
 | Main benefit, MC 6(b) | The same AS categories with WFF `mc6b_disqualifying_payment` asserted `verified` | MC 6(b) applies when "they receive" a main benefit, i.e. the person. For a single household the contradiction is certain; for a couple the AS category may describe the partner's benefit, so flagging it is conservative. |
 | Dependent children | The WFF child list length differs from AS `dependent_children_count` | Different definitions (AS cl 7 excludes children with an orphan's or unsupported child's benefit; WFF has whole-year qualification and its own tests), so a difference may be legitimate. The 28.1 research asks for child identities to be verified under each policy; neither scenario type carries identities, so v0.1 compares counts only. Equal counts do not establish the same children. |
@@ -512,9 +514,11 @@ receiving a main benefit.
 #### Outcome on disagreement
 
 - Both modules always run, so their traces exist.
-- **[Pete decides] precedence.** Interim, following the 28.1 research gate
-  "preserve existing component/domain `unsupported` outcome": a component
-  already `unsupported` stays `unsupported`; every other component becomes
+- **Precedence (decided, Pete, 24 September 2026)**, following the 28.1
+  research gate "preserve existing component/domain `unsupported` outcome":
+  a component already `unsupported` stays `unsupported`, since both outcomes
+  are non-numeric and the exclusion is the more specific fact. Every other
+  component becomes
   `needs_review` with a reason listing every disagreement found, in the
   order of the table above, each naming both assertions.
 - The original module results are kept alongside the replacements
