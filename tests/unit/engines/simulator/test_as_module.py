@@ -269,3 +269,59 @@ def test_requested_policy_version_mismatch_still_raises() -> None:
             requested_policy_version="9.9.9",
             assessment_week=WEEK,
         )
+
+
+# --- Boundary coverage added after the fresh-context review of PR #43,
+# which found these mutations survived: dropping or loosening the
+# reference-period start check, flipping either reference edge to exclusive,
+# checking only the lookup date's upper bound, and dropping the period from
+# a validation-failure trace.
+
+
+def test_week_straddling_the_reference_period_start_is_needs_review(tmp_path: Path) -> None:
+    policy_dir = _write_policy_dir(
+        tmp_path, reference_from="2026-03-02", param_effective_from="2026-01-01", param_effective_to=None
+    )
+
+    result = _run(
+        policy_dir, week=AssessmentWeek(start=date(2026, 2, 27), end=date(2026, 3, 6)), modelled_date=date(2026, 3, 3)
+    )
+
+    assert result.outcome == "needs_review"
+    assert "not wholly within" in (result.reason or "")
+
+
+@pytest.mark.parametrize(
+    ("week", "modelled_date"),
+    [
+        (AssessmentWeek(start=date(2026, 3, 2), end=date(2026, 3, 9)), date(2026, 3, 2)),  # starts on the period start
+        (AssessmentWeek(start=date(2027, 3, 25), end=date(2027, 4, 1)), date(2027, 3, 25)),  # ends on the exclusive end
+    ],
+)
+def test_weeks_meeting_the_reference_period_edges_exactly_are_accepted(
+    tmp_path: Path, week: AssessmentWeek, modelled_date: date
+) -> None:
+    policy_dir = _write_policy_dir(
+        tmp_path, reference_from="2026-03-02", param_effective_from="2026-03-02", param_effective_to="2027-04-01"
+    )
+
+    assert _passes_module_validation(policy_dir, week, modelled_date)
+
+
+def test_lookup_date_before_the_week_is_needs_review(tmp_path: Path) -> None:
+    policy_dir = _write_policy_dir(tmp_path)
+
+    result = _run(policy_dir, modelled_date=date(2026, 5, 31))  # the day before WEEK starts
+
+    assert result.outcome == "needs_review"
+    assert "outside the assessment week" in (result.reason or "")
+
+
+def test_validation_failure_trace_records_the_assessment_week(tmp_path: Path) -> None:
+    policy_dir = _write_policy_dir(tmp_path, policy_id="working_for_families")
+
+    result = _run(policy_dir)
+
+    assert result.outcome == "needs_review"
+    assert result.trace is not None
+    assert result.trace.assessment_period == (WEEK.start, WEEK.end)

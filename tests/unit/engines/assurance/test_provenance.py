@@ -30,6 +30,7 @@ from poltika.engines.simulator.accommodation_supplement import (
     run_as_module,
 )
 from poltika.engines.simulator.wff import ComponentResult, WffResult, calculate_wff, run_wff_module
+from poltika.policy.loader import load_policy_parameters
 from tests.conftest import (
     AS_MODELLED_DATE,
     AS_POLICY_DIR,
@@ -373,3 +374,15 @@ def test_report_refuses_the_same_household_for_different_weeks() -> None:
         build_provenance_report(
             AS_POLICY_DIR, {"accommodation_supplement": first, "accommodation_supplement_again": second}
         )
+
+
+def test_report_says_when_no_assessment_period_was_stated() -> None:
+    """A bare calculator call is not told its period; the report must say
+    so rather than invent one (PR #43 fresh-context review)."""
+    scenario = wff_scenario_from_yaml(load_wff_spec_case("single_ordinary_low_income")["scenario"])
+    parameters = load_policy_parameters(WFF_POLICY_DIR, WFF_MODELLED_DATE)
+    report = build_provenance_report(WFF_POLICY_DIR, _wff_components(calculate_wff(scenario, parameters)))
+    assert report["policy"]["assessment_period"] is None
+    assert "Assessment period: not stated (results did not come through a module entry point)" in render_markdown(
+        report
+    )

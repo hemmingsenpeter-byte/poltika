@@ -313,3 +313,13 @@ def test_as_recording_leaves_scenario_type_untouched() -> None:
     scenario = as_scenario_from_yaml(case["scenario"])
     calculate_accommodation_supplement(scenario, as_parameters_for_case(case))
     assert type(scenario) is AsScenario
+
+
+def test_wff_validation_failure_trace_records_the_tax_year() -> None:
+    """Added after PR #43's fresh-context review: the period must be on a
+    validation-failure trace too, not only on calculated results."""
+    scenario = wff_scenario_from_yaml(load_wff_spec_case("single_ordinary_low_income")["scenario"])
+    result = run_wff_module(WFF_POLICY_DIR, date(2027, 6, 1), scenario, requested_policy_version="0.1.0")
+    assert result.family_tax_credit.outcome == "needs_review"
+    assert result.family_tax_credit.trace is not None
+    assert result.family_tax_credit.trace.assessment_period == (date(2026, 4, 1), date(2027, 4, 1))
