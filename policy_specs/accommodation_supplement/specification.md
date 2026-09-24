@@ -417,6 +417,89 @@ and parameter provenance, and full assessment-week interval validation.
 Use synthetic values for selector isolation, clearly labelled; independent
 source-derived expectations for the populated policy follow in 26a.
 
+### Task 28.3 WFF-AS interaction contract
+
+**Status:** drafted 24 September 2026 by Claude Code on Pete's instruction to
+proceed without GPT/Codex input; independent (fresh-context) review and
+Pete's acceptance required before Task 28.4 relies on it. This is the
+canonical contract; the WFF specification's matching section points here
+and lists WFF-side obligations. Sources: Task 28.1 research (PR #48,
+`docs/research/task_28_1_wff_as_interactions.md`), DEC-003, the Task 28.2
+decisions (PR #49), and the primary provisions cited below.
+
+#### Periods (Task 28.2)
+
+- WFF is assessed for the full 2026-27 tax year `[2026-04-01, 2027-04-01)`
+  with parameter lookup date 2026-06-01; its components are annual.
+- AS is assessed for the week `[2026-06-01, 2026-06-08)` with lookup date
+  2026-06-01; its component is weekly.
+- A combined result reports each policy in its native period. It never sums
+  WFF and AS, never converts one period into the other, and never presents
+  an AS week as a year or a WFF year as a week. The AS week must lie wholly
+  inside the WFF interval; otherwise the combined run is `needs_review`.
+
+#### Income: no coupling in either direction
+
+- **AS does not enter WFF family scheme income.** CW 33(1)(a) makes Social
+  Security Act monetary benefits other than main benefits exempt income;
+  AS is not in the Act's main-benefit definition; MB 13(2)(l) excludes an
+  exempt Social Security Act monetary benefit from family scheme income
+  (`wff-income-tax-act-part-c`, `wff-income-tax-act`; corroborated by
+  `wff-ird-other-income`).
+- **WFF does not enter AS chargeable income, whichever agency pays it.**
+  Social Security Act Schedule 3 cl 8(1)(l) excludes tax credits received
+  under Income Tax Act subparts MA to MG and MZ, with no payer qualifier;
+  TAA s 80KN-80KO make an MSD-paid credit a WFF tax credit under those
+  subparts (DEC-003).
+- Consequently the combined runner **never derives, adds or subtracts** one
+  policy's output into the other's income input. Each policy's income input
+  (`family_scheme_income` for WFF; `weekly_income` for AS non-beneficiaries)
+  is supplied already derived under that policy's own definition, as the
+  caller's verified assertion, exactly as each module already requires. An
+  income figure that mixes the two definitions is an unverified derivation
+  (`needs_review` under each policy's existing rule), not something the
+  runner normalises.
+- The MSD-paid route needs no runtime gate: AS's r 18 income reduction
+  applies only to non-beneficiaries, and s 80KN's MSD payment accompanies a
+  main benefit, so within v0.1 the route reaches AS income only for a
+  non-beneficiary in transition (s 80KP/80KK); DEC-003 excludes it there
+  too. The caller's `weekly_income` must already exclude it.
+- AS's r 17 base-rate definition refers to a statutory family tax credit
+  rate, not the household's WFF result. On the DEC-002 table path no such
+  term is computed; the runner passes no WFF output into AS.
+
+#### Shared facts and consistency checks
+
+The two scenarios describe one household, but each policy defines its facts
+for its own period and purpose. The runner checks only contradictions that
+the definitions make certain; it never repairs one input from the other.
+Any contradiction makes **every component of both policies** `needs_review`,
+with a reason naming both conflicting assertions, because the runner cannot
+know which assertion is wrong.
+
+| Check | Contradiction | Basis |
+| --- | --- | --- |
+| Partner status | WFF `single` with AS `ordinary_couple`, or WFF `partnered` with AS `single` | Same relationship during the AS week, which lies inside the WFF year. WFF `unknown` is not a contradiction (WFF gates it itself). AS joint-tenancy and community-spouse cases are AS-unsupported and are not compared. |
+| Main benefit | AS claimant category Jobseeker Support, Sole Parent Support or Supported Living Payment (a main benefit paid in the AS week) with WFF `in_work_eligibility` or `mc6b_disqualifying_payment` asserted `verified` | WFF-04 requires no main-benefit period for the in-work credit; MC 6(b)(i) excludes in-work and minimum family tax credit for a main benefit received in the period. A verified "no main benefit" for the year cannot coexist with a main benefit paid during the week. The reverse (AS non-beneficiary for one week) proves nothing about the year and is not checked. |
+| Dependent children | The WFF child list length differs from AS `dependent_children_count` | Different definitions (AS's cl 7 excludes children with an orphan's or unsupported child's benefit; WFF has its own tests and whole-year qualification), so a difference may be legitimate, but v0.1 cannot verify which. Conservatively `needs_review`. Equal counts are necessary, not sufficient: each policy's child facts remain that policy's own verified inputs. |
+
+Receiving AS is not receiving a main benefit: no check treats an AS amount
+as a WFF main-benefit fact.
+
+#### Output and provenance
+
+The combined result carries the unmodified WFF and AS module results (or
+their `needs_review` replacements when a shared-fact check fails), the two
+periods, and each module's own provenance trace. Combined provenance (Task
+31.6) identifies both runs; there is no combined total.
+
+#### Not in this contract
+
+Payment schedules or instalments; any cash-assets treatment of WFF receipts
+(r 16/Schedule 8 are separate; see Task 28.1 research); homeowner, joint-
+tenancy, community-spouse, pension or mixed-benefit cases (each already
+unsupported in its own policy); and any dependency-graph behaviour (v0.3).
+
 ### Historical Task 25 schema stress-test note
 
 AS is assessed on an ongoing weekly basis, reassessed on a change of
