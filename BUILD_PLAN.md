@@ -1552,6 +1552,17 @@ and Pete's acceptance):
     A no-future-Order assumption cannot clear the gate or enter the
     assumption-free golden suite. Completion means a reviewed disposition,
     not necessarily rate approval. Task 35's question must respect it.
+
+    **Disposition recorded 24 September 2026 (Claude Code, on Pete's
+    instruction to proceed without Codex input; `sources.yaml`
+    `task_26b_check`).** The official 2026 No 8 section 2 record still
+    states "There is no secondary legislation made under this section
+    currently on this website". The 28.2 interval is the full 2026-27 year,
+    which extends beyond the check, so under WFF's Task 10.2 rate-status
+    table the annual in-work base **stays `needs_review`**. `review_status`
+    is unchanged. A targeted register search could not be repeated (the
+    search URL returned 404), and the limitation is recorded. Recheck
+    whenever the modelled interval or the check date changes.
 27. **Re-scoped: settle the schema-version question (was "Migrate WFF's
     spec files to v0.2").** Task 25 concluded that no `PolicySpec`/
     `ParameterSpec` revision is needed for AS; both `policy.yaml` files and
