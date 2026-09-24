@@ -149,7 +149,7 @@ def test_each_disagreement_flags_every_non_unsupported_component(
         # Provenance of the underlying module run is kept either way.
         assert component.trace is not None
         if original.outcome == "unsupported":
-            assert component == original  # interim precedence: unsupported is kept
+            assert component == original  # precedence: an existing unsupported is kept
             continue
         assert component.outcome == "needs_review"
         assert component.value is None
@@ -200,7 +200,7 @@ def test_other_as_couple_forms_are_compared_with_wff_single(as_overrides: dict[s
     assert combined.wff.family_tax_credit.outcome == "needs_review"
 
 
-def test_community_spouse_is_not_compared_pending_petes_decision() -> None:
+def test_community_spouse_is_not_compared() -> None:
     combined = _run(as_=_as(partner_status=PartnerType.COMMUNITY_SPOUSE_OR_PARTNER))
     assert not any("partner status" in c for c in combined.contradictions)
 

@@ -12,8 +12,8 @@ Implements the Task 28.3 interaction contract (the AS specification's "Task
 - A small set of shared facts is compared as conservative gates (the
   policies' definitions differ, so a disagreement is escalated, never
   guessed). A disagreement makes every component `needs_review` -- except
-  one already `unsupported`, which is kept (the Task 28.1 research gate;
-  interim pending Pete's precedence decision) -- with a reason naming both
+  one already `unsupported`, which is kept (the Task 28.1 research gate,
+  confirmed by Pete) -- with a reason naming both
   assertions. The runner never repairs one input from the other.
 
 Both modules always run, so each replaced result keeps its own provenance
@@ -46,8 +46,9 @@ from poltika.engines.simulator.wff import (
 from poltika.policy.loader import load_policy_spec
 
 # AS partner types that describe a couple for the partner-status comparison.
-# community_spouse_or_partner is deliberately not compared until Pete decides
-# (Task 28.3 contract).
+# community_spouse_or_partner is deliberately not compared (Pete's Task 28.3
+# decision): AS is already unsupported for it, and the Income Tax Act's
+# separated-person test means the WFF status may legitimately differ.
 _AS_COUPLE_PARTNER_TYPES = frozenset({PartnerType.ORDINARY_COUPLE, PartnerType.JOINT_TENANCY})
 
 # AS claimant categories that are main benefits (Social Security Act
@@ -199,7 +200,7 @@ def run_combined_household(
 
 def _flag(result: ComponentResult, reason: str) -> ComponentResult:
     """A disagreement makes a component `needs_review`, except one already
-    `unsupported`, which is kept (interim precedence, Task 28.3 contract)."""
+    `unsupported`, which is kept (Task 28.3 contract precedence)."""
     if result.outcome == "unsupported":
         return result
     return _replace(result, "needs_review", reason)
