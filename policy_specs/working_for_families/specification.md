@@ -344,24 +344,24 @@ a Task 12 obligation, not a new eligibility rule.
 ## Task 28.3 WFF-AS interaction (Claude Code draft, 24 September 2026)
 
 The canonical interaction contract is the Accommodation Supplement
-specification's "Task 28.3 WFF-AS interaction contract" section; it is
-pending independent review and Pete's acceptance. WFF-side obligations:
+specification's "Task 28.3 WFF-AS interaction contract" section. It is not
+yet accepted: it needs GPT/Codex review (or Pete's waiver) and Pete's
+decisions on input shape, community-spouse comparison and precedence.
+WFF-side obligations:
 
-- **Period:** the full 2026-27 year `[2026-04-01, 2027-04-01)`, lookup date
-  2026-06-01 (Task 28.2). WFF results stay annual; an AS week is never
-  scaled into them.
+- **Period:** the full 2026-27 year, lookup 2026-06-01 (Task 28.2). WFF
+  results stay annual; an AS week is never scaled into them.
 - **Income:** `family_scheme_income` excludes AS (CW 33(1)(a); MB 13(2)(l);
-  AS is not a main benefit). The runner never adds, subtracts or derives
-  WFF income from an AS input or output. Taxable main benefits remain
-  included under WFF's own rules; the exclusion is AS-specific.
-- **Consistency:** WFF `partner_status`, `in_work_eligibility`,
+  AS is not a main benefit). The runner never derives WFF income from an AS
+  input or output. Taxable main benefits stay included under WFF's rules.
+- **Shared-fact checks:** WFF `partner_status`, `in_work_eligibility`,
   `mc6b_disqualifying_payment` and the child list are compared with the AS
-  scenario only for the contradictions listed in the AS section. Any
-  contradiction makes all WFF and AS components `needs_review`; WFF inputs
-  are never altered to match AS.
+  scenario only as the AS section lists, as conservative gates. A
+  disagreement makes WFF components `needs_review` (an existing
+  `unsupported` is kept, pending Pete's precedence decision); WFF inputs are
+  never altered.
 - **Unchanged gates:** the in-work rate stays `needs_review` for the year
-  (Task 26b); protected-credit, s 80KW and other existing gates keep their
-  own outcomes.
+  (Task 26b); protected-credit, s 80KW and other gates keep their outcomes.
 
 ## Task 10 follow-up: MD 4-9/14, MG 1-4 verification (Claude Code, 2026-09-21) — resolved
 
