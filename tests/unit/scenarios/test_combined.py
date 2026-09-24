@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import fields, replace
 from datetime import date
 from decimal import Decimal
+from typing import Any
 
 import pytest
 
@@ -20,10 +21,12 @@ from poltika.engines.simulator.accommodation_supplement import (
     run_as_module,
 )
 from poltika.engines.simulator.wff import (
+    ComponentResult,
     FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffResult,
+    WffScenario,
     run_wff_module,
 )
 from poltika.scenarios.combined import (
@@ -45,7 +48,7 @@ WEEK = AssessmentWeek(start=date(2026, 6, 1), end=date(2026, 6, 8))
 WFF_VERSION = "0.1.0"
 
 
-def _wff():  # type: ignore[no-untyped-def]
+def _wff() -> WffScenario:
     # A single claimant with one child, in-work eligibility and MC 6(b)
     # verified (no main benefit in the year).
     return wff_scenario_from_yaml(load_wff_spec_case("single_ordinary_low_income")["scenario"])
@@ -72,8 +75,11 @@ def _as(**overrides: object) -> AsScenario:
     return AsScenario(**base)  # type: ignore[arg-type]
 
 
-def _run(  # type: ignore[no-untyped-def]
-    wff=None, as_=None, week: AssessmentWeek = WEEK, precondition: FactStatus = FactStatus.VERIFIED
+def _run(
+    wff: WffScenario | None = None,
+    as_: AsScenario | None = None,
+    week: AssessmentWeek = WEEK,
+    precondition: FactStatus = FactStatus.VERIFIED,
 ) -> CombinedResult:
     return run_combined_household(
         WFF_POLICY_DIR,
@@ -91,7 +97,7 @@ def _run(  # type: ignore[no-untyped-def]
     )
 
 
-def _wff_components(result: WffResult) -> list:  # type: ignore[type-arg]
+def _wff_components(result: WffResult) -> list[ComponentResult]:
     return [getattr(result, f.name) for f in fields(WffResult)]
 
 
@@ -140,7 +146,7 @@ def test_no_income_coupling_in_either_direction() -> None:
     ],
 )
 def test_each_disagreement_flags_every_non_unsupported_component(
-    wff_overrides: dict[str, object], as_overrides: dict[str, object], phrase: str
+    wff_overrides: dict[str, Any], as_overrides: dict[str, Any], phrase: str
 ) -> None:
     combined = _run(wff=replace(_wff(), **wff_overrides), as_=_as(**as_overrides))
     assert any(phrase in c for c in combined.contradictions)

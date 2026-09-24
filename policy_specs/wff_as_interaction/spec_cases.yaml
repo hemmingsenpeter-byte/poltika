@@ -1,0 +1,158 @@
+# Task 28.5: WFF + Accommodation Supplement interaction spec cases.
+#
+# Each case runs the combined household runner (Task 28.4) against the real
+# approved policies (WFF 0.1.0, AS 0.1.1) under the Task 28.3 contract and
+# the Task 28.2 dates: WFF lookup 2026-06-01 for the 2026-27 year; AS week
+# [2026-06-01, 2026-06-08), lookup 2026-06-01. No parameter assumptions.
+#
+# Expected values are hand-calculated from the approved policy values
+# (WFF eldest-child rate $7,921, abatement threshold $44,900 at 27.5%,
+# MFTC prescribed amount $36,604; AS published sole-parent threshold $168,
+# sole-parent income level $906, cl 2 Area 1 cap $235). The inputs are
+# chosen to be leak-sensitive: if AS were added to WFF family scheme income,
+# or WFF to AS chargeable income, a result would change (see derivations).
+#
+# Hand-calculated by Claude Code, which also implemented the runner; Pete
+# waived the author/implementer rotation for Task 28 ("accept and proceed",
+# 24 September 2026), and each value is independently re-checked in review.
+status: approved
+interaction_cases:
+  - id: non_beneficiary_sole_parent_receives_both_with_no_income_leak
+    derivation: >-
+      WFF: family scheme income $40,000 is below $44,900, so family tax credit is the full $7,921
+      eldest-child rate; in-work tax credit is needs_review (the in_work_base rate gate, Task 26b);
+      MFTC is max(0, $36,604 - $40,000) = $0; Best Start is $0 (child outside entitlement). AS:
+      non-beneficiary sole parent, 70% x ($400 - $168) = $162.40, below the $235 cap; weekly income
+      $800 is below the $906 income level, so no reduction; r 19 gives $163. Leak sensitivity: adding
+      AS annualised ($163 x 52 = $8,476) to WFF income would exceed $44,900 and abate family tax
+      credit by $983.40; adding WFF weekly ($7,921 / 52 = $152.33) to AS income would exceed $906
+      and reduce AS by $11.58 before rounding ($12 after r 19, $163 to $151). Neither happens.
+    precondition: verified
+    wff: &wff_sole_parent
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: '40000'}
+      net_family_scheme_income: '40000'
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+    accommodation_supplement: &as_sole_parent
+      household_eligibility: verified
+      claimant_category: non_beneficiary
+      tenure_type: rent_contributions_or_board
+      partner_status: single
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '400'
+      dependent_children_count: 1
+      cash_assets: '1000'
+      exempt_cash_asset_status: verified
+      weekly_income: '800'
+      ordinary_rate_status: verified
+      eldest_dependent_child_under_16: verified
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '7921'}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: calculated, value: '0'}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: calculated, value: '163'}
+
+  - id: sole_parent_support_beneficiary_consistent
+    derivation: >-
+      A Sole Parent Support household, consistently described: WFF verifies that in-work
+      eligibility fails and that an MC 6(b) main benefit was received, so in-work and minimum family
+      tax credit are unsupported; family tax credit is the full $7,921 (income $30,000); Best Start
+      $0. AS: Sole Parent Support sole parent, 70% x ($400 - $168) = $162.40, no income test (AS-08),
+      r 19 gives $163. No shared-fact disagreement.
+    precondition: verified
+    wff:
+      <<: *wff_sole_parent
+      family_scheme_income: {claimant_amount: '30000'}
+      net_family_scheme_income: '30000'
+      in_work_eligibility: excluded
+      mc6b_disqualifying_payment: excluded
+    accommodation_supplement:
+      <<: *as_sole_parent
+      claimant_category: sole_parent_support
+      weekly_income: null
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '7921'}
+        in_work_tax_credit: {outcome: unsupported}
+        minimum_family_tax_credit: {outcome: unsupported}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: calculated, value: '163'}
+
+  - id: main_benefit_disagreement_flags_every_component
+    derivation: >-
+      AS says Jobseeker Support was paid in the week; WFF asserts in-work eligibility and MC 6(b) as
+      verified (no main benefit in the year). Two disagreements (Task 28.3); no component was
+      unsupported, so every component is needs_review with no value.
+    precondition: verified
+    wff: *wff_sole_parent
+    accommodation_supplement:
+      <<: *as_sole_parent
+      claimant_category: jobseeker_support
+      weekly_income: null
+    expected:
+      contradictions: 2
+      wff:
+        family_tax_credit: {outcome: needs_review}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: needs_review}
+        best_start: {outcome: needs_review}
+      accommodation_supplement: {outcome: needs_review}
+
+  - id: unverified_precondition_is_needs_review
+    derivation: >-
+      The caller has not verified that the AS claimant is the WFF claimant or their partner (Task
+      28.3 precondition), so every component is needs_review.
+    precondition: unknown
+    wff: *wff_sole_parent
+    accommodation_supplement: *as_sole_parent
+    expected:
+      contradictions: 1
+      wff:
+        family_tax_credit: {outcome: needs_review}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: needs_review}
+        best_start: {outcome: needs_review}
+      accommodation_supplement: {outcome: needs_review}
+
+  - id: disagreement_keeps_existing_unsupported_components
+    derivation: >-
+      The consistent Sole Parent Support household (case 2), but AS asserts two dependent children
+      while WFF lists one: one child-count disagreement (Task 28.3). Precedence: components already
+      unsupported stay unsupported (in-work and minimum family tax credit, from WFF's verified
+      in-work and MC 6(b) exclusions); every other component -- family tax credit, Best Start and AS --
+      becomes needs_review with no value.
+    precondition: verified
+    wff:
+      <<: *wff_sole_parent
+      family_scheme_income: {claimant_amount: '30000'}
+      net_family_scheme_income: '30000'
+      in_work_eligibility: excluded
+      mc6b_disqualifying_payment: excluded
+    accommodation_supplement:
+      <<: *as_sole_parent
+      claimant_category: sole_parent_support
+      weekly_income: null
+      dependent_children_count: 2
+    expected:
+      contradictions: 1
+      wff:
+        family_tax_credit: {outcome: needs_review}
+        in_work_tax_credit: {outcome: unsupported}
+        minimum_family_tax_credit: {outcome: unsupported}
+        best_start: {outcome: needs_review}
+      accommodation_supplement: {outcome: needs_review}

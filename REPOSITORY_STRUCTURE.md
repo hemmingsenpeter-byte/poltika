@@ -30,6 +30,8 @@ poltika/
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
 ├── adr/               — architecture decisions with rationale and context
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
+│                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases,
+│                         matched by the statutory-value guard's policy_specs/*/spec_cases.yaml)
 ├── review_packets/     — assembled review packet template/instances
 ├── reviews/           — review and discrepancy records
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
@@ -81,7 +83,8 @@ poltika/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
     ├── unit/
     │   ├── policy/         — loader tests (Task 11)
-    │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4)
+    │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4) and
+    │   │                        interaction spec-case runner (Task 28.5)
     │   ├── engines/assurance/ — provenance report tests (Task 31)
     │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
     │   │                        benchmark-case loader/runners (Tasks 13-14),
