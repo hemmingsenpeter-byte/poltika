@@ -46,6 +46,19 @@ sources:
       $2,700 for any other person. No discrepancy found across the 17 values
       sourced to this Act entry (12 caps, entry fraction, 2 thresholds, step,
       and amount per step).
+    task_28_1_check:
+      checked_on: 2026-09-24
+      version_as_at: 2026-09-04
+      audit_version_url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/
+      locator: Schedule 2 main benefit definition; Schedule 3 clause 8(1)(a), (l); Schedule 4 Part 7 clause 7
+      finding: Clause 8(1)(l) excludes tax credits or amounts under Income
+        Tax Act subparts MA-MG and MZ without an IRD-only payer qualifier.
+        Main benefits and other specified benefits have a separate exclusion
+        in clause 8(1)(a). AS's dependent-child definition has its own
+        orphan-benefit/unsupported-child-benefit exclusion.
+      limitation: The source map's earlier IRD-versus-MSD uncertainty is
+        addressed by this text plus the TAA payment provisions, pending
+        independent review. This does not establish a cash-assets exemption.
   - id: as-social-security-regulations
     kind: regulations
     title: Social Security Regulations 2018
@@ -75,6 +88,18 @@ sources:
       with no intermediate-rounding instruction. No discrepancy found across
       the 3 values sourced to this Regulations entry (2 ceilings and reduction
       rate).
+    task_28_1_check:
+      checked_on: 2026-09-24
+      version_as_at: 2026-09-04
+      audit_version_url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-09-04/
+      locator: Regulations 16-18; Schedule 8 Part 1 item 15 and Part 21 clauses 36-37
+      finding: Regulation 17 uses a statutory maximum FTC term divided by
+        52 in specified parent base rates, not the household's computed WFF
+        total. Regulation 18 concerns non-beneficiaries. The Best Start
+        asset exemption is a narrowly defined historic arrears provision,
+        not a general WFF cash-assets exclusion.
+      limitation: Do not infer income-to-assets equivalence. Current scoped
+        exemption gates and Task 26a's unresolved base-rate work remain.
   - id: as-2025-amendment
     kind: amending_legislation
     title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025
@@ -136,6 +161,58 @@ sources:
     title: Chargeable income - non-beneficiaries
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/chargeable-income-non-beneficiaries-01.html
     covers: Income inclusions and exclusions, including Inland Revenue WFF tax credits.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      locator: Not counted as income, Working for Families Tax Credits from Inland Revenue
+      finding: Guidance expressly identifies the IRD-paid route; it does
+        not say MSD-paid WFF is included. The broader statutory exclusion
+        is verified separately in Schedule 3 clause 8(1)(l).
+      limitation: Live guidance without a displayed revision date; not a
+        historical snapshot or evidence of cash-assets treatment.
+  - id: as-taa-wff-payment-routes
+    kind: legislation
+    title: Tax Administration Act 1994 - WFF payments by MSD and Inland Revenue
+    url: https://www.legislation.govt.nz/act/public/1994/166/en/latest/
+    audit_version_url: https://www.legislation.govt.nz/act/public/1994/166/en/2026-09-04/
+    covers: Legal identity and payer of WFF credits paid alongside a main benefit.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      version_as_at: 2026-09-04
+      locator: Sections 80KK, 80KN-80KS, 80KU
+      finding: MSD's payment remains a WFF tax credit, with its amount
+        linked by 80KO to the Income Tax Act. Payer agreements, requests
+        and transitional provisions prevent inferring payer solely from
+        current main-benefit status.
+      limitation: Section 225A abated-payment instruments and an individual
+        claimant's administrative payment history remain unverified.
+  - id: as-msd-wff-payer-choice
+    kind: agency_guidance
+    title: Family Tax Credit - Payment from Ministry of Social Development or Inland Revenue
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/family-tax-credit/payment-from-ministry-of-social-development-or-inland-revenue.html
+    covers: Main-benefit clients' payer choice and exceptions.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      locator: Opening payer-choice paragraphs and young-parent exception
+      finding: Ordinary main-benefit clients can choose IRD or MSD; FTC
+        and Best Start are paid together by the same agency. The page names
+        foster-parent and Young Parent Payment exceptions, which must not
+        be erased by a generic payer rule.
+      limitation: Undated live guidance. Verify the actual route and scope
+        of each household; this is not evidence of a particular payment.
+  - id: as-msd-ftc-administration
+    kind: agency_guidance
+    title: Family Tax Credit - Introduction
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/family-tax-credit/introduction.html
+    covers: MSD administers FTC on behalf of IRD for main-benefit clients.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      locator: Opening administration paragraphs
+      finding: MSD describes paying FTC on behalf of IRD. Ordinary clients
+        without a main benefit are paid by IRD; main-benefit clients may
+        elect IRD instead. Transitional payments require the statutory
+        qualifications in 80KP/80KK, not an absolute payer inference.
+      limitation: Undated live guidance, read with the TAA rather than
+        as a universal rule across transitions.
   - id: as-msd-rate-method
     kind: agency_guidance
     title: Calculating rate - general formula
