@@ -23,8 +23,13 @@ Status: source-research handoff; no runtime values or code changed.
 
 ## Review record
 
-Independent Claude review pending. Author findings do not constitute
-independent acceptance. Pete confirms classifications and any decision.
+Claude's independent review of `c8a306c` on PR 46 confirmed F1-F4 and
+classified F1/F2 primarily as SPEC_ERROR: code followed the approved
+contract. This follow-up adopts that proposed classification, records the
+additional child-age/paragraph-(f) interpretation and March coverage gaps,
+and notes that the newly added FTC Order still awaits independent review.
+Author changes do not constitute independent acceptance. Pete confirms
+classifications and any decision. Re-review of the final SHA is pending.
 No BUILD_PLAN.md edit is included while PR #42 owns its status update.
 
 ## Validation record

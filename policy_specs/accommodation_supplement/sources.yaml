@@ -73,14 +73,18 @@ sources:
       audit_version_url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-03-02/
       locator: Regulations 17(1)-(2), 18(3)(a)-(c), 19
       finding: Base-rate construction depends on benefit and relationship
-        circumstances, including a statutory maximum family-tax-credit
-        term for specified parents. The non-beneficiary income level is
+        circumstances. Paragraphs 17(2)(b), (d), (h) expressly reference a
+        maximum annual FTC rate; paragraph (f) says annual rate payable.
+        All four reference an eldest dependent child under 16; paragraph
+        (a) applies an age-25 benefit rate to a single beneficiary under 25.
+        The non-beneficiary income level is
         household-dependent. Regulation 19 governs final AS rounding;
         no rule authorising inversion of rounded table thresholds into
         statutory base rates was established in these provisions.
       limitation: The entry-threshold precision question remains unresolved;
         see docs/research/task_26a_as_rate_audit.md. DEC-001 addresses a
-        different issue, rounding the income excess.
+        different issue, rounding the income excess. The child-age condition
+        and paragraph (f)'s different wording also require interpretation.
     task_22_check: Official "latest" consolidated text checked directly
       2026-09-22 (browser user-agent, same method as the Act entry above;
       this URL redirects to
@@ -116,8 +120,9 @@ sources:
       version_checked: 2025-11-17
       finding: The Order commences on 1 April 2026. Clause 4 replaces
         the MD 3(4)(a) amount with 7921 for the 2026-27 and later tax years.
-        Regulation 17 uses the relevant statutory annual amount divided
-        by 52 in specified parent cases, not actual household WFF output.
+        This supplies the statutory maximum-rate amount for the express
+        maximum-rate terms in regulation 17. Paragraph (f)'s different
+        wording and the under-16 condition are not resolved by this Order.
       limitation: Source verification only. This does not approve an AS
         intermediate-rounding convention, parameter ID or runtime value.
   - id: as-2025-amendment

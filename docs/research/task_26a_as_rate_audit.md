@@ -2,8 +2,9 @@
 
 Author: GPT/Codex. Checked: 24 September 2026 (NZST).
 Base: `18e1ca5`, after the per-policy provenance merge.
-Status: research and discrepancy handoff, pending Claude's independent
-source review and Pete's classification. Task 26a is not complete.
+Status: research and discrepancy handoff. Claude independently confirmed
+F1-F4 at `c8a306c`; subsequent evidence and corrections await re-review.
+Pete's classification and decisions remain pending. Task 26a is not complete.
 
 ## Disposition
 
@@ -43,7 +44,7 @@ No 28.2 date, future interval, or policy amendment is approved here.
 
 ## F1: base-rate household IDs collapse different published rows
 
-Proposed classification: CODE_ERROR / SPEC_ERROR; priority high before
+Proposed classification: SPEC_ERROR; priority high before
 any rate population. Implementation owner: Claude Code; specification
 follow-up: Codex, after review.
 
@@ -80,7 +81,7 @@ and spec change need review before values are populated.
 
 ## F2: one non-beneficiary income-level ID cannot represent four levels
 
-Proposed classification: CODE_ERROR / SPEC_ERROR; priority high before
+Proposed classification: SPEC_ERROR; priority high before
 population. Implementation owner: Claude Code.
 
 The income-reduction lookup uses
@@ -194,6 +195,36 @@ Resolve the verification/exclusion contract for such cases explicitly.
 Do not infer normal-rate eligibility solely from a broad claimant enum.
 An asserted general eligibility bundle is not documentation that the
 rate-specific subtype was checked.
+
+### Additional subtype and wording questions from independent review
+
+Regulation 17(2)(b)(ii), (d)(ii), (f)(ii) and (h)(ii) all reference an
+eldest dependent child under 16. The current scenario carries a count,
+not child ages. Do not silently treat every parent as satisfying this
+wording, or decide that an older child's case omits the term without
+an interpretation. Regulation 17(2)(a) also prescribes the age-25 rate for
+a single beneficiary under 25; the subtype contract needs to account for
+that provision rather than using an actual lower benefit payment.
+
+Paragraph (f)(ii), unlike (b), (d) and (h), says annual rate payable,
+without the word maximum. Whether it means the same un-abated statutory
+eldest-child rate is unresolved. The parent diagnostic above is explicitly
+a beneficiary paragraph (b) example, not proof of the non-beneficiary
+paragraph (f) interpretation. Pete's decision must precede population of
+that term. No household WFF result is substituted while it is unresolved.
+
+The independent review also noted the missing FTC primary source in the
+initial revision. The follow-up `0edef62` adds the directly checked 2025
+Order and exact-expression evidence; that addition still requires review.
+It does not by itself settle either the age condition or paragraph (f).
+
+## Effective-date boundary
+
+The audited tables and benefit amounts are April-effective, not evidence
+for 2-31 March 2026. Leave March uncovered unless separately sourced;
+do not backdate values to fill the policy reference period. A chosen week
+must still satisfy the module's interval checks. Selecting an April-or-
+later week is Pete's 28.2 decision, not a decision made by this audit.
 
 ## Required handoff and completion conditions
 
