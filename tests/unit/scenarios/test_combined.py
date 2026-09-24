@@ -12,8 +12,8 @@ import pytest
 
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
-    AssessmentWeek,
     AsScenario,
+    AssessmentWeek,
     ClaimantCategory,
     PartnerType,
     TenureType,
@@ -26,7 +26,11 @@ from poltika.engines.simulator.wff import (
     WffResult,
     run_wff_module,
 )
-from poltika.scenarios.combined import CombinedHouseholdScenario, CombinedResult, run_combined_household
+from poltika.scenarios.combined import (
+    CombinedHouseholdScenario,
+    CombinedResult,
+    run_combined_household,
+)
 from tests.conftest import (
     AS_POLICY_DIR,
     AS_POLICY_VERSION,
