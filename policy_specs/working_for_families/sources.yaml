@@ -102,6 +102,16 @@ sources:
       locator: Section 2(43)-(45); section 106 inserting MF 4L.
       claim: The reversal can commence by Order, with a 1 April 2027 backstop; MF 4L addresses instalments if an earlier change date is set. A past parameter lookup date cannot certify the rest of an unfinished annual interval.
       scope: Commencement mechanism checked only. This is not Task 26b's independent register search or a replacement of the existing order_check record; no rate-status change.
+    task_26b_check:
+      checked_on: 2026-09-24
+      url: https://www.legislation.govt.nz/act/public/2026/0008/latest/whole.html
+      source_version: Official 2026 No 8 text, version as at 30 March 2026, retrieved on the check date.
+      locator: Section 2(43)-(45) and the section's secondary-legislation record.
+      finding: Section 2(43) says section 105(2) "comes into force on a single date set by Order in Council"; section 2(44) is the 1 April 2027 backstop. Immediately after section 2(45) the official page states "There is no secondary legislation made under this section currently on this website." No reversal Order was published as at the check date.
+      interval_evidence_covers: 2026-04-01 to 2026-09-24 (as-of observation only).
+      disposition: The 28.2 WFF interval is the full 2026-27 year [2026-04-01, 2027-04-01), which extends beyond this check. Under specification.md's Task 10.2 rate-status table ("Interval extends beyond the last Order check"), an unconditional annual in-work amount stays needs_review; in_work_base review_status is unchanged. Recheck for any later modelled interval; an Order commencing inside an interval invokes the unsupported split-period row.
+      limitation: A targeted search of the secondary-legislation register was attempted but the search URL used returned 404, so the section's own record is the evidence relied on, the same method as the 21 September order_check. Not a Gazette search.
+
   - id: wff-ird-interpretation-2026
     kind: agency_interpretation
     title: IS 26/12 - Working for Families tax credits and family scheme income

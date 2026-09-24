@@ -1207,7 +1207,10 @@ twin of the New Zealand policy system.
     (`test_one_child_single_uses_higher_asset_ceiling_but_cl2_area_cap`)
     already does. Re-verified independently after the fix: 195 passed,
     Ruff clean, strict mypy clean. Pete accepted and merged.
-24.3. **Implemented 23 September 2026; proposed ADR-0012 pending independent
+24.3. **ADR-0012 accepted 24 September 2026, narrowly** (Pete's delegation,
+    recorded in PR #49): the name-only no-gap conclusion stands; the four
+    opaque names remain unconfirmed candidates. Earlier status below.
+    **Implemented 23 September 2026; proposed ADR-0012 pending independent
     review and Pete's acceptance.** Repeated ADR-0009's corrected WFF method
     after PR #28 merged: structural names only at pinned commits, with no
     external contents, test logic, values, or formulas read. Compared both
@@ -1443,7 +1446,12 @@ is owned by the task named):
   coverage of the selected assessment week, and a boundary inside the week
   is never silently picked. WFF's full-year rule stays. The fix depends on
   28.2's week definition and must merge before 26a's rates run through the
-  module.
+  module. **Resolved, merged 24 September 2026 (PR #43).** `run_as_module()`
+  takes an explicit `assessment_week` ([start, end), 7 days, no weekday
+  convention). Reviewed by a fresh-context subagent standing in for
+  GPT/Codex, on Pete's instruction to proceed without Codex input: approve,
+  with six surviving boundary mutations, each now pinned by a test. PR #44
+  added the AS route to the installed-wheel probe.
 
 **Work split.** This follows the Roles section: GPT/Codex does source
 work, specification text, and hand-calculated expected values; Claude
@@ -1511,6 +1519,26 @@ and Pete's acceptance):
       approved policy with no parameter assumptions.
     - **26a.4 — Claude Code reviews (fresh-context subagent); Pete accepts.** Independent review of every new value against its source
       (not the author's workings); Pete accepts.
+
+    **Status, 24 September 2026.** 26a.1's source audit merged (PR #46).
+    Its fresh-context review confirmed that the Task 25/26 base-rate id
+    reused the Schedule 4 cap grouping, which MSD's threshold tables split
+    differently. That was a SPEC_ERROR, and Claude Code's own Task 25/26
+    design error. It also found that the income level varies by household
+    (r 18(3)). Pete delegated "resolve and proceed", and Codex recorded the
+    resolution (PR #49):
+    - DEC-002: use the published MSD entry thresholds and income levels
+      directly, under four rate-household rows separate from the cap
+      grouping, with fail-closed `ordinary_rate_status` and
+      eldest-child-under-16 facts;
+    - DEC-003: identified WFF is excluded from AS income whichever agency
+      pays it.
+
+    As a result, 26a.2 no longer populates `as_base_rate_*` values, as
+    written above. It populates `as_entry_threshold_<claimant>_<rate_
+    household>` and `as_income_level_non_beneficiary_<rate_household>`
+    under AS policy `0.1.1`. Claude Code's code repair is PR #50, under
+    fresh-context review; 26a.2's values follow once it merges.
 26b. **Recheck `in_work_base` for the v0.1 modelled interval(s) (new).** GPT/Codex;
     Claude Code reviews. Depends on 28.2's date/interval decision. Apply
     Task 10.2's existing rate-status contract in WFF's specification:
@@ -1524,6 +1552,17 @@ and Pete's acceptance):
     A no-future-Order assumption cannot clear the gate or enter the
     assumption-free golden suite. Completion means a reviewed disposition,
     not necessarily rate approval. Task 35's question must respect it.
+
+    **Disposition recorded 24 September 2026 (Claude Code, on Pete's
+    instruction to proceed without Codex input; `sources.yaml`
+    `task_26b_check`).** The official 2026 No 8 section 2 record still
+    states "There is no secondary legislation made under this section
+    currently on this website". The 28.2 interval is the full 2026-27 year,
+    which extends beyond the check, so under WFF's Task 10.2 rate-status
+    table the annual in-work base **stays `needs_review`**. `review_status`
+    is unchanged. A targeted register search could not be repeated (the
+    search URL returned 404), and the limitation is recorded. Recheck
+    whenever the modelled interval or the check date changes.
 27. **Re-scoped: settle the schema-version question (was "Migrate WFF's
     spec files to v0.2").** Task 25 concluded that no `PolicySpec`/
     `ParameterSpec` revision is needed for AS; both `policy.yaml` files and
@@ -1566,8 +1605,17 @@ and Pete's acceptance):
       categories); (d) identify any other interaction that touches the
       supported domains, or record that none was found. Each unresolved
       point becomes an explicit `needs_review` gate or a DEC-00x decision
-      artifact for Pete, never an assumption.
-    - **28.2 — Pete decides; GPT/Codex supplies the source research. Period and date reconciliation.** WFF is
+      artifact for Pete, never an assumption. **Research merged 24
+      September 2026 (PR #48)**, after Claude Code's independent
+      primary-source review. Its findings were resolved by DEC-003 (the
+      MSD-paid route) and DEC-002 (r 17(2)(f)'s wording is left undecided;
+      the table-based path doesn't compute that term). 28.3 drafting is
+      unblocked.
+    - **28.2 — Decided 24 September 2026 (Pete's "resolve and proceed"
+      delegation, recorded in PR #49; research PR #41):** both lookup
+      dates 2026-06-01; AS week [2026-06-01, 2026-06-08); WFF the full
+      2026-27 year; results reported in native periods, with no combined
+      total and no conversion. **Period and date reconciliation.** WFF is
       assessed per tax year (annual amounts) and AS per assessment week
       (weekly amounts). Decide how a combined result reports both: side by
       side in their native periods (recommended: no conversion rule is
@@ -1703,7 +1751,11 @@ and Pete's acceptance):
       Sources have no structured check-date field today, so the report
       shows `check_date` as not recorded rather than parsing free text. PR
       #41's `task_28_2_check.checked_on` fields are a follow-up for the
-      report to read. Verified on merged `main`: 249 passed, the
+      report to read. **Done (PR #45, merged 24 September 2026):** a
+      structured `checked_on` inside a mapping-valued check is reported per
+      source; free text is never parsed. Merged without GPT/Codex's
+      re-review of the final fix, on Pete's instruction to proceed without
+      Codex input. PR #47 made `tests/conftest.py` strict-mypy clean. Verified on merged `main`: 249 passed, the
       installed-artifact test passed, Ruff and strict mypy clean.
     - **31.6 — Claude Code; GPT/Codex reviews; Pete accepts.** After 30, extend
       provenance tests to combined scenarios and their artifact manifests.
