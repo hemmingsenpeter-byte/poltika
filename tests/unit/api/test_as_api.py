@@ -43,7 +43,7 @@ def _request_payload(**overrides: Any) -> dict[str, Any]:
         "modelled_date": MODELLED_DATE,
         "assessment_week_start": ASSESSMENT_WEEK_START,
         "assessment_week_end": ASSESSMENT_WEEK_END,
-        "requested_policy_version": "0.1.0",
+        "requested_policy_version": "0.1.1",
         "household_eligibility": "verified",
         "claimant_category": "jobseeker_support",
         "tenure_type": "rent_contributions_or_board",
@@ -53,6 +53,7 @@ def _request_payload(**overrides: Any) -> dict[str, Any]:
         "dependent_children_count": 0,
         "cash_assets": "1000",
         "exempt_cash_asset_status": "verified",
+        "ordinary_rate_status": "verified",
     }
     payload.update(overrides)
     return payload
@@ -79,7 +80,7 @@ def test_policy_dir_defaults_without_env_var(monkeypatch: pytest.MonkeyPatch) ->
     assert resolved.parent.name == "policy_specs"
 
 
-def test_calculate_real_policy_undeclared_base_rate_is_needs_review() -> None:
+def test_calculate_real_policy_undeclared_entry_threshold_is_needs_review() -> None:
     """The real, approved policy.yaml does not yet declare
     as_base_rate_jobseeker_support (Task 22's documented gap, pending
     Task 25's parameter-shape fix) -- must serialize as a clear
@@ -90,7 +91,7 @@ def test_calculate_real_policy_undeclared_base_rate_is_needs_review() -> None:
     component = response.json()["accommodation_supplement"]
     assert component["outcome"] == "needs_review"
     assert component["value"] is None
-    assert "as_base_rate_jobseeker_support" in (component["reason"] or "")
+    assert "as_entry_threshold_jobseeker_support_single_no_dependent_children" in (component["reason"] or "")
 
 
 def test_calculate_real_policy_asset_ceiling_is_unsupported() -> None:
@@ -204,7 +205,7 @@ def test_500_handler_does_not_leak_exception_detail(tmp_path: Path, monkeypatch:
             {
                 "schema_version": "0.1",
                 "policy_id": "accommodation_supplement",
-                "policy_version": "0.1.0",
+                "policy_version": "0.1.1",
                 "status": "approved",
                 "reference_period": {"from": "2026-03-02", "to": "2027-04-01"},
                 "source_catalog": "does_not_exist.yaml",  # triggers InvalidSourceCatalogError
@@ -260,3 +261,38 @@ def test_calculate_rejects_a_week_that_is_not_seven_days() -> None:
     )
     assert response.status_code == 422
     assert "exactly 7 days" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("omitted", ["ordinary_rate_status", "eldest_dependent_child_under_16"])
+def test_calculate_treats_an_omitted_new_fact_as_unverified(omitted: str) -> None:
+    """Task 26a repair: the API must not default either fact to verified,
+    and must pass each through to the scenario (PR #50 review, M22-M26)."""
+    payload = _request_payload(
+        partner_status="single",
+        dependent_children_count=1,
+        ordinary_rate_status="verified",
+        eldest_dependent_child_under_16="verified",
+    )
+    del payload[omitted]
+    response = client.post("/accommodation-supplement/calculate", json=payload)
+    assert response.status_code == 200
+    component = response.json()["accommodation_supplement"]
+    assert component["outcome"] == "needs_review"
+    assert omitted in (component["reason"] or "")
+
+
+def test_calculate_passes_eldest_child_exclusion_through() -> None:
+    response = client.post(
+        "/accommodation-supplement/calculate",
+        json=_request_payload(dependent_children_count=1, eldest_dependent_child_under_16="excluded"),
+    )
+    assert response.json()["accommodation_supplement"]["outcome"] == "unsupported"
+
+
+def test_calculate_refuses_the_pre_repair_policy_version() -> None:
+    """No old policy version may be silently interpreted as the new contract:
+    requesting 0.1.0 against the 0.1.1 AS policy is a 409, not a result."""
+    response = client.post(
+        "/accommodation-supplement/calculate", json=_request_payload(requested_policy_version="0.1.0")
+    )
+    assert response.status_code == 409

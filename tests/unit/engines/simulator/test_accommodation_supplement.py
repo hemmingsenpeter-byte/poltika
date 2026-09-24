@@ -8,14 +8,15 @@ imputation, r 19's final round-up), not copied from an implementation.
 Runs through Task 11's real loader throughout, but against two fixtures:
 `parameters` is a synthetic policy.yaml carrying the real approved AS rates
 (the 20 values Task 22 independently verified) plus test-only, clearly
-non-authoritative `as_base_rate_*`/`as_income_level_*` values -- these do
-not exist in the real policy.yaml yet (pending Task 24's independent
-recalculation of the dated MSD tables they'd come from), so they cannot be
+non-authoritative `as_entry_threshold_*`/`as_income_level_non_beneficiary_*`
+values (Task 26a repair, DEC-002) -- these do not exist in the real
+policy.yaml yet (pending Task 26a.2's population from the dated MSD
+tables), so they cannot be
 "the real approved rate with review_status flipped" the way WFF's synthetic
 fixture works; they exist purely to exercise the calculated-outcome
 arithmetic. `real_as_parameters` is the actual approved
 `policy_specs/accommodation_supplement/policy.yaml`, used to prove the
-still-undeclared base-rate/income-level parameters propagate as
+still-undeclared entry-threshold/income-level parameters propagate as
 `needs_review`, not a crash and not a guessed number.
 """
 
@@ -73,10 +74,18 @@ def _param(param_id: str, value_type: str, unit: str, value: str) -> dict[str, A
     }
 
 
+_RATE_HOUSEHOLDS = (
+    "single_no_dependent_children",
+    "sole_parent",
+    "couple_no_dependent_children",
+    "couple_with_dependent_children",
+)
+
+
 @pytest.fixture()
 def parameters(tmp_path: Path):
     """The real 20 Task-22-verified AS values, plus test-only
-    `as_base_rate_*`/`as_income_level_*` figures that do NOT exist in the
+    `as_entry_threshold_*`/`as_income_level_non_beneficiary_*` figures that do NOT exist in the
     real policy.yaml -- these are not statutory values, just round numbers
     for exercising the arithmetic (documented inline, never to be confused
     with a real MSD-sourced rate)."""
@@ -138,27 +147,25 @@ def parameters(tmp_path: Path):
             _param("asset_imputation_amount_per_step", "money", "NZD_per_week", "1"),
             _param("income_reduction_rate", "fraction", "fraction", "0.25"),
             # Test-only figures, NOT statutory values -- see module docstring.
-            # Task 25/26: as_base_rate_* is keyed by claimant category AND
-            # household category (_base_rate_parameter_id()'s docstring) --
-            # every combination this file's tests can reach is declared
-            # here, all at the same round test value, so no test's choice
-            # of partner_status/dependent_children_count needs to line up
-            # with which combinations happen to be declared.
+            # Task 26a repair: the entry threshold is keyed by claimant
+            # category and the published-table rate household. Every
+            # combination is declared at $75 -- the same threshold these
+            # tests previously reached as 25% of an assumed $300 base -- so
+            # every hand calculation below is unchanged.
             *(
-                _param(f"as_base_rate_{claimant_category}_{household_category}", "money", "NZD_per_week", "300")
+                _param(f"as_entry_threshold_{claimant_category}_{rate_household}", "money", "NZD_per_week", "75")
                 for claimant_category in (
                     "jobseeker_support",
                     "sole_parent_support",
                     "supported_living_payment",
                     "non_beneficiary",
                 )
-                for household_category in (
-                    "with_dependent_children",
-                    "no_dependent_children_couple_or_sole_parent_one_child",
-                    "single_no_dependent_children",
-                )
+                for rate_household in _RATE_HOUSEHOLDS
             ),
-            _param("as_income_level_non_beneficiary", "money", "NZD_per_week", "200"),
+            *(
+                _param(f"as_income_level_non_beneficiary_{rate_household}", "money", "NZD_per_week", "200")
+                for rate_household in _RATE_HOUSEHOLDS
+            ),
         ],
         "components": [],
         "outputs": {},
@@ -181,6 +188,8 @@ def _ordinary_scenario(**overrides: object) -> AsScenario:
         "dependent_children_count": 0,
         "cash_assets": Decimal(1000),
         "exempt_cash_asset_status": FactStatus.VERIFIED,
+        "ordinary_rate_status": FactStatus.VERIFIED,
+        "eldest_dependent_child_under_16": FactStatus.VERIFIED,
     }
     base.update(overrides)
     return AsScenario(**base)  # type: ignore[arg-type]
@@ -188,7 +197,7 @@ def _ordinary_scenario(**overrides: object) -> AsScenario:
 
 def test_ordinary_jobseeker_case_no_income_test(parameters) -> None:
     """Single, no dependent children, Jobseeker Support, Area 1: entry
-    threshold = 0.25 * 300 = 75; excess = 200 - 75 = 125; cost-based =
+    threshold (test assumption) = 75; excess = 200 - 75 = 125; cost-based =
     min(0.7 * 125, 165) = 87.5; Jobseeker Support has no AS income test
     (AS-08), so pre-rounding = 87.5; rounded up (r 19) = 88."""
     result = calculate_accommodation_supplement(_ordinary_scenario(), parameters)
@@ -337,16 +346,13 @@ def test_non_beneficiary_missing_weekly_income_is_needs_review(parameters) -> No
 
 def test_real_policy_undeclared_base_rate_is_needs_review_not_a_crash(real_as_parameters) -> None:
     """The real, approved policy.yaml does not yet declare
-    as_base_rate_jobseeker_support_single_no_dependent_children (pending
-    Task 24) -- this must resolve needs_review, not raise KeyError, unlike
-    WFF's PR #21 bug (which was a malformed-fixture edge case, not the
-    normal state of a real policy.yaml). The id includes the household
-    category (Task 25/26's compound-id fix) -- `_ordinary_scenario()`'s
-    default (single, no dependent children) maps to
-    `single_no_dependent_children`."""
+    as_entry_threshold_jobseeker_support_single_no_dependent_children
+    (pending Task 26a.2) -- this must resolve needs_review, not raise
+    KeyError. `_ordinary_scenario()`'s default (single, no dependent
+    children) maps to the `single_no_dependent_children` rate row."""
     result = calculate_accommodation_supplement(_ordinary_scenario(), real_as_parameters)
 
     assert result.outcome == "needs_review"
     assert result.value is None
-    assert "as_base_rate_jobseeker_support_single_no_dependent_children" in (result.reason or "")
+    assert "as_entry_threshold_jobseeker_support_single_no_dependent_children" in (result.reason or "")
     assert "not yet declared" in (result.reason or "")

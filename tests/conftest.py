@@ -30,8 +30,9 @@ from poltika.engines.simulator.accommodation_supplement import (
     ClaimantCategory,
     PartnerType,
     TenureType,
-    _base_rate_parameter_id,
-    _household_category,
+    _entry_threshold_parameter_id,
+    _income_level_parameter_id,
+    _rate_household,
 )
 from poltika.engines.simulator.wff import (
     BestStartCohort,
@@ -47,7 +48,8 @@ WFF_POLICY_DIR = Path(__file__).resolve().parent.parent / "policy_specs" / "work
 WFF_MODELLED_DATE = date(2026, 6, 1)
 AS_POLICY_DIR = Path(__file__).resolve().parent.parent / "policy_specs" / "accommodation_supplement"
 AS_MODELLED_DATE = date(2026, 6, 1)
-AS_ALLOWED_PARAMETER_ASSUMPTIONS = {"base_rate", "income_level"}
+AS_POLICY_VERSION = "0.1.1"
+AS_ALLOWED_PARAMETER_ASSUMPTIONS = {"entry_threshold", "income_level"}
 
 
 def _param(param_id: str, value_type: str, unit: str, value: str) -> dict[str, Any]:
@@ -228,12 +230,22 @@ def as_scenario_from_yaml(raw: dict[str, Any]) -> AsScenario:
         cash_assets=optional_decimal("cash_assets"),
         exempt_cash_asset_status=FactStatus(raw["exempt_cash_asset_status"]),
         weekly_income=optional_decimal("weekly_income"),
+        # Absent means unverified, never a silent pass (Task 26a repair).
+        ordinary_rate_status=FactStatus(raw.get("ordinary_rate_status", "unknown")),
+        eldest_dependent_child_under_16=FactStatus(raw.get("eldest_dependent_child_under_16", "unknown")),
     )
 
 
 def as_parameters_for_case(case: dict[str, Any]) -> PolicyParameterSet:
-    """Load real AS parameters and add only a case's explicit test assumptions."""
-    base = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version="0.1.0")
+    """Load real AS parameters and add only a case's explicit test assumptions.
+
+    Assumptions are keyed by the Task 26a repair's ids
+    (`as_entry_threshold_<claimant>_<rate_household>`,
+    `as_income_level_non_beneficiary_<rate_household>`), built from the
+    case's own scenario facts. A missing fact fails loudly rather than
+    guessing a household row.
+    """
+    base = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version=AS_POLICY_VERSION)
     assumptions = case.get("parameter_assumptions", {})
     assert set(assumptions) <= AS_ALLOWED_PARAMETER_ASSUMPTIONS, (
         f"{case['id']}: unknown parameter assumption(s) "
@@ -241,39 +253,25 @@ def as_parameters_for_case(case: dict[str, Any]) -> PolicyParameterSet:
     )
     resolutions = dict(base.resolutions)
     category = case["scenario"].get("claimant_category")
-    if "base_rate" in assumptions and category is not None:
-        # Task 25/26: as_base_rate_* is keyed by claimant category AND
-        # household category (see _base_rate_parameter_id()'s docstring),
-        # so a base_rate assumption needs both scenario facts to build the
-        # right compound id -- fail loudly if either is missing, rather
-        # than silently guessing a household category.
+    if assumptions and category is not None:
         partner_status_raw = case["scenario"].get("partner_status")
         dependent_children_count = case["scenario"].get("dependent_children_count")
         assert partner_status_raw is not None and dependent_children_count is not None, (
-            f"{case['id']}: a base_rate parameter_assumption needs partner_status and "
-            "dependent_children_count in the case's scenario to build the compound "
-            "as_base_rate_<claimant_category>_<household_category> id (Task 25/26)"
+            f"{case['id']}: a parameter assumption needs partner_status and "
+            "dependent_children_count in the case's scenario to select the rate-household row"
         )
-        household_category = _household_category(
-            PartnerType(partner_status_raw), dependent_children_count
-        )
-        parameter_id = _base_rate_parameter_id(ClaimantCategory(category), household_category)
-        resolutions[parameter_id] = ParameterResolution(
-            parameter_id=parameter_id,
-            outcome="resolved",
-            value=Decimal(assumptions["base_rate"]),
-            unit="NZD_per_week",
-            source_id="test-case-assumption",
-            locator=case["id"],
-        )
-    if "income_level" in assumptions and category is not None:
-        parameter_id = f"as_income_level_{category}"
-        resolutions[parameter_id] = ParameterResolution(
-            parameter_id=parameter_id,
-            outcome="resolved",
-            value=Decimal(assumptions["income_level"]),
-            unit="NZD_per_week",
-            source_id="test-case-assumption",
-            locator=case["id"],
-        )
+        rate_household = _rate_household(PartnerType(partner_status_raw), dependent_children_count)
+        ids = {
+            "entry_threshold": _entry_threshold_parameter_id(ClaimantCategory(category), rate_household),
+            "income_level": _income_level_parameter_id(rate_household),
+        }
+        for key, value in assumptions.items():
+            resolutions[ids[key]] = ParameterResolution(
+                parameter_id=ids[key],
+                outcome="resolved",
+                value=Decimal(value),
+                unit="NZD_per_week",
+                source_id="test-case-assumption",
+                locator=case["id"],
+            )
     return replace(base, resolutions=resolutions)

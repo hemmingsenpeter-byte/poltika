@@ -87,7 +87,7 @@ AS_PAYLOAD = {
     "modelled_date": "2026-06-01",
     "assessment_week_start": "2026-06-01",
     "assessment_week_end": "2026-06-08",
-    "requested_policy_version": "0.1.0",
+    "requested_policy_version": "0.1.1",
     "household_eligibility": "verified",
     "claimant_category": "jobseeker_support",
     "tenure_type": "rent_contributions_or_board",

@@ -84,7 +84,8 @@ poltika/
     │   │                        AS calculator unit tests (Task 23),
     │   │                        AS spec/benchmark tests (Task 24.1),
     │   │                        AS module-integration tests (Task 24.7),
-    │   │                        per-component trace tests (Task 31)
+    │   │                        per-component trace tests (Task 31),
+    │   │                        AS rate-selector tests (Task 26a repair)
     │   └── api/             — FastAPI TestClient tests (Task 21 WFF,
     │                          Task 24.8 AS)
     ├── installed_artifact/ — builds and installs the real wheel into a

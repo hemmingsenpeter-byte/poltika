@@ -252,18 +252,19 @@ def test_recording_parameters_logs_membership_tests_too() -> None:
 # --- Accommodation Supplement ---
 
 
-def test_as_real_policy_records_undeclared_base_rate() -> None:
+def test_as_real_policy_records_undeclared_entry_threshold() -> None:
     case = _as_case("ordinary_uncapped_jobseeker")
     result = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
     )
     # The real policy does not declare base rates yet (Task 26a).
     assert result.outcome == "needs_review"
     assert result.trace is not None
-    base_rate = next(p for p in result.trace.parameters if p.parameter_id.startswith("as_base_rate_"))
-    assert base_rate.parameter_id == "as_base_rate_jobseeker_support_single_no_dependent_children"
-    assert base_rate.outcome == "undeclared"
-    assert base_rate.source_id is None
+    threshold = next(p for p in result.trace.parameters if p.parameter_id.startswith("as_entry_threshold_"))
+    assert threshold.parameter_id == "as_entry_threshold_jobseeker_support_single_no_dependent_children"
+    assert threshold.outcome == "undeclared"
+    assert threshold.source_id is None
+    assert not any(p.parameter_id.startswith("as_base_rate_") for p in result.trace.parameters)
     assert result.trace.calculation_rules == ()
 
 
@@ -272,8 +273,11 @@ def test_as_calculated_beneficiary_applies_only_r19() -> None:
     result = calculate_accommodation_supplement(as_scenario_from_yaml(case["scenario"]), as_parameters_for_case(case))
     assert result.outcome == "calculated"
     assert result.trace is not None
-    assert [r.split(":")[0] for r in result.trace.calculation_rules] == ["r 19"]
-    assert result.trace.decisions == ()
+    assert [r.split(":")[0] for r in result.trace.calculation_rules] == ["DEC-002", "r 19"]
+    assert result.trace.decisions == ("DEC-002",)
+    # The table threshold is subtracted directly; the entry fraction is not
+    # consulted and no base rate exists (Task 26a repair).
+    assert "entry_threshold_rent_board_fraction" not in _ids(result)
     assert "income_reduction_rate" not in _ids(result)
     assert "weekly_income" not in _inputs(result)
 
@@ -288,10 +292,16 @@ def test_as_non_beneficiary_path_records_dec_001_and_income_parameters() -> None
     result = calculate_accommodation_supplement(as_scenario_from_yaml(case["scenario"]), as_parameters_for_case(case))
     assert result.outcome == "calculated"
     assert result.trace is not None
-    assert result.trace.decisions == ("DEC-001",)
-    assert [r.split(":")[0] for r in result.trace.calculation_rules] == ["s 423(3)", "r 18(2)", "r 19"]
+    assert result.trace.decisions == ("DEC-002", "DEC-001")
+    assert [r.split(":")[0] for r in result.trace.calculation_rules] == [
+        "DEC-002",
+        "DEC-002",
+        "s 423(3)",
+        "r 18(2)",
+        "r 19",
+    ]
     assert {
-        "as_income_level_non_beneficiary",
+        "as_income_level_non_beneficiary_single_no_dependent_children",
         "asset_imputation_step_size",
         "asset_imputation_amount_per_step",
         "income_reduction_rate",
