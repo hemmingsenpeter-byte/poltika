@@ -44,7 +44,7 @@ from sqlalchemy import (
     select,
 )
 
-from poltika.common.errors import ImmutableRecordError, StoreError
+from poltika.common.errors import ImmutableRecordError, StoredRunNotFoundError, StoreError
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
     AsScenario,
@@ -171,7 +171,7 @@ class ScenarioStore:
         with self._engine.connect() as conn:
             row = conn.execute(select(run_table).where(run_table.c.result_id == result_id)).one_or_none()
             if row is None:
-                raise StoreError(f"no stored run {result_id}")
+                raise StoredRunNotFoundError(f"no stored run {result_id}")
             record_json = conn.execute(
                 select(scenario_table.c.record_json).where(scenario_table.c.scenario_id == row.scenario_id)
             ).scalar_one()

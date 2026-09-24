@@ -38,9 +38,15 @@ from fastapi.responses import JSONResponse
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.accommodation_supplement import router as as_router
 from poltika.api.household import router as household_router
+from poltika.api.scenarios import router as scenarios_router
 from poltika.api.wff import WFF_POLICY_DIR
 from poltika.api.wff import router as wff_router
-from poltika.common.errors import PolicyVersionMismatchError, PoltikaError
+from poltika.common.errors import (
+    ImmutableRecordError,
+    PolicyVersionMismatchError,
+    PoltikaError,
+    StoredRunNotFoundError,
+)
 
 logger = logging.getLogger("poltika.api")
 
@@ -88,6 +94,20 @@ app = FastAPI(
 app.include_router(wff_router)
 app.include_router(as_router)
 app.include_router(household_router)
+app.include_router(scenarios_router)
+
+
+@app.exception_handler(StoredRunNotFoundError)
+async def _stored_run_not_found_handler(request: Request, exc: StoredRunNotFoundError) -> JSONResponse:
+    """Task 33.2: an unknown result id. The message holds only the id."""
+    return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+
+@app.exception_handler(ImmutableRecordError)
+async def _immutable_record_handler(request: Request, exc: ImmutableRecordError) -> JSONResponse:
+    """Task 33.2: an id already stored with different content (ADR-0013).
+    The message holds only table and id names, never paths."""
+    return JSONResponse(status_code=409, content={"detail": str(exc)})
 
 
 @app.exception_handler(PolicyVersionMismatchError)

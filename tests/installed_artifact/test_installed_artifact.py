@@ -28,6 +28,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.conftest import pg_bin_dir
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PROBE_SCRIPT = Path(__file__).resolve().parent / "_probe_installed_api.py"
 
@@ -43,7 +45,7 @@ def _run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
 
 
 @pytest.mark.installed_artifact
-def test_installed_wheel_serves_a_request_end_to_end(tmp_path: Path) -> None:
+def test_installed_wheel_serves_a_request_end_to_end(tmp_path: Path, request: pytest.FixtureRequest) -> None:
     if shutil.which("uv") is None:
         pytest.skip("uv not on PATH -- cannot build/install the wheel")
 
@@ -81,6 +83,12 @@ def test_installed_wheel_serves_a_request_end_to_end(tmp_path: Path) -> None:
     probe_env.pop("PYTHONPATH", None)
     probe_env["POLTIKA_POLICY_SPECS_DIR"] = str(REPO_ROOT / "policy_specs")
     probe_env["POLTIKA_EXPECTED_VENV_DIR"] = str(venv_dir.resolve())
+    # Task 33.4: with PostgreSQL server binaries available, the probe also
+    # migrates a fresh database from the *installed* package's migrations and
+    # exercises the stored scenario routes. Without them it says so.
+    probe_env.pop("POLTIKA_DATABASE_URL", None)
+    if pg_bin_dir() is not None:
+        probe_env["POLTIKA_DATABASE_URL"] = request.getfixturevalue("database_url")
     probe = subprocess.run(
         [str(python), str(PROBE_SCRIPT)],
         capture_output=True,
@@ -92,3 +100,5 @@ def test_installed_wheel_serves_a_request_end_to_end(tmp_path: Path) -> None:
 
     assert probe.returncode == 0, f"probe failed:\nstdout:\n{probe.stdout}\nstderr:\n{probe.stderr}"
     assert "PROBE_OK" in probe.stdout
+    if "POLTIKA_DATABASE_URL" in probe_env:
+        assert "PROBE_STORE_OK" in probe.stdout

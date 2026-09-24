@@ -4,53 +4,19 @@ PostgreSQL server (never SQLite, per ADR-0013)."""
 from __future__ import annotations
 
 import shutil
-import socket
-import subprocess
-from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
 
 from poltika.common.errors import ImmutableRecordError, StoreError
 from poltika.scenarios.record import CodeIdentity, run_scenario
-from poltika.scenarios.store import ScenarioStore, migrate
+from poltika.scenarios.store import ScenarioStore
 from tests.conftest import AS_POLICY_DIR, WFF_POLICY_DIR
 from tests.unit.scenarios.test_scenario_record import _household, record_from_yaml
 
 pytestmark = pytest.mark.postgres
 
-_CANDIDATE_BIN_DIRS = [Path("/usr/local/opt/postgresql@16/bin"), Path("/opt/homebrew/opt/postgresql@16/bin")]
 CODE = CodeIdentity("0.1.0", None, None, None)
-
-
-def _pg_bin() -> Path | None:
-    found = shutil.which("pg_ctl")
-    if found:
-        return Path(found).parent
-    return next((d for d in _CANDIDATE_BIN_DIRS if (d / "pg_ctl").exists()), None)
-
-
-@pytest.fixture(scope="session")
-def database_url(tmp_path_factory: pytest.TempPathFactory) -> Iterator[str]:
-    bin_dir = _pg_bin()
-    if bin_dir is None:
-        pytest.skip("PostgreSQL server binaries not installed")
-    data = tmp_path_factory.mktemp("pgdata")
-    with socket.socket() as s:
-        s.bind(("127.0.0.1", 0))
-        port = s.getsockname()[1]
-    subprocess.run([str(bin_dir / "initdb"), "-D", str(data), "-U", "poltika", "--auth=trust"], check=True, capture_output=True)
-    subprocess.run(
-        [str(bin_dir / "pg_ctl"), "-D", str(data), "-o", f"-p {port} -c listen_addresses=127.0.0.1 -c unix_socket_directories=''", "-l", str(data / "log"), "-w", "start"],
-        check=True, capture_output=True,
-    )
-    try:
-        subprocess.run([str(bin_dir / "createdb"), "-h", "127.0.0.1", "-p", str(port), "-U", "poltika", "poltika"], check=True, capture_output=True)
-        url = f"postgresql+psycopg://poltika@127.0.0.1:{port}/poltika"
-        migrate(url)
-        yield url
-    finally:
-        subprocess.run([str(bin_dir / "pg_ctl"), "-D", str(data), "-m", "fast", "stop"], capture_output=True, check=False)
 
 
 def _copy_policies(tmp_path: Path) -> tuple[Path, Path]:

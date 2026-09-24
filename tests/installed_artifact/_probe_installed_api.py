@@ -30,6 +30,7 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 import poltika
 
@@ -119,6 +120,26 @@ HOUSEHOLD_PAYLOAD = {
 }
 
 
+def _probe_scenario_store(client_factory: Any) -> str | None:
+    """Task 33.4: migrate with the installed package's own Alembic files, then
+    create, fetch and replay a stored scenario."""
+    from poltika.scenarios.store import migrate
+
+    migrate(os.environ["POLTIKA_DATABASE_URL"])
+    with client_factory() as client:
+        created = client.post("/scenarios", json=HOUSEHOLD_PAYLOAD)
+        if created.status_code != 201:
+            return f"store create {created.status_code}: {created.text}"
+        result_id = created.json()["result_id"]
+        fetched = client.get(f"/scenarios/{result_id}")
+        if fetched.status_code != 200 or fetched.json()["reproducible"]:
+            return f"store fetch {fetched.status_code}: {fetched.text}"
+        replayed = client.post(f"/scenarios/{result_id}/replay")
+        if replayed.json() != {"result_id": result_id, "reproduced": True}:
+            return f"store replay: {replayed.text}"
+    return None
+
+
 def main() -> int:
     with TestClient(app) as client:
         response = client.post("/wff/calculate", json=PAYLOAD)
@@ -154,6 +175,14 @@ def main() -> int:
         print("PROBE_FAILED: an installed wheel has no git commit, so a run cannot be reproducible")
         return 1
 
+    if os.environ.get("POLTIKA_DATABASE_URL"):
+        failure = _probe_scenario_store(client_factory=lambda: TestClient(app))
+        if failure:
+            print(f"PROBE_FAILED: {failure}")
+            return 1
+        print("PROBE_STORE_OK")
+    else:
+        print("PROBE_STORE_SKIPPED: POLTIKA_DATABASE_URL not set")
     print("PROBE_OK")
     return 0
 

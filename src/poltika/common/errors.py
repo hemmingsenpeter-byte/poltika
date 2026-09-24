@@ -68,3 +68,7 @@ class StoreError(PoltikaError):
 class ImmutableRecordError(StoreError):
     """An id already stored with different content: runs are never edited in
     place (ADR-0013, BUILD_PLAN Task 32.2)."""
+
+
+class StoredRunNotFoundError(StoreError):
+    """No stored run has the requested result id (Task 33.2: 404)."""

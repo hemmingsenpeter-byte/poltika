@@ -36,7 +36,7 @@ from poltika.engines.assurance.provenance import build_combined_provenance_repor
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
 from poltika.engines.simulator.wff import FactStatus
 from poltika.scenarios.combined import CombinedHouseholdScenario
-from poltika.scenarios.record import ScenarioRecord, detect_code_identity, run_scenario
+from poltika.scenarios.record import ScenarioRecord, ScenarioRun, detect_code_identity, run_scenario
 
 router = APIRouter(prefix="/household", tags=["household"])
 
@@ -66,6 +66,59 @@ class HouseholdCalculationResponse(BaseModel):
     provenance: dict[str, Any]
 
 
+def record_from_request(request: HouseholdCalculationRequest) -> ScenarioRecord:
+    """The Task 30 scenario record for a request; invalid combinations are 422."""
+    as_request = request.accommodation_supplement
+    try:
+        return ScenarioRecord(
+            household=CombinedHouseholdScenario(
+                wff=_wff_scenario(request.wff),
+                accommodation_supplement=_as_scenario(as_request),
+                as_claimant_is_wff_claimant_or_partner=request.as_claimant_is_wff_claimant_or_partner,
+            ),
+            wff_lookup_date=request.wff.modelled_date,
+            as_lookup_date=as_request.modelled_date,
+            assessment_week=AssessmentWeek(
+                start=as_request.assessment_week_start, end=as_request.assessment_week_end
+            ),
+            requested_wff_policy_version=request.wff.requested_policy_version,
+            requested_as_policy_version=as_request.requested_policy_version,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+def execute(record: ScenarioRecord) -> ScenarioRun:
+    """Run a record against the internally pinned policy directories."""
+    return run_scenario(
+        record, WFF_POLICY_DIR, AS_POLICY_DIR, code=detect_code_identity(_CODE_ROOT)
+    )
+
+
+def response_from_run(run: ScenarioRun) -> HouseholdCalculationResponse:
+    wff = run.result.wff
+    return HouseholdCalculationResponse(
+        wff=WffCalculationResponse(
+            family_tax_credit=WffComponentResponse.from_component_result(wff.family_tax_credit),
+            in_work_tax_credit=WffComponentResponse.from_component_result(wff.in_work_tax_credit),
+            minimum_family_tax_credit=WffComponentResponse.from_component_result(
+                wff.minimum_family_tax_credit
+            ),
+            best_start=WffComponentResponse.from_component_result(wff.best_start),
+        ),
+        accommodation_supplement=AsComponentResultResponse.from_component_result(
+            run.result.accommodation_supplement
+        ),
+        wff_period=run.result.wff_period,
+        accommodation_supplement_period=run.result.accommodation_supplement_period,
+        contradictions=list(run.result.contradictions),
+        scenario_id=run.scenario_id,
+        result_id=run.result_id,
+        reproducible=run.manifest.reproducible,
+        provenance=build_combined_provenance_report(run, WFF_POLICY_DIR, AS_POLICY_DIR),
+    )
+
+
 @router.post("/calculate", response_model=HouseholdCalculationResponse)
 def calculate(request: HouseholdCalculationRequest) -> HouseholdCalculationResponse:
     """Calculate WFF and Accommodation Supplement for one household.
@@ -75,38 +128,4 @@ def calculate(request: HouseholdCalculationRequest) -> HouseholdCalculationRespo
     no combined total. A structural error (such as a policy-version
     mismatch) maps to 409 or 500 through the app-level handlers.
     """
-    as_request = request.accommodation_supplement
-    try:
-        record = ScenarioRecord(
-            household=CombinedHouseholdScenario(
-                wff=_wff_scenario(request.wff),
-                accommodation_supplement=_as_scenario(as_request),
-                as_claimant_is_wff_claimant_or_partner=request.as_claimant_is_wff_claimant_or_partner,
-            ),
-            wff_lookup_date=request.wff.modelled_date,
-            as_lookup_date=as_request.modelled_date,
-            assessment_week=AssessmentWeek(start=as_request.assessment_week_start, end=as_request.assessment_week_end),
-            requested_wff_policy_version=request.wff.requested_policy_version,
-            requested_as_policy_version=as_request.requested_policy_version,
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-
-    run = run_scenario(record, WFF_POLICY_DIR, AS_POLICY_DIR, code=detect_code_identity(_CODE_ROOT))
-    wff = run.result.wff
-    return HouseholdCalculationResponse(
-        wff=WffCalculationResponse(
-            family_tax_credit=WffComponentResponse.from_component_result(wff.family_tax_credit),
-            in_work_tax_credit=WffComponentResponse.from_component_result(wff.in_work_tax_credit),
-            minimum_family_tax_credit=WffComponentResponse.from_component_result(wff.minimum_family_tax_credit),
-            best_start=WffComponentResponse.from_component_result(wff.best_start),
-        ),
-        accommodation_supplement=AsComponentResultResponse.from_component_result(run.result.accommodation_supplement),
-        wff_period=run.result.wff_period,
-        accommodation_supplement_period=run.result.accommodation_supplement_period,
-        contradictions=list(run.result.contradictions),
-        scenario_id=run.scenario_id,
-        result_id=run.result_id,
-        reproducible=run.manifest.reproducible,
-        provenance=build_combined_provenance_report(run, WFF_POLICY_DIR, AS_POLICY_DIR),
-    )
+    return response_from_run(execute(record_from_request(request)))
