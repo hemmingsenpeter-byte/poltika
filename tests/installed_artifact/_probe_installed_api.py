@@ -100,10 +100,30 @@ AS_PAYLOAD = {
 }
 
 
+# Task 33.4: the combined household route. The WFF facts are PAYLOAD's; AS
+# is a non-beneficiary sole parent with one child (consistent with WFF), so
+# both policies run and no shared-fact disagreement arises.
+HOUSEHOLD_PAYLOAD = {
+    "wff": PAYLOAD,
+    "accommodation_supplement": {
+        **AS_PAYLOAD,
+        "claimant_category": "non_beneficiary",
+        "dependent_children_count": 1,
+        "cash_assets": "1000",
+        "weekly_income": "500",
+        "weekly_accommodation_costs": "400",
+        "ordinary_rate_status": "verified",
+        "eldest_dependent_child_under_16": "verified",
+    },
+    "as_claimant_is_wff_claimant_or_partner": "verified",
+}
+
+
 def main() -> int:
     with TestClient(app) as client:
         response = client.post("/wff/calculate", json=PAYLOAD)
         as_response = client.post("/accommodation-supplement/calculate", json=AS_PAYLOAD)
+        household_response = client.post("/household/calculate", json=HOUSEHOLD_PAYLOAD)
 
     if response.status_code != 200:
         print(f"PROBE_FAILED: status {response.status_code}: {response.text}")
@@ -121,6 +141,17 @@ def main() -> int:
     supplement = as_response.json().get("accommodation_supplement", {})
     if supplement.get("outcome") != "unsupported" or "r 15" not in (supplement.get("reason") or ""):
         print(f"PROBE_FAILED: unexpected accommodation_supplement shape: {supplement}")
+        return 1
+
+    if household_response.status_code != 200:
+        print(f"PROBE_FAILED: household status {household_response.status_code}: {household_response.text}")
+        return 1
+    household = household_response.json()
+    if household["contradictions"] or household["accommodation_supplement"]["outcome"] != "calculated":
+        print(f"PROBE_FAILED: unexpected household result: {household}")
+        return 1
+    if household["reproducible"]:
+        print("PROBE_FAILED: an installed wheel has no git commit, so a run cannot be reproducible")
         return 1
 
     print("PROBE_OK")
