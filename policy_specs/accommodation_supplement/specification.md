@@ -14,6 +14,13 @@ below; supersedes the earlier "September 2026" placeholder). Source IDs
 below refer to
 [sources.yaml](sources.yaml). No external implementation was consulted.
 
+**24 September repair:** the Task 26a section below supersedes the old
+base/income selector design for the next reviewed implementation. Decisions
+DEC-002/003 are recorded under Pete's "resolve and proceed" delegation.
+This contract change is awaiting independent review and coordinated adoption
+as AS policy `0.1.1`; current executable `policy.yaml` remains `0.1.0`.
+Historical acceptance and calculation text below do not approve new values.
+
 ## Statutory structure
 
 The Social Security Act 2018, ss 65AAA-69 and Schedule 4 Part 7 (`as-social-security-act`),
@@ -307,7 +314,110 @@ false zero or a silent default):
    confirmed this governs only the final figure, not any intermediate
    step.
 
-### Note for Task 25 (schema stress test)
+### Task 26a selector and threshold repair
+
+**Owner:** Codex specification; Claude implementation; cross-model review
+before parameter population. This section replaces step 3's base-rate
+lookup and step 5's claimant-only income-level lookup upon adoption. The
+three statutory cap categories and all other scoped arithmetic remain
+unchanged. Source basis: regulations 17-19, the four dated MSD entry tables
+and `as-msd-income-2026`; modelling precision is DEC-002, not a newly
+discovered intermediate rounding rule.
+
+#### Separate household selectors
+
+Derive `rate_household` from verified partner status and child count;
+do not accept a caller-selected category that can contradict those facts.
+
+| Partner status | Children | Rate-household suffix |
+| --- | --- | --- |
+| `single` | 0 | `single_no_dependent_children` |
+| `single` | 1 or more | `sole_parent` |
+| `ordinary_couple` | 0 | `couple_no_dependent_children` |
+| `ordinary_couple` | 1 or more | `couple_with_dependent_children` |
+
+Use `as_entry_threshold_<claimant_category>_<rate_household>` for the
+published rent/board threshold, in `NZD_per_week`. Subtract that amount
+directly from qualifying costs; never multiply it by `entry_fraction_rent`
+or convert it into `as_base_rate_*`. The old base IDs are not aliases and
+must not be a fallback. Historical synthetic base-rate fixtures remain
+conditional evidence for the old contract, not new protected table values.
+
+For non-beneficiaries only, use
+`as_income_level_non_beneficiary_<rate_household>`, also `NZD_per_week`.
+Use the table's income-threshold column, not its area cut-out points.
+Never fall back to `as_income_level_non_beneficiary`. Beneficiary branches
+do not look up an income threshold merely to satisfy a generic schema.
+
+For caps, retain the existing three-way selector: a couple with children
+and a sole parent with two or more children share cl 1; a childless couple
+and a sole parent with one child share cl 2; a single without children uses
+cl 3. A sole parent's entry/income row can remain the same when a second
+child changes the cap. Both selectors must be tested independently.
+
+#### Rate-row verification and limits
+
+Add a separately documented `ordinary_rate_status` fact at assessment-unit
+level, for the entire AS week, following existing `FactStatus` conventions:
+
+- `verified`: the supported ordinary claimant/table row has been verified;
+  no protected Jobseeker woman-alone rate, mixed-benefit rate, special
+  care/residential rate or other unrepresented subtype applies. For a
+  single beneficiary under 25, verification includes applicability of
+  regulation 17(2)(a)'s age-25 rate, not their actual lower cash benefit.
+- `excluded`: a known rate subtype is outside this branch; `unsupported`.
+- `unknown`, including omitted input: `needs_review`. General household
+  eligibility does not imply this rate-specific verification.
+
+For any parent row add `eldest_dependent_child_under_16`, also a verified
+fact for the whole week: `verified` means the eldest qualifying dependent
+child is under 16 throughout; `excluded` means outside this narrow domain
+and returns `unsupported`; `unknown` means `needs_review`. This is a scope
+restriction, not a determination that older-child households lack AS
+entitlement. Do not infer it from a positive count or a WFF child list.
+No age-status fact is required or consulted when the count is zero.
+
+Sole Parent Support requires `single` with one or more children. A known
+other combination is `unsupported`, not a manufactured table parameter.
+Other claimant categories retain their existing exclusions. Known outside-
+domain outcomes should not be hidden behind a missing-rate lookup. Once
+facts put a household in the supported branch, missing or unreviewed
+required rates remain `needs_review`, never zero. Interval gaps retain
+the loader/module's existing fail-closed outcomes.
+
+#### Precision, trace and revision
+
+Do not compute the regulation-17 FTC expression on this table-based path.
+In particular, paragraph (f)'s different wording remains a legal question,
+not an instruction to substitute the household's calculated WFF. The
+table-derived threshold has its own source, effective interval and review
+status. Any future exact-base path needs a separate reviewed decision.
+
+The trace must identify the actual threshold/income IDs consulted, the
+new facts when consulted, the unchanged cap ID, and DEC-002. Do not report
+an unused base, FTC rate, or 25% multiplication as applied arithmetic.
+No hardcoded reporting note may stand in for a recorded decision trace.
+DEC-001 continues to apply to fractional income excess; final r 19 rounding
+is unchanged. DEC-003 resolves only the MSD-paid WFF income interpretation
+in AS-10, retaining payment-identity and income-derivation verification.
+
+At coordinated implementation adoption, Codex updates `policy.yaml` input
+metadata and policy version to `0.1.1`, with schema still `0.1`. Claude
+updates API/runner tests and trace logic; source/fixture changes retain
+their separate ownership and independent review. No old policy version
+may silently be interpreted as the new contract. Numeric values still
+wait for 26a.2 after reviewed code; no dates may be backfilled into March.
+
+Required regression coverage includes both formerly colliding household
+pairs for entry thresholds, all four non-beneficiary income selectors,
+one/two-child sole-parent cap distinction, no old-ID fallback, ordinary-
+rate unknown/excluded facts, invalid Sole Parent combinations, age-state
+gates, direct-threshold arithmetic, exact table-boundary zero, decision
+and parameter provenance, and full assessment-week interval validation.
+Use synthetic values for selector isolation, clearly labelled; independent
+source-derived expectations for the populated policy follow in 26a.
+
+### Historical Task 25 schema stress-test note
 
 AS is assessed on an ongoing weekly basis, reassessed on a change of
 circumstance, not against a fixed annual membership period the way WFF's

@@ -8,3 +8,12 @@ Add a further dated `DEC-NNN-<topic>.md` here only after Pete resolves a
 genuine ambiguity, using [`DECISION_TEMPLATE.md`](../../DECISION_TEMPLATE.md).
 Source mapping and open review questions belong in `specification.md` until
 then.
+
+- [DEC-002-published-thresholds-and-rate-scope.md](DEC-002-published-thresholds-and-rate-scope.md):
+  explicit published-table modelling convention and bounded ordinary-rate
+  scope, selected under Pete's 24 September "resolve and proceed" delegation.
+- [DEC-003-msd-paid-wff-income-exclusion.md](DEC-003-msd-paid-wff-income-exclusion.md):
+  identified statutory WFF income exclusion independent of IRD/MSD payer.
+
+These decisions do not approve unreviewed implementation or numeric
+parameters. See each artifact's status and residual uncertainty.

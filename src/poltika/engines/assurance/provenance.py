@@ -130,6 +130,13 @@ def build_provenance_report(policy_dir: Path, results: Mapping[str, ComponentRes
             "policy_version": header["policy_version"],
             "schema_version": header["schema_version"],
             "modelled_date": header["modelled_date"].isoformat(),
+            # [from, to), exclusive end; None when the results did not come
+            # through a module entry point that states its period.
+            "assessment_period": (
+                {"from": header["assessment_period"][0].isoformat(), "to": header["assessment_period"][1].isoformat()}
+                if header["assessment_period"] is not None
+                else None
+            ),
         },
         "scenario_sha256": header["scenario_sha256"],
         "code_version": _code_version(),
@@ -150,7 +157,8 @@ def render_markdown(report: Mapping[str, Any]) -> str:
     lines = [
         f"# Provenance report: {policy['policy_id']} {policy['policy_version']}",
         "",
-        f"- Modelled date: {policy['modelled_date']}",
+        f"- Assessment period: {_period_text(policy['assessment_period'])}",
+        f"- Parameter lookup date: {policy['modelled_date']}",
         f"- Scenario SHA-256: `{report['scenario_sha256']}`",
         f"- Schema version: {policy['schema_version']}",
         f"- Code version: {report['code_version']}",
@@ -258,14 +266,23 @@ def _require_trace(component_id: str, result: ComponentResult) -> ComponentTrace
 
 def _shared_header(traces: list[ComponentTrace]) -> dict[str, Any]:
     headers = {
-        (t.policy_id, t.policy_version, t.schema_version, t.modelled_date, t.artifact_sha256, t.scenario_sha256)
+        (
+            t.policy_id,
+            t.policy_version,
+            t.schema_version,
+            t.modelled_date,
+            t.artifact_sha256,
+            t.scenario_sha256,
+            t.assessment_period,
+        )
         for t in traces
     }
     if len(headers) != 1:
         raise ProvenanceError(
-            "component traces come from different runs (policy identity, artifacts, or scenario differ)"
+            "component traces come from different runs "
+            "(policy identity, artifacts, scenario, or assessment period differ)"
         )
-    policy_id, policy_version, schema_version, modelled_date, artifact_sha256, scenario = headers.pop()
+    policy_id, policy_version, schema_version, modelled_date, artifact_sha256, scenario, period = headers.pop()
     if not artifact_sha256:
         raise ProvenanceError(
             "the traces record no artifact hashes -- the parameter set was not loaded from policy files, "
@@ -278,6 +295,7 @@ def _shared_header(traces: list[ComponentTrace]) -> dict[str, Any]:
         "modelled_date": modelled_date,
         "artifact_sha256": artifact_sha256,
         "scenario_sha256": scenario,
+        "assessment_period": period,
     }
 
 
@@ -398,6 +416,12 @@ def _code_version() -> str:
         return f"poltika {package_version('poltika')}"
     except PackageNotFoundError:
         return "poltika (package metadata unavailable)"
+
+
+def _period_text(period: Mapping[str, str] | None) -> str:
+    if period is None:
+        return "not stated (results did not come through a module entry point)"
+    return f"{period['from']} to {period['to']} (end exclusive)"
 
 
 def _cell(value: Any) -> str:

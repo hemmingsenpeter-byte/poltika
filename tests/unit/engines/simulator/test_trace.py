@@ -18,6 +18,7 @@ import yaml
 
 from poltika.engines.simulator.accommodation_supplement import (
     AsScenario,
+    AssessmentWeek,
     calculate_accommodation_supplement,
     run_as_module,
 )
@@ -41,6 +42,10 @@ from tests.conftest import (
     load_wff_spec_case,
     wff_scenario_from_yaml,
 )
+
+# A test week containing the modelled date -- not Task 28.2's selected week,
+# which Pete has not chosen yet.
+TEST_ASSESSMENT_WEEK = AssessmentWeek(start=date(2026, 6, 1), end=date(2026, 6, 8))
 
 _FTC_PARAMETERS = [
     "family_tax_credit_eldest_child",
@@ -250,7 +255,7 @@ def test_recording_parameters_logs_membership_tests_too() -> None:
 def test_as_real_policy_records_undeclared_base_rate() -> None:
     case = _as_case("ordinary_uncapped_jobseeker")
     result = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0"
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
     )
     # The real policy does not declare base rates yet (Task 26a).
     assert result.outcome == "needs_review"
@@ -308,3 +313,13 @@ def test_as_recording_leaves_scenario_type_untouched() -> None:
     scenario = as_scenario_from_yaml(case["scenario"])
     calculate_accommodation_supplement(scenario, as_parameters_for_case(case))
     assert type(scenario) is AsScenario
+
+
+def test_wff_validation_failure_trace_records_the_tax_year() -> None:
+    """Added after PR #43's fresh-context review: the period must be on a
+    validation-failure trace too, not only on calculated results."""
+    scenario = wff_scenario_from_yaml(load_wff_spec_case("single_ordinary_low_income")["scenario"])
+    result = run_wff_module(WFF_POLICY_DIR, date(2027, 6, 1), scenario, requested_policy_version="0.1.0")
+    assert result.family_tax_credit.outcome == "needs_review"
+    assert result.family_tax_credit.trace is not None
+    assert result.family_tax_credit.trace.assessment_period == (date(2026, 4, 1), date(2027, 4, 1))
