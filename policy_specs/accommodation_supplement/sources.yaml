@@ -11,12 +11,18 @@ sources:
       checked_on: 2026-09-24
       versions_checked: [2026-04-01, 2026-09-04]
       audit_version_url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-04-01/
-      locator: Schedule 4 Part 1 clause 1(d); Part 7 clauses 1-3
+      locator: Schedule 2 Income Test 3; Schedule 4 Part 1 clause 1(d)-(g), (j); Part 7 clauses 1-3
       finding: The single ordinary Jobseeker rate is 372.55, while Part 7
         uses 25 percent of the regulation 17 base rate for rent or board.
         The statutory cap categories combine couples and sole parents;
         this does not establish that their base rates are equal.
       limitation: Research only. No new runtime value or date selection approved.
+      precision_cross_check: The ordinary sole-parent Jobseeker rate is
+        521.52; the ordinary couple rates in Part 1 clause 1(j) are 633.94
+        without children and 669.40 with children. Income Test 3 reduces
+        the relevant benefit by 70 cents per dollar of income over 160.
+        Continuous-equation cut-outs are diagnostic only, not verified
+        legal payment-prevention thresholds. See the audit's F3 section.
     task_22_check: Official "latest" consolidated text checked directly
       2026-09-22 (browser user-agent, bare fetch 403s). ss 65AAA, 66, 67,
       68, 69, 423, and Schedule 4 Part 7 (cl 1-8) reviewed in full for
@@ -99,6 +105,21 @@ sources:
       with no intermediate-rounding instruction. No discrepancy found across
       the 3 values sourced to this Regulations entry (2 ceilings and reduction
       rate).
+  - id: as-ftc-rate-order-2025
+    kind: amending_legislation
+    title: Income Tax (Tax Credit) Order 2025
+    url: https://www.legislation.govt.nz/regulation/public/2025/0260/latest/whole.html
+    covers: Statutory eldest-child annual FTC amount used in regulation 17 base-rate construction.
+    locator: Clauses 2 and 4(1), (3)
+    task_26a_check:
+      checked_on: 2026-09-24
+      version_checked: 2025-11-17
+      finding: The Order commences on 1 April 2026. Clause 4 replaces
+        the MD 3(4)(a) amount with 7921 for the 2026-27 and later tax years.
+        Regulation 17 uses the relevant statutory annual amount divided
+        by 52 in specified parent cases, not actual household WFF output.
+      limitation: Source verification only. This does not approve an AS
+        intermediate-rounding convention, parameter ID or runtime value.
   - id: as-2025-amendment
     kind: amending_legislation
     title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025

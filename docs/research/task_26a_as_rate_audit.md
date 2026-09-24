@@ -144,6 +144,40 @@ Possible resolutions to investigate, not decisions made here:
 DEC-001 does not decide this issue: it concerns fractional income excess
 under regulation 18(2), not entry thresholds or regulation 18(3) levels.
 
+### Exact-expression cross-check for a parent
+
+For an ordinary sole-parent Jobseeker case to which regulation 17(2)(b)
+applies, the April Act's Schedule 4 Part 1 clause 1(e)-(f) supplies 521.52.
+The Income Tax (Tax Credit) Order 2025, clauses 2 and 4(1), (3), establishes
+the 7,921 eldest-child annual FTC amount from 1 April 2026 for 2026-27 and
+later tax years (`as-ftc-rate-order-2025`). The exact expression is therefore
+`521.52 + 7921/52 = 876001/1300`; a quarter of that expression is
+`876001/5200`, approximately 168.461731, not the published 168 threshold.
+This is a source-grounded arithmetic diagnostic under the stated subtype,
+not an approved parameter or expected household result. Do not truncate
+the repeating fraction into a decimal policy value without a reviewed
+precision contract. The FTC term is a statutory maximum, not the result
+of running this household's WFF calculation.
+
+A separate diagnostic for regulation 18(3) uses the April Act's Schedule 2
+Income Test 3: 70 cents of reduction per dollar above 160. Solving the
+continuous equation `160 + benefit_rate / 0.70` gives:
+
+| Ordinary household | Jobseeker rate used | Continuous-equation zero | Published income threshold |
+| --- | ---: | ---: | ---: |
+| Single without children | 372.55 | 9691/14 | 693 |
+| Couple without children | 633.94 | 37297/35 | 1066 |
+| Couple with children | 669.40 | 7814/7 | 1117 |
+| Sole parent | 521.52 | 31676/35 | 906 |
+
+The rates are in Schedule 4 Part 1 clause 1(d)-(f), (j); regulation
+18(3)(b) specifically substitutes Income Test 3 for the sole-parent rate.
+These expressions diagnose the precision question only. They are not a
+claim that the continuous zero is legally the payment-prevention point:
+applicable payment rounding, income units and minimum-payment rules still
+need checking. Nor does agreement with a ceiling operation across these
+four rows establish that operation's authority.
+
 ## F4: supported claimant labels need a bounded rate subtype contract
 
 Proposed classification: SPEC_ERROR / MISSING_SOURCE for unrepresented

@@ -10,6 +10,10 @@ Status: source-research handoff; no runtime values or code changed.
   `sources.yaml`'s `task_26a_check` entries.
 - MSD tables: the four `as-msd-*-rates-2026` entry-threshold sources,
   `as-msd-rates-2026`, `as-msd-income-2026`, and the main Jobseeker table.
+- Income Tax (Tax Credit) Order 2025 clauses 2 and 4(1), (3), and the
+  April Act's Income Test 3 and Schedule 4 Part 1 ordinary household rates.
+  Recalculate the exact-expression diagnostics independently; they are
+  not approved values or payment-prevention thresholds.
 - Inspect `_household_category`, `_base_rate_parameter_id`, and the income
   level lookup in `src/poltika/engines/simulator/accommodation_supplement.py`.
 - Current `policy.yaml`, `spec_cases.yaml`, `benchmarks.yaml`; distinguish
@@ -36,3 +40,7 @@ No BUILD_PLAN.md edit is included while PR #42 owns its status update.
   text segmentation differences observed, no substantive rule difference.
 - No implementation or protected fixture change; installed-artifact,
   Ruff and mypy are not rerun for this documentation-only slice.
+- Follow-up precision evidence: directly fetched the official 2025 Order;
+  checked commencement and eldest-child amount; used Python's exact
+  `fractions.Fraction` arithmetic for the parent expression and continuous
+  income diagnostics. Re-ran YAML/reference validation and diff checking.
