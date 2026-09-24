@@ -38,6 +38,7 @@ from pydantic import BaseModel, Field
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
     AsScenario,
+    AssessmentWeek,
     ClaimantCategory,
     PartnerType,
     TenureType,
@@ -69,6 +70,12 @@ class AsCalculationRequest(BaseModel):
     """Mirrors `AsScenario`'s own fields; see this module's docstring."""
 
     modelled_date: date
+    # Required, no default: the AS assessment week, [start, end), exactly
+    # seven days. modelled_date (the parameter lookup date) must fall in
+    # it, and every rate used must cover the whole week. No weekday
+    # convention is assumed; the caller states the week.
+    assessment_week_start: date
+    assessment_week_end: date
     # Required, no default -- Task 24.7's explicit version-selection
     # contract (`run_as_module()`'s own `requested_policy_version` is a
     # required keyword argument for the same reason): no implicit
@@ -141,6 +148,7 @@ def calculate(request: AsCalculationRequest) -> AsCalculationResponse:
     """
     try:
         scenario = _scenario_from_request(request)
+        assessment_week = AssessmentWeek(start=request.assessment_week_start, end=request.assessment_week_end)
     except ValueError as exc:
         # A structural contradiction the dataclass itself rejects (e.g. a
         # negative amount past Pydantic's own `ge=0`) -- a caller input
@@ -153,6 +161,7 @@ def calculate(request: AsCalculationRequest) -> AsCalculationResponse:
         request.modelled_date,
         scenario,
         requested_policy_version=request.requested_policy_version,
+        assessment_week=assessment_week,
     )
 
     return AsCalculationResponse(

@@ -1063,18 +1063,38 @@ def run_wff_module(
         policy_dir, modelled_date, requested_policy_version=requested_policy_version
     )
 
+    # WFF is assessed for the policy's whole reviewed tax year, which the
+    # invariants below require every rate to cover.
+    reference_period = load_policy_spec(policy_dir / "policy.yaml").reference_period
+    assessment_period = (reference_period.from_, reference_period.to)
+
     validation_failure = _wff_module_validation_failure(policy_dir, modelled_date, parameters)
     if validation_failure is not None:
-        # No component ran, so the trace carries only the policy identity
-        # and artifact hashes; the reason says which invariant failed.
+        # No component ran, so the trace carries only the run identity;
+        # the reason says which invariant failed.
         return WffResult(
             **{
                 component_id: replace(
                     validation_failure,
-                    trace=ComponentTrace(component_id=component_id, **trace_header(parameters, scenario)),
+                    trace=ComponentTrace(
+                        component_id=component_id,
+                        **trace_header(parameters, scenario),
+                        assessment_period=assessment_period,
+                    ),
                 )
                 for component_id in _WFF_COMPONENT_IDS
             }
         )
 
-    return calculate_wff(scenario, parameters)
+    result = calculate_wff(scenario, parameters)
+    return WffResult(
+        **{
+            component_id: _with_assessment_period(getattr(result, component_id), assessment_period)
+            for component_id in _WFF_COMPONENT_IDS
+        }
+    )
+
+
+def _with_assessment_period(result: ComponentResult, assessment_period: tuple[date, date]) -> ComponentResult:
+    assert result.trace is not None
+    return replace(result, trace=replace(result.trace, assessment_period=assessment_period))

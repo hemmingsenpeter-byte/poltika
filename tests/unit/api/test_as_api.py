@@ -32,11 +32,17 @@ from poltika.engines.simulator.wff import ComponentResult
 client = TestClient(app)
 
 MODELLED_DATE = "2026-06-01"
+# A test week containing MODELLED_DATE -- not Task 28.2's selected week,
+# which Pete has not chosen yet.
+ASSESSMENT_WEEK_START = "2026-06-01"
+ASSESSMENT_WEEK_END = "2026-06-08"
 
 
 def _request_payload(**overrides: Any) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "modelled_date": MODELLED_DATE,
+        "assessment_week_start": ASSESSMENT_WEEK_START,
+        "assessment_week_end": ASSESSMENT_WEEK_END,
         "requested_policy_version": "0.1.0",
         "household_eligibility": "verified",
         "claimant_category": "jobseeker_support",
@@ -232,3 +238,25 @@ def test_startup_fails_loudly_if_as_policy_directory_is_missing(
 
     with pytest.raises(RuntimeError, match="has no policy.yaml"), TestClient(app):
         pass
+
+
+def test_calculate_requires_an_assessment_week() -> None:
+    """AS is assessed per week: the route must not fall back to a lookup
+    date alone."""
+    payload = _request_payload()
+    del payload["assessment_week_start"]
+    del payload["assessment_week_end"]
+    response = client.post("/accommodation-supplement/calculate", json=payload)
+    assert response.status_code == 422
+    missing = {tuple(error["loc"]) for error in response.json()["detail"]}
+    assert ("body", "assessment_week_start") in missing
+    assert ("body", "assessment_week_end") in missing
+
+
+def test_calculate_rejects_a_week_that_is_not_seven_days() -> None:
+    response = client.post(
+        "/accommodation-supplement/calculate",
+        json=_request_payload(assessment_week_end="2026-06-09"),
+    )
+    assert response.status_code == 422
+    assert "exactly 7 days" in response.json()["detail"]
