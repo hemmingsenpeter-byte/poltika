@@ -120,6 +120,30 @@ HOUSEHOLD_PAYLOAD = {
 }
 
 
+def _check_provenance(report: dict[str, Any], result_id: str, manifest: dict[str, Any]) -> str | None:
+    """Task 34.2: the provenance report describes the stored run -- same
+    result id, the same bound policy files as the stored manifest, each hash
+    matching the deployed file -- and renders from the installed package."""
+    import hashlib
+
+    from poltika.engines.assurance.provenance import render_combined_markdown
+
+    if report["result_id"] != result_id:
+        return f"provenance result id {report['result_id']} != {result_id}"
+    if not report["working_for_families"] or not report["accommodation_supplement"]:
+        return "provenance report is missing a policy"
+    files = [[f["path"], f["sha256"]] for f in report["policy_files"]]
+    if not files or files != manifest["policy_files"]:
+        return "provenance policy files differ from the stored manifest"
+    specs = Path(os.environ["POLTIKA_POLICY_SPECS_DIR"])
+    for path, sha in files:
+        if hashlib.sha256((specs / path).read_bytes()).hexdigest() != sha:
+            return f"provenance hash for {path} does not match the deployed file"
+    if result_id not in render_combined_markdown(report):
+        return "rendered provenance report lacks the result id"
+    return None
+
+
 def _probe_scenario_store(client_factory: Any) -> str | None:
     """Task 33.4: migrate with the installed package's own Alembic files, then
     create, fetch and replay a stored scenario."""
@@ -130,10 +154,14 @@ def _probe_scenario_store(client_factory: Any) -> str | None:
         created = client.post("/scenarios", json=HOUSEHOLD_PAYLOAD)
         if created.status_code != 201:
             return f"store create {created.status_code}: {created.text}"
-        result_id = created.json()["result_id"]
+        body = created.json()
+        result_id = body["result_id"]
         fetched = client.get(f"/scenarios/{result_id}")
         if fetched.status_code != 200 or fetched.json()["reproducible"]:
             return f"store fetch {fetched.status_code}: {fetched.text}"
+        failure = _check_provenance(body["provenance"], result_id, fetched.json()["manifest"])
+        if failure:
+            return failure
         replayed = client.post(f"/scenarios/{result_id}/replay")
         if replayed.json() != {"result_id": result_id, "reproduced": True}:
             return f"store replay: {replayed.text}"
