@@ -1671,6 +1671,36 @@ and Pete's acceptance):
       and add that path to the statutory-value guard if it holds
       protected values.
     - **28.6 — cross-review -- Claude Code reviews 28.1/28.3 (sources, contract), GPT/Codex reviews 28.4/28.5 code; Pete accepts.** Fresh-context review by the non-implementer; Pete accepts.
+
+    **Task 28 complete, 24 September 2026.** Claude Code did 28.3, 28.4
+    and 28.5 on Pete's instruction to proceed without Codex input. Pete
+    waived the cross-model rotation for Task 28 ("find the most obvious
+    solution for these, accept and proceed"). Fresh-context Claude
+    reviewers stood in for 28.6, and a GPT/Codex review remains welcome
+    afterwards but is not a gate.
+    - **28.3, the contract (PR #55; AS specification's "Task 28.3 WFF-AS
+      interaction contract", with a WFF pointer).** The review corrected its
+      claims of certainty: the partner, MC 6(b) and child checks are now
+      conservative gates. It restored DEC-003's limits and left r 17(2)(f)
+      unresolved. Pete's decisions:
+      - two scenarios rather than one merged fact set;
+      - community spouse not compared;
+      - an existing `unsupported` is kept on a disagreement.
+    - **28.4, the runner (PR #56; `src/poltika/scenarios/combined.py`, the
+      first `scenarios/` code).** It keeps native periods, has no income
+      coupling and no total, and adds the AS-claimant precondition fact. The
+      shared-fact disagreements make components `needs_review`. Traces and
+      the original module results are preserved. REPOSITORY_STRUCTURE.md
+      gained a `scenarios/` dependency row, with a one-way no-cycle rule
+      resolving a pre-existing table ambiguity.
+    - **28.5, the cases (PR #57; `policy_specs/wff_as_interaction/
+      spec_cases.yaml`, covered by the statutory-value guard's pattern).**
+      Five hand-calculated cases, independently recalculated by the
+      reviewer. They include a leak-sensitive household receiving both
+      payments and a precedence case. There are regressions named for each
+      income leak; injecting either leak into the runner fails them.
+    - **Verified:** 336 passed, installed-artifact test passed, Ruff and
+      strict mypy clean.
 29. **Golden household test suite across both policies.** Unlike the
     per-policy spec cases, golden households run against the real
     approved policies with no parameter assumptions. Depends on 26a and 28.
