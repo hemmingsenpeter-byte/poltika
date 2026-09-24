@@ -53,6 +53,10 @@ poltika/
 │   │                        provenance trace types, and the recording
 │   │                        helpers that capture which parameters and
 │   │                        scenario facts each component consulted)
+│   ├── scenarios/         — combined.py (Task 28.4: the combined WFF+AS
+│   │                        household runner -- both module entry points,
+│   │                        native periods, the Task 28.3 shared-fact
+│   │                        contradiction checks; no income coupling)
 │   ├── engines/assurance/ — provenance.py (Task 31: builds the provenance
 │   │                        report from traced results -- verifies the
 │   │                        run's artifact hashes, resolves source/rule/
@@ -77,6 +81,7 @@ poltika/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/
     ├── unit/
     │   ├── policy/         — loader tests (Task 11)
+    │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4)
     │   ├── engines/assurance/ — provenance report tests (Task 31)
     │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
     │   │                        benchmark-case loader/runners (Tasks 13-14),
@@ -96,8 +101,8 @@ poltika/
     └── regression/         — known-historical-issue tests (Task 15)
 ```
 
-Only `src/poltika/{data,scenarios,llm}` (`api/` is now instantiated, Task
-21) and `tests/{integration,fixtures}`,
+Only `src/poltika/{data,llm}` (`api/` is now instantiated, Task 21;
+`scenarios/` by Task 28.4) and `tests/{integration,fixtures}`,
 plus everything under `data/`, `config/`, and `scripts/`, remain undone
 from the target tree below — created incrementally as the BUILD_PLAN.md
 tasks that need them are reached, not all at once. `docs/` is partially
@@ -188,6 +193,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | `src/poltika/policy/` | `semantics/`, `common/` | `data/` (raw or processed), source-specific formats |
 | `src/poltika/engines/simulator/` | `semantics/`, `policy/`, `scenarios/`, `common/` | Stats NZ (or any) API, source CSV structures, LLM output |
 | `src/poltika/engines/assurance/` | `semantics/`, `policy/`, `scenarios/`, `engines/simulator/`, `common/` | source-specific formats/APIs |
+| `src/poltika/scenarios/` | `engines/simulator/`, `engines/assurance/`, `policy/`, `semantics/`, `common/` (Task 28.4: the combined WFF+AS runner calls both module entry points -- downstream of `engines/`, per the layer arrow above) | `data/` (raw or processed), `api/`, `llm/`, source-specific formats. **One-way rule:** `engines/` must never import `scenarios/`'s combined runner; the simulator row's permission to use `scenarios/` covers scenario *definitions* only, so no import cycle can form. |
 | `src/poltika/llm/` | `scenarios/` (to build/read a `ScenarioRequest`) | `engines/simulator/` internals, raw/processed data |
 | `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly, no `scenarios/` layer yet); `POLTIKA_POLICY_SPECS_DIR` at deploy time (ADR-0011 -- an operator-set deployment variable, not a per-request caller input) | `data/` (raw or processed), source-specific formats, a *request*-supplied policy directory path (still prohibited -- no HTTP caller may choose the policy directory) |
 
