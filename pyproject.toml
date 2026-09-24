@@ -7,6 +7,10 @@ dependencies = [
     "pydantic>=2.0",
     "pyyaml>=6.0",
     "fastapi>=0.115",
+    # Task 32 (ADR-0013): scenario/run storage in PostgreSQL.
+    "sqlalchemy>=2.0",
+    "psycopg[binary]>=3.1",
+    "alembic>=1.13",
 ]
 
 [project.optional-dependencies]
@@ -31,7 +35,10 @@ testpaths = ["tests"]
 # installed_artifact tests build a wheel and install it into a throwaway
 # venv (ADR-0011) -- too slow for the default fast suite, excluded here
 # and run explicitly with `uv run pytest -m installed_artifact`.
-markers = ["installed_artifact: builds and installs a real wheel (slow, not part of the default suite)"]
+markers = [
+    "installed_artifact: builds and installs a real wheel (slow, not part of the default suite)",
+    "postgres: needs local PostgreSQL server binaries (initdb/pg_ctl); skipped when absent",
+]
 addopts = "-m 'not installed_artifact'"
 
 [tool.ruff]

@@ -60,7 +60,11 @@ poltika/
 │   │                        native periods, the Task 28.3 shared-fact
 │   │                        contradiction checks; no income coupling);
 │   │                        record.py (Task 30: scenario records, artifact
-│   │                        manifests, canonical identity, code identity)
+│   │                        manifests, canonical identity, code identity);
+│   │                        store.py (Task 32, ADR-0013: append-only
+│   │                        PostgreSQL scenario store -- runs, content-
+│   │                        addressed artifact bytes, replay, drift re-run;
+│   │                        POLTIKA_DATABASE_URL); migrations/ (Alembic)
 │   ├── engines/assurance/ — provenance.py (Task 31: builds the provenance
 │   │                        report from traced results -- verifies the
 │   │                        run's artifact hashes, resolves source/rule/
@@ -87,7 +91,10 @@ poltika/
     │   ├── policy/         — loader tests (Task 11)
     │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4) and
     │   │                        interaction spec-case runner (Task 28.5),
-    │   │                        golden household runner (Task 29)
+    │   │                        golden household runner (Task 29), store
+    │   │                        tests (Task 32; marked postgres, start a
+    │   │                        throwaway server from initdb/pg_ctl on PATH,
+    │   │                        skipped when absent)
     │   ├── engines/assurance/ — provenance report tests (Task 31)
     │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
     │   │                        benchmark-case loader/runners (Tasks 13-14),
