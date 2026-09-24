@@ -26,7 +26,7 @@ interaction_cases:
       $800 is below the $906 income level, so no reduction; r 19 gives $163. Leak sensitivity: adding
       AS annualised ($163 x 52 = $8,476) to WFF income would exceed $44,900 and abate family tax
       credit by $983.40; adding WFF weekly ($7,921 / 52 = $152.33) to AS income would exceed $906
-      and reduce AS by $11.58. Neither happens.
+      and reduce AS by $11.58 before rounding ($12 after r 19, $163 to $151). Neither happens.
     precondition: verified
     wff: &wff_sole_parent
       household_eligibility: verified
@@ -126,5 +126,33 @@ interaction_cases:
         family_tax_credit: {outcome: needs_review}
         in_work_tax_credit: {outcome: needs_review}
         minimum_family_tax_credit: {outcome: needs_review}
+        best_start: {outcome: needs_review}
+      accommodation_supplement: {outcome: needs_review}
+
+  - id: disagreement_keeps_existing_unsupported_components
+    derivation: >-
+      The consistent Sole Parent Support household (case 2), but AS asserts two dependent children
+      while WFF lists one: one child-count disagreement (Task 28.3). Precedence: components already
+      unsupported stay unsupported (in-work and minimum family tax credit, from WFF's verified
+      in-work and MC 6(b) exclusions); every other component -- family tax credit, Best Start and AS --
+      becomes needs_review with no value.
+    precondition: verified
+    wff:
+      <<: *wff_sole_parent
+      family_scheme_income: {claimant_amount: '30000'}
+      net_family_scheme_income: '30000'
+      in_work_eligibility: excluded
+      mc6b_disqualifying_payment: excluded
+    accommodation_supplement:
+      <<: *as_sole_parent
+      claimant_category: sole_parent_support
+      weekly_income: null
+      dependent_children_count: 2
+    expected:
+      contradictions: 1
+      wff:
+        family_tax_credit: {outcome: needs_review}
+        in_work_tax_credit: {outcome: unsupported}
+        minimum_family_tax_credit: {outcome: unsupported}
         best_start: {outcome: needs_review}
       accommodation_supplement: {outcome: needs_review}

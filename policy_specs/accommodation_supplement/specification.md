@@ -441,8 +441,9 @@ DEC-002, DEC-003, the Task 28.2 decisions (PR #49), and the provisions cited.
 - Precondition, as a verified fact the caller supplies
   (`as_claimant_is_wff_claimant_or_partner`): the AS claimant is the WFF
   claimant or their partner. Neither scenario type carries it; `unknown`
-  makes every component `needs_review`, `excluded` makes the combined run
-  `unsupported`.
+  makes every component `needs_review` (subject to the precedence rule
+  below: a component already `unsupported` stays `unsupported`), and
+  `excluded` makes the combined run `unsupported`.
 - Income attestation: each policy's income input is supplied already
   derived under that policy's own definition (see "Income" below). This
   cannot be checked at runtime; a caller who cannot attest it supplies the
