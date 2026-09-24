@@ -62,6 +62,22 @@ sources:
       $2,700 for any other person. No discrepancy found across the 17 values
       sourced to this Act entry (12 caps, entry fraction, 2 thresholds, step,
       and amount per step).
+    task_28_1_check:
+      checked_on: 2026-09-24
+      version_as_at: 2026-09-04
+      audit_version_url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/
+      locator: Schedule 2 main benefit definition; Schedule 3 clause 8(1)(a), (l); Schedule 4 Part 7 clause 7
+      finding: Clause 8(1)(l) excludes tax credits or amounts under Income
+        Tax Act subparts MA-MG and MZ without an IRD-only payer qualifier.
+        Clause 8(1)(a) separately excludes benefits, grants, allowances and
+        concessions under this Act, Part 6 of the Veterans' Support Act
+        2014 and Part 1 of the New Zealand Superannuation and Retirement
+        Income Act 2001, not just main benefits. AS's dependent-child definition has its own
+        orphan-benefit/unsupported-child-benefit exclusion.
+      limitation: The source map's earlier IRD-versus-MSD uncertainty is
+        addressed by this text plus the TAA payment provisions, pending
+        Pete's acceptance of the cross-Act interpretation after independent
+        review. This does not establish a cash-assets exemption.
   - id: as-social-security-regulations
     kind: regulations
     title: Social Security Regulations 2018
@@ -109,6 +125,21 @@ sources:
       with no intermediate-rounding instruction. No discrepancy found across
       the 3 values sourced to this Regulations entry (2 ceilings and reduction
       rate).
+    task_28_1_check:
+      checked_on: 2026-09-24
+      version_as_at: 2026-09-04
+      audit_version_url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-09-04/
+      locator: Regulations 16-18; Schedule 8 Part 1 item 15 and Part 21 clauses 36-37
+      finding: Regulation 17(2)(b), (d) and (h) expressly use a maximum
+        annual FTC rate divided by 52. Paragraph (f) instead says annual
+        rate payable; treating that as necessarily the same maximum is
+        an unresolved interpretation. All four refer to an eldest child
+        under 16. Regulation 18 concerns non-beneficiaries. The Best Start
+        asset exemption is a narrowly defined historic arrears provision,
+        not a general WFF cash-assets exclusion.
+      limitation: Do not infer income-to-assets equivalence. Current scoped
+        exemption gates and Task 26a's unresolved base-rate work remain,
+        including the paragraph (f) wording and child-age question.
   - id: as-ftc-rate-order-2025
     kind: amending_legislation
     title: Income Tax (Tax Credit) Order 2025
@@ -130,12 +161,27 @@ sources:
     title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025
     url: https://www.legislation.govt.nz/act/public/2025/27/en/latest/sections/LMS1443018/
     covers: Changes to accommodation costs and qualifying costs effective 2026-03-02.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      url: https://www.legislation.govt.nz/act/public/2025/0027/latest/whole.html
+      source_version: Official 2025 No 27 text retrieved on the check date.
+      locator: Section 2; Schedule 1 inserting Social Security Act Schedule 1 Part 11 clauses 104-105.
+      effective_from: 2026-03-02
+      claim: Commencement is 2 March 2026; clause 105 addresses weeks starting on or after that date for existing recipients, subject to clause 104's pending-application exception.
+      scope: Do not treat a calendar date alone as proof that every transitional case falls within the ordinary scoped calculation.
   - id: as-2026-amendment
     kind: amending_legislation
     title: Social Security (Jobseeker Support and Accommodation Supplement) Amendment Act 2026
     url: https://www.legislation.govt.nz/act/public/2026/54/en/latest/
     covers: Future homeowner entry-threshold changes and transitional provisions.
     date_note: Check commencement and application; Schedule 1 Part 18 says the accommodation amendments apply from 2027-04-01.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      url: https://www.legislation.govt.nz/act/public/2026/0054/latest/whole.html
+      source_version: As enacted, 3 September 2026; official page labels the Act not yet in force.
+      locator: Section 2(1)-(2); Part 2; Schedule 2 inserting Schedule 1 Part 18 clauses 131-132.
+      claim: Part 2's homeowner threshold changes commence and apply on 1 April 2027. Part 1 separately commences on 2 November 2026 and concerns Jobseeker eligibility; the two dates must not be conflated.
+      scope: The approved AS domain excludes homeowners and ends before 1 April 2027. Later candidate weeks still require verification of relevant claimant-category facts and operative law; this check does not approve them.
   - id: as-msd-overview
     kind: agency_guidance
     title: Accommodation Supplement
@@ -186,17 +232,79 @@ sources:
     title: Chargeable income - non-beneficiaries
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/chargeable-income-non-beneficiaries-01.html
     covers: Income inclusions and exclusions, including Inland Revenue WFF tax credits.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      locator: Not counted as income, Working for Families Tax Credits from Inland Revenue
+      finding: Guidance expressly identifies the IRD-paid route; it does
+        not say MSD-paid WFF is included. The broader statutory exclusion
+        is verified separately in Schedule 3 clause 8(1)(l).
+      limitation: Live guidance without a displayed revision date; not a
+        historical snapshot or evidence of cash-assets treatment.
+  - id: as-taa-wff-payment-routes
+    kind: legislation
+    title: Tax Administration Act 1994 - WFF payments by MSD and Inland Revenue
+    url: https://www.legislation.govt.nz/act/public/1994/166/en/latest/
+    audit_version_url: https://www.legislation.govt.nz/act/public/1994/166/en/2026-09-04/
+    covers: Legal identity and payer of WFF credits paid alongside a main benefit.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      version_as_at: 2026-09-04
+      locator: Sections 80KK, 80KN-80KS, 80KU
+      finding: MSD's payment remains a WFF tax credit, with its amount
+        linked by 80KO to the Income Tax Act. Payer agreements, requests
+        and transitional provisions prevent inferring payer solely from
+        current main-benefit status.
+      limitation: Section 225A abated-payment instruments and an individual
+        claimant's administrative payment history remain unverified.
+  - id: as-msd-wff-payer-choice
+    kind: agency_guidance
+    title: Family Tax Credit - Payment from Ministry of Social Development or Inland Revenue
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/family-tax-credit/payment-from-ministry-of-social-development-or-inland-revenue.html
+    covers: Main-benefit clients' payer choice and exceptions.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      locator: Opening payer-choice paragraphs and young-parent exception
+      finding: Ordinary main-benefit clients can choose IRD or MSD; FTC
+        and Best Start are paid together by the same agency. The page names
+        foster-parent and Young Parent Payment exceptions, which must not
+        be erased by a generic payer rule.
+      limitation: Undated live guidance. Verify the actual route and scope
+        of each household; this is not evidence of a particular payment.
+  - id: as-msd-ftc-administration
+    kind: agency_guidance
+    title: Family Tax Credit - Introduction
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/family-tax-credit/introduction.html
+    covers: MSD administers FTC on behalf of IRD for main-benefit clients.
+    task_28_1_check:
+      checked_on: 2026-09-24
+      locator: Opening administration paragraphs
+      finding: MSD describes paying FTC on behalf of IRD. Ordinary clients
+        without a main benefit are paid by IRD; main-benefit clients may
+        elect IRD instead. Transitional payments require the statutory
+        qualifications in 80KP/80KK, not an absolute payer inference.
+      limitation: Undated live guidance, read with the TAA rather than
+        as a universal rule across transitions.
   - id: as-msd-rate-method
     kind: agency_guidance
     title: Calculating rate - general formula
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/calculating-rate-general-formula-01.html
     covers: Qualifying costs, entry threshold, subsidy, and regional cap.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Live MSD MAP guidance; no historical page version or revision date displayed in retrieved content.
+      locator: Opening paragraph; Legislation link to Schedule 4 Part 7.
+      claim: AS is assessed using weekly qualifying accommodation costs. This supports retaining a weekly amount, not annualising it from one observed week.
   - id: as-msd-qualifying-costs
     kind: agency_guidance_and_example
     title: Weekly qualifying accommodation costs
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/weekly-qualifying-accommodation-costs.html
     covers: Property-use deductions, accommodation income, and a worked example.
     date_note: MSD says these rules apply from 2026-03-02.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Live MSD MAP guidance with explicit 2 March 2026 application statement.
+      locator: Opening paragraph.
+      claim: Guidance separates the weekly-cost rules from 2 March 2026 from the previous settings. Statutory transitional qualifications remain in as-2025-amendment.
   - id: as-msd-rates-2026
     kind: agency_rates
     title: Non-beneficiaries - entry thresholds and maximum rates
@@ -212,6 +320,13 @@ sources:
         thresholds, not published regulation 17 base rates.
       limitation: Live current page; not evidence for March rates or a
         future unchanged interval. Values not promoted to policy.yaml.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Live MSD MAP table explicitly labelled at 1 April 2026.
+      locator: Opening sentence above the table.
+      effective_from: 2026-04-01
+      claim: The table labels its amounts as weekly and applicable at 1 April 2026. It does not substantiate backdating these entries to the policy reference-period start of 2 March 2026.
+      scope: Date and unit checked only. Base-rate derivation, other claimant tables and parameter approval remain Task 26a.
   - id: as-msd-jobseeker-rates-2026
     kind: agency_rates
     title: Jobseeker Support - Accommodation Supplement thresholds and maxima
