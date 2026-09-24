@@ -53,12 +53,15 @@ sources:
       locator: Schedule 2 main benefit definition; Schedule 3 clause 8(1)(a), (l); Schedule 4 Part 7 clause 7
       finding: Clause 8(1)(l) excludes tax credits or amounts under Income
         Tax Act subparts MA-MG and MZ without an IRD-only payer qualifier.
-        Main benefits and other specified benefits have a separate exclusion
-        in clause 8(1)(a). AS's dependent-child definition has its own
+        Clause 8(1)(a) separately excludes benefits, grants, allowances and
+        concessions under this Act, Part 6 of the Veterans' Support Act
+        2014 and Part 1 of the New Zealand Superannuation and Retirement
+        Income Act 2001, not just main benefits. AS's dependent-child definition has its own
         orphan-benefit/unsupported-child-benefit exclusion.
       limitation: The source map's earlier IRD-versus-MSD uncertainty is
         addressed by this text plus the TAA payment provisions, pending
-        independent review. This does not establish a cash-assets exemption.
+        Pete's acceptance of the cross-Act interpretation after independent
+        review. This does not establish a cash-assets exemption.
   - id: as-social-security-regulations
     kind: regulations
     title: Social Security Regulations 2018
@@ -93,13 +96,16 @@ sources:
       version_as_at: 2026-09-04
       audit_version_url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-09-04/
       locator: Regulations 16-18; Schedule 8 Part 1 item 15 and Part 21 clauses 36-37
-      finding: Regulation 17 uses a statutory maximum FTC term divided by
-        52 in specified parent base rates, not the household's computed WFF
-        total. Regulation 18 concerns non-beneficiaries. The Best Start
+      finding: Regulation 17(2)(b), (d) and (h) expressly use a maximum
+        annual FTC rate divided by 52. Paragraph (f) instead says annual
+        rate payable; treating that as necessarily the same maximum is
+        an unresolved interpretation. All four refer to an eldest child
+        under 16. Regulation 18 concerns non-beneficiaries. The Best Start
         asset exemption is a narrowly defined historic arrears provision,
         not a general WFF cash-assets exclusion.
       limitation: Do not infer income-to-assets equivalence. Current scoped
-        exemption gates and Task 26a's unresolved base-rate work remain.
+        exemption gates and Task 26a's unresolved base-rate work remain,
+        including the paragraph (f) wording and child-age question.
   - id: as-2025-amendment
     kind: amending_legislation
     title: Social Assistance Legislation (Accommodation Supplement and Income-related Rent) Amendment Act 2025

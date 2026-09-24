@@ -76,8 +76,9 @@ that MSD pays FTC on behalf of IRD.
 Conclusion, inferred from the linked statutes: an identified statutory
 WFF tax credit does not lose the clause 8(1)(l) income exclusion merely
 because MSD pays it. An agency page naming the IRD route is not evidence
-that the MSD route is chargeable. This resolves the source question left
-open by AS-10, subject to independent review; it does not silently amend
+that the MSD route is chargeable. This supports resolving the source
+question left open by AS-10, subject to Pete's recorded acceptance of the
+cross-Act interpretation; it does not silently amend
 the approved specifications or assert that every MSD payment is WFF.
 
 The research distinguishes two propositions:
@@ -122,20 +123,39 @@ approved calculation requires it.
 
 ## 28.1(d): other interactions found in the scoped domains
 
-### AS's base rate references a statutory FTC maximum
+### AS's base rate references an FTC rate, with interpretation gates
 
-Regulation 17(2)(b), (d), (f) and (h) add a specified maximum annual FTC
-rate divided by 52 in relevant parent cases. This is a parameter-level
-link, distinct from the household's actual received credit and from the
-income-exclusion question. Do not add the calculated household FTC, its
-IWTC, or a total WFF result to the AS base or chargeable income.
+Regulation 17(2)(b), (d) and (h) expressly reference a maximum annual FTC
+rate divided by 52 in relevant parent cases. Paragraph (f), for a single
+non-beneficiary with children, instead says the annual rate payable. The
+initial note incorrectly described all four as expressly maximum rates.
+Whether (f) also selects the un-abated statutory eldest-child rate must
+be decided from the sources, not assumed from its neighbouring paragraphs.
+All four refer to an eldest dependent child under 16; the age condition
+also needs interpretation before a count-only household key can be accepted.
+
+This establishes a rate-construction link distinct from the income
+exclusion, but does not settle the (f) term's treatment. Do not feed an
+annual household WFF total or IWTC into the AS base. Nor should a household
+FTC output be wired in for (f) without a reviewed interpretation and
+contract. No new output dependency is approved here.
 
 Consequences for 26a/28.3: base-rate provenance must include this statutory
-source where applicable; the maximum-rate term must not be replaced by a
-possibly abated or unresolved household output. It does not require a
+source where applicable; an expressly maximum-rate term must not be
+replaced by a possibly abated or unresolved household output. Paragraph
+(f) remains a decision gate, not a proven maximum-rate case. This research
+does not require a
 v0.3 dependency graph or approval of WFF's temporary IWTC base. The separate
-26a audit identifies household-selector and threshold-precision blockers;
+26a audit identifies household-selector, subtype and threshold-precision blockers;
 this note does not resolve them.
+
+Claude's independent review also recommends an explicit decision record
+for the MSD-paid income exclusion. The linked statutory text supports it
+at high confidence, but accepting that inference closes AS-10's reserved
+gate and belongs to Pete. Within ordinary main-beneficiary AS cases there
+is no regulation 18 income reduction; do not introduce a generic payer
+gate there. The MSD income-exclusion question is particularly relevant
+to a non-beneficiary still receiving transitional MSD-paid WFF.
 
 ### Main-benefit facts constrain WFF component branches
 

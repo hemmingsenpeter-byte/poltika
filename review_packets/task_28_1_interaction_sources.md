@@ -22,7 +22,12 @@ Requested independent reviewer: Claude Code. Pete accepts.
 
 ## Review and acceptance
 
-Independent review pending. This is source research, not Task 28.3's
+Claude independently reviewed `8790e13` on PR 48 on 24 September 2026.
+The income-exclusion chains were confirmed. The author corrected the
+overbroad maximum-rate description of regulation 17(2)(f) and clause
+8(1)(a)'s benefit exclusion, and recorded the child-age and MSD-route
+decision gates. Re-review of this follow-up and Pete's acceptance remain
+pending. This is source research, not Task 28.3's
 contract approval, a payer/date decision or an implementation PR.
 Unresolved interpretation goes to Pete with the evidence, not to an
 author-created accepted DEC. No BUILD_PLAN.md edit while #42 owns it.
