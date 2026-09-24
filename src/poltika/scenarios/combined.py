@@ -9,14 +9,16 @@ Implements the Task 28.3 interaction contract (the AS specification's "Task
 - There is no income coupling. Neither policy's output is added to,
   subtracted from, or used to derive the other's income input (CW 33(1)(a)
   and MB 13(2)(l); Schedule 3 cl 8(1)(l) and DEC-003).
-- A small set of shared-fact contradictions, which the two policies'
-  definitions make certain, are checked. Any contradiction makes every
-  component of both policies `needs_review`, with a reason naming both
-  assertions. The runner never repairs one input from the other, because it
-  cannot know which assertion is wrong.
+- A small set of shared facts is compared as conservative gates (the
+  policies' definitions differ, so a disagreement is escalated, never
+  guessed). A disagreement makes every component `needs_review` -- except
+  one already `unsupported`, which is kept (the Task 28.1 research gate;
+  interim pending Pete's precedence decision) -- with a reason naming both
+  assertions. The runner never repairs one input from the other.
 
-Both modules still run when a contradiction is found, so each replaced
-result keeps its own provenance trace.
+Both modules always run, so each replaced result keeps its own provenance
+trace, and the original results are kept alongside ("preserve the
+conflicting evidence"). A structural error a module raises propagates.
 """
 
 from __future__ import annotations
@@ -33,6 +35,7 @@ from poltika.engines.simulator.accommodation_supplement import (
     run_as_module,
 )
 from poltika.engines.simulator.wff import (
+    ComponentOutcome,
     ComponentResult,
     FactStatus,
     PartnerStatus,
@@ -41,6 +44,11 @@ from poltika.engines.simulator.wff import (
     run_wff_module,
 )
 from poltika.policy.loader import load_policy_spec
+
+# AS partner types that describe a couple for the partner-status comparison.
+# community_spouse_or_partner is deliberately not compared until Pete decides
+# (Task 28.3 contract).
+_AS_COUPLE_PARTNER_TYPES = frozenset({PartnerType.ORDINARY_COUPLE, PartnerType.JOINT_TENANCY})
 
 # AS claimant categories that are main benefits (Social Security Act
 # Schedule 2 "main benefit"); non-beneficiary and the unsupported categories
@@ -62,6 +70,10 @@ class CombinedHouseholdScenario:
 
     wff: WffScenario
     accommodation_supplement: AsScenario
+    # Contract precondition, a verified fact the caller supplies: the AS
+    # claimant is the WFF claimant or their partner. Neither scenario type
+    # carries it. UNKNOWN -> needs_review; EXCLUDED -> unsupported.
+    as_claimant_is_wff_claimant_or_partner: FactStatus = FactStatus.UNKNOWN
 
 
 @dataclass(frozen=True)
@@ -73,19 +85,25 @@ class CombinedResult:
     accommodation_supplement: ComponentResult
     wff_period: tuple[date, date]
     accommodation_supplement_period: tuple[date, date]
-    # Each shared-fact contradiction found, in the order checked. Non-empty
-    # means every component above is a `needs_review` replacement.
+    # The module results before any replacement ("preserve the conflicting
+    # evidence"); equal to the fields above when nothing was flagged.
+    original_wff: WffResult
+    original_accommodation_supplement: ComponentResult
+    # Each disagreement or precondition failure found, in contract order.
     contradictions: tuple[str, ...] = ()
 
 
 def shared_fact_contradictions(
     scenario: CombinedHouseholdScenario, wff_period: tuple[date, date], assessment_week: AssessmentWeek
 ) -> tuple[str, ...]:
-    """The Task 28.3 contract's checks. Only contradictions the definitions
-    make certain are reported; an unverified fact on either side is left to
-    that policy's own gates."""
+    """The Task 28.3 contract's conservative shared-fact checks. A fact that
+    is unverified on either side (`None` in AS, `unknown` in WFF) is not
+    compared; that policy's own gates handle it."""
     wff, as_ = scenario.wff, scenario.accommodation_supplement
     found: list[str] = []
+
+    if scenario.as_claimant_is_wff_claimant_or_partner == FactStatus.UNKNOWN:
+        found.append("precondition: the AS claimant is not verified to be the WFF claimant or their partner")
 
     if assessment_week.start < wff_period[0] or assessment_week.end > wff_period[1]:
         found.append(
@@ -93,8 +111,11 @@ def shared_fact_contradictions(
             f"year [{wff_period[0]}, {wff_period[1]})"
         )
 
-    if wff.partner_status == PartnerStatus.SINGLE and as_.partner_status == PartnerType.ORDINARY_COUPLE:
-        found.append("partner status: WFF asserts single, AS asserts an ordinary couple")
+    as_couple = as_.partner_status in _AS_COUPLE_PARTNER_TYPES or (
+        as_.claimant_category == ClaimantCategory.MIXED_BENEFIT_COUPLE
+    )
+    if wff.partner_status == PartnerStatus.SINGLE and as_couple:
+        found.append("partner status: WFF asserts single, AS describes a couple")
     if wff.partner_status == PartnerStatus.PARTNERED and as_.partner_status == PartnerType.SINGLE:
         found.append("partner status: WFF asserts partnered, AS asserts single")
 
@@ -147,23 +168,43 @@ def run_combined_household(
     wff_period = (reference.from_, reference.to)
     as_period = (assessment_week.start, assessment_week.end)
 
-    contradictions = shared_fact_contradictions(scenario, wff_period, assessment_week)
-    if contradictions:
-        reason = "combined household run: shared facts contradict -- " + "; ".join(contradictions)
+    original_wff, original_as = wff_result, as_result
+    contradictions: tuple[str, ...]
+    if scenario.as_claimant_is_wff_claimant_or_partner == FactStatus.EXCLUDED:
+        reason = "combined household run: the AS claimant is not the WFF claimant or their partner"
         wff_result = WffResult(
-            **{f.name: _needs_review(getattr(wff_result, f.name), reason) for f in fields(WffResult)}
+            **{f.name: _replace(getattr(wff_result, f.name), "unsupported", reason) for f in fields(WffResult)}
         )
-        as_result = _needs_review(as_result, reason)
+        as_result = _replace(as_result, "unsupported", reason)
+        contradictions = (reason,)
+    else:
+        contradictions = shared_fact_contradictions(scenario, wff_period, assessment_week)
+        if contradictions:
+            reason = "combined household run: shared facts disagree -- " + "; ".join(contradictions)
+            wff_result = WffResult(
+                **{f.name: _flag(getattr(wff_result, f.name), reason) for f in fields(WffResult)}
+            )
+            as_result = _flag(as_result, reason)
 
     return CombinedResult(
         wff=wff_result,
         accommodation_supplement=as_result,
         wff_period=wff_period,
         accommodation_supplement_period=as_period,
+        original_wff=original_wff,
+        original_accommodation_supplement=original_as,
         contradictions=contradictions,
     )
 
 
-def _needs_review(result: ComponentResult, reason: str) -> ComponentResult:
+def _flag(result: ComponentResult, reason: str) -> ComponentResult:
+    """A disagreement makes a component `needs_review`, except one already
+    `unsupported`, which is kept (interim precedence, Task 28.3 contract)."""
+    if result.outcome == "unsupported":
+        return result
+    return _replace(result, "needs_review", reason)
+
+
+def _replace(result: ComponentResult, outcome: ComponentOutcome, reason: str) -> ComponentResult:
     """Replace a component's outcome while keeping its provenance trace."""
-    return replace(result, outcome="needs_review", value=None, reason=reason)
+    return replace(result, outcome=outcome, value=None, reason=reason)

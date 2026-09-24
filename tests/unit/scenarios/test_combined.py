@@ -72,11 +72,17 @@ def _as(**overrides: object) -> AsScenario:
     return AsScenario(**base)  # type: ignore[arg-type]
 
 
-def _run(wff=None, as_=None, week: AssessmentWeek = WEEK) -> CombinedResult:  # type: ignore[no-untyped-def]
+def _run(  # type: ignore[no-untyped-def]
+    wff=None, as_=None, week: AssessmentWeek = WEEK, precondition: FactStatus = FactStatus.VERIFIED
+) -> CombinedResult:
     return run_combined_household(
         WFF_POLICY_DIR,
         AS_POLICY_DIR,
-        CombinedHouseholdScenario(wff=wff or _wff(), accommodation_supplement=as_ or _as()),
+        CombinedHouseholdScenario(
+            wff=wff or _wff(),
+            accommodation_supplement=as_ or _as(),
+            as_claimant_is_wff_claimant_or_partner=precondition,
+        ),
         wff_lookup_date=LOOKUP,
         as_lookup_date=LOOKUP,
         assessment_week=week,
@@ -133,17 +139,21 @@ def test_no_income_coupling_in_either_direction() -> None:
         ({}, {"dependent_children_count": 2}, "dependent children"),
     ],
 )
-def test_each_contradiction_makes_every_component_needs_review(
+def test_each_disagreement_flags_every_non_unsupported_component(
     wff_overrides: dict[str, object], as_overrides: dict[str, object], phrase: str
 ) -> None:
     combined = _run(wff=replace(_wff(), **wff_overrides), as_=_as(**as_overrides))
     assert any(phrase in c for c in combined.contradictions)
-    for component in [*_wff_components(combined.wff), combined.accommodation_supplement]:
+    originals = [*_wff_components(combined.original_wff), combined.original_accommodation_supplement]
+    for component, original in zip([*_wff_components(combined.wff), combined.accommodation_supplement], originals):
+        # Provenance of the underlying module run is kept either way.
+        assert component.trace is not None
+        if original.outcome == "unsupported":
+            assert component == original  # interim precedence: unsupported is kept
+            continue
         assert component.outcome == "needs_review"
         assert component.value is None
         assert phrase in (component.reason or "")
-        # Provenance of the underlying module run is kept.
-        assert component.trace is not None
 
 
 def test_main_benefit_names_each_verified_wff_assertion() -> None:
@@ -172,3 +182,61 @@ def test_week_outside_the_wff_year_is_a_contradiction() -> None:
     combined = _run(week=week)
     assert any("not inside the WFF year" in c for c in combined.contradictions)
     assert combined.wff.family_tax_credit.outcome == "needs_review"
+
+
+@pytest.mark.parametrize(
+    "as_overrides",
+    [
+        {"partner_status": PartnerType.JOINT_TENANCY},
+        {"claimant_category": ClaimantCategory.MIXED_BENEFIT_COUPLE},
+    ],
+)
+def test_other_as_couple_forms_are_compared_with_wff_single(as_overrides: dict[str, object]) -> None:
+    combined = _run(as_=_as(**as_overrides))
+    assert any("partner status" in c for c in combined.contradictions)
+    # AS is already unsupported for these forms and keeps that outcome; WFF,
+    # which would otherwise publish a single-household result, is flagged.
+    assert combined.accommodation_supplement.outcome == "unsupported"
+    assert combined.wff.family_tax_credit.outcome == "needs_review"
+
+
+def test_community_spouse_is_not_compared_pending_petes_decision() -> None:
+    combined = _run(as_=_as(partner_status=PartnerType.COMMUNITY_SPOUSE_OR_PARTNER))
+    assert not any("partner status" in c for c in combined.contradictions)
+
+
+def test_unverified_precondition_flags_every_component() -> None:
+    combined = _run(precondition=FactStatus.UNKNOWN)
+    assert any("precondition" in c for c in combined.contradictions)
+    assert combined.accommodation_supplement.outcome == "needs_review"
+    assert combined.wff.family_tax_credit.outcome == "needs_review"
+
+
+def test_excluded_precondition_makes_every_component_unsupported() -> None:
+    combined = _run(precondition=FactStatus.EXCLUDED)
+    for component in [*_wff_components(combined.wff), combined.accommodation_supplement]:
+        assert component.outcome == "unsupported"
+        assert component.value is None
+
+
+def test_original_results_are_preserved_alongside_replacements() -> None:
+    combined = _run(as_=_as(dependent_children_count=2))
+    assert combined.original_wff == run_wff_module(WFF_POLICY_DIR, LOOKUP, _wff(), requested_policy_version=WFF_VERSION)
+    assert combined.original_wff.family_tax_credit.outcome == "calculated"
+    assert combined.wff.family_tax_credit.outcome == "needs_review"
+
+
+def test_structural_errors_propagate() -> None:
+    from poltika.common.errors import PolicyVersionMismatchError
+
+    with pytest.raises(PolicyVersionMismatchError):
+        run_combined_household(
+            WFF_POLICY_DIR,
+            AS_POLICY_DIR,
+            CombinedHouseholdScenario(wff=_wff(), accommodation_supplement=_as()),
+            wff_lookup_date=LOOKUP,
+            as_lookup_date=LOOKUP,
+            assessment_week=WEEK,
+            requested_wff_policy_version=WFF_VERSION,
+            requested_as_policy_version="0.1.0",
+        )
