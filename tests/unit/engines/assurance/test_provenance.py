@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,7 @@ from poltika.engines.assurance.provenance import (
     render_markdown,
 )
 from poltika.engines.simulator.accommodation_supplement import (
+    AssessmentWeek,
     calculate_accommodation_supplement,
     run_as_module,
 )
@@ -39,6 +41,10 @@ from tests.conftest import (
     load_wff_spec_case,
     wff_scenario_from_yaml,
 )
+
+# A test week containing the modelled date -- not Task 28.2's selected week,
+# which Pete has not chosen yet.
+TEST_ASSESSMENT_WEEK = AssessmentWeek(start=date(2026, 6, 1), end=date(2026, 6, 8))
 
 _WFF_COMPONENTS = ("family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start")
 
@@ -106,6 +112,8 @@ def test_wff_report_resolves_every_parameter_source_and_rule_from_the_files() ->
         "policy_version": "0.1.0",
         "schema_version": "0.1",
         "modelled_date": WFF_MODELLED_DATE.isoformat(),
+        # WFF is assessed for the policy's whole tax year.
+        "assessment_period": {"from": "2026-04-01", "to": "2027-04-01"},
     }
 
     sources = {s["id"]: s for s in yaml.safe_load((WFF_POLICY_DIR / "sources.yaml").read_text())["sources"]}
@@ -147,7 +155,7 @@ def test_report_artifacts_are_the_exact_file_hashes() -> None:
 def _as_real_run() -> ComponentResult:
     case = _as_case("ordinary_uncapped_jobseeker")
     return run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0"
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
     )
 
 
@@ -180,7 +188,7 @@ def test_report_refuses_a_changed_decision_file(as_policy_with_assumed_rates: Pa
         as_policy_with_assumed_rates,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.0",
+        requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK,
     )
     decision = as_policy_with_assumed_rates / "decisions" / "DEC-001-income-excess-rounding.md"
     with decision.open("a") as f:
@@ -195,7 +203,7 @@ def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assum
         as_policy_with_assumed_rates,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.0",
+        requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK,
     )
     assert result.outcome == "calculated"
     assert result.value == 74  # the spec case's own expected value, unchanged by tracing
@@ -216,7 +224,7 @@ def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_with_assum
 def test_as_undeclared_parameter_is_reported_without_a_source() -> None:
     case = _as_case("ordinary_uncapped_jobseeker")
     result = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0"
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
     )
     report = build_provenance_report(AS_POLICY_DIR, {"accommodation_supplement": result})
     component = report["components"][0]
@@ -338,3 +346,30 @@ def test_markdown_carries_the_same_content_as_json() -> None:
         assert source["url"] in sources_section
         for note in source["check_evidence"]:
             assert f"- {note['field']}: " in sources_section
+
+
+def test_as_report_states_the_assessment_week() -> None:
+    report = build_provenance_report(AS_POLICY_DIR, {"accommodation_supplement": _as_real_run()})
+    assert report["policy"]["assessment_period"] == {"from": "2026-06-01", "to": "2026-06-08"}
+    assert "Assessment period: 2026-06-01 to 2026-06-08 (end exclusive)" in render_markdown(report)
+
+
+def test_report_refuses_the_same_household_for_different_weeks() -> None:
+    case = _as_case("ordinary_uncapped_jobseeker")
+    scenario = as_scenario_from_yaml(case["scenario"])
+    first = run_as_module(
+        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.0", assessment_week=TEST_ASSESSMENT_WEEK
+    )
+    other_week = AssessmentWeek(start=date(2026, 5, 29), end=date(2026, 6, 5))
+    second = run_as_module(
+        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.0", assessment_week=other_week
+    )
+    assert first.trace is not None and second.trace is not None
+    assert first.trace.scenario_sha256 == second.trace.scenario_sha256
+    assert first.trace.assessment_period != second.trace.assessment_period
+    # Two single-component results can only be mixed by listing both; the
+    # header check must still tell the runs apart.
+    with pytest.raises(ProvenanceError, match="different runs"):
+        build_provenance_report(
+            AS_POLICY_DIR, {"accommodation_supplement": first, "accommodation_supplement_again": second}
+        )

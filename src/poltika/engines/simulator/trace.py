@@ -105,6 +105,10 @@ class ComponentTrace:
     # Decision artifacts (policy_specs/<policy>/decisions/) the calculated
     # path applied, e.g. ("DEC-001",).
     decisions: tuple[str, ...] = ()
+    # The period the result is for, `[from, to)`: the WFF tax year or the AS
+    # assessment week. Set by the module entry points; `None` for a bare
+    # calculator call, which is not told its period.
+    assessment_period: tuple[date, date] | None = None
 
 
 class _RecordingResolutions(dict[str, Any]):

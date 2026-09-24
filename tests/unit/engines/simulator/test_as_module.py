@@ -2,11 +2,11 @@
 
 Mirrors `test_wff_module.py`'s Task 20 scope, adapted for AS's
 single-component result shape: the module-boundary invariants
-`_as_module_validation_failure()` enforces (policy_id match, modelled_date
-within the reference_period, and every declared parameter rate-covered for
-the complete reference period), plus a behaviour-preservation smoke test
-and confirmation the pre-existing policy_version-mismatch raise is
-untouched.
+`_as_module_validation_failure()` enforces (policy_id match, the assessment
+week within the reference_period, the lookup date within the week, and every
+declared parameter's value covering the whole week), plus a
+behaviour-preservation smoke test and confirmation the pre-existing
+policy_version-mismatch raise is untouched.
 
 Unlike WFF, there is no "missing required parameter" invariant test here --
 `calculate_accommodation_supplement()`'s own `_param_value()` already
@@ -29,6 +29,7 @@ from poltika.common.errors import PolicyVersionMismatchError
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
     AsScenario,
+    AssessmentWeek,
     ClaimantCategory,
     PartnerType,
     TenureType,
@@ -113,83 +114,146 @@ def _write_policy_dir(
     return policy_dir
 
 
-def test_modelled_date_outside_reference_period_is_needs_review(tmp_path: Path) -> None:
-    """Invariant (1). An open-ended parameter interval legitimately resolves
-    under Task 11's loader alone for a date years outside the reviewed
-    reference_period -- `run_as_module()` must catch that at the
-    integration boundary."""
+# A test week containing MODELLED_DATE -- not Task 28.2's selected week,
+# which Pete has not chosen yet.
+WEEK = AssessmentWeek(start=date(2026, 6, 1), end=date(2026, 6, 8))
+
+
+def _run(policy_dir: Path, *, week: AssessmentWeek = WEEK, modelled_date: date = MODELLED_DATE) -> Any:
+    return run_as_module(
+        policy_dir, modelled_date, _ordinary_scenario(), requested_policy_version="0.1.0", assessment_week=week
+    )
+
+
+def _passes_module_validation(policy_dir: Path, week: AssessmentWeek, modelled_date: date = MODELLED_DATE) -> bool:
+    """True when run_as_module() reaches the calculator: its result then
+    equals calling the calculator directly on the same parameters."""
+    direct = calculate_accommodation_supplement(
+        _ordinary_scenario(), load_policy_parameters(policy_dir, modelled_date, requested_policy_version="0.1.0")
+    )
+    return bool(_run(policy_dir, week=week, modelled_date=modelled_date) == direct)
+
+
+def test_week_outside_reference_period_is_needs_review(tmp_path: Path) -> None:
+    """An open-ended parameter interval legitimately resolves under Task
+    11's loader for a date years outside the reviewed reference_period --
+    `run_as_module()` must catch that at the integration boundary."""
     policy_dir = _write_policy_dir(tmp_path, param_effective_to=None)
 
-    result = run_as_module(
-        policy_dir, date(2030, 1, 1), _ordinary_scenario(), requested_policy_version="0.1.0"
+    result = _run(
+        policy_dir, week=AssessmentWeek(start=date(2030, 1, 1), end=date(2030, 1, 8)), modelled_date=date(2030, 1, 1)
     )
 
     assert result.outcome == "needs_review"
     assert "reference_period" in (result.reason or "")
 
 
+def test_week_straddling_the_reference_period_end_is_needs_review(tmp_path: Path) -> None:
+    policy_dir = _write_policy_dir(tmp_path, param_effective_to=None)
+
+    result = _run(
+        policy_dir, week=AssessmentWeek(start=date(2027, 3, 29), end=date(2027, 4, 5)), modelled_date=date(2027, 3, 29)
+    )
+
+    assert result.outcome == "needs_review"
+    assert "not wholly within" in (result.reason or "")
+
+
 def test_mismatched_policy_id_is_needs_review(tmp_path: Path) -> None:
-    """Invariant (2). A `policy_dir` resolving to a different policy_id
-    (e.g. an accidental WFF directory) must not silently run AS arithmetic
-    against a foreign parameter set."""
+    """A `policy_dir` resolving to a different policy_id (e.g. an accidental
+    WFF directory) must not silently run AS arithmetic against a foreign
+    parameter set."""
     policy_dir = _write_policy_dir(tmp_path, policy_id="working_for_families")
 
-    result = run_as_module(
-        policy_dir, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="0.1.0"
-    )
+    result = _run(policy_dir)
 
     assert result.outcome == "needs_review"
     assert "policy_id" in (result.reason or "")
     assert "working_for_families" in (result.reason or "")
 
 
-def test_parameter_interval_not_spanning_full_period_is_needs_review(tmp_path: Path) -> None:
-    """Invariant (3). A parameter interval that covers `modelled_date` but
-    ends before the reference period's own end must not be treated as a
-    verified full-year rate."""
+def test_lookup_date_outside_the_week_is_needs_review(tmp_path: Path) -> None:
+    policy_dir = _write_policy_dir(tmp_path)
+
+    result = _run(policy_dir, modelled_date=date(2026, 6, 8))  # the week's exclusive end
+
+    assert result.outcome == "needs_review"
+    assert "outside the assessment week" in (result.reason or "")
+
+
+def test_value_covering_the_week_but_not_the_whole_reference_period_is_usable(tmp_path: Path) -> None:
+    """Replaces the Task 24.7 test that required each value to span the
+    whole reference period. That rule was WFF's annual one, copied in error:
+    AS is assessed per week (CODE_ERROR, Task 28.2 research, PR #41). A value
+    that ends after the week but before the reference period ends is that
+    week's rate."""
     policy_dir = _write_policy_dir(tmp_path, param_effective_to="2027-01-01")
 
-    result = run_as_module(
-        policy_dir, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="0.1.0"
+    assert _passes_module_validation(policy_dir, WEEK)
+
+
+def test_value_starting_after_the_reference_period_start_is_usable_for_a_later_week(tmp_path: Path) -> None:
+    """Replaces the Task 24.7 mirror-direction test, which expected
+    `needs_review` here. A value starting 1 July covers an August week."""
+    policy_dir = _write_policy_dir(tmp_path, param_effective_from="2026-07-01", param_effective_to="2027-04-01")
+
+    assert _passes_module_validation(
+        policy_dir, AssessmentWeek(start=date(2026, 8, 1), end=date(2026, 8, 8)), modelled_date=date(2026, 8, 1)
     )
+
+
+@pytest.mark.parametrize(
+    ("effective_from", "effective_to"),
+    [
+        ("2026-06-03", "2027-04-01"),  # starts inside the week
+        ("2026-04-01", "2026-06-05"),  # ends inside the week
+    ],
+)
+def test_value_changing_inside_the_week_is_needs_review(
+    tmp_path: Path, effective_from: str, effective_to: str
+) -> None:
+    """A value covering only part of the week is not that week's rate, and
+    the module must not silently pick one side of the change."""
+    policy_dir = _write_policy_dir(tmp_path, param_effective_from=effective_from, param_effective_to=effective_to)
+
+    result = _run(policy_dir, modelled_date=date(2026, 6, 4))
 
     assert result.outcome == "needs_review"
-    assert "does not span the complete reference period" in (result.reason or "")
+    assert "changes inside the assessment week" in (result.reason or "")
 
 
-def test_parameter_interval_starting_after_reference_period_is_needs_review(tmp_path: Path) -> None:
-    """Invariant (3), mirror direction -- a parameter interval starting
-    after the reference period's own start, even though it still covers
-    `modelled_date`."""
-    policy_dir = _write_policy_dir(
-        tmp_path, param_effective_from="2026-07-01", param_effective_to="2027-04-01"
-    )
+@pytest.mark.parametrize(
+    ("effective_from", "effective_to"),
+    [
+        ("2026-06-01", "2027-04-01"),  # starts exactly at the week's start
+        ("2026-04-01", "2026-06-08"),  # ends exactly at the week's exclusive end
+    ],
+)
+def test_value_meeting_the_week_boundary_exactly_is_usable(
+    tmp_path: Path, effective_from: str, effective_to: str
+) -> None:
+    policy_dir = _write_policy_dir(tmp_path, param_effective_from=effective_from, param_effective_to=effective_to)
 
-    result = run_as_module(
-        policy_dir, date(2026, 8, 1), _ordinary_scenario(), requested_policy_version="0.1.0"
-    )
-
-    assert result.outcome == "needs_review"
-    assert "does not span the complete reference period" in (result.reason or "")
+    assert _passes_module_validation(policy_dir, WEEK)
 
 
-def test_valid_full_year_case_matches_calculate_accommodation_supplement_directly() -> None:
+def test_assessment_week_must_be_seven_days() -> None:
+    with pytest.raises(ValueError, match="exactly 7 days"):
+        AssessmentWeek(start=date(2026, 6, 1), end=date(2026, 6, 9))
+
+
+def test_valid_case_matches_calculate_accommodation_supplement_directly() -> None:
     """When every module-boundary invariant holds, `run_as_module()` must
     be behaviour-preserving: identical to calling `load_policy_parameters()`
     then `calculate_accommodation_supplement()` directly, against the real
     approved AS policy and its own scenario."""
-    scenario = _ordinary_scenario()
+    assert _passes_module_validation(AS_POLICY_DIR, WEEK)
 
-    direct_parameters = load_policy_parameters(
-        AS_POLICY_DIR, MODELLED_DATE, requested_policy_version="0.1.0"
-    )
-    expected = calculate_accommodation_supplement(scenario, direct_parameters)
 
-    actual = run_as_module(
-        AS_POLICY_DIR, MODELLED_DATE, scenario, requested_policy_version="0.1.0"
-    )
-
-    assert actual == expected
+def test_result_trace_records_the_assessment_week() -> None:
+    result = _run(AS_POLICY_DIR)
+    assert result.trace is not None
+    assert result.trace.assessment_period == (WEEK.start, WEEK.end)
 
 
 def test_requested_policy_version_mismatch_still_raises() -> None:
@@ -199,5 +263,9 @@ def test_requested_policy_version_mismatch_still_raises() -> None:
     that into a needs_review result, it is unchanged, existing behaviour."""
     with pytest.raises(PolicyVersionMismatchError):
         run_as_module(
-            AS_POLICY_DIR, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="9.9.9"
+            AS_POLICY_DIR,
+            MODELLED_DATE,
+            _ordinary_scenario(),
+            requested_policy_version="9.9.9",
+            assessment_week=WEEK,
         )

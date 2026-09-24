@@ -34,7 +34,7 @@ equivalent concepts.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import date
+from datetime import date, timedelta
 from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 from enum import Enum
 from pathlib import Path
@@ -49,7 +49,6 @@ from poltika.engines.simulator.trace import (
 )
 from poltika.engines.simulator.wff import ComponentResult, FactStatus
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
-from poltika.semantics.schemas.policy_spec import ReferencePeriod
 
 
 class ClaimantCategory(str, Enum):
@@ -628,43 +627,64 @@ def _covers(value_effective_from: date, value_effective_to: date | None, target_
     return value_effective_to is None or target_date < value_effective_to
 
 
-def _spans_reference_period(
-    value_effective_from: date, value_effective_to: date | None, reference_period: ReferencePeriod
-) -> bool:
-    """Whether a parameter value's effective interval fully contains the
-    policy's reference_period -- not merely the single requested
-    modelled_date. Mirrors `wff.py`'s `_spans_reference_period()` exactly
-    (Task 19/20's module-boundary invariant (3), now applied to AS)."""
-    if value_effective_from > reference_period.from_:
+@dataclass(frozen=True)
+class AssessmentWeek:
+    """The AS assessment week a calculation is for: `[start, end)`.
+
+    AS is assessed per week (specification.md; `policy.yaml`'s
+    `assessment.membership_period: assessment_week`), so the module needs
+    the week itself, not only a lookup date inside it (Task 28.2 research,
+    PR #41: "a lookup date alone does not identify it"). The caller states
+    both ends explicitly. No weekday convention is assumed here -- which
+    week a scenario uses is a Task 28.2 decision, not something this type
+    infers. The only structural rule is that a week is seven consecutive
+    days.
+    """
+
+    start: date
+    end: date  # exclusive
+
+    def __post_init__(self) -> None:
+        if self.end - self.start != timedelta(days=7):
+            raise ValueError(
+                f"AssessmentWeek must span exactly 7 days [start, end), got {self.start} to {self.end}"
+            )
+
+
+def _covers_week(value_effective_from: date, value_effective_to: date | None, week: AssessmentWeek) -> bool:
+    """Whether a parameter value's effective interval contains the whole
+    assessment week. A value that starts or ends inside the week covers
+    only part of it, so it cannot be used as that week's rate."""
+    if value_effective_from > week.start:
         return False
-    return value_effective_to is None or value_effective_to >= reference_period.to
+    return value_effective_to is None or value_effective_to >= week.end
 
 
 def _as_module_validation_failure(
-    policy_dir: Path, modelled_date: date, parameters: PolicyParameterSet
+    policy_dir: Path, modelled_date: date, assessment_week: AssessmentWeek, parameters: PolicyParameterSet
 ) -> ComponentResult | None:
-    """The module-boundary invariants Task 20 established for WFF's
-    `run_wff_module()`, applied to AS. Returns the shared `needs_review`
-    result to use for the single `accommodation_supplement` component, or
-    `None` if every invariant holds.
+    """The AS module-boundary invariants. Returns the shared `needs_review`
+    result for the single `accommodation_supplement` component, or `None`
+    if every invariant holds.
+
+    AS is assessed per week, so parameter coverage is checked against the
+    assessment week, not against the policy's whole reference period. An
+    earlier version (Task 24.7) copied WFF's annual rule and required every
+    value to span the entire reference period, which gated a genuinely
+    April-effective weekly rate for every week (CODE_ERROR found in the Task
+    28.2 research, PR #41). WFF keeps its full-year rule: WFF is assessed
+    per tax year.
 
     Unlike `_wff_module_validation_failure()`, there is no separate
-    "every parameter calculate_wff() might look up is declared" check
-    here -- that invariant exists for WFF because an undeclared required
-    parameter was always a malformed-fixture bug (PR #21 review finding).
-    For AS, `calculate_accommodation_supplement()`'s own `_param_value()`
-    helper already resolves an undeclared parameter to `needs_review`
-    directly (Task 23's documented design: an undeclared parameter is AS's
-    normal, expected v0.1 state right now, not a fixture bug) -- adding the
-    same check here would be redundant, not defensive.
+    "every parameter is declared" check: `calculate_accommodation_supplement()`'s
+    own `_param_value()` resolves an undeclared parameter to `needs_review`
+    (Task 23's documented design).
     """
     spec = load_policy_spec(policy_dir / "policy.yaml")
     reference_period = spec.reference_period
 
-    # Invariant: the loaded parameter set is actually for this module, not
-    # an unrelated or stale one -- a caller-supplied policy_dir resolving
-    # to a different policy_id would otherwise silently run AS arithmetic
-    # against, say, Working for Families' parameters.
+    # The loaded parameter set is actually for this module, not an
+    # unrelated or stale one.
     if parameters.policy_id != _AS_MODULE_ID:
         return ComponentResult(
             outcome="needs_review",
@@ -674,28 +694,35 @@ def _as_module_validation_failure(
             ),
         )
 
-    # Invariant: the requested date actually falls within the period this
-    # policy version was reviewed to cover, not merely within some
-    # individual parameter's own interval.
-    if not _covers(reference_period.from_, reference_period.to, modelled_date):
+    # The whole week falls within the period this policy version was
+    # reviewed to cover.
+    if assessment_week.start < reference_period.from_ or assessment_week.end > reference_period.to:
         return ComponentResult(
             outcome="needs_review",
             reason=(
-                f"modelled_date {modelled_date} is outside policy '{parameters.policy_id}''s "
-                f"reviewed reference_period [{reference_period.from_}, {reference_period.to})"
+                f"assessment week [{assessment_week.start}, {assessment_week.end}) is not wholly within "
+                f"policy '{parameters.policy_id}''s reviewed reference_period "
+                f"[{reference_period.from_}, {reference_period.to})"
             ),
         )
 
-    # Invariant: every parameter actually declared in policy.yaml is
-    # rate-covered for the *complete* reference period, not just resolved
-    # for the single requested modelled_date. Iterated generically over
-    # `spec.parameters` -- never hardcoded to AS's specific parameter ids,
-    # the same discipline `_wff_module_validation_failure()` follows.
+    # Parameters are looked up at a date inside the week they are for.
+    if not _covers(assessment_week.start, assessment_week.end, modelled_date):
+        return ComponentResult(
+            outcome="needs_review",
+            reason=(
+                f"parameter lookup date {modelled_date} is outside the assessment week "
+                f"[{assessment_week.start}, {assessment_week.end})"
+            ),
+        )
+
+    # Every declared parameter's selected value covers the whole week.
+    # Iterated generically over `spec.parameters`, never hardcoded to AS's
+    # parameter ids.
     for param in spec.parameters:
         resolution = parameters.get(param.id)
         if resolution.outcome != "resolved":
-            # Already needs_review/unsupported for its own reason --
-            # nothing this invariant would add.
+            # Already needs_review/unsupported for its own reason.
             continue
         matching_value = next(
             (v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)),
@@ -705,15 +732,14 @@ def _as_module_validation_failure(
             f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
             "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
         )
-        if not _spans_reference_period(matching_value.effective_from, matching_value.effective_to, reference_period):
+        if not _covers_week(matching_value.effective_from, matching_value.effective_to, assessment_week):
             return ComponentResult(
                 outcome="needs_review",
                 reason=(
                     f"parameter '{param.id}' value effective {matching_value.effective_from}"
-                    f"-{matching_value.effective_to} covers the requested {modelled_date} but "
-                    f"does not span the complete reference period {reference_period.from_}-"
-                    f"{reference_period.to} -- a point-in-time match cannot verify a full-year "
-                    "rate"
+                    f"-{matching_value.effective_to} changes inside the assessment week "
+                    f"[{assessment_week.start}, {assessment_week.end}) -- a value covering only "
+                    "part of the week is not that week's rate"
                 ),
             )
 
@@ -726,6 +752,7 @@ def run_as_module(
     scenario: AsScenario,
     *,
     requested_policy_version: str,
+    assessment_week: AssessmentWeek,
 ) -> ComponentResult:
     """Task 24.7: the Accommodation Supplement module's integration entry
     point, mirroring `wff.py`'s `run_wff_module()` (Task 20) for AS's
@@ -735,6 +762,12 @@ def run_as_module(
     `calculate_accommodation_supplement()` behind one call, enforcing the
     module contract's `validation_checks` before the component is
     calculated.
+
+    `assessment_week` is required too: AS is assessed per week, and each
+    parameter value used must cover the whole week (see
+    `_as_module_validation_failure()`). `modelled_date` is the parameter
+    lookup date and must fall inside that week. The week is recorded on the
+    result's trace (`ComponentTrace.assessment_period`).
 
     `requested_policy_version` is a required keyword argument, not an
     optional one, for the same reason as `run_wff_module()`'s: module
@@ -759,13 +792,20 @@ def run_as_module(
         policy_dir, modelled_date, requested_policy_version=requested_policy_version
     )
 
-    validation_failure = _as_module_validation_failure(policy_dir, modelled_date, parameters)
+    assessment_period = (assessment_week.start, assessment_week.end)
+    validation_failure = _as_module_validation_failure(policy_dir, modelled_date, assessment_week, parameters)
     if validation_failure is not None:
-        # No calculation ran, so the trace carries only the policy identity
-        # and artifact hashes; the reason says which invariant failed.
+        # No calculation ran, so the trace carries only the run identity;
+        # the reason says which invariant failed.
         return replace(
             validation_failure,
-            trace=ComponentTrace(component_id=_AS_MODULE_ID, **trace_header(parameters, scenario)),
+            trace=ComponentTrace(
+                component_id=_AS_MODULE_ID,
+                **trace_header(parameters, scenario),
+                assessment_period=assessment_period,
+            ),
         )
 
-    return calculate_accommodation_supplement(scenario, parameters)
+    result = calculate_accommodation_supplement(scenario, parameters)
+    assert result.trace is not None
+    return replace(result, trace=replace(result.trace, assessment_period=assessment_period))
