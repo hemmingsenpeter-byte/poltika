@@ -303,8 +303,15 @@ def test_sources_carry_their_own_check_evidence_not_the_catalogue_date() -> None
     report = build_provenance_report(WFF_POLICY_DIR, _wff_components(_wff_run(WFF_POLICY_DIR)))
     catalogue = {s["id"]: s for s in yaml.safe_load((WFF_POLICY_DIR / "sources.yaml").read_text())["sources"]}
     for source in report["sources"]:
-        # No catalogue entry has a structured check date; never borrow as_of.
-        assert source["check_date"] is None
+        # Structured check dates come only from mapping-valued checks with a
+        # checked_on; never from free text or the catalogue's as_of.
+        raw_entry = catalogue[source["id"]]
+        expected_dates = sorted(
+            (str(value["checked_on"]), key)
+            for key, value in raw_entry.items()
+            if isinstance(value, dict) and "checked_on" in value
+        )
+        assert [(c["date"], c["field"]) for c in source["checked_on"]] == expected_dates
         raw = catalogue[source["id"]]
         evidence_fields = {e["field"] for e in source["check_evidence"]}
         for key in raw:
@@ -349,6 +356,51 @@ def test_markdown_carries_the_same_content_as_json() -> None:
         assert source["url"] in sources_section
         for note in source["check_evidence"]:
             assert f"- {note['field']}: " in sources_section
+
+
+def test_structured_checked_on_is_reported_with_its_check_and_free_text_is_not_parsed(tmp_path: Path) -> None:
+    """A mapping-valued check with a structured `checked_on` (the shape PR
+    #41 introduces) is reported as that source's check date, naming the
+    check. A date inside free text is never parsed, and a non-date
+    `checked_on` is left as evidence only."""
+    policy_dir = _copy_policy_dir(WFF_POLICY_DIR, tmp_path)
+    catalogue_path = policy_dir / "sources.yaml"
+    catalogue = yaml.safe_load(catalogue_path.read_text())
+    cited = {
+        "wff-tax-credit-order-2025": {
+            "task_a_check": {"checked_on": "2026-09-24", "claim": "synthetic test check"},
+            "task_b_check": {"checked_on": date(2026, 9, 22), "claim": "synthetic test check"},
+            "task_c_check": {"checked_on": "sometime in September", "claim": "not a date"},
+            "free_text_note": "Checked 2026-09-01 by hand.",
+        }
+    }
+    for source in catalogue["sources"]:
+        source.update(cited.get(source["id"], {}))
+    catalogue_path.write_text(yaml.safe_dump(catalogue, sort_keys=False))
+
+    catalogue_by_id = {s["id"]: s for s in catalogue["sources"]}
+    report = build_provenance_report(policy_dir, _wff_components(_wff_run(policy_dir)))
+    source = next(s for s in report["sources"] if s["id"] == "wff-tax-credit-order-2025")
+    assert source["checked_on"] == [
+        {"field": "task_b_check", "date": "2026-09-22"},
+        {"field": "task_a_check", "date": "2026-09-24"},
+    ]
+    evidence = {e["field"]: e["text"] for e in source["check_evidence"]}
+    assert evidence["free_text_note"] == "Checked 2026-09-01 by hand."
+    assert json.loads(evidence["task_c_check"]) == {"checked_on": "sometime in September", "claim": "not a date"}
+
+    markdown = render_markdown(report)
+    assert "- Checked on: 2026-09-22 (task_b_check)" in markdown
+    assert "- Checked on: 2026-09-24 (task_a_check)" in markdown
+    # A cited source whose catalogue entry has no mapping-valued check
+    # reports no structured date.
+    unchecked = [
+        s
+        for s in report["sources"]
+        if not any(isinstance(v, dict) and "checked_on" in v for v in catalogue_by_id[s["id"]].values())
+    ]
+    assert unchecked, "fixture should keep at least one cited source without a structured check"
+    assert all(s["checked_on"] == [] for s in unchecked)
 
 
 def test_as_report_states_the_assessment_week() -> None:
