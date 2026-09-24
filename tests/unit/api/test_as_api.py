@@ -261,3 +261,38 @@ def test_calculate_rejects_a_week_that_is_not_seven_days() -> None:
     )
     assert response.status_code == 422
     assert "exactly 7 days" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("omitted", ["ordinary_rate_status", "eldest_dependent_child_under_16"])
+def test_calculate_treats_an_omitted_new_fact_as_unverified(omitted: str) -> None:
+    """Task 26a repair: the API must not default either fact to verified,
+    and must pass each through to the scenario (PR #50 review, M22-M26)."""
+    payload = _request_payload(
+        partner_status="single",
+        dependent_children_count=1,
+        ordinary_rate_status="verified",
+        eldest_dependent_child_under_16="verified",
+    )
+    del payload[omitted]
+    response = client.post("/accommodation-supplement/calculate", json=payload)
+    assert response.status_code == 200
+    component = response.json()["accommodation_supplement"]
+    assert component["outcome"] == "needs_review"
+    assert omitted in (component["reason"] or "")
+
+
+def test_calculate_passes_eldest_child_exclusion_through() -> None:
+    response = client.post(
+        "/accommodation-supplement/calculate",
+        json=_request_payload(dependent_children_count=1, eldest_dependent_child_under_16="excluded"),
+    )
+    assert response.json()["accommodation_supplement"]["outcome"] == "unsupported"
+
+
+def test_calculate_refuses_the_pre_repair_policy_version() -> None:
+    """No old policy version may be silently interpreted as the new contract:
+    requesting 0.1.0 against the 0.1.1 AS policy is a 409, not a result."""
+    response = client.post(
+        "/accommodation-supplement/calculate", json=_request_payload(requested_policy_version="0.1.0")
+    )
+    assert response.status_code == 409
