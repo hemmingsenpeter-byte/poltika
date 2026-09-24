@@ -410,7 +410,7 @@
       "accommodation_supplement": {
         "outcome": "calculated",
         "reason": null,
-        "value": "149"
+        "value": "235"
       },
       "accommodation_supplement_period": [
         "2026-06-01",
@@ -420,7 +420,7 @@
       "original_accommodation_supplement": {
         "outcome": "calculated",
         "reason": null,
-        "value": "149"
+        "value": "235"
       },
       "original_wff": {
         "best_start": {
@@ -471,7 +471,7 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "3073fcf23ffd8bbe88c4ccb008388515d31c07ac80babd46aa41131dd81cb2a3"
+    "scenario_id": "25add3acb566bab18c4bc2ea2c5ec56713762dc2f1a9d8d690a0a5e1e2627948"
   },
   "g7_sole_parent_asset_imputation_and_income_reduction": {
     "policy_files": {
