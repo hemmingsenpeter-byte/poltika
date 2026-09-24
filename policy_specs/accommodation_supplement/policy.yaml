@@ -86,7 +86,7 @@ inputs:
     period: assessment_week
     source_rule_ids: [AS-04]
     missing_outcome: needs_review
-    note: Task 26a repair (DEC-002). verified means the ordinary published rate row applies for the whole week -- no protected Jobseeker woman-alone rate, mixed-benefit rate, special care/residential rate or other unrepresented subtype; for a single beneficiary under 25 it includes applicability of r 17(2)(a)'s age-25 rate. excluded (a known subtype outside this branch) is unsupported. General household eligibility does not imply it.
+    note: Task 26a repair (DEC-002). verified means the ordinary published rate row applies for the whole week -- no protected Jobseeker woman-alone rate, mixed-benefit rate, special care/residential rate or other unrepresented subtype; for a single beneficiary under 25 it includes applicability of r 17(2)(a)'s age-25 rate. A couple with a non-qualified partner and dependent children uses the ordinary couple-with-children row (MSD publishes identical values for it); a non-qualified-partner couple without children has no published row and is an unrepresented subtype, so excluded. excluded (a known subtype outside this branch) is unsupported. General household eligibility does not imply it.
   - id: eldest_dependent_child_under_16
     owner: assessment_unit
     type: verified_fact_status
@@ -268,9 +268,12 @@ parameters:
   # Task 26a.2 (24 September 2026): published MSD rent/board entry thresholds
   # and non-beneficiary income levels, per DEC-002 and the Task 26a selector
   # repair. Values generated from the fetched tables (all labelled "at 1 April
-  # 2026"), not re-typed. Protected Jobseeker woman-alone and non-qualified-
-  # partner rows are not separate ids; ordinary_rate_status gates them. No
-  # value exists before 1 April 2026, so March weeks stay gated.
+  # 2026"), not re-typed. The protected Jobseeker woman-alone row has no id
+  # (ordinary_rate_status excludes it). Non-qualified-partner couple rows
+  # with children publish the same values as the ordinary couple-with-
+  # children row and share its id; without children no row is published,
+  # so ordinary_rate_status excludes them (see that input's note). No value
+  # exists before 1 April 2026, so March weeks stay gated.
   - id: as_entry_threshold_non_beneficiary_single_no_dependent_children
     value_type: money
     unit: NZD_per_week

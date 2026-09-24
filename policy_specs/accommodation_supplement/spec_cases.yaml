@@ -1,12 +1,12 @@
 # Task 24.1: independently hand-calculated Accommodation Supplement cases.
 #
-# Each case uses the 20 approved statutory parameters in policy.yaml. The
-# published entry threshold and r 18(3) income level (Task 26a repair,
-# DEC-002, policy 0.1.1) remain undeclared there; where arithmetic needs
-# them, parameter_assumptions names the synthetic input explicitly. These
-# assumptions isolate the approved calculation sequence and are not asserted
-# to be statutory rates. The $75 threshold was previously expressed as 25% of
-# an assumed $300 base; each case's arithmetic and expected value is unchanged.
+# Cases up to the Task 26a.3 block use parameter_assumptions: synthetic entry
+# thresholds and income levels (Task 26a repair, DEC-002) that isolate the
+# approved calculation sequence and override the policy's published values;
+# they are not asserted to be statutory rates. The $75 threshold was
+# previously expressed as 25% of an assumed $300 base; each case's arithmetic
+# and expected value is unchanged. The Task 26a.3 cases at the end use no
+# assumptions and run against the real published values in policy.yaml.
 status: pending_review
 spec_cases:
   - id: ordinary_uncapped_jobseeker
