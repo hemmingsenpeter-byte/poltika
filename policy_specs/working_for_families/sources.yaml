@@ -14,6 +14,14 @@ sources:
     access_note: Official full-page retrieval returned 403 in the initial Task 10 pass; later browser-user-agent fetches enabled direct checks of MB 1-13 and MC 2-11, plus MD 1, MD 3-10, MD 13-15, ME 1-3, MF 4L, and MG 1-4 (PR #6 review comment 5753283332 and Task 10 follow-up). MB 9 and MB 14 are repealed; the rest of Part M is not claimed as fully reviewed.
     mb_mc_audit: Official version as at 2026-09-04, checked 2026-09-21. MB 1-13 and MC 2-11 reviewed in full; notable scope checks are MB 1(5)/(5D)-(5E), MB 11(2)-(3), MB 13(1)-(3), MC 5(1)-(3), MC 6(a)-(c), MC 7(1)-(2), MC 8(1), MC 9(1)-(3), and MC 10(1)-(4). Recheck the version at implementation time.
     calculation_audit: Official version as at 2026-09-04, checked 2026-09-21. MD 1-3, MD 10, MD 13-15, ME 1-3, MG 1-4, and MF 1-4/4L checked for the scoped full-year calculation; MD 2(2)(c) orders abatement, MD 13(3)(a) and MG 3(2)(a) use complete dollars of income excess, and MF 4(4) concerns display of instalments. MD 13's 27.5-cent rate can produce a half-cent annual result; no intermediate cent rounding was found in these provisions. Independent review remains required before approval.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Official consolidation labelled as at 04 September 2026.
+      url: https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/parts/DLM1518405/
+      locator: MD 3(1)-(5); MF 4(1)-(4).
+      claim: MD 3 uses entitlement-period days in its formula; MF 4 separately governs instalment calculation and notice display. The approved full-year calculator is not an instalment calculator.
+      scope: Period semantics only. No new parameter approval or historical whole-year law audit; the approved 2026-27 domain and Task 10.2 gate remain binding.
+      access_method: Official HTML fetched with curl and a browser user agent after the web tool could not retrieve it.
   - id: wff-tax-credit-order-2025
     kind: amending_legislation
     title: Income Tax (Tax Credit) Order 2025
@@ -49,6 +57,13 @@ sources:
     locator: Sections 2(43)-(45) and 105-106, amending Income Tax Act s MD 10 and inserting s MF 4L.
     verification_status: current_publication_checked_future_recheck_required
     order_check: On 2026-09-21, the official s 2 page's secondary-legislation link was disabled and stated that no secondary legislation made under that section was currently on the website; a targeted search found no reversal Order. This is an as-of observation, not proof that no later Order will be made. Recheck the official section and secondary-legislation record for every modelled period.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      url: https://www.legislation.govt.nz/act/public/2026/0008/latest/whole.html
+      source_version: Official 2026 No 8 text retrieved on the check date.
+      locator: Section 2(43)-(45); section 106 inserting MF 4L.
+      claim: The reversal can commence by Order, with a 1 April 2027 backstop; MF 4L addresses instalments if an earlier change date is set. A past parameter lookup date cannot certify the rest of an unfinished annual interval.
+      scope: Commencement mechanism checked only. This is not Task 26b's independent register search or a replacement of the existing order_check record; no rate-status change.
   - id: wff-ird-interpretation-2026
     kind: agency_interpretation
     title: IS 26/12 - Working for Families tax credits and family scheme income
@@ -71,6 +86,12 @@ sources:
     url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir200---ir299/ir271/ir271-2027.pdf?modified=20260330235509
     covers: Published payment estimates for 2026-04-01 through 2027-03-31.
     date_note: An earlier PDF revision omits the temporary in-work tax credit increase.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: IR271, April 2026 revision; modified=20260330235509.
+      locator: Page 1 heading and temporary-IWTC note.
+      effective_period: 2026-04-01 through 2027-03-31 inclusive.
+      claim: The chart identifies this payment year and labels the temporary increase; it does not establish an unconditional full-year in-work rate.
   - id: wff-ird-family-tax-credit
     kind: agency_guidance_and_examples
     title: Family tax credit
@@ -80,6 +101,12 @@ sources:
     locator: How the family tax credit works > Please note (excess abatement reduces in-work tax credit); Weekly or fortnightly payments; Examples.
     verification_status: task_14_worked_examples_fetched_and_promoted_2026-09-22
     access_note: A bare fetch returned no content; a browser-user-agent request succeeded (same pattern already used for legislation.govt.nz elsewhere in this file). Three worked examples (Sarah, Rahui, Claire & Laura) transcribed into policy_specs/working_for_families/benchmarks.yaml.
+    task_28_2_check:
+      checked_on: 2026-09-24
+      source_version: Live guidance still labelled Last updated 25 Feb 2026.
+      locator: How the family tax credit works; Weekly or fortnightly payments.
+      claim: Guidance distinguishes annual entitlement from weekly or fortnightly instalments, including instalment rounding. A display conversion must not be presented as a verified payment schedule.
+      scope: Reporting-period evidence only; no new numeric benchmark.
   - id: wff-ird-in-work-tax-credit
     kind: agency_guidance_and_examples
     title: In-work tax credit
