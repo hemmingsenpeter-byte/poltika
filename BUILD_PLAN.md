@@ -1718,6 +1718,16 @@ and Pete's acceptance):
       same completeness guards (unique IDs, every component expected) as
       the per-policy suites.
     - **29.4 — Claude Code reviews the hand calculations via a fresh-context subagent (Task 24.4 precedent); Pete accepts.** Independent review of the hand calculations; Pete accepts.
+
+    **Task 29 complete, merged 24 September 2026 (PR #59).** Claude Code did
+    29.1-29.3 under Pete's delegation ("do all of this for me -- keep
+    going"). There are nine households in
+    `policy_specs/wff_as_interaction/golden_households.yaml`; the
+    statutory-value guard now also watches `*/golden_households.yaml`.
+    Expected values came from a standalone script over the policy files.
+    The 29.4 fresh-context review recalculated all of them and approved. At
+    its request, g6 was adjusted so that the one-child cl 2 cap binds. No
+    household depends on DEC-001's convention.
 30. **Cross-policy deterministic scenarios.** A scenario is a golden or
     ad hoc household plus modelled date plus requested policy versions.
     This task makes running one reproducible and identifiable. It adds no
@@ -1754,6 +1764,23 @@ and Pete's acceptance):
       change-attribution rule. No external dataset exists for v0.1
       (10a/22a); the retained artifacts and their hashes support replay.
       Hashes identify retained content; they do not replace snapshots.
+
+    **Task 30 complete, merged 25 September 2026 (PR #60;
+    `src/poltika/scenarios/record.py`).**
+    - The scenario record, and an artifact manifest built from the run's own
+      traces.
+    - Code identity: commit, clean tree, `uv.lock` hash.
+    - Canonical `scenario_id` and `result_id`.
+    - `policy_files_committed`: every bound file equals its committed
+      version. `reproducible` requires it together with a clean tree.
+    - Determinism across processes.
+    - 30.4 fixture `tests/fixtures/golden_results_v0_1.json`, with
+      attribution of any change to the household's inputs, named policy
+      artifacts, or code.
+
+    The fresh-context review was cut off by the usage limit, so Claude Code
+    reviewed it and found and fixed one gap (committed-file verification).
+    An independent review afterwards is recommended.
 31. **Full calculation provenance report.** Today a result carries its
     outcome, value and reason, but not which parameters and sources
     produced it (`ParameterResolution.source_id` exists in the loader but
@@ -1816,7 +1843,13 @@ and Pete's acceptance):
       provenance tests to combined scenarios and their artifact manifests.
       Verify both assessment periods, interaction gates and report content
       are preserved. This adds combined coverage to the reviewed per-policy
-      slice; it does not defer that slice's tests or review.
+      slice; it does not defer that slice's tests or review. **Done 25 September 2026:**
+      `build_combined_provenance_report()` and `render_combined_markdown()`
+      cover a scenario run's identities, reproducibility, manifest and
+      disagreements, plus each policy's full report in its native period.
+      The report refuses a manifest that does not match the files it
+      verified, and a file changed after the run. Self-reviewed (usage
+      limits); tests are mutation-checked.
 32. **Scenario/version persistence.**
     - **32.1 — Pete decides; Claude Code drafts the ADR. Decided 24
       September 2026: option (a), PostgreSQL (ADR-0013, accepted; PR #39,
