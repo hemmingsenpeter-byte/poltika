@@ -293,8 +293,15 @@ def test_sources_carry_their_own_check_evidence_not_the_catalogue_date() -> None
     report = build_provenance_report(WFF_POLICY_DIR, _wff_components(_wff_run(WFF_POLICY_DIR)))
     catalogue = {s["id"]: s for s in yaml.safe_load((WFF_POLICY_DIR / "sources.yaml").read_text())["sources"]}
     for source in report["sources"]:
-        # main's WFF catalogue has no structured check yet; never borrow as_of.
-        assert source["checked_on"] == []
+        # Structured check dates come only from mapping-valued checks with a
+        # checked_on; never from free text or the catalogue's as_of.
+        raw_entry = catalogue[source["id"]]
+        expected_dates = sorted(
+            (str(value["checked_on"]), key)
+            for key, value in raw_entry.items()
+            if isinstance(value, dict) and "checked_on" in value
+        )
+        assert [(c["date"], c["field"]) for c in source["checked_on"]] == expected_dates
         raw = catalogue[source["id"]]
         evidence_fields = {e["field"] for e in source["check_evidence"]}
         for key in raw:
