@@ -1,7 +1,11 @@
 # ADR-0012: Task 24.3 external coverage-gap check for Accommodation Supplement
 
 **Date:** 2026-09-23
-**Status:** proposed
+**Status:** accepted, narrowly -- 24 September 2026, under Pete's
+"resolve and proceed" delegation recorded in PR #49
+(`docs/research/2026_09_24_scope_resolution.md`). The name-only no-gap
+conclusion is accepted; the four opaque OpenFisca names remain unconfirmed
+candidates, not verified gaps or required v0.1 features.
 
 ## Context
 
