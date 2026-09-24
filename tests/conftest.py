@@ -15,6 +15,10 @@ here at their third consumer for Task 24.2, following the same rule.
 
 from __future__ import annotations
 
+import shutil
+import socket
+import subprocess
+from collections.abc import Iterator
 from dataclasses import replace
 from datetime import date
 from decimal import Decimal
@@ -43,6 +47,7 @@ from poltika.engines.simulator.wff import (
     WffScenario,
 )
 from poltika.policy.loader import ParameterResolution, PolicyParameterSet, load_policy_parameters
+from poltika.scenarios.store import migrate
 
 WFF_POLICY_DIR = Path(__file__).resolve().parent.parent / "policy_specs" / "working_for_families"
 WFF_MODELLED_DATE = date(2026, 6, 1)
@@ -287,3 +292,40 @@ def real_as_parameters_without(*parameter_ids: str) -> PolicyParameterSet:
     return replace(
         base, resolutions={k: v for k, v in base.resolutions.items() if k not in parameter_ids}
     )
+
+
+# Task 32/33.2: a throwaway real PostgreSQL server (never SQLite, ADR-0013)
+# for tests marked `postgres`, from initdb/pg_ctl on PATH or a Homebrew
+# postgresql@16. TCP only: the Unix socket path under pytest's tmp dir can
+# exceed macOS's 103-byte limit. Skipped when the binaries are absent.
+_CANDIDATE_BIN_DIRS = [Path("/usr/local/opt/postgresql@16/bin"), Path("/opt/homebrew/opt/postgresql@16/bin")]
+
+
+def pg_bin_dir() -> Path | None:
+    found = shutil.which("pg_ctl")
+    if found:
+        return Path(found).parent
+    return next((d for d in _CANDIDATE_BIN_DIRS if (d / "pg_ctl").exists()), None)
+
+
+@pytest.fixture(scope="session")
+def database_url(tmp_path_factory: pytest.TempPathFactory) -> Iterator[str]:
+    bin_dir = pg_bin_dir()
+    if bin_dir is None:
+        pytest.skip("PostgreSQL server binaries not installed")
+    data = tmp_path_factory.mktemp("pgdata")
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        port = s.getsockname()[1]
+    subprocess.run([str(bin_dir / "initdb"), "-D", str(data), "-U", "poltika", "--auth=trust"], check=True, capture_output=True)
+    subprocess.run(
+        [str(bin_dir / "pg_ctl"), "-D", str(data), "-o", f"-p {port} -c listen_addresses=127.0.0.1 -c unix_socket_directories=''", "-l", str(data / "log"), "-w", "start"],
+        check=True, capture_output=True,
+    )
+    try:
+        subprocess.run([str(bin_dir / "createdb"), "-h", "127.0.0.1", "-p", str(port), "-U", "poltika", "poltika"], check=True, capture_output=True)
+        url = f"postgresql+psycopg://poltika@127.0.0.1:{port}/poltika"
+        migrate(url)
+        yield url
+    finally:
+        subprocess.run([str(bin_dir / "pg_ctl"), "-D", str(data), "-m", "fast", "stop"], capture_output=True, check=False)
