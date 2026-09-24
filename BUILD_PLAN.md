@@ -1539,6 +1539,31 @@ and Pete's acceptance):
     household>` and `as_income_level_non_beneficiary_<rate_household>`
     under AS policy `0.1.1`. Claude Code's code repair is PR #50, under
     fresh-context review; 26a.2's values follow once it merges.
+
+    **Task 26a complete, merged 24 September 2026.** Claude Code did both
+    parts on Pete's instruction to proceed without Codex input, with
+    fresh-context subagent reviews standing in for GPT/Codex. Codex-owned
+    files edited along the way: AS `policy.yaml`, `spec_cases.yaml` and
+    `benchmarks.yaml`. Each PR flags this for Codex's later review.
+    - **Selector repair (PR #50):**
+      - four rate-household rows, separate from the cap selector;
+      - published thresholds subtracted directly, with no old-id fallback;
+      - fail-closed `ordinary_rate_status` and eldest-child-under-16 facts;
+      - AS policy `0.1.1`.
+
+      The fixture edits changed no expected value, which a script checked.
+      The review found one fail-closed gate-order bug (a known unsupported
+      case shown as `needs_review` when cash assets were unverified) and
+      seven surviving mutations. All were fixed and re-checked.
+    - **26a.2/26a.3 (PR #53):** 17 values were generated from MSD's
+      1 April 2026 tables and verified one by one against the fetched tables
+      by the reviewer. Three new spec cases run against the real policy with
+      no assumptions ($75, $104, $47). The last two reproduce MSD's own
+      published Nadiya and income-change examples. The non-qualified-partner
+      rows are clarified: with children they use the ordinary row; without
+      children there is no published row, so they are excluded.
+    - **Verified on merged `main` (`c8316b2`):** 309 passed, the
+      installed-artifact test passed, Ruff and strict mypy clean.
 26b. **Recheck `in_work_base` for the v0.1 modelled interval(s) (new).** GPT/Codex;
     Claude Code reviews. Depends on 28.2's date/interval decision. Apply
     Task 10.2's existing rate-status contract in WFF's specification:
