@@ -18,6 +18,12 @@
 # additional $6,454, abatement 27.5% of complete dollars over $44,900, MFTC
 # prescribed $36,604, Best Start $4,041 abating 21% over $79,000. AS
 # thresholds, caps, income levels and asset settings as cited per household.
+#
+# No household depends on DEC-001's medium-confidence convention: every AS
+# income excess here is a whole-dollar amount, so flooring first would give
+# the same result (Task 29.2 flag: none). Each WFF net family scheme income
+# is a synthetic, attested ME 3 amount set equal to gross for clear
+# arithmetic; it does not model an actual tax liability.
 status: approved
 households:
   - id: g1_sole_parent_two_children_non_beneficiary
@@ -194,12 +200,13 @@ households:
       accommodation_supplement: {outcome: calculated, value: '192'}
 
   - id: g6_sole_parent_support_best_start_child
-    why: Best Start calculated for a supported-cohort child; one child uses the cl 2 cap.
+    why: Best Start calculated for a supported-cohort child; the one-child cl 2 cap binds.
     derivation: >-
       WFF: FTC $7,921 (income $28,000); IWTC and MFTC unsupported (Sole Parent Support: in-work and MC
       6(b) excluded); Best Start $4,041 (income below $79,000, no abatement; child in the supported
       birth cohort, no shared care, no protected month, no MC 6(c) payment). AS: Sole Parent Support
-      threshold $168; 70% x ($380 - $168) = $148.40, under the cl 2 Area 1 cap of $235; r 19 gives $149.
+      threshold $168; 70% x ($600 - $168) = $302.40, capped at the cl 2 Area 1 cap of $235 (a sole
+      parent with one child; the cl 1 cap would be $305); $235.
     precondition: verified
     wff:
       <<: *wff_single_earner
@@ -213,7 +220,7 @@ households:
       <<: *as_base
       claimant_category: sole_parent_support
       statistical_area_unit: area1
-      weekly_accommodation_costs: '380'
+      weekly_accommodation_costs: '600'
       dependent_children_count: 1
       cash_assets: '800'
       weekly_income: null
@@ -224,10 +231,10 @@ households:
         in_work_tax_credit: {outcome: unsupported}
         minimum_family_tax_credit: {outcome: unsupported}
         best_start: {outcome: calculated, value: '4041'}
-      accommodation_supplement: {outcome: calculated, value: '149'}
+      accommodation_supplement: {outcome: calculated, value: '235'}
 
   - id: g7_sole_parent_asset_imputation_and_income_reduction
-    why: s 423(3) asset imputation pushes income over the level; DEC-001 exact excess; WFF abates.
+    why: s 423(3) asset imputation pushes income over the level (whole-dollar excess); WFF abates.
     derivation: >-
       WFF: income $45,500, excess $600, abatement $165, FTC $7,756; IWTC needs_review; MFTC $0;
       Best Start $0. AS: sole-parent threshold $168; 70% x ($420 - $168) = $176.40, under the cl 2
