@@ -1,0 +1,323 @@
+# Task 29: golden household suite across WFF and Accommodation Supplement.
+#
+# Nine complete households run through the combined household runner (Task
+# 28.4) against the real approved policies (WFF 0.1.0, AS 0.1.1) with the
+# Task 28.2 dates -- WFF 2026-27 year, lookup 2026-06-01; AS week
+# [2026-06-01, 2026-06-08), lookup 2026-06-01 -- and NO parameter
+# assumptions. Protected by the statutory-value guard.
+#
+# 29.1: household list proposed by Claude Code and approved under Pete's
+# delegation ("do all of this for me -- keep going", 24 September 2026).
+# 29.2: expected values hand-calculated by Claude Code from the approved
+# policy.yaml values and the specifications' calculation sequences, by a
+# standalone script independent of the calculators; each is re-derived by a
+# fresh-context reviewer (29.4). The in-work tax credit is needs_review
+# wherever it is reached: the 2026-27 in-work base is gated (Task 26b).
+#
+# Parameter values used (from the policy files): WFF eldest $7,921,
+# additional $6,454, abatement 27.5% of complete dollars over $44,900, MFTC
+# prescribed $36,604, Best Start $4,041 abating 21% over $79,000. AS
+# thresholds, caps, income levels and asset settings as cited per household.
+#
+# No household depends on DEC-001's medium-confidence convention: every AS
+# income excess here is a whole-dollar amount, so flooring first would give
+# the same result (Task 29.2 flag: none). Each WFF net family scheme income
+# is a synthetic, attested ME 3 amount set equal to gross for clear
+# arithmetic; it does not model an actual tax liability.
+status: approved
+households:
+  - id: g1_sole_parent_two_children_non_beneficiary
+    why: Both policies calculated; sole parent with 2+ children uses the cl 1 cap.
+    derivation: >-
+      WFF: FTC $7,921 + $6,454 = $14,375 (income $35,000 below $44,900); IWTC needs_review; MFTC
+      $36,604 - $35,000 = $1,604; Best Start $0. AS: non-beneficiary sole-parent threshold $168;
+      70% x ($450 - $168) = $197.40, under the cl 1 Area 2 cap of $220; income $673 below $906; assets
+      $3,000 below $5,400; r 19 gives $198.
+    precondition: verified
+    wff: &wff_single_earner
+      household_eligibility: verified
+      extra_instalment_status: verified
+      partner_status: single
+      family_scheme_income: {claimant_amount: '35000'}
+      net_family_scheme_income: '35000'
+      net_family_scheme_income_me3_attested: true
+      in_work_eligibility: verified
+      ftc_iwtc_protected_or_direct_abatement: verified
+      mc6a_veterans_payment: verified
+      mc6b_disqualifying_payment: verified
+      minimum_family_full_time_earner_weeks: verified
+      best_start_no_shared_care: verified
+      best_start_protected_credit: verified
+      children: &two_children
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+    accommodation_supplement: &as_base
+      household_eligibility: verified
+      claimant_category: non_beneficiary
+      tenure_type: rent_contributions_or_board
+      partner_status: single
+      statistical_area_unit: area2
+      weekly_accommodation_costs: '450'
+      dependent_children_count: 2
+      cash_assets: '3000'
+      exempt_cash_asset_status: verified
+      weekly_income: '673'
+      ordinary_rate_status: verified
+      eldest_dependent_child_under_16: verified
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '14375'}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: calculated, value: '1604'}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: calculated, value: '198'}
+
+  - id: g2_couple_two_children_income_abated_both
+    why: Partnered income verified per person; WFF abatement and AS income reduction both apply.
+    derivation: >-
+      WFF: combined $50,000 + $20,000 = $70,000; abatement 27.5% x $25,100 = $6,902.50; FTC $14,375 -
+      $6,902.50 = $7,472.50; IWTC needs_review; MFTC $0 ($36,604 - $70,000 < 0); Best Start $0. AS:
+      couple-with-children threshold $205; 70% x ($600 - $205) = $276.50, under the cl 1 Area 1 cap of
+      $305; income $1,346 over the $1,117 level, reduction 25% x $229 = $57.25 (DEC-001); $219.25,
+      r 19 gives $220. Assets $2,000 below $5,400.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: '50000', partner_amount: '20000'}
+      net_family_scheme_income: '70000'
+    accommodation_supplement:
+      <<: *as_base
+      partner_status: ordinary_couple
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '600'
+      cash_assets: '2000'
+      weekly_income: '1346'
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '7472.5'}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: calculated, value: '0'}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: calculated, value: '220'}
+
+  - id: g3_childless_couple_as_only
+    why: WFF excluded (no dependent child) while AS calculates.
+    derivation: >-
+      WFF: no dependent child, so every component is unsupported (outside the family-scheme
+      domain). AS: couple-without-children threshold $158; 70% x ($300 - $158) = $99.40, under the
+      cl 2 Area 3 cap of $105; income $1,000 below the $1,066 level; assets $5,000 below $5,400; r 19
+      gives $100.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: '40000', partner_amount: '12000'}
+      net_family_scheme_income: '52000'
+      children: []
+    accommodation_supplement:
+      <<: *as_base
+      partner_status: ordinary_couple
+      statistical_area_unit: area3
+      weekly_accommodation_costs: '300'
+      dependent_children_count: 0
+      cash_assets: '5000'
+      weekly_income: '1000'
+      eldest_dependent_child_under_16: unknown
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: unsupported}
+        in_work_tax_credit: {outcome: unsupported}
+        minimum_family_tax_credit: {outcome: unsupported}
+        best_start: {outcome: unsupported}
+      accommodation_supplement: {outcome: calculated, value: '100'}
+
+  - id: g4_single_jobseeker_cap_binds
+    why: A main beneficiary with no children; the Area 4 single cap binds.
+    derivation: >-
+      WFF: no dependent child, so unsupported; in-work eligibility and MC 6(b) are recorded as
+      excluded (a main benefit is received), so no main-benefit disagreement. AS: Jobseeker single
+      threshold $93; 70% x ($250 - $93) = $109.90, capped at the cl 3 Area 4 cap of $70; no income
+      test; $70.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      family_scheme_income: {claimant_amount: '19000'}
+      net_family_scheme_income: '19000'
+      in_work_eligibility: excluded
+      mc6b_disqualifying_payment: excluded
+      children: []
+    accommodation_supplement:
+      <<: *as_base
+      claimant_category: jobseeker_support
+      statistical_area_unit: area4
+      weekly_accommodation_costs: '250'
+      dependent_children_count: 0
+      cash_assets: '500'
+      weekly_income: null
+      eldest_dependent_child_under_16: unknown
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: unsupported}
+        in_work_tax_credit: {outcome: unsupported}
+        minimum_family_tax_credit: {outcome: unsupported}
+        best_start: {outcome: unsupported}
+      accommodation_supplement: {outcome: calculated, value: '70'}
+
+  - id: g5_supported_living_couple_two_children
+    why: Beneficiary couple; FTC and AS calculated, IWTC and MFTC excluded by the main benefit.
+    derivation: >-
+      WFF: combined $25,000 + $15,000 = $40,000, below $44,900, FTC $14,375; in-work eligibility and
+      MC 6(b) excluded, so IWTC and MFTC unsupported; Best Start $0. AS: Supported Living couple-with-
+      children threshold $227; 70% x ($500 - $227) = $191.10, under the cl 1 Area 2 cap of $220; no
+      income test; r 19 gives $192.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: '25000', partner_amount: '15000'}
+      net_family_scheme_income: '40000'
+      in_work_eligibility: excluded
+      mc6b_disqualifying_payment: excluded
+    accommodation_supplement:
+      <<: *as_base
+      claimant_category: supported_living_payment
+      partner_status: ordinary_couple
+      weekly_accommodation_costs: '500'
+      cash_assets: '1000'
+      weekly_income: null
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '14375'}
+        in_work_tax_credit: {outcome: unsupported}
+        minimum_family_tax_credit: {outcome: unsupported}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: calculated, value: '192'}
+
+  - id: g6_sole_parent_support_best_start_child
+    why: Best Start calculated for a supported-cohort child; the one-child cl 2 cap binds.
+    derivation: >-
+      WFF: FTC $7,921 (income $28,000); IWTC and MFTC unsupported (Sole Parent Support: in-work and MC
+      6(b) excluded); Best Start $4,041 (income below $79,000, no abatement; child in the supported
+      birth cohort, no shared care, no protected month, no MC 6(c) payment). AS: Sole Parent Support
+      threshold $168; 70% x ($600 - $168) = $302.40, capped at the cl 2 Area 1 cap of $235 (a sole
+      parent with one child; the cl 1 cap would be $305); $235.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      family_scheme_income: {claimant_amount: '28000'}
+      net_family_scheme_income: '28000'
+      in_work_eligibility: excluded
+      mc6b_disqualifying_payment: excluded
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: in_supported_cohort, best_start_no_disqualifying_payment: verified}
+    accommodation_supplement:
+      <<: *as_base
+      claimant_category: sole_parent_support
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '600'
+      dependent_children_count: 1
+      cash_assets: '800'
+      weekly_income: null
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '7921'}
+        in_work_tax_credit: {outcome: unsupported}
+        minimum_family_tax_credit: {outcome: unsupported}
+        best_start: {outcome: calculated, value: '4041'}
+      accommodation_supplement: {outcome: calculated, value: '235'}
+
+  - id: g7_sole_parent_asset_imputation_and_income_reduction
+    why: s 423(3) asset imputation pushes income over the level (whole-dollar excess); WFF abates.
+    derivation: >-
+      WFF: income $45,500, excess $600, abatement $165, FTC $7,756; IWTC needs_review; MFTC $0;
+      Best Start $0. AS: sole-parent threshold $168; 70% x ($420 - $168) = $176.40, under the cl 2
+      Area 1 cap of $235; cash $7,000 is $1,600 over the $5,400 threshold, 16 complete $100 steps,
+      $16 imputed; income $895 + $16 = $911, over $906 by $5, reduction $1.25; $175.15, r 19 gives $176.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      family_scheme_income: {claimant_amount: '45500'}
+      net_family_scheme_income: '45500'
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+    accommodation_supplement:
+      <<: *as_base
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '420'
+      dependent_children_count: 1
+      cash_assets: '7000'
+      weekly_income: '895'
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '7756'}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: calculated, value: '0'}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: calculated, value: '176'}
+
+  - id: g8_homeowner_wff_only
+    why: AS excluded (homeowner tenure) while WFF calculates with heavy abatement.
+    derivation: >-
+      WFF: income $60,000, excess $15,100, abatement $4,152.50, FTC $7,921 - $4,152.50 = $3,768.50;
+      IWTC needs_review; MFTC $0; Best Start $0. AS: homeowner tenure is outside the v0.1 rent/board
+      branch, so unsupported.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      family_scheme_income: {claimant_amount: '60000'}
+      net_family_scheme_income: '60000'
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+    accommodation_supplement:
+      <<: *as_base
+      tenure_type: homeowner
+      dependent_children_count: 1
+      weekly_income: '1150'
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: calculated, value: '3768.5'}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: calculated, value: '0'}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: unsupported}
+
+  - id: g9_partner_income_unverified
+    why: WFF partnered-income verification gate; AS unaffected.
+    derivation: >-
+      WFF: partnered, but only the claimant's family scheme income is verified, so FTC, IWTC and MFTC
+      are needs_review; Best Start is a verified zero (the child is outside Best Start entitlement).
+      AS: couple-with-children threshold $205; 70% x ($500 - $205) = $206.50, under the cl 1 Area 1
+      cap of $305; income $1,100 below $1,117; r 19 gives $207.
+    precondition: verified
+    wff:
+      <<: *wff_single_earner
+      partner_status: partnered
+      family_scheme_income: {claimant_amount: '48000'}
+      net_family_scheme_income: '48000'
+      children:
+        - {qualifies_whole_year: verified, best_start_cohort: outside_best_start_entitlement, best_start_no_disqualifying_payment: verified}
+    accommodation_supplement:
+      <<: *as_base
+      partner_status: ordinary_couple
+      statistical_area_unit: area1
+      weekly_accommodation_costs: '500'
+      dependent_children_count: 1
+      cash_assets: '1000'
+      weekly_income: '1100'
+    expected:
+      contradictions: 0
+      wff:
+        family_tax_credit: {outcome: needs_review}
+        in_work_tax_credit: {outcome: needs_review}
+        minimum_family_tax_credit: {outcome: needs_review}
+        best_start: {outcome: calculated, value: '0'}
+      accommodation_supplement: {outcome: calculated, value: '207'}

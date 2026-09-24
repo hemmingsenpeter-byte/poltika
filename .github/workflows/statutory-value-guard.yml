@@ -32,6 +32,7 @@ jobs:
           CHANGED=$(git diff --name-only "$MERGE_BASE" "$HEAD_SHA" -- \
             'policy_specs/*/benchmarks.yaml' \
             'policy_specs/*/spec_cases.yaml' \
+            'policy_specs/*/golden_households.yaml' \
             'policy_specs/*/policy.yaml')
           if [ -n "$CHANGED" ]; then
             echo "::warning title=Statutory-value files changed::This PR changes protected statutory-value files (ADR-0007). Review before merging — this check does not block merge."
