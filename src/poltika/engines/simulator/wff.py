@@ -517,7 +517,7 @@ def _family_tax_credit(
     additional_children = len(scenario.children) - 1
     family_credit_base = eldest + additional * additional_children
     abatement = rate * _complete_dollar_excess(scenario.family_scheme_income.combined, threshold)
-    family_credit = max(zero, family_credit_base - abatement)
+    family_credit = _zero_floor(family_credit_base - abatement)
     remaining_abatement = max(zero, abatement - family_credit_base)
 
     return ComponentResult(outcome="calculated", value=family_credit), remaining_abatement
@@ -529,8 +529,6 @@ def _in_work_tax_credit(
     ftc_result: ComponentResult,
     remaining_abatement: Decimal,
 ) -> ComponentResult:
-    zero = Decimal(0)
-
     if scenario.mc6a_veterans_payment == FactStatus.EXCLUDED:
         return ComponentResult(
             outcome="unsupported",
@@ -586,7 +584,7 @@ def _in_work_tax_credit(
     num_children = len(scenario.children)
     children_beyond_three = max(0, num_children - 3)
     iwtc_base = base + additional * children_beyond_three
-    iwtc = max(zero, iwtc_base - remaining_abatement)
+    iwtc = _zero_floor(iwtc_base - remaining_abatement)
 
     return ComponentResult(outcome="calculated", value=iwtc)
 
@@ -641,7 +639,7 @@ def _minimum_family_tax_credit(scenario: WffScenario, parameters: PolicyParamete
     if isinstance(prescribed, ComponentResult):
         return prescribed
 
-    mftc = max(Decimal(0), prescribed - scenario.net_family_scheme_income)
+    mftc = _zero_floor(prescribed - scenario.net_family_scheme_income)
     return ComponentResult(outcome="calculated", value=mftc)
 
 
@@ -725,7 +723,7 @@ def _best_start(scenario: WffScenario, parameters: PolicyParameterSet) -> Compon
         return rate
 
     abatement = rate * _complete_dollar_excess(scenario.family_scheme_income.combined, threshold)
-    best_start = max(Decimal(0), annual_amount - abatement)
+    best_start = _zero_floor(annual_amount - abatement)
 
     return ComponentResult(outcome="calculated", value=best_start)
 
@@ -922,6 +920,13 @@ def _covers(value_effective_from: date, value_effective_to: date | None, target_
     return value_effective_to is None or target_date < value_effective_to
 
 
+def _zero_floor(amount: Decimal) -> Decimal:
+    """`max(0, amount)` at the amount's own decimal scale (v0.1 question set
+    QS-3): a floored credit reads `0.000`, like its unfloored `7920.725`,
+    not a bare `0`. The value is unchanged; only its representation is."""
+    return amount if amount > 0 else abs(amount * 0)
+
+
 def _spans_reference_period(
     value_effective_from: date, value_effective_to: date | None, reference_period: ReferencePeriod
 ) -> bool:
@@ -1008,6 +1013,18 @@ def _wff_module_validation_failure(
             f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
             "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
         )
+        if matching_value.effective_to is None:
+            # v0.1 question set QS-2: SCHEMA.md permits an open-ended final
+            # interval, but a calculation must not rely on one -- a later
+            # replacement that has not been loaded would be applied silently.
+            return ComponentResult(
+                outcome="needs_review",
+                reason=(
+                    f"parameter '{param.id}' value effective {matching_value.effective_from} has no "
+                    "effective_to -- an open-ended value cannot establish that it is still the "
+                    "law for this period"
+                ),
+            )
         if not _spans_reference_period(matching_value.effective_from, matching_value.effective_to, reference_period):
             return ComponentResult(
                 outcome="needs_review",

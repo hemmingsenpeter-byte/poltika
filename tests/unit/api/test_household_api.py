@@ -82,3 +82,15 @@ def test_boolean_child_count_is_rejected() -> None:
     """Task 34.3 F8: `true` is not one dependent child."""
     response = client.post("/household/calculate", json=_payload(dependent_children_count=True))
     assert response.status_code == 422
+
+
+def test_unknown_request_fields_are_rejected_not_ignored() -> None:
+    """v0.1 question set Q64: an unsupported `date_of_birth` was silently
+    ignored and the request calculated (HTTP 200)."""
+    payload = _payload()
+    payload["wff"]["children"][0]["date_of_birth"] = "2027-01-01"
+    assert client.post("/household/calculate", json=payload).status_code == 422
+    assert client.post("/wff/calculate", json=payload["wff"]).status_code == 422
+    as_payload = {**payload["accommodation_supplement"], "postcode": "6011"}
+    assert client.post("/accommodation-supplement/calculate", json=as_payload).status_code == 422
+    assert client.post("/household/calculate", json={**_payload(), "extra": 1}).status_code == 422

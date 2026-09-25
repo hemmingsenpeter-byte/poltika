@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
@@ -68,6 +68,9 @@ router = APIRouter(prefix="/accommodation-supplement", tags=["accommodation-supp
 
 class AsCalculationRequest(BaseModel):
     """Mirrors `AsScenario`'s own fields; see this module's docstring."""
+
+    # v0.1 question set Q64: an unknown field is rejected, never ignored.
+    model_config = ConfigDict(extra="forbid")
 
     modelled_date: date
     # Required, no default: the AS assessment week, [start, end), exactly

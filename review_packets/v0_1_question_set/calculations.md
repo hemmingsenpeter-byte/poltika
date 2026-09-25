@@ -75,15 +75,15 @@
 | 24 | A required parameter covers 1 April to 30 June 2026 only (tested on a scratch copy): **every component needs_review** ("covers the requested 2026-05-15 but does not span the complete reference period ... a point-in-time match cannot verify a full-year rate"). There is no partial-year amount. |
 | 28 | Income −$20,000: **422**, "Input should be greater than or equal to 0". |
 | 61 | Income "sixty thousand dollars": **422**, "Input should be a valid decimal". |
-| 62 | Rate stored as 27.5 instead of 0.275 (scratch copy): **the file loads and FTC silently becomes $0.** This is a defect; see finding QS-1. |
-| 63 | A parameter with no end date (scratch copy) **loads and applies**. After an unloaded replacement it would keep applying the old value; see finding QS-2. |
+| 62 | Rate stored as 27.5 instead of 0.275 (scratch copy). **Before the fix:** the file loaded and FTC silently became $0 (QS-1). **Now:** the load is refused ("fractions must be between 0 and 1"). |
+| 63 | A parameter with no end date (scratch copy). **Before the fix:** it loaded and applied, and would have kept applying after an unloaded replacement (QS-2). **Now:** every component that depends on it is **needs_review** ("has no effective_to -- an open-ended value cannot establish that it is still the law for this period"). |
 
 ## E. Thresholds, continuity, determinism
 
 | Q | Poltika result |
 | --- | --- |
 | 43 | FTC at $44,900.00 and $44,900.01 is **$7,921.000 in both**. At $44,901.00 it is **$7,920.725**. Best Start at $79,000.00 and $79,000.01 is **$4,041.00 in both**, and $4,040.79 at $79,001. **A cent never changes the result.** Both abatements count complete dollars (MD 13(3), MG 3). |
-| 44 | **Sweep:** $40,000 to $100,000 in $1 steps, 60,000 steps, with one supported-cohort child. **FTC:** each step is either 0 or −$0.275, except one −$0.175 step. The first change is at $44,901. **Best Start:** each step is either 0 or −$0.21, except one −$0.18 step. The first change is at $79,001. **The odd steps are where each credit reaches its zero floor**: $7,921 is not a whole multiple of $0.275, and $4,041 is not a whole multiple of $0.21, so the last dollar before zero removes less. **No discontinuity is unexplained.** (See QS-3 on how zero values are displayed.) |
+| 44 | **Sweep:** $40,000 to $100,000 in $1 steps, 60,000 steps, with one supported-cohort child. **FTC:** each step is either 0 or −$0.275, except one −$0.175 step. The first change is at $44,901. **Best Start:** each step is either 0 or −$0.21, except one −$0.18 step. The first change is at $79,001. **The odd steps are where each credit reaches its zero floor**: $7,921 is not a whole multiple of $0.275, and $4,041 is not a whole multiple of $0.21, so the last dollar before zero removes less. **No discontinuity is unexplained.** Since the QS-3 fix, zero steps print at each component's own scale (`0.000` for FTC, `0.00` for Best Start). |
 | 45 | 10,000 identical runs gave **1 distinct output**. |
 
 ## F. Process and assurance questions (answered from doctrine and existing tests)
@@ -126,3 +126,15 @@
   - no multi-source income reconciliation;
   - no duplicate-child detection;
   - no policy comparison.
+
+## Disposition, 26 September 2026
+
+Pete asked for these to be fixed ("fix the errors found in these"). The fixes and their regression tests are in the same PR. `results.json` was regenerated after the fixes.
+
+| Finding | Status | Fix |
+| --- | --- | --- |
+| QS-1 fraction range | **Fixed** | `ParameterSpec` refuses a `fraction` value outside [0, 1]. Test: `test_fraction_outside_zero_to_one_is_refused`. |
+| QS-2 open-ended intervals | **Fixed at the calculation boundary** | SCHEMA.md still permits the shape, so a policy file may declare it. But both module entry points now return needs_review for any consulted value with no `effective_to`. Tests: `test_open_ended_parameter_value_is_needs_review` (WFF) and `test_open_ended_value_is_needs_review` (AS). |
+| QS-3 decimal scale | **Fixed** | WFF zero floors keep the component's decimal scale (`_zero_floor`). Values are unchanged, and the golden snapshot is unchanged. Test: `test_zero_floor_keeps_the_components_decimal_scale`. |
+| QS-4 provision effectiveness | **Deferred (ARCHITECTURE_ISSUE)** | This is not an error in any current result: it is a verification the design does not yet have. It needs dated in-force metadata for each cited provision in `sources.yaml`, plus a provenance check, which is a data-model change for a later version. |
+| Codex Q64 (unknown API fields ignored) | **Fixed** | Every request model sets `extra="forbid"`: an unknown field such as `date_of_birth` now gives 422, where it used to be silently ignored with HTTP 200. Test: `test_unknown_request_fields_are_rejected_not_ignored`. |

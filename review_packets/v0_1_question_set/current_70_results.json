@@ -819,30 +819,21 @@
     }
   },
   "Q64": {
-    "body": {
-      "best_start": {
-        "outcome": "calculated",
-        "reason": null,
-        "value": "0"
-      },
-      "family_tax_credit": {
-        "outcome": "calculated",
-        "reason": null,
-        "value": "7893.500"
-      },
-      "in_work_tax_credit": {
-        "outcome": "needs_review",
-        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
-        "value": null
-      },
-      "minimum_family_tax_credit": {
-        "outcome": "needs_review",
-        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)",
-        "value": null
+    "body": null,
+    "detail": [
+      {
+        "input": "2027-01-01",
+        "loc": [
+          "body",
+          "children",
+          0,
+          "date_of_birth"
+        ],
+        "msg": "Extra inputs are not permitted",
+        "type": "extra_forbidden"
       }
-    },
-    "detail": null,
-    "status": 200
+    ],
+    "status": 422
   },
   "Q65": {
     "body": null,
@@ -936,7 +927,7 @@
     "family_tax_credit": {
       "outcome": "calculated",
       "reason": null,
-      "value": "0"
+      "value": "0.000"
     },
     "in_work_tax_credit": {
       "outcome": "needs_review",

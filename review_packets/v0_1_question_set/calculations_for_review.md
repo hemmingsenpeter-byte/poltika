@@ -256,8 +256,9 @@ and total WFF is unavailable even when FTC, MFTC and Best Start calculate.
 
 ## Validation And Assurance
 
-64. **Expected safe answer: do not calculate. Observed v0.1 API behavior:
-    review required.** The API has no date-of-birth field and Pydantic ignores
+64. **Fixed 26 September 2026: the request is now rejected (HTTP 422,
+    "Extra inputs are not permitted").** Original observation, kept for the
+    record: The API has no date-of-birth field and Pydantic ignores
     the extra `date_of_birth: 2027-01-01`; with `qualifies_whole_year` also
     asserted `verified`, it returns HTTP 200 and FTC $7,893.500. This is a
     silent-input boundary worth classifying before relying on raw birth-date
@@ -285,9 +286,9 @@ and total WFF is unavailable even when FTC, MFTC and Best Start calculate.
 
 ## Review Flags
 
-- **Q64:** classify whether silently ignoring an impossible, unsupported
-  `date_of_birth` field is an API contract defect or an accepted upstream
-  canonicalisation boundary. The present behavior is HTTP 200.
+- **Q64:** classified as a CODE_ERROR and fixed. Every API request model now
+  forbids unknown fields (HTTP 422), and `current_70_results.json` was
+  regenerated. See `calculations.md`, "Disposition".
 - **Q10-Q13, Q21-Q24:** v0.1 models whole-year qualification and a narrow Best
   Start cohort as asserted facts; it does not derive them from dates.
 - **Q17, Q25, Q27-Q29, Q31-Q33, Q38, Q43-Q44, Q49, Q54-Q57:** the question as

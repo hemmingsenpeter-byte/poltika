@@ -322,6 +322,7 @@ def test_value_type_unit_dimension_mismatch_rejected(tmp_path: Path) -> None:
     policy = _base_policy()
     policy["parameters"][0]["value_type"] = "fraction"
     policy["parameters"][0]["unit"] = "NZD_per_tax_year"  # a money unit, not a rate unit
+    policy["parameters"][0]["values"][0]["value"] = 0.25  # a valid fraction: only the unit is wrong
     _write_policy(tmp_path, policy)
 
     with pytest.raises(ValueError, match="not a valid unit for that dimension"):
@@ -344,6 +345,8 @@ def test_task_23_as_units_are_valid(tmp_path: Path, value_type: str, unit: str) 
     policy = _base_policy()
     policy["parameters"][0]["value_type"] = value_type
     policy["parameters"][0]["unit"] = unit
+    if value_type == "fraction":
+        policy["parameters"][0]["values"][0]["value"] = 0.25  # fractions are range-checked (QS-1)
     _write_policy(tmp_path, policy)
 
     result = load_policy_parameters(tmp_path, MODELLED_DATE)
@@ -363,4 +366,18 @@ def test_task_23_fraction_unit_still_rejects_wrong_value_type(tmp_path: Path) ->
     _write_policy(tmp_path, policy)
 
     with pytest.raises(ValueError, match="not a valid unit for that dimension"):
+        load_policy_parameters(tmp_path, MODELLED_DATE)
+
+
+@pytest.mark.parametrize("value", [27.5, -0.01, 1.01])
+def test_fraction_outside_zero_to_one_is_refused(tmp_path: Path, value: float) -> None:
+    """v0.1 question set QS-1: a rate stored as a percentage (27.5 for
+    0.275) loaded and silently made FTC $0. It is now refused at load."""
+    policy = _base_policy()
+    policy["parameters"][0]["value_type"] = "fraction"
+    policy["parameters"][0]["unit"] = "fraction"
+    policy["parameters"][0]["values"][0]["value"] = value
+    _write_policy(tmp_path, policy)
+
+    with pytest.raises(ValueError, match="fractions must be between 0 and 1"):
         load_policy_parameters(tmp_path, MODELLED_DATE)

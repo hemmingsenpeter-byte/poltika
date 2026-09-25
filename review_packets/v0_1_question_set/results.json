@@ -725,7 +725,7 @@
     "bs_79000.00": {
       "family_tax_credit": {
         "outcome": "calculated",
-        "value": "0",
+        "value": "0.000",
         "reason": null
       },
       "in_work_tax_credit": {
@@ -747,7 +747,7 @@
     "bs_79000.01": {
       "family_tax_credit": {
         "outcome": "calculated",
-        "value": "0",
+        "value": "0.000",
         "reason": null
       },
       "in_work_tax_credit": {
@@ -769,7 +769,7 @@
     "bs_79001.00": {
       "family_tax_credit": {
         "outcome": "calculated",
-        "value": "0",
+        "value": "0.000",
         "reason": null
       },
       "in_work_tax_credit": {
@@ -792,16 +792,14 @@
   "Q44": {
     "step_counts": {
       "family_tax_credit": {
-        "0.000": 4900,
+        "0.000": 31196,
         "-0.275": 28803,
-        "-0.175": 1,
-        "0": 26296
+        "-0.175": 1
       },
       "best_start": {
-        "0.00": 39000,
+        "0.00": 40757,
         "-0.21": 19242,
-        "-0.18": 1,
-        "0": 1757
+        "-0.18": 1
       }
     },
     "first_income_with_a_change": {
@@ -836,52 +834,31 @@
     }
   },
   "Q62": {
-    "loaded": true,
-    "result": {
-      "family_tax_credit": {
-        "outcome": "calculated",
-        "value": "0",
-        "reason": null
-      },
-      "in_work_tax_credit": {
-        "outcome": "needs_review",
-        "value": null,
-        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
-      },
-      "minimum_family_tax_credit": {
-        "outcome": "needs_review",
-        "value": null,
-        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
-      },
-      "best_start": {
-        "outcome": "calculated",
-        "value": "0",
-        "reason": null
-      }
-    }
+    "loaded": false,
+    "error": "ValidationError: 1 validation error for PolicySpec\nparameters.3\n  Value error, parameter 'family_tax_credit_abatement_rate' is a fraction but has value 27.5 (effective 2026-04-01); fractions must be between 0 and 1 [type=value_error, input_value={'id': 'family_tax_credit...w_status': 'approved'}]}, input_type=dict]\n"
   },
   "Q63": {
     "loaded": true,
     "result": {
       "family_tax_credit": {
-        "outcome": "calculated",
-        "value": "6518.500",
-        "reason": null
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01 has no effective_to -- an open-ended value cannot establish that it is still the law for this period"
       },
       "in_work_tax_credit": {
         "outcome": "needs_review",
         "value": null,
-        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+        "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01 has no effective_to -- an open-ended value cannot establish that it is still the law for this period"
       },
       "minimum_family_tax_credit": {
         "outcome": "needs_review",
         "value": null,
-        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+        "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01 has no effective_to -- an open-ended value cannot establish that it is still the law for this period"
       },
       "best_start": {
-        "outcome": "calculated",
-        "value": "0",
-        "reason": null
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01 has no effective_to -- an open-ended value cannot establish that it is still the law for this period"
       }
     }
   },

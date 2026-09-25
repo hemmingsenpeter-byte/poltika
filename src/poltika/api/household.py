@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from poltika.api.accommodation_supplement import (
     AS_POLICY_DIR,
@@ -66,6 +66,9 @@ def running_code_identity() -> CodeIdentity:
 
 
 class HouseholdCalculationRequest(BaseModel):
+    # v0.1 question set Q64: an unknown field is rejected, never ignored.
+    model_config = ConfigDict(extra="forbid")
+
     wff: WffCalculationRequest
     accommodation_supplement: AsCalculationRequest
     # Task 28.3 precondition: the AS claimant is the WFF claimant or their
