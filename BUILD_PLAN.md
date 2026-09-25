@@ -1907,9 +1907,8 @@ and Pete's acceptance):
       decision artifact that evidences it. Any unevidenced bullet is a
       blocking gap. **Drafted 25 September 2026:**
       `review_packets/v0_1_traceability_matrix.md` (PR #65, updated in #68).
-      Open: E5 (the GPT/Codex half of 34.3). D4's CI gap was closed by the
-      Tests workflow (PR #66). **Pending:** GPT/Codex verification of each
-      row.
+      D4's CI gap was closed by the Tests workflow (PR #66). **Every row
+      was verified by GPT/Codex, 25 September 2026; all rows are evidenced.**
     - **34.2 — Claude Code.** An end-to-end test through the installed artifact:
       request → both modules → persistence → provenance report.
       **Done 25 September 2026 (PR #65):** the installed-wheel probe stores,
@@ -1933,7 +1932,17 @@ and Pete's acceptance):
       Pete's approval), F2 (protected-credit shared-fact gate), F3 (70% rate
       as a sourced parameter) and F7 (AS cases approved). Fixed in PR #68: F4,
       F5, F6, F8, F9 and F10. F11 (independence) routes to the GPT/Codex half
-      of 34.3, which is still outstanding.
+      of 34.3.
+      **GPT/Codex half done 25 September 2026:**
+      `reviews/2026-09-25-task34-3-codex.md` covers 28.4, 29.3, 30-33, the
+      Claude 34.3 fixes, the F11 re-derivations (g2, g5, g6, g7, g9 and all
+      five interaction cases, with no discrepancy), 34.1 row verification
+      and the 35.3 wording (no change needed). There was one P3, C1 (missing
+      review packets), which was resolved by adding
+      `review_packets/task_28_3_interaction_contract.md`,
+      `task_28_5_interaction_cases.md` and `task_29_4_golden_households.md`.
+      Classification was accepted under Pete's delegation. **34.3 and 34.4
+      are complete; 34.1 is verified.**
     - **34.5 — Pete.** Pete's acceptance of v0.1.
 35. **Demo: one real policy question, answered end-to-end.**
     - **35.1 — Pete decides; GPT/Codex proposes candidate questions inside both domains.** The question. It must sit inside both
@@ -1955,9 +1964,7 @@ and Pete's acceptance):
       limitations: conditional on caller-asserted facts, supported domain
       only. **Run and written 25 September 2026:** `docs/demo/v0_1/`
       (stored through `POST /scenarios` from clean commit `61564c3`;
-      reproducible; replay `reproduced` and `code_matches`). **Pending:**
-      GPT/Codex wording check (brief:
-      `review_packets/task_34_3_codex_brief.md`).
+      reproducible; replay `reproduced` and `code_matches`). GPT/Codex wording check done (no change needed; `reviews/2026-09-25-task34-3-codex.md`).
     - **35.4 — Claude Code.** Release: CHANGELOG, tag `v0.1.0`. The deferred v0.1.5 repo
       taxonomy rework starts after the tag, not before. **CHANGELOG drafted
       25 September 2026; the tag waits for the GPT/Codex half of 34.3, its
