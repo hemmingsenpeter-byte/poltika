@@ -14,6 +14,7 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 - `doctrine/` — decisions that are fixed and not to be re-litigated
 - [docs/demo/v0_1/](docs/demo/v0_1/README.md) — one household run end to end through both policies, with its provenance report and limitations
 - [CHANGELOG.md](CHANGELOG.md) — what v0.1 contains
+- [docs/pilot/GUIDE.md](docs/pilot/GUIDE.md) — run Poltika with Docker and use the analyst page
 
 ## Current status
 
@@ -35,7 +36,7 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
 ```sh
 uv sync --extra dev
 uv run --extra dev pytest -q                       # spec, benchmark and regression tests
-uv run --extra dev uvicorn poltika.api.main:app    # API; see /docs for the routes
+uv run --extra dev uvicorn poltika.api.main:app    # API; see /docs, and /analyst for the page
 ```
 
 - **Policy files:** the API reads `policy_specs/` from the checkout. Set `POLTIKA_POLICY_SPECS_DIR` to use a mounted copy (ADR-0011).

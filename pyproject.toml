@@ -14,6 +14,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# v0.1.5 Task 8.1: what the pilot container needs to serve the API.
+serve = [
+    "uvicorn>=0.30",
+]
 dev = [
     "pytest>=8.0",
     "hypothesis>=6.0",
