@@ -1879,7 +1879,13 @@ and Pete's acceptance):
       covers policy, source catalogue and specification changes. Code-change
       replay runs as an opt-in test, like `installed_artifact`, and is
       exercised at least once in 34.2.
-    - **32.5 — GPT/Codex reviews.** Review; Pete accepts.
+      **Done 25 September 2026:** 32.2-32.3 in PR #63 (`ScenarioStore`,
+      Alembic baseline, append-only content-addressed artifacts, hash checks
+      on save and restore); code-change replay in PR #68
+      (`tests/code_replay/`, run in CI), after the Task 34.3 review found
+      it missing (F5).
+    - **32.5 — GPT/Codex reviews.** Review; Pete accepts. **Pending:** Codex
+      has not reviewed #63; covered by the GPT/Codex half of 34.3.
 33. **API integration.** The per-policy routes (Tasks 21, 24.8) stay.
     - **33.1 — Claude Code.** A combined household route running the 28.4 runner and
       returning both modules' results plus the provenance trace, with
@@ -1889,13 +1895,26 @@ and Pete's acceptance):
       text in 500s (Task 21's finding), with tests at route level.
     - **33.4 — Claude Code; GPT/Codex reviews all of Task 33.** Extend the installed-artifact test (ADR-0011) to cover the
       combined route and persistence.
+      **Done 25 September 2026 (33.1-33.4):** `/household/calculate` (PR
+      #62); stored scenario routes create, fetch, replay and re-run (PR
+      #64, `code_matches` added in #68); 404/409/422/503 and generic-500
+      mapping tested at route level; the installed-artifact probe covers
+      the combined route, migrations from the installed wheel, and stored
+      scenarios. **Pending:** GPT/Codex review of Task 33 (34.3).
 34. **End-to-end acceptance testing.**
     - **34.1 — Claude Code drafts; GPT/Codex verifies each row's evidence.** A traceability matrix: each Definition of Done bullet and
       the ROADMAP.md v0.1 exit gate, mapped to the test, review record, or
       decision artifact that evidences it. Any unevidenced bullet is a
-      blocking gap.
+      blocking gap. **Drafted 25 September 2026:**
+      `review_packets/v0_1_traceability_matrix.md` (PR #65, updated in #68).
+      Open: E5 (the GPT/Codex half of 34.3). D4's CI gap was closed by the
+      Tests workflow (PR #66). **Pending:** GPT/Codex verification of each
+      row.
     - **34.2 — Claude Code.** An end-to-end test through the installed artifact:
       request → both modules → persistence → provenance report.
+      **Done 25 September 2026 (PR #65):** the installed-wheel probe stores,
+      fetches and replays a scenario and checks its provenance report
+      against the stored manifest and the deployed file hashes.
     - **34.3 — cross-review -- GPT/Codex reviews the Claude Code-authored slices (28.4, 29.3, 30-33), a Claude Code fresh-context subagent reviews the GPT/Codex-authored slices (26a, 26b, 28.1, 28.3, 29.2).** A fresh-context adversarial review of the whole v0.1
       (both policies, the interaction, scenarios, and provenance) by the
       non-implementer, as in Tasks 17 and 24.4.
@@ -1905,6 +1924,16 @@ and Pete's acceptance):
       check; ownership boundaries must not leave integration gaps unreviewed.
     - **34.4 — Pete confirms classifications; each fix routes to the slice's author.** Classify and resolve the findings under the Review
       Doctrine.
+      **Claude half done 25 September 2026:** the Claude fresh-context review
+      (`reviews/2026-09-25-task34-3-claude-fresh-context.md`) found 11
+      findings (1 P1, 4 P2, 6 P3). Pete accepted the proposed
+      classifications and fixes ("fix, accept and proceed"). Fixed in PR #67:
+      F1 (beneficiary golden households and interaction cases: MD 14/15 and
+      MG 4 protected months are `unsupported`; protected values changed with
+      Pete's approval), F2 (protected-credit shared-fact gate), F3 (70% rate
+      as a sourced parameter) and F7 (AS cases approved). Fixed in PR #68: F4,
+      F5, F6, F8, F9 and F10. F11 (independence) routes to the GPT/Codex half
+      of 34.3, which is still outstanding.
     - **34.5 — Pete.** Pete's acceptance of v0.1.
 35. **Demo: one real policy question, answered end-to-end.**
     - **35.1 — Pete decides; GPT/Codex proposes candidate questions inside both domains.** The question. It must sit inside both
