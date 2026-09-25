@@ -44,13 +44,16 @@ poltika/
 ├── reviews/           — review and discrepancy records
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
+├── docs/releases/     — per-release limitations and measured baselines (v0.1.5 Tasks 0.3-0.4)
 ├── docs/pilot/        — v0.1.5 pilot guide (and, after the pilot, its findings)
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question
 │
 ├── src/poltika/
 │   ├── common/            — errors.py (exception hierarchy)
-│   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml)
+│   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml);
+│   │                        source_catalog.py (v0.1.5: sources.yaml model,
+│   │                        source type and authority rank derived from kind)
 │   ├── policy/            — loader.py (Task 11 parameter loader)
 │   ├── engines/simulator/ — outcome.py (the ComponentResult/FactStatus
 │   │                        outcome types every module returns, shared by
@@ -84,7 +87,9 @@ poltika/
 │   │                        decision ids, renders JSON and Markdown);
 │   │                        explanation.py (v0.1.5 Phase 3: deterministic
 │   │                        explanations rendered only from the recorded
-│   │                        trace, and verify() against the calculation)
+│   │                        trace, and verify() against the calculation;
+│   │                        evidence.py (v0.1.5 Phase 1: evidence coverage
+│   │                        report, run in CI))
 │   └── api/               — Task 21/24.8: FastAPI app (ADR-0010). main.py
 │                            (app instance, exception handling for
 │                            common.errors.PoltikaError subclasses,

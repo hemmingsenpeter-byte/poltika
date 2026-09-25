@@ -41,6 +41,9 @@ jobs:
       - name: Mypy (strict)
         run: uv run --extra dev mypy --strict src
 
+      - name: Evidence coverage (v0.1.5 Phase 1)
+        run: uv run --extra dev python -m poltika.engines.assurance.evidence policy_specs/working_for_families policy_specs/accommodation_supplement
+
       - name: Tests (spec, benchmark, regression, PostgreSQL store)
         run: uv run --extra dev pytest -q
 
