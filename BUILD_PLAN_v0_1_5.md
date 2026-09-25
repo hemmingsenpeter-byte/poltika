@@ -308,7 +308,7 @@ GPT/Codex audit of each is deferred.
 | 1.1, 1.3, 1.4 Evidence model and coverage | Done (PR #86); CI prints coverage |
 | 2.1, 2.2, 2.4, 2.5 Calculation steps | Done (PR #82) |
 | 2.3 Step-to-rule mapping review | Open (GPT/Codex) |
-| 3.1-3.5 Deterministic explanations | Done (PR #84) |
+| 3.1-3.5 Deterministic explanations | Done (PR #84; per-policy routes in PR #88) |
 | 4.2, 4.4, 4.6 Reason codes, missing facts, categories | Done (PR #83) |
 | 4.5 Assumption ledger | Done: the facts each result read are listed as caller-asserted (PR #84) |
 | 4.1, 4.3 Fact origin; soft uncertainty | Open: no specification permits a soft case yet |

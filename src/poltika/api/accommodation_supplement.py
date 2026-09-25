@@ -30,11 +30,12 @@ import os
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
+from poltika.engines.assurance.explanation import explain, explanation_to_dict
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
     AsScenario,
@@ -133,6 +134,8 @@ class AsComponentResultResponse(BaseModel):
 
 class AsCalculationResponse(BaseModel):
     accommodation_supplement: AsComponentResultResponse
+    # v0.1.5 Phase 3: the deterministic explanation of the result.
+    explanation: dict[str, Any]
 
 
 def scenario_from_request(request: AsCalculationRequest) -> AsScenario:
@@ -190,5 +193,6 @@ def calculate(request: AsCalculationRequest) -> AsCalculationResponse:
     )
 
     return AsCalculationResponse(
-        accommodation_supplement=AsComponentResultResponse.from_component_result(result)
+        accommodation_supplement=AsComponentResultResponse.from_component_result(result),
+        explanation=explanation_to_dict(explain("accommodation_supplement", result)),
     )
