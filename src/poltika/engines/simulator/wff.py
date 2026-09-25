@@ -593,7 +593,11 @@ def _minimum_family_tax_credit(scenario: WffScenario, parameters: PolicyParamete
     if scenario.minimum_family_full_time_earner_weeks == FactStatus.EXCLUDED:
         return ComponentResult(
             outcome="unsupported",
-            reason="ME 2(2)-(4) Commissioner-determined employment period or a part-week case applies -- outside the 52-verified-week v0.1 branch",
+            reason=(
+                "52 full-time-earner weeks (MA 7 / ME 2) are not established -- the claimant is not "
+                "a full-time earner for every week, or an ME 2(2)-(4) Commissioner-determined "
+                "employment period or part-week case applies; outside the 52-verified-week v0.1 branch"
+            ),
         )
     if scenario.mc6b_disqualifying_payment == FactStatus.EXCLUDED:
         return ComponentResult(

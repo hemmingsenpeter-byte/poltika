@@ -94,10 +94,24 @@ spec_cases:
     parameter_assumptions: {}
     scenario: {<<: *ordinary, exempt_cash_asset_status: unknown}
     expected: *unsupported
-  - id: asset_ceiling_met_is_unsupported
+  # Corrected 26 September 2026 (v0.1 question set, Q135; Pete: "apply fixes
+  # where there are errors"): r 15(1) says cash assets "must not exceed" the
+  # ceiling, checked against the official Regulations text (latest version)
+  # on 26 September 2026. Assets exactly at $8,100 therefore pass; the former
+  # case `asset_ceiling_met_is_unsupported` (assets 8100) was a TEST_ERROR.
+  - id: asset_ceiling_exceeded_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, cash_assets: '8100.01'}
+    expected: *unsupported
+  - id: asset_ceiling_exactly_met_is_eligible
+    derivation: >-
+      Assets equal to the $8,100 ceiling do not exceed it (r 15(1)), and
+      Jobseeker Support has no asset-income imputation. Real published values
+      (no assumptions): Jobseeker single threshold $93; 70% x ($200 - $93) =
+      $74.90, under the Area 1 single cap of $165; r 19 rounds up to $75.
     parameter_assumptions: {}
     scenario: {<<: *ordinary, cash_assets: '8100'}
-    expected: *unsupported
+    expected: {accommodation_supplement: {outcome: calculated, value: '75'}}
 
   - id: household_facts_unverified
     parameter_assumptions: {}

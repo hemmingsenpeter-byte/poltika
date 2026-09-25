@@ -453,6 +453,18 @@ def _household_gate_failure(
             ),
         )
 
+    # s 65AAA / AS-01: entitlement requires accommodation costs, so a
+    # verified $0 is an evidenced exclusion, not a calculated $0 (v0.1
+    # question set QS-6). Known exclusion, so it runs before the facts below.
+    if scenario.weekly_accommodation_costs is not None and scenario.weekly_accommodation_costs == 0:
+        return ComponentResult(
+            outcome="unsupported",
+            reason=(
+                "no accommodation costs -- entitlement requires accommodation costs "
+                "(s 65AAA; AS-01), so this is not a calculated $0"
+            ),
+        )
+
     # --- needs_review: the last fact the r 15 ceiling check needs ---
     if scenario.cash_assets is None:
         return ComponentResult(outcome="needs_review", reason="cash_assets unverified")
@@ -465,11 +477,14 @@ def _household_gate_failure(
     ceiling = _param_value(parameters, ceiling_id)
     if isinstance(ceiling, ComponentResult):
         return ceiling
-    if scenario.cash_assets >= ceiling:
+    # r 15(1): cash assets "must not exceed" the ceiling, so assets exactly
+    # at the ceiling meet the requirement (v0.1 question set, Q135; the
+    # earlier ">=" came from the specification's "below the ceiling").
+    if scenario.cash_assets > ceiling:
         return ComponentResult(
             outcome="unsupported",
             reason=(
-                f"cash assets ({scenario.cash_assets}) meet or exceed the r 15 ceiling "
+                f"cash assets ({scenario.cash_assets}) exceed the r 15 ceiling "
                 f"({ceiling}) -- the assets requirement (r 15) fails"
             ),
         )

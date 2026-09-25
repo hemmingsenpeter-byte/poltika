@@ -201,7 +201,8 @@ def test_as_asset_ceiling_five_point_boundary(
         real_as_parameters,
     )
 
-    if offset < 0:
+    # r 15(1): cash assets "must not exceed" the ceiling -- exactly at it passes.
+    if offset <= 0:
         assert result.outcome == "calculated"
         assert result.value is not None
     else:
@@ -233,8 +234,10 @@ def test_generated_wff_entitlements_obey_accounting_invariants(
 
 @settings(max_examples=500, derandomize=True, deadline=None)
 @given(
-    first_cost_cents=st.integers(min_value=0, max_value=200_000),
-    second_cost_cents=st.integers(min_value=0, max_value=200_000),
+    # From 1 cent: $0 costs are an s 65AAA exclusion (unsupported), tested
+    # in test_zero_accommodation_costs_is_unsupported_not_zero.
+    first_cost_cents=st.integers(min_value=1, max_value=200_000),
+    second_cost_cents=st.integers(min_value=1, max_value=200_000),
 )
 def test_generated_as_cost_increases_are_monotonic_and_capped(
     first_cost_cents: int,
