@@ -59,3 +59,15 @@ review record — PRs and workflow output already provide one.
   decision, not an assumed reversion to ADR-0005's exact mechanism.
 - Task 9 closes once the guard workflow has been fixed and demonstrated
   working on a real PR, not merely committed.
+
+## Later path additions
+
+The mechanism is unchanged; only the list of watched paths has grown, as
+BUILD_PLAN.md asks when a new file holds protected values (Task 28.5):
+
+- `policy_specs/*/golden_households.yaml` (Tasks 28.5 and 29).
+- `tests/fixtures/golden_results_*.json` (the Task 30.4 frozen golden
+  results; one environment variable regenerates it).
+- A second, separately titled list for `policy_specs/*/sources.yaml`,
+  `specification.md` and `decisions/`: not values, but the texts they are
+  cited from and interpreted by, whose hashes every run binds (Task 31).
