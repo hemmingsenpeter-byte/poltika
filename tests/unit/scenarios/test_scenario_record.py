@@ -11,6 +11,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+import pytest
 import yaml
 
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
@@ -145,6 +146,31 @@ def test_detect_code_identity_outside_git_is_not_reproducible(tmp_path: Path) ->
     code = detect_code_identity(tmp_path)
     assert code.source_commit is None
     assert not code.reproducible
+
+
+def test_code_identity_needs_the_running_package_to_be_this_checkouts_source(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Task 34.3 F4: a wheel installed in a venv inside the checkout must not
+    inherit the checkout's commit."""
+    import poltika.scenarios.record as record_module
+
+    monkeypatch.setattr(record_module, "_running_package_dir", lambda: tmp_path / "site-packages" / "poltika")
+    code = detect_code_identity(REPO_ROOT)
+    assert code.source_commit is None
+    assert not code.reproducible
+
+
+def test_child_order_does_not_change_identity() -> None:
+    """Task 34.3 F10: the calculators ignore child order; so do the ids."""
+    record = record_from_yaml(_household("g2_couple_two_children_income_abated_both"))
+    first, second = record.household.wff.children
+    distinct = replace(first, best_start_no_disqualifying_payment=FactStatus.UNKNOWN)
+    wff_a = replace(record.household.wff, children=(distinct, second))
+    wff_b = replace(record.household.wff, children=(second, distinct))
+    record_a = replace(record, household=replace(record.household, wff=wff_a))
+    record_b = replace(record, household=replace(record.household, wff=wff_b))
+    assert scenario_id(record_a) == scenario_id(record_b)
 
 
 def test_policy_files_outside_the_committed_repository_are_not_reproducible(tmp_path: Path) -> None:

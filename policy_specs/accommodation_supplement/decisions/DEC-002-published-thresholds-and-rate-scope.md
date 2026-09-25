@@ -4,8 +4,11 @@
 **Date:** 2026-09-24
 **Decision owner:** Pete; modelling choice recorded by Codex under the
 explicit "resolve and proceed" delegation.
-**Status:** Selected modelling convention; independent contract review and
-implementation acceptance remain required. Not yet an executable policy.
+**Status:** Accepted and executed in AS policy 0.1.1 (Task 26a repair,
+PR #50; published values checked against the official MSD tables in the
+Task 34.3 review, 25 September 2026). The original status read "Selected
+modelling convention; independent contract review and implementation
+acceptance remain required.")
 
 ## Ambiguity
 

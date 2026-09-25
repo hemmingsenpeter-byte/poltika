@@ -51,6 +51,7 @@ import yaml
 from poltika.common.errors import ArtifactHashMismatchError, ProvenanceError
 from poltika.engines.simulator.trace import ComponentTrace, ParameterUse, plain
 from poltika.engines.simulator.wff import ComponentResult, WffResult
+from poltika.scenarios.combined import SHARED_FACT_CHECKS
 from poltika.scenarios.record import ScenarioRun
 
 REPORT_FORMAT = "poltika-provenance/0.1"
@@ -117,6 +118,11 @@ def build_provenance_report(policy_dir: Path, results: Mapping[str, ComponentRes
                     for rule_id in component_rule_ids[component_id]
                 ],
                 "calculation_rules": list(trace.calculation_rules),
+                # Task 34.3 F9: a component replaced after the module ran
+                # (e.g. needs_review from the combined runner) keeps its
+                # module trace; its rules and decisions were not applied to
+                # the reported outcome.
+                "rules_applied": result.outcome == "calculated",
                 "decisions": decisions,
                 "parameters": parameters,
                 "inputs": [
@@ -214,11 +220,12 @@ def render_markdown(report: Mapping[str, Any]) -> str:
             lines.append(f"- Depends on: {', '.join(component['upstream_components'])}")
         lines += ["", "### Specification rules", ""]
         lines += [f"- {rule['id']}: {rule['summary']}" for rule in component["source_rules"]]
+        applied = "applied" if component["rules_applied"] else "from the superseded module result (not applied)"
         if component["calculation_rules"]:
-            lines += ["", "### Calculation rules applied", ""]
+            lines += ["", f"### Calculation rules {applied}", ""]
             lines += [f"- {rule}" for rule in component["calculation_rules"]]
         if component["decisions"]:
-            lines += ["", "### Decisions applied", ""]
+            lines += ["", f"### Decisions {applied}", ""]
             lines += [f"- {d['id']} (`{d['path']}`)" for d in component["decisions"]]
         lines += ["", "### Parameters consulted", ""]
         if component["parameters"]:
@@ -477,6 +484,15 @@ def build_combined_provenance_report(
         },
         "policy_files": [{"path": path, "sha256": sha} for path, sha in run.manifest.policy_files],
         "contradictions": list(run.result.contradictions),
+        # Task 34.3 F9: the combined runner's own inputs and checks.
+        "combined_inputs": [
+            {
+                "name": "as_claimant_is_wff_claimant_or_partner",
+                "value": run.record.household.as_claimant_is_wff_claimant_or_partner.value,
+                "asserted_by": "caller",
+            }
+        ],
+        "shared_fact_checks": list(SHARED_FACT_CHECKS),
         "working_for_families": wff_report,
         "accommodation_supplement": as_report,
     }
@@ -498,9 +514,13 @@ def render_combined_markdown(report: Mapping[str, Any]) -> str:
         ),
         "- Each policy is reported in its own period; there is no combined total.",
         "",
-        "## Shared-fact disagreements",
+        "## Combined-run inputs",
         "",
     ]
+    lines += [f"- {i['name']}: {i['value']} (asserted by {i['asserted_by']})" for i in report["combined_inputs"]]
+    lines += ["", "## Shared-fact checks run", ""]
+    lines += [f"- {check}" for check in report["shared_fact_checks"]]
+    lines += ["", "## Shared-fact disagreements", ""]
     lines += [f"- {c}" for c in report["contradictions"]] or ["None."]
     for key, title in (
         ("working_for_families", "Working for Families (annual)"),

@@ -38,8 +38,9 @@ testpaths = ["tests"]
 markers = [
     "installed_artifact: builds and installs a real wheel (slow, not part of the default suite)",
     "postgres: needs local PostgreSQL server binaries (initdb/pg_ctl); skipped when absent",
+    "code_replay: replays a stored run on its retained code revision in a git worktree (slow, opt-in)",
 ]
-addopts = "-m 'not installed_artifact'"
+addopts = "-m 'not installed_artifact and not code_replay'"
 
 [tool.ruff]
 line-length = 100

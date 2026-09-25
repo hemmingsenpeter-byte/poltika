@@ -2,11 +2,11 @@
   "g1_sole_parent_two_children_non_beneficiary": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -81,11 +81,11 @@
   "g2_couple_two_children_income_abated_both": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -160,11 +160,11 @@
   "g3_childless_couple_as_only": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -239,11 +239,11 @@
   "g4_single_jobseeker_cap_binds": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -318,11 +318,11 @@
   "g5_supported_living_couple_two_children": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -397,11 +397,11 @@
   "g6_sole_parent_support_best_start_child": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -476,11 +476,11 @@
   "g7_sole_parent_asset_imputation_and_income_reduction": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -555,11 +555,11 @@
   "g8_homeowner_wff_only": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
@@ -634,11 +634,11 @@
   "g9_partner_income_unverified": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
-      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "b9bb1b9920373162a322aad85bffbfd818e1ee5dc1a06adcc044a2e7f90cab8a",
-      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "452334588551120d180e0180189dba6a396af08a89d3fda9d892f0ebc1cf4c84",
-      "accommodation_supplement/policy.yaml": "df560713374d0dd2474584211dd385fa02ca087363a6ba7c4d5041224e2957d1",
+      "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
+      "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
+      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "545e2c4ee0aef47237093a140af9a1b26cef3c1758642c4f7180d671b29072cf",
+      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
       "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
       "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"

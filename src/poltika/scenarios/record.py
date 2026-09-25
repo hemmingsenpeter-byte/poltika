@@ -109,7 +109,12 @@ def _sha256(text: str) -> str:
 
 
 def scenario_id(record: ScenarioRecord) -> str:
-    return _sha256(canonical_json({"type": "combined_household_scenario", "record": record}))
+    """Task 34.3 F10: the calculators ignore child order, so the identity
+    does too -- children are hashed in canonical order."""
+    content = json.loads(canonical_json(record))
+    children = content["household"]["wff"]["children"]
+    children.sort(key=lambda child: json.dumps(child, sort_keys=True, separators=(",", ":")))
+    return _sha256(canonical_json({"type": "combined_household_scenario", "record": content}))
 
 
 def result_payload(result: CombinedResult) -> dict[str, Any]:
@@ -182,13 +187,20 @@ def run_scenario(
 def detect_code_identity(repo_root: Path) -> CodeIdentity:
     """Best-effort code identity for a source checkout. Outside a git
     checkout (e.g. an installed wheel) the commit and cleanliness are
-    unknown, so the run is recorded as not reproducible."""
+    unknown, so the run is recorded as not reproducible.
+
+    Task 34.3 F4: the commit only identifies the running code when the
+    imported `poltika` package *is* this checkout's `src/poltika`. A wheel
+    installed into a virtual environment inside the checkout would otherwise
+    inherit the checkout's HEAD."""
     try:
         pkg = package_version("poltika")
     except PackageNotFoundError:
         pkg = "unknown"
     lock = repo_root / "uv.lock"
     lock_sha = hashlib.sha256(lock.read_bytes()).hexdigest() if lock.is_file() else None
+    if _running_package_dir() != (repo_root / "src" / "poltika").resolve():
+        return CodeIdentity(pkg, None, None, lock_sha)
     try:
         commit = subprocess.run(
             ["git", "-C", str(repo_root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True
@@ -199,6 +211,12 @@ def detect_code_identity(repo_root: Path) -> CodeIdentity:
     except (OSError, subprocess.CalledProcessError):
         return CodeIdentity(pkg, None, None, lock_sha)
     return CodeIdentity(pkg, commit, status.strip() == "", lock_sha)
+
+
+def _running_package_dir() -> Path:
+    import poltika
+
+    return Path(poltika.__file__).resolve().parent
 
 
 def _files_match_commit(

@@ -3,8 +3,12 @@
 **Policy:** Accommodation Supplement
 **Date:** 2026-09-24
 **Decision owner:** Pete; recorded by Codex under "resolve and proceed".
-**Status:** Selected interpretation after independent source review in
-PR 48; final artifact review and implementation acceptance remain required.
+**Status:** Accepted and executed through the Task 28.3 contract and the
+Task 28.4 combined runner (no WFF amount enters AS income); the statutory
+inference was re-checked in the Task 34.3 review, 25 September 2026. The
+original status read "Selected interpretation after independent source
+review in PR 48; final artifact review and implementation acceptance remain
+required.")
 
 ## Ambiguity
 

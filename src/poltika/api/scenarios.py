@@ -27,16 +27,16 @@ from pydantic import BaseModel
 
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.household import (
-    _CODE_ROOT,
     HouseholdCalculationRequest,
     HouseholdCalculationResponse,
     execute,
     record_from_request,
     response_from_run,
+    running_code_identity,
 )
 from poltika.api.wff import WFF_POLICY_DIR
 from poltika.common.errors import StoreError
-from poltika.scenarios.record import canonical_json, detect_code_identity
+from poltika.scenarios.record import canonical_json
 from poltika.scenarios.store import ScenarioStore, database_url
 
 router = APIRouter(prefix="/scenarios", tags=["scenarios"])
@@ -72,6 +72,9 @@ class StoredRunResponse(BaseModel):
 class ReplayResponse(BaseModel):
     result_id: str
     reproduced: bool
+    # Task 34.3 F4: whether the code running now is the stored run's code.
+    # A result can reproduce under different code; this says whether it did.
+    code_matches: bool
 
 
 class RerunResponse(BaseModel):
@@ -106,14 +109,14 @@ def fetch(result_id: ResultId, store: StoreDep) -> StoredRunResponse:
 @router.post("/{result_id}/replay", response_model=ReplayResponse)
 def replay(result_id: ResultId, store: StoreDep) -> ReplayResponse:
     with tempfile.TemporaryDirectory() as workdir:
-        reproduced = store.replay(result_id, Path(workdir))
-    return ReplayResponse(result_id=result_id, reproduced=reproduced)
+        report = store.replay(result_id, Path(workdir), code=running_code_identity())
+    return ReplayResponse(result_id=result_id, reproduced=report.reproduced, code_matches=report.code_matches)
 
 
 @router.post("/{result_id}/rerun", response_model=RerunResponse)
 def rerun(result_id: ResultId, store: StoreDep) -> RerunResponse:
     drift = store.rerun_against_current(
-        result_id, WFF_POLICY_DIR, AS_POLICY_DIR, code=detect_code_identity(_CODE_ROOT)
+        result_id, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
     )
     return RerunResponse(
         original_result_id=drift.original_result_id,

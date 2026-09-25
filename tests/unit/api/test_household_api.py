@@ -68,3 +68,17 @@ def test_household_route_is_deterministic() -> None:
     first = client.post("/household/calculate", json=_payload()).json()
     second = client.post("/household/calculate", json=_payload()).json()
     assert (first["scenario_id"], first["result_id"]) == (second["scenario_id"], second["result_id"])
+
+
+def test_omitted_wff_children_is_a_validation_error_not_no_children() -> None:
+    """Task 34.3 F8: omitting `children` must not assert "no children"."""
+    payload = _payload()
+    del payload["wff"]["children"]
+    assert client.post("/household/calculate", json=payload).status_code == 422
+    assert client.post("/wff/calculate", json=payload["wff"]).status_code == 422
+
+
+def test_boolean_child_count_is_rejected() -> None:
+    """Task 34.3 F8: `true` is not one dependent child."""
+    response = client.post("/household/calculate", json=_payload(dependent_children_count=True))
+    assert response.status_code == 422

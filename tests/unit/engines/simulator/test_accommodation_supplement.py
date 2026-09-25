@@ -9,14 +9,11 @@ Runs through Task 11's real loader throughout, but against two fixtures:
 `parameters` is a synthetic policy.yaml carrying the real approved AS rates
 (the 20 values Task 22 independently verified) plus test-only, clearly
 non-authoritative `as_entry_threshold_*`/`as_income_level_non_beneficiary_*`
-values (Task 26a repair, DEC-002) -- these do not exist in the real
-policy.yaml yet (pending Task 26a.2's population from the dated MSD
-tables), so they cannot be
-"the real approved rate with review_status flipped" the way WFF's synthetic
-fixture works; they exist purely to exercise the calculated-outcome
-arithmetic. `real_as_parameters` is the actual approved
-`policy_specs/accommodation_supplement/policy.yaml`, used to prove the
-still-undeclared entry-threshold/income-level parameters propagate as
+values (Task 26a repair, DEC-002) that isolate the calculated-outcome
+arithmetic from the published values. The real policy.yaml declares the
+published values for the supported rows only (Task 26a.2); `real_as_parameters`
+is the actual approved `policy_specs/accommodation_supplement/policy.yaml`,
+used to prove that an undeclared row's parameter propagates as
 `needs_review`, not a crash and not a guessed number.
 """
 
@@ -48,9 +45,9 @@ MODELLED_DATE = date(2026, 6, 1)
 
 @pytest.fixture()
 def real_as_parameters():
-    """The real, approved AS policy.yaml -- used to prove the still-
-    undeclared claimant-category base rates and r 18(3) income level reach
-    the calculator as `needs_review`, never a crash and never a guessed
+    """The real, approved AS policy.yaml -- used to prove that an
+    undeclared row's entry threshold or r 18(3) income level reaches the
+    calculator as `needs_review`, never a crash and never a guessed
     number (see `calculate_accommodation_supplement._param_value`'s
     docstring for why an undeclared parameter is the normal v0.1 state
     here, unlike WFF's PR #21 bug)."""
