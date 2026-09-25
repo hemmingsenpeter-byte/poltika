@@ -33,7 +33,7 @@ intermediate values, stable rule ids, ranked and period-checked evidence,
 a deterministic plain-language explanation, an assumption ledger and
 structured review reasons. A thin analyst interface and one external pilot
 test it. No new policies, data or simulation. `BUILD_PLAN_v0_1_5.md` holds
-the tasks (draft, pending Pete's approval).
+the tasks (approved 25 September 2026).
 
 **Exit gate:** An external pilot user can take any supported WFF and
 Accommodation Supplement result and find where the number came from, which

@@ -1,11 +1,13 @@
 # Poltika v0.1.5 Build Plan: the evidence and explainability bridge
 
 **Date:** 25 September 2026
-**Status:** DRAFT for Pete's approval. It is built on the GPT proposal Pete
-relayed on 25 September 2026, reconciled with the repository as it stands
-at `v0.1.0`. `BUILD_PLAN.md` stays the frozen record of v0.1, and its
-doctrines still apply here: primary sources only, the three test classes,
-the review taxonomy, and the IP boundary.
+**Status:** APPROVED 25 September 2026 under Pete's delegation ("approve
+each step yourself and keep going"); decisions D1-D4 are recorded at the
+end. It is built on the GPT proposal Pete relayed on 25 September 2026,
+reconciled with the repository as it stands at `v0.1.0`. `BUILD_PLAN.md`
+stays the frozen record of v0.1, and its doctrines still apply here:
+primary sources only, the three test classes, the review taxonomy, and the
+IP boundary.
 
 **Timebox:** 6-8 weeks from `v0.1.0`.
 
@@ -282,12 +284,11 @@ v0.1.5 ships only when all of these hold:
 
 Housekeeping runs alongside.
 
-## Open decisions for Pete
+## Decisions (25 September 2026, delegated by Pete)
 
-- **D1:** Approve this plan, including adjustments 1-7.
-- **D2:** UI stack: a thin FastAPI-served page (recommended for the pilot),
-  or a first Next.js screen per ARCHITECTURE.md.
-- **D3:** Branch protection: agreement only, or enforced (needs a public
-  repository or a paid plan, ADR-0007).
-- **D4:** A machine-readable reason category inside `unsupported` (Task
-  4.6). Recommended: yes, since the pilot will need it.
+- **D1: approved,** including adjustments 1-7.
+- **D2: a thin page served by FastAPI** for the pilot. No second front-end
+  stack in v0.1.5; Next.js stays the long-term target.
+- **D3: agreement only,** until the repository is public or on a paid plan.
+- **D4: yes.** `unsupported` results carry a machine-readable category:
+  `not_modelled` or `evidenced_exclusion` (Task 4.6).
