@@ -47,6 +47,7 @@ from poltika.engines.simulator.trace import (
     trace_header,
 )
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
+from poltika.semantics.schemas.policy_spec import covers
 
 
 class ClaimantCategory(str, Enum):
@@ -730,17 +731,6 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
 _AS_MODULE_ID = "accommodation_supplement"
 
 
-def _covers(value_effective_from: date, value_effective_to: date | None, target_date: date) -> bool:
-    """Same interval-membership test as `wff.py`'s own `_covers()` (itself
-    duplicated from `poltika.policy.loader`'s private helper) -- duplicated
-    again here rather than imported across sibling simulator files, for the
-    same reason: this is a small, self-contained predicate, not a shared
-    abstraction two real policies are asking for."""
-    if target_date < value_effective_from:
-        return False
-    return value_effective_to is None or target_date < value_effective_to
-
-
 @dataclass(frozen=True)
 class AssessmentWeek:
     """The AS assessment week a calculation is for: `[start, end)`.
@@ -821,7 +811,7 @@ def _as_module_validation_failure(
         )
 
     # Parameters are looked up at a date inside the week they are for.
-    if not _covers(assessment_week.start, assessment_week.end, modelled_date):
+    if not covers(assessment_week.start, assessment_week.end, modelled_date):
         return ComponentResult(
             outcome="needs_review",
             reason=(
@@ -839,7 +829,7 @@ def _as_module_validation_failure(
             # Already needs_review/unsupported for its own reason.
             continue
         matching_value = next(
-            (v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)),
+            (v for v in param.values if covers(v.effective_from, v.effective_to, modelled_date)),
             None,
         )
         assert matching_value is not None, (

@@ -49,7 +49,7 @@ from poltika.engines.simulator.trace import (
     trace_header,
 )
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
-from poltika.semantics.schemas.policy_spec import ReferencePeriod
+from poltika.semantics.schemas.policy_spec import ReferencePeriod, covers
 
 
 class BestStartCohort(str, Enum):
@@ -866,18 +866,6 @@ _WFF_REQUIRED_PARAMETER_IDS = frozenset(
 )
 
 
-def _covers(value_effective_from: date, value_effective_to: date | None, target_date: date) -> bool:
-    """Same interval-membership test as `poltika.policy.loader`'s private
-    `_covers()` -- duplicated deliberately, not imported: that function is
-    a loader implementation detail, and this file must not reach into it
-    (REPOSITORY_STRUCTURE.md's dependency boundary is one-directional,
-    engines/simulator -> policy, not the reverse of poking at policy's
-    private helpers)."""
-    if target_date < value_effective_from:
-        return False
-    return value_effective_to is None or target_date < value_effective_to
-
-
 def _zero_floor(amount: Decimal) -> Decimal:
     """`max(0, amount)` at the amount's own decimal scale (v0.1 question set
     QS-3): a floored credit reads `0.000`, like its unfloored `7920.725`,
@@ -944,7 +932,7 @@ def _wff_module_validation_failure(
     # Invariant (1): the requested date actually falls within the period
     # this policy version was reviewed to cover, not merely within some
     # individual parameter's own interval.
-    if not _covers(reference_period.from_, reference_period.to, modelled_date):
+    if not covers(reference_period.from_, reference_period.to, modelled_date):
         return ComponentResult(
             outcome="needs_review",
             reason=(
@@ -964,7 +952,7 @@ def _wff_module_validation_failure(
             # invariant would add.
             continue
         matching_value = next(
-            (v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)),
+            (v for v in param.values if covers(v.effective_from, v.effective_to, modelled_date)),
             None,
         )
         assert matching_value is not None, (

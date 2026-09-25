@@ -24,6 +24,7 @@ from poltika.common.errors import (
     UnsupportedSchemaVersionError,
 )
 from poltika.policy.loader import load_policy_parameters
+from poltika.semantics.schemas.policy_spec import covers
 
 MODELLED_DATE = date(2026, 6, 1)  # inside the fixtures' 2026-04-01..2027-04-01 interval
 
@@ -381,3 +382,13 @@ def test_fraction_outside_zero_to_one_is_refused(tmp_path: Path, value: float) -
 
     with pytest.raises(ValueError, match="fractions must be between 0 and 1"):
         load_policy_parameters(tmp_path, MODELLED_DATE)
+
+
+def test_covers_is_half_open() -> None:
+    """The shared interval test: start inclusive, end exclusive, None open."""
+    start, end = date(2026, 4, 1), date(2027, 4, 1)
+    assert not covers(start, end, date(2026, 3, 31))
+    assert covers(start, end, start)
+    assert covers(start, end, date(2027, 3, 31))
+    assert not covers(start, end, end)
+    assert covers(start, None, date(2099, 1, 1))

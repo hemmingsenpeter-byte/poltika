@@ -31,6 +31,7 @@ from poltika.semantics.schemas.policy_spec import (
     ParameterSpec,
     PolicySpec,
     PolicyStatus,
+    covers,
 )
 
 # Task 11.2: reject any schema_version outside this set before interpreting
@@ -241,16 +242,9 @@ def _specification_and_decision_hashes(policy_dir: Path) -> dict[str, str]:
     return hashes
 
 
-def _covers(value_effective_from: date, value_effective_to: date | None, modelled_date: date) -> bool:
-    if modelled_date < value_effective_from:
-        return False
-    # effective_to is exclusive when present; None means open-ended (no upper bound).
-    return value_effective_to is None or modelled_date < value_effective_to
-
-
 def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterResolution:
     matching = [
-        v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)
+        v for v in param.values if covers(v.effective_from, v.effective_to, modelled_date)
     ]
 
     if not matching:
