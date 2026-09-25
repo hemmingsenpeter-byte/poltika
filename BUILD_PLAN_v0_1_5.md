@@ -318,5 +318,5 @@ GPT/Codex audit of each is deferred.
 | 7.1 100+ explanation fixtures | Done: every WFF and AS spec case, one verified explanation per component (this PR) |
 | 8.1 Pilot container | Done (PR #85); 3.2 pilot guide, `docs/pilot/GUIDE.md` |
 | 8.2-8.5 Pilot | **Pete** |
-| H.1 Review-record clean-up | Open |
+| H.1 Review-record clean-up | Done as a documented taxonomy in `REPOSITORY_STRUCTURE.md` (this PR); files not moved, because protected hash-bound files link to them |
 | H.2 Working agreement | Done: `doctrine/development-doctrine.md` |
