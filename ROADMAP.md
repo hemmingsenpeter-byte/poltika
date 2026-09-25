@@ -2,7 +2,8 @@
 
 This is a release-level direction, not an implementation backlog. Each release
 has a technical purpose and an exit gate. Detailed tasks belong in the active
-release's build plan; `BUILD_PLAN.md` remains the frozen authority for v0.1.
+release's build plan; `BUILD_PLAN.md` remains the frozen authority for v0.1,
+and `BUILD_PLAN_v0_1_5.md` holds v0.1.5's.
 
 ## Planning status
 
@@ -24,11 +25,19 @@ the detailed scope and acceptance criteria.
 deterministic, source-traceable results for both policies and passes the frozen
 v0.1 review and test gates.
 
-## v0.1.5 - Existing interim milestone
+## v0.1.5 - Evidence intelligence and pilotability
 
-The frozen build plan reserves v0.1.5 for evidence intelligence and
-pilotability. Its scope remains governed by that plan until the roadmap
-conflict above is resolved; the proposal does not silently remove it.
+Make v0.1 usable by someone who did not build it, and keep the evidence
+behind every number visibly current. No new policies or data. Report
+pending, open-ended, expiring and stale rates and sources with each result;
+close the in-work tax credit gap when the evidence allows; ship a
+reproducible deployment and a pilot-user guide; tidy the repository's review
+records. `BUILD_PLAN_v0_1_5.md` holds the tasks (draft, pending Pete's
+approval).
+
+**Exit gate:** A pilot user who did not build Poltika deploys it, answers a
+supported WFF and Accommodation Supplement household question, and sees for
+every number its sources and whether any rate is pending or expiring.
 
 ## v0.2 - Authoritative data foundation
 
