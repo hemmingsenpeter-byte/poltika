@@ -180,7 +180,9 @@ The calculator must return per-component `calculated`, `unsupported`, or
 income derivation, or unknown operative rate produces `needs_review`;
 structurally outside-domain facts produce `unsupported`. Neither becomes a
 numeric zero. A genuine, evidenced failure of an eligibility test may yield
-zero for that component. Do not sum a partial result and present it as total
+zero for that component; DEC-001 records when it does (only when the input
+establishes no entitlement for the whole year and cannot also describe a
+partly entitled case) and when it stays `unsupported`. Do not sum a partial result and present it as total
 WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
 
 ### Temporary in-work base: Task 10.2 rate-status contract

@@ -39,3 +39,6 @@ The scope limits the report lists are genuine v0.1 limits, not defects:
 
 - **QS-5:** should an evidenced "not a full-time earner" give MFTC $0, or
   stay `unsupported`?
+  **Resolved 25 September 2026:** stays `unsupported`. The `excluded` value
+  also covers ME 2(2)-(4) and part-week cases, where $0 would be a false
+  zero. See `policy_specs/working_for_families/decisions/DEC-001-evidenced-ineligibility-outcome.md`.
