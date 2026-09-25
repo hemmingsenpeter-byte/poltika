@@ -237,7 +237,7 @@ def _param_value(parameters: PolicyParameterSet, parameter_id: str) -> Component
     """
     if parameter_id not in parameters.resolutions:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="AS_PARAMETER_UNDECLARED",
             reason=(
                 f"parameter '{parameter_id}' is not yet declared in policy "
                 f"'{parameters.policy_id}' -- no sourced value exists for this row"
@@ -249,6 +249,10 @@ def _param_value(parameters: PolicyParameterSet, parameter_id: str) -> Component
         return ComponentResult(
             outcome=resolution.outcome,
             reason=resolution.reason or f"parameter '{parameter_id}' is {resolution.outcome}",
+            # A parameter awaiting review, or with no value for the date:
+            # the rate itself is the missing evidence, not a scenario fact.
+            code="PARAMETER_NEEDS_REVIEW" if resolution.outcome == "needs_review" else "PARAMETER_NO_VALUE_FOR_DATE",
+            category="not_modelled" if resolution.outcome == "unsupported" else None,
         )
     assert resolution.value is not None
     return resolution.value
@@ -357,7 +361,7 @@ def _household_gate_failure(
     # --- unsupported / EXCLUDED conditions first ---
     if scenario.household_eligibility == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_HOUSEHOLD_EXCLUSION", category="evidenced_exclusion",
             reason=(
                 "household_eligibility_facts verified outside the v0.1 domain "
                 "(social housing exclusion s 66, an other-funding exclusion "
@@ -370,7 +374,7 @@ def _household_gate_failure(
         ClaimantCategory.MIXED_BENEFIT_COUPLE,
     ):
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_CLAIMANT_CATEGORY_NOT_MODELLED", category="not_modelled",
             reason=(
                 f"claimant category '{scenario.claimant_category.value}' is outside the "
                 "v0.1 supported categories (Jobseeker Support, Sole Parent Support, "
@@ -379,7 +383,7 @@ def _household_gate_failure(
         )
     if scenario.tenure_type == TenureType.HOMEOWNER:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_HOMEOWNER", category="not_modelled",
             reason="homeowner accommodation costs (Schedule 4 Part 7 cl 4-6) are outside the v0.1 rent/board-only branch",
         )
     if scenario.partner_status in (
@@ -387,7 +391,7 @@ def _household_gate_failure(
         PartnerType.COMMUNITY_SPOUSE_OR_PARTNER,
     ):
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_PARTNER_TYPE_NOT_MODELLED", category="not_modelled",
             reason=(
                 f"partner status '{scenario.partner_status.value}' (joint tenancy s 68, or "
                 "community spouse/partner Schedule 4 Part 7 cl 6A) needs its own "
@@ -396,7 +400,7 @@ def _household_gate_failure(
         )
     if scenario.ordinary_rate_status == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_RATE_SUBTYPE_NOT_MODELLED", category="not_modelled",
             reason=(
                 "a rate subtype outside the ordinary published row applies (e.g. the protected "
                 "Jobseeker woman-alone rate, a mixed-benefit or special care/residential rate) -- "
@@ -416,7 +420,7 @@ def _household_gate_failure(
         # should treat this as a specific, considered exception, not an
         # accidental inconsistency, and confirm the reading holds.
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_EXEMPT_ASSETS_NOT_MODELLED", category="not_modelled",
             reason=(
                 "an exempt cash asset (r 16, Schedule 8 Part 1) is not modelled in this "
                 "branch -- exemptions must be verified, not assumed absent, and this "
@@ -427,9 +431,9 @@ def _household_gate_failure(
     # --- needs_review: partner status and child count, which the unsupported
     # checks immediately below and the r 15 ceiling check both depend on ---
     if scenario.partner_status is None:
-        return ComponentResult(outcome="needs_review", reason="partner_status unverified")
+        return ComponentResult(outcome="needs_review", code="AS_PARTNER_STATUS_UNVERIFIED", missing_facts=("partner_status",), reason="partner_status unverified")
     if scenario.dependent_children_count is None:
-        return ComponentResult(outcome="needs_review", reason="dependent_children_count unverified")
+        return ComponentResult(outcome="needs_review", code="AS_DEPENDENT_CHILDREN_UNVERIFIED", missing_facts=("dependent_children_count",), reason="dependent_children_count unverified")
 
     # --- unsupported conditions that need partner status and child count.
     # They run before the cash_assets check, which they do not need, so a
@@ -439,7 +443,7 @@ def _household_gate_failure(
         scenario.partner_status == PartnerType.SINGLE and scenario.dependent_children_count >= 1
     ):
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_SOLE_PARENT_SUPPORT_ROW", category="not_modelled",
             reason=(
                 "Sole Parent Support with a partner or without a dependent child has no published "
                 "ordinary rate row in this branch (DEC-002)"
@@ -447,7 +451,7 @@ def _household_gate_failure(
         )
     if scenario.dependent_children_count >= 1 and scenario.eldest_dependent_child_under_16 == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_ELDEST_CHILD_16_PLUS", category="not_modelled",
             reason=(
                 "the eldest dependent child is not under 16 throughout the week -- outside this "
                 "branch's parent rows (a scope restriction, not a finding of no entitlement; DEC-002)"
@@ -459,7 +463,7 @@ def _household_gate_failure(
     # question set QS-6). Known exclusion, so it runs before the facts below.
     if scenario.weekly_accommodation_costs is not None and scenario.weekly_accommodation_costs == 0:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_NO_ACCOMMODATION_COSTS", category="evidenced_exclusion",
             reason=(
                 "no accommodation costs -- entitlement requires accommodation costs "
                 "(s 65AAA; AS-01), so this is not a calculated $0"
@@ -468,7 +472,7 @@ def _household_gate_failure(
 
     # --- needs_review: the last fact the r 15 ceiling check needs ---
     if scenario.cash_assets is None:
-        return ComponentResult(outcome="needs_review", reason="cash_assets unverified")
+        return ComponentResult(outcome="needs_review", code="AS_CASH_ASSETS_UNVERIFIED", missing_facts=("cash_assets",), reason="cash_assets unverified")
 
     # --- assets requirement (r 15): a genuine, evidenced exclusion, not a
     # scope limitation -- evaluated as soon as the facts above make it
@@ -483,7 +487,7 @@ def _household_gate_failure(
     # earlier ">=" came from the specification's "below the ceiling").
     if scenario.cash_assets > ceiling:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="AS_ASSETS_OVER_CEILING", category="evidenced_exclusion",
             reason=(
                 f"cash assets ({scenario.cash_assets}) exceed the r 15 ceiling "
                 f"({ceiling}) -- the assets requirement (r 15) fails"
@@ -493,30 +497,30 @@ def _household_gate_failure(
     # --- remaining needs_review / unverified conditions ---
     if scenario.household_eligibility == FactStatus.UNKNOWN:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="AS_HOUSEHOLD_ELIGIBILITY_UNVERIFIED", missing_facts=("household_eligibility",),
             reason="household_eligibility_facts (social housing, other-funding, s 69 grounds) unverified",
         )
     if scenario.claimant_category is None:
-        return ComponentResult(outcome="needs_review", reason="claimant_category unverified")
+        return ComponentResult(outcome="needs_review", code="AS_CLAIMANT_CATEGORY_UNVERIFIED", missing_facts=("claimant_category",), reason="claimant_category unverified")
     if scenario.ordinary_rate_status == FactStatus.UNKNOWN:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="AS_ORDINARY_RATE_UNVERIFIED", missing_facts=("ordinary_rate_status",),
             reason="ordinary_rate_status unverified -- the ordinary published rate row is not established",
         )
     if scenario.dependent_children_count >= 1 and scenario.eldest_dependent_child_under_16 == FactStatus.UNKNOWN:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="AS_ELDEST_CHILD_AGE_UNVERIFIED", missing_facts=("eldest_dependent_child_under_16",),
             reason="eldest_dependent_child_under_16 unverified for a parent rate row",
         )
     if scenario.tenure_type is None:
-        return ComponentResult(outcome="needs_review", reason="tenure_type unverified")
+        return ComponentResult(outcome="needs_review", code="AS_TENURE_UNVERIFIED", missing_facts=("tenure_type",), reason="tenure_type unverified")
     if scenario.statistical_area_unit is None:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="AS_AREA_UNVERIFIED", missing_facts=("statistical_area_unit",),
             reason="statistical_area_unit unverified -- never defaulted to Area 4",
         )
     if scenario.weekly_accommodation_costs is None:
-        return ComponentResult(outcome="needs_review", reason="weekly_accommodation_costs unverified")
+        return ComponentResult(outcome="needs_review", code="AS_COSTS_UNVERIFIED", missing_facts=("weekly_accommodation_costs",), reason="weekly_accommodation_costs unverified")
 
     return None
 
@@ -691,7 +695,7 @@ def _accommodation_supplement(
     if scenario.claimant_category == ClaimantCategory.NON_BENEFICIARY:
         if scenario.weekly_income is None:
             return ComponentResult(
-                outcome="needs_review",
+                outcome="needs_review", code="AS_WEEKLY_INCOME_UNVERIFIED", missing_facts=("weekly_income",),
                 reason="weekly_income unverified -- required for the non-beneficiary income-reduction step",
             )
         income_level = _param_value(parameters, _income_level_parameter_id(rate_household))
@@ -837,7 +841,7 @@ def _as_module_validation_failure(
     # unrelated or stale one.
     if parameters.policy_id != _AS_MODULE_ID:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="MODULE_POLICY_MISMATCH",
             reason=(
                 f"loaded policy_id '{parameters.policy_id}' does not match the "
                 f"'{_AS_MODULE_ID}' module -- a mismatched or foreign parameter set"
@@ -848,7 +852,7 @@ def _as_module_validation_failure(
     # reviewed to cover.
     if assessment_week.start < reference_period.from_ or assessment_week.end > reference_period.to:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="MODULE_WEEK_OUTSIDE_REFERENCE_PERIOD",
             reason=(
                 f"assessment week [{assessment_week.start}, {assessment_week.end}) is not wholly within "
                 f"policy '{parameters.policy_id}''s reviewed reference_period "
@@ -859,7 +863,7 @@ def _as_module_validation_failure(
     # Parameters are looked up at a date inside the week they are for.
     if not covers(assessment_week.start, assessment_week.end, modelled_date):
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="MODULE_LOOKUP_DATE_OUTSIDE_WEEK",
             reason=(
                 f"parameter lookup date {modelled_date} is outside the assessment week "
                 f"[{assessment_week.start}, {assessment_week.end})"
@@ -887,7 +891,7 @@ def _as_module_validation_failure(
             # interval, but a calculation must not rely on one -- a later
             # replacement that has not been loaded would be applied silently.
             return ComponentResult(
-                outcome="needs_review",
+                outcome="needs_review", code="MODULE_OPEN_ENDED_VALUE",
                 reason=(
                     f"parameter '{param.id}' value effective {matching_value.effective_from} has no "
                     "effective_to -- an open-ended value cannot establish that it is still the "
@@ -896,7 +900,7 @@ def _as_module_validation_failure(
             )
         if not _covers_week(matching_value.effective_from, matching_value.effective_to, assessment_week):
             return ComponentResult(
-                outcome="needs_review",
+                outcome="needs_review", code="MODULE_VALUE_CHANGES_IN_WEEK",
                 reason=(
                     f"parameter '{param.id}' value effective {matching_value.effective_from}"
                     f"-{matching_value.effective_to} changes inside the assessment week "

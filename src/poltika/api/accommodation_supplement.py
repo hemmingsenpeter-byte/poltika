@@ -112,10 +112,23 @@ class AsComponentResultResponse(BaseModel):
     outcome: Literal["calculated", "needs_review", "unsupported"]
     value: Decimal | None = None
     reason: str | None = None
+    # v0.1.5 Phase 4: machine-readable companions to `reason` -- a stable
+    # code, the unsupported category, and the facts a needs_review result
+    # is waiting for.
+    code: str | None = None
+    category: Literal["evidenced_exclusion", "not_modelled"] | None = None
+    missing_facts: list[str] = []
 
     @classmethod
     def from_component_result(cls, result: ComponentResult) -> AsComponentResultResponse:
-        return cls(outcome=result.outcome, value=result.value, reason=result.reason)
+        return cls(
+            outcome=result.outcome,
+            value=result.value,
+            reason=result.reason,
+            code=result.code,
+            category=result.category,
+            missing_facts=list(result.missing_facts),
+        )
 
 
 class AsCalculationResponse(BaseModel):

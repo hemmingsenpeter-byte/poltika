@@ -19,6 +19,16 @@ from poltika.engines.simulator.trace import ComponentTrace
 
 ComponentOutcome = Literal["calculated", "needs_review", "unsupported"]
 
+# v0.1.5 Task 4.6 (decision D4, applying WFF DEC-001's rule): why an
+# `unsupported` result has no amount.
+# - "evidenced_exclusion": a verified fact is itself a statutory exclusion
+#   for the period (e.g. an MC 6 payment, cash assets over the r 15
+#   ceiling, no accommodation costs).
+# - "not_modelled": the case has rules v0.1 does not implement, or the
+#   recorded fact can also describe a partly entitled household (DEC-001),
+#   so no amount -- not even $0 -- is safe.
+UnsupportedCategory = Literal["evidenced_exclusion", "not_modelled"]
+
 
 class FactStatus(str, Enum):
     """Tri-state for any fact that gates a component.
@@ -61,3 +71,13 @@ class ComponentResult:
     # Task 31: what this result was computed from. Excluded from equality,
     # so attaching a trace never changes whether two results compare equal.
     trace: ComponentTrace | None = field(default=None, compare=False)
+    # v0.1.5 Task 4.2: a stable, machine-readable reason code for a result
+    # that is not `calculated` (e.g. "WFF_MC6A_UNVERIFIED"), alongside the
+    # human-readable `reason`. Every v0.1 `needs_review` reason is a hard
+    # blocker: no amount is produced.
+    code: str | None = field(default=None, compare=False)
+    # Task 4.6: set only on `unsupported` results.
+    category: UnsupportedCategory | None = field(default=None, compare=False)
+    # Task 4.4: the scenario facts a `needs_review` result is waiting for,
+    # by input name (a child-level fact is "children.<field>").
+    missing_facts: tuple[str, ...] = field(default=(), compare=False)
