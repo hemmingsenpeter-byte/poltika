@@ -18,6 +18,8 @@ def test_page_is_self_contained_html() -> None:
     for status in ("CALCULATED", "NEEDS REVIEW", "UNSUPPORTED"):
         assert status in html
     assert "/household/calculate" in html and "/analyst/examples" in html
+    # Task 6.1: the household form is generated from the API's own schema.
+    assert "/openapi.json" in html and "HouseholdCalculationRequest" in html
 
 
 def test_every_example_request_runs() -> None:
