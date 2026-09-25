@@ -329,6 +329,13 @@ def _partner_income_gap_reason(scenario: WffScenario) -> str | None:
     return None
 
 
+def _partner_income_gap_facts(scenario: WffScenario) -> tuple[str, ...]:
+    """The fact `_partner_income_gap_reason` is waiting for."""
+    if scenario.partner_status == PartnerStatus.UNKNOWN:
+        return ("partner_status",)
+    return ("family_scheme_income.partner_amount",)
+
+
 def _complete_dollar_excess(amount: Decimal, threshold: Decimal) -> Decimal:
     """`floor(max(0, amount - threshold))`. specification.md: the abatement
     rate applies to "complete dollars" of income *excess*, not the credit
@@ -350,43 +357,43 @@ def _household_gate_failure(scenario: WffScenario) -> ComponentResult | None:
     """
     if not scenario.children:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_NO_DEPENDENT_CHILD", category="not_modelled",
             reason="no dependent child in the scenario -- outside WFF's family-scheme membership domain",
         )
 
     if any(c.qualifies_whole_year == FactStatus.EXCLUDED for c in scenario.children):
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_CHILD_PART_YEAR", category="not_modelled",
             reason="a child does not qualify for the whole tax year (age, care, or dependency) -- outside the v0.1 whole-year branch",
         )
 
     if scenario.household_eligibility == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_HOUSEHOLD_OUTSIDE_DOMAIN", category="not_modelled",
             reason="household eligibility_facts verified outside the v0.1 domain (e.g. shared care, relationship change, competing caregiver, or an unsupported residence pathway)",
         )
 
     if scenario.extra_instalment_status == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_EXTRA_INSTALMENT_YEAR", category="not_modelled",
             reason="Tax Administration Act s 80KW extra-instalment year applies -- the ordinary annual-entitlement branch does not cover this case",
         )
 
     if any(c.qualifies_whole_year == FactStatus.UNKNOWN for c in scenario.children):
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="WFF_CHILD_QUALIFICATION_UNVERIFIED", missing_facts=("children.qualifies_whole_year",),
             reason="a child's whole-year qualification (age, care, dependency) is unverified",
         )
 
     if scenario.household_eligibility == FactStatus.UNKNOWN:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="WFF_HOUSEHOLD_ELIGIBILITY_UNVERIFIED", missing_facts=("household_eligibility",),
             reason="household eligibility_facts (residence, principal care, competing caregiver) unverified",
         )
 
     if scenario.extra_instalment_status == FactStatus.UNKNOWN:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="WFF_EXTRA_INSTALMENT_UNVERIFIED", missing_facts=("extra_instalment_status",),
             reason="Tax Administration Act s 80KW extra-instalment applicability unverified",
         )
 
@@ -404,6 +411,10 @@ def _param_value(parameters: PolicyParameterSet, parameter_id: str) -> Component
         return ComponentResult(
             outcome=resolution.outcome,
             reason=resolution.reason or f"parameter '{parameter_id}' is {resolution.outcome}",
+            # A parameter awaiting review, or with no value for the date:
+            # the rate itself is the missing evidence, not a scenario fact.
+            code="PARAMETER_NEEDS_REVIEW" if resolution.outcome == "needs_review" else "PARAMETER_NO_VALUE_FOR_DATE",
+            category="not_modelled" if resolution.outcome == "unsupported" else None,
         )
     assert resolution.value is not None
     return resolution.value
@@ -422,7 +433,7 @@ def _family_tax_credit(
     if scenario.mc6a_veterans_payment == FactStatus.EXCLUDED:
         return (
             ComponentResult(
-                outcome="unsupported",
+                outcome="unsupported", code="WFF_MC6A_VETERANS_PAYMENT", category="evidenced_exclusion",
                 reason="MC 6(a) veterans' payment disqualifies abating WFF for this relationship period",
             ),
             zero,
@@ -430,32 +441,32 @@ def _family_tax_credit(
     if scenario.ftc_iwtc_protected_or_direct_abatement == FactStatus.EXCLUDED:
         return (
             ComponentResult(
-                outcome="unsupported",
+                outcome="unsupported", code="WFF_MD14_15_PROTECTED_CREDIT", category="not_modelled",
                 reason="MD 14/15 protected family-tax-credit case applies -- needs its own specification, not the ordinary abatement formula",
             ),
             zero,
         )
     if scenario.mc6a_veterans_payment == FactStatus.UNKNOWN:
         return (
-            ComponentResult(outcome="needs_review", reason="MC 6(a) veterans' payment applicability unverified"),
+            ComponentResult(outcome="needs_review", code="WFF_MC6A_UNVERIFIED", missing_facts=("mc6a_veterans_payment",), reason="MC 6(a) veterans' payment applicability unverified"),
             zero,
         )
     if scenario.ftc_iwtc_protected_or_direct_abatement == FactStatus.UNKNOWN:
         return (
             ComponentResult(
-                outcome="needs_review",
+                outcome="needs_review", code="WFF_MD14_15_UNVERIFIED", missing_facts=("ftc_iwtc_protected_or_direct_abatement",),
                 reason="MD 14/15 protected-credit applicability unverified",
             ),
             zero,
         )
     if scenario.family_scheme_income is None:
         return (
-            ComponentResult(outcome="needs_review", reason="family_scheme_income not verified"),
+            ComponentResult(outcome="needs_review", code="WFF_FAMILY_SCHEME_INCOME_UNVERIFIED", missing_facts=("family_scheme_income",), reason="family_scheme_income not verified"),
             zero,
         )
     partner_income_gap = _partner_income_gap_reason(scenario)
     if partner_income_gap is not None:
-        return (ComponentResult(outcome="needs_review", reason=partner_income_gap), zero)
+        return (ComponentResult(outcome="needs_review", code="WFF_PARTNER_INCOME_UNVERIFIED", missing_facts=_partner_income_gap_facts(scenario), reason=partner_income_gap), zero)
 
     eldest = _param_value(parameters, "family_tax_credit_eldest_child")
     if isinstance(eldest, ComponentResult):
@@ -508,34 +519,34 @@ def _in_work_tax_credit(
 ) -> ComponentResult:
     if scenario.mc6a_veterans_payment == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_MC6A_VETERANS_PAYMENT", category="evidenced_exclusion",
             reason="MC 6(a) veterans' payment disqualifies abating WFF for this relationship period",
         )
     if scenario.ftc_iwtc_protected_or_direct_abatement == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_DIRECT_ABATEMENT_PATHWAY", category="not_modelled",
             reason="direct-abatement pathway applies (family tax credit unavailable for a child due to a different payment) -- needs its own specification",
         )
     if scenario.in_work_eligibility == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_IN_WORK_INELIGIBLE", category="not_modelled",
             reason="in-work eligibility test fails (main benefit/Student Allowance period, unpaid break, or not a qualifying full-year earner)",
         )
     if scenario.mc6b_disqualifying_payment == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_MC6B_DISQUALIFYING_PAYMENT", category="evidenced_exclusion",
             reason="MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
         )
     if scenario.mc6a_veterans_payment == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="MC 6(a) veterans' payment applicability unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_MC6A_UNVERIFIED", missing_facts=("mc6a_veterans_payment",), reason="MC 6(a) veterans' payment applicability unverified")
     if scenario.ftc_iwtc_protected_or_direct_abatement == FactStatus.UNKNOWN:
         return ComponentResult(
-            outcome="needs_review", reason="direct-abatement pathway applicability unverified"
+            outcome="needs_review", code="WFF_DIRECT_ABATEMENT_UNVERIFIED", missing_facts=("ftc_iwtc_protected_or_direct_abatement",), reason="direct-abatement pathway applicability unverified"
         )
     if scenario.in_work_eligibility == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="in-work eligibility unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_IN_WORK_ELIGIBILITY_UNVERIFIED", missing_facts=("in_work_eligibility",), reason="in-work eligibility unverified")
     if scenario.mc6b_disqualifying_payment == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="MC 6(b) disqualifying-payment status unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_MC6B_UNVERIFIED", missing_facts=("mc6b_disqualifying_payment",), reason="MC 6(b) disqualifying-payment status unverified")
 
     if ftc_result.outcome != "calculated":
         # MD 2(2)(c): abatement applies to family tax credit first, then any
@@ -545,6 +556,9 @@ def _in_work_tax_credit(
         # abatement here would silently overstate in-work tax credit.
         return ComponentResult(
             outcome=ftc_result.outcome,
+            code="WFF_IWTC_AWAITS_FAMILY_TAX_CREDIT",
+            category=ftc_result.category,
+            missing_facts=ftc_result.missing_facts,
             reason=(
                 "family tax credit's abatement could not be determined, and MD 2(2)(c) "
                 f"passes any remainder to in-work tax credit: {ftc_result.reason}"
@@ -579,7 +593,7 @@ def _minimum_family_tax_credit(
 ) -> ComponentResult:
     if scenario.minimum_family_full_time_earner_weeks == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_MFTC_FULL_TIME_EARNER_WEEKS", category="not_modelled",
             reason=(
                 "52 full-time-earner weeks (MA 7 / ME 2) are not established -- the claimant is not "
                 "a full-time earner for every week, or an ME 2(2)-(4) Commissioner-determined "
@@ -588,11 +602,11 @@ def _minimum_family_tax_credit(
         )
     if scenario.mc6b_disqualifying_payment == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_MC6B_DISQUALIFYING_PAYMENT", category="evidenced_exclusion",
             reason="MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
         )
     if scenario.minimum_family_full_time_earner_weeks == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="full-time-earner weeks (MA 7 / ME 2) unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_MFTC_FULL_TIME_WEEKS_UNVERIFIED", missing_facts=("minimum_family_full_time_earner_weeks",), reason="full-time-earner weeks (MA 7 / ME 2) unverified")
     if scenario.partner_status == PartnerStatus.UNKNOWN:
         # MA 7's full-time-earner test itself depends on partner status --
         # specification.md: "at least 20 hours for a single person or 30
@@ -601,11 +615,11 @@ def _minimum_family_tax_credit(
         # was actually applied; without knowing single vs partnered, that
         # verification can't be trusted for this branch.
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="WFF_PARTNER_STATUS_UNVERIFIED", missing_facts=("partner_status",),
             reason="partner status (single vs partnered) is unverified -- MA 7's full-time-earner threshold (20 solo hours vs 30 combined) depends on it",
         )
     if scenario.mc6b_disqualifying_payment == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="MC 6(b) disqualifying-payment status unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_MC6B_UNVERIFIED", missing_facts=("mc6b_disqualifying_payment",), reason="MC 6(b) disqualifying-payment status unverified")
     if scenario.family_scheme_income is None:
         # ME 3(3)(a)(i): the net family-scheme-income formula's own
         # "adjusted income" item starts from the person's family scheme
@@ -614,17 +628,17 @@ def _minimum_family_tax_credit(
         # names a separately verified family-scheme-income input as part
         # of the whole domain, not scoped away from this component (Task
         # 17 review finding).
-        return ComponentResult(outcome="needs_review", reason="family_scheme_income not verified")
+        return ComponentResult(outcome="needs_review", code="WFF_FAMILY_SCHEME_INCOME_UNVERIFIED", missing_facts=("family_scheme_income",), reason="family_scheme_income not verified")
     partner_income_gap = _partner_income_gap_reason(scenario)
     if partner_income_gap is not None:
-        return ComponentResult(outcome="needs_review", reason=partner_income_gap)
+        return ComponentResult(outcome="needs_review", code="WFF_PARTNER_INCOME_UNVERIFIED", missing_facts=_partner_income_gap_facts(scenario), reason=partner_income_gap)
     if not scenario.net_family_scheme_income_me3_attested:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="WFF_NET_INCOME_NOT_ATTESTED", missing_facts=("net_family_scheme_income_me3_attested",),
             reason="net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)",
         )
     if scenario.net_family_scheme_income is None:
-        return ComponentResult(outcome="needs_review", reason="net_family_scheme_income not verified")
+        return ComponentResult(outcome="needs_review", code="WFF_NET_INCOME_UNVERIFIED", missing_facts=("net_family_scheme_income",), reason="net_family_scheme_income not verified")
 
     prescribed = _param_value(parameters, "minimum_family_prescribed_amount")
     if isinstance(prescribed, ComponentResult):
@@ -643,24 +657,24 @@ def _best_start(
 ) -> ComponentResult:
     if scenario.mc6a_veterans_payment == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_MC6A_VETERANS_PAYMENT", category="evidenced_exclusion",
             reason="MC 6(a) veterans' payment disqualifies Best Start for this relationship period",
         )
     if scenario.best_start_no_shared_care == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported", reason="shared care applies -- outside the v0.1 no-shared-care branch"
+            outcome="unsupported", code="WFF_SHARED_CARE", category="not_modelled", reason="shared care applies -- outside the v0.1 no-shared-care branch"
         )
     if scenario.best_start_protected_credit == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_MG4_PROTECTED_CREDIT", category="not_modelled",
             reason="MG 4 protected Best Start credit month applies -- needs its own specification",
         )
     if scenario.mc6a_veterans_payment == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="MC 6(a) veterans' payment applicability unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_MC6A_UNVERIFIED", missing_facts=("mc6a_veterans_payment",), reason="MC 6(a) veterans' payment applicability unverified")
     if scenario.best_start_no_shared_care == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="shared-care status unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_SHARED_CARE_UNVERIFIED", missing_facts=("best_start_no_shared_care",), reason="shared-care status unverified")
     if scenario.best_start_protected_credit == FactStatus.UNKNOWN:
-        return ComponentResult(outcome="needs_review", reason="MG 4 protected Best Start credit applicability unverified")
+        return ComponentResult(outcome="needs_review", code="WFF_MG4_UNVERIFIED", missing_facts=("best_start_protected_credit",), reason="MG 4 protected Best Start credit applicability unverified")
 
     supported_cohort_children = [
         c for c in scenario.children if c.best_start_cohort == BestStartCohort.IN_SUPPORTED_COHORT
@@ -673,16 +687,16 @@ def _best_start(
     # false-zero bug this check exists to prevent).
     if any(c.best_start_cohort == BestStartCohort.OTHER_COHORT_UNSUPPORTED for c in scenario.children):
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_BEST_START_COHORT_OUT_OF_BRANCH", category="not_modelled",
             reason="a child's Best Start birth cohort/period is outside the v0.1 narrow calculable branch (e.g. a later birth cohort, or an in-year birth/third birthday) -- real entitlement, not calculated here",
         )
     if any(c.best_start_cohort == BestStartCohort.UNKNOWN for c in scenario.children):
         return ComponentResult(
-            outcome="needs_review", reason="a child's Best Start birth-cohort status is unverified"
+            outcome="needs_review", code="WFF_BEST_START_COHORT_UNVERIFIED", missing_facts=("children.best_start_cohort",), reason="a child's Best Start birth-cohort status is unverified"
         )
     if len(supported_cohort_children) > 1:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_BEST_START_MULTIPLE_CHILDREN", category="not_modelled",
             reason="more than one Best Start birth-cohort-eligible child -- multi-child apportionment is outside the v0.1 single-child branch",
         )
     if not supported_cohort_children:
@@ -696,18 +710,18 @@ def _best_start(
     child = supported_cohort_children[0]
     if child.best_start_no_disqualifying_payment == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="unsupported", code="WFF_MC6C_DISQUALIFYING_PAYMENT", category="evidenced_exclusion",
             reason="MC 6(c) disqualifying payment applies for the Best Start child",
         )
     if child.best_start_no_disqualifying_payment == FactStatus.UNKNOWN:
         return ComponentResult(
-            outcome="needs_review", reason="MC 6(c) disqualifying-payment status unverified for the Best Start child"
+            outcome="needs_review", code="WFF_MC6C_UNVERIFIED", missing_facts=("children.best_start_no_disqualifying_payment",), reason="MC 6(c) disqualifying-payment status unverified for the Best Start child"
         )
     if scenario.family_scheme_income is None:
-        return ComponentResult(outcome="needs_review", reason="family_scheme_income not verified")
+        return ComponentResult(outcome="needs_review", code="WFF_FAMILY_SCHEME_INCOME_UNVERIFIED", missing_facts=("family_scheme_income",), reason="family_scheme_income not verified")
     partner_income_gap = _partner_income_gap_reason(scenario)
     if partner_income_gap is not None:
-        return ComponentResult(outcome="needs_review", reason=partner_income_gap)
+        return ComponentResult(outcome="needs_review", code="WFF_PARTNER_INCOME_UNVERIFIED", missing_facts=_partner_income_gap_facts(scenario), reason=partner_income_gap)
 
     annual_amount = _param_value(parameters, "best_start_annual_amount")
     if isinstance(annual_amount, ComponentResult):
@@ -964,7 +978,7 @@ def _wff_module_validation_failure(
     # arithmetic against, say, Accommodation Supplement's parameters.
     if parameters.policy_id != _WFF_MODULE_ID:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="MODULE_POLICY_MISMATCH",
             reason=(
                 f"loaded policy_id '{parameters.policy_id}' does not match the "
                 f"'{_WFF_MODULE_ID}' module -- a mismatched or foreign parameter set"
@@ -980,7 +994,7 @@ def _wff_module_validation_failure(
     missing_parameter_ids = sorted(_WFF_REQUIRED_PARAMETER_IDS - parameters.resolutions.keys())
     if missing_parameter_ids:
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="MODULE_PARAMETERS_UNDECLARED",
             reason=(
                 f"policy '{parameters.policy_id}' does not declare required parameter(s) "
                 f"{missing_parameter_ids} -- calculate_wff() cannot run against an incomplete "
@@ -993,7 +1007,7 @@ def _wff_module_validation_failure(
     # individual parameter's own interval.
     if not covers(reference_period.from_, reference_period.to, modelled_date):
         return ComponentResult(
-            outcome="needs_review",
+            outcome="needs_review", code="MODULE_DATE_OUTSIDE_REFERENCE_PERIOD",
             reason=(
                 f"modelled_date {modelled_date} is outside policy '{parameters.policy_id}''s "
                 f"reviewed reference_period [{reference_period.from_}, {reference_period.to})"
@@ -1023,7 +1037,7 @@ def _wff_module_validation_failure(
             # interval, but a calculation must not rely on one -- a later
             # replacement that has not been loaded would be applied silently.
             return ComponentResult(
-                outcome="needs_review",
+                outcome="needs_review", code="MODULE_OPEN_ENDED_VALUE",
                 reason=(
                     f"parameter '{param.id}' value effective {matching_value.effective_from} has no "
                     "effective_to -- an open-ended value cannot establish that it is still the "
@@ -1032,7 +1046,7 @@ def _wff_module_validation_failure(
             )
         if not _spans_reference_period(matching_value.effective_from, matching_value.effective_to, reference_period):
             return ComponentResult(
-                outcome="needs_review",
+                outcome="needs_review", code="MODULE_VALUE_PARTIAL_PERIOD",
                 reason=(
                     f"parameter '{param.id}' value effective {matching_value.effective_from}"
                     f"-{matching_value.effective_to} covers the requested {modelled_date} but "

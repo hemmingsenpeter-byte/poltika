@@ -113,6 +113,9 @@ def build_provenance_report(policy_dir: Path, results: Mapping[str, ComponentRes
                 "outcome": result.outcome,
                 "value": plain(result.value),
                 "reason": result.reason,
+                "code": result.code,
+                "category": result.category,
+                "missing_facts": list(result.missing_facts),
                 "upstream_components": list(trace.upstream_components),
                 "source_rules": [
                     {"id": rule_id, "summary": _rule_summary(rule_summaries, rule_id)}
@@ -231,6 +234,12 @@ def render_markdown(report: Mapping[str, Any]) -> str:
         ]
         if component["reason"]:
             lines.append(f"- Reason: {component['reason']}")
+        if component["code"]:
+            lines.append(f"- Code: `{component['code']}`")
+        if component["category"]:
+            lines.append(f"- Category: {component['category']}")
+        if component["missing_facts"]:
+            lines.append(f"- Waiting for: {', '.join(component['missing_facts'])}")
         if component["upstream_components"]:
             lines.append(f"- Depends on: {', '.join(component['upstream_components'])}")
         lines += ["", "### Specification rules", ""]

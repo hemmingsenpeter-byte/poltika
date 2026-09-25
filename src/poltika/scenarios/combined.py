@@ -203,9 +203,12 @@ def run_combined_household(
     if scenario.as_claimant_is_wff_claimant_or_partner == FactStatus.EXCLUDED:
         reason = "combined household run: the AS claimant is not the WFF claimant or their partner"
         wff_result = WffResult(
-            **{f.name: _replace(getattr(wff_result, f.name), "unsupported", reason) for f in fields(WffResult)}
+            **{
+                f.name: _replace(getattr(wff_result, f.name), "unsupported", reason, "COMBINED_DIFFERENT_CLAIMANT")
+                for f in fields(WffResult)
+            }
         )
-        as_result = _replace(as_result, "unsupported", reason)
+        as_result = _replace(as_result, "unsupported", reason, "COMBINED_DIFFERENT_CLAIMANT")
         contradictions = (reason,)
     else:
         contradictions = shared_fact_contradictions(scenario, wff_period, assessment_week)
@@ -232,9 +235,19 @@ def _flag(result: ComponentResult, reason: str) -> ComponentResult:
     `unsupported`, which is kept (Task 28.3 contract precedence)."""
     if result.outcome == "unsupported":
         return result
-    return _replace(result, "needs_review", reason)
+    return _replace(result, "needs_review", reason, "COMBINED_SHARED_FACTS_DISAGREE")
 
 
-def _replace(result: ComponentResult, outcome: ComponentOutcome, reason: str) -> ComponentResult:
+def _replace(result: ComponentResult, outcome: ComponentOutcome, reason: str, code: str) -> ComponentResult:
     """Replace a component's outcome while keeping its provenance trace."""
-    return replace(result, outcome=outcome, value=None, reason=reason)
+    return replace(
+        result,
+        outcome=outcome,
+        value=None,
+        reason=reason,
+        code=code,
+        # The AS claimant is outside the WFF family: the combined question
+        # is outside the contract, not a finding about either entitlement.
+        category="not_modelled" if outcome == "unsupported" else None,
+        missing_facts=(),
+    )
