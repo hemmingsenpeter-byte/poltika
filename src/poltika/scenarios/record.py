@@ -240,17 +240,36 @@ def _files_match_commit(
     for key, sha in policy_files:
         policy_id, relative = key.split("/", 1)
         path = (policy_dirs[policy_id] / relative).resolve()
-        try:
-            top = subprocess.run(
-                ["git", "-C", str(path.parent), "rev-parse", "--show-toplevel"],
-                capture_output=True, text=True, check=True,
-            ).stdout.strip()
-            committed = subprocess.run(
-                ["git", "-C", top, "show", f"{commit}:{path.relative_to(Path(top).resolve()).as_posix()}"],
-                capture_output=True, check=True,
-            ).stdout
-        except (OSError, ValueError, subprocess.CalledProcessError):
-            return False
-        if hashlib.sha256(committed).hexdigest() != sha:
+        if _committed_sha256(commit, path) != sha:
             return False
     return True
+
+
+# (commit, file) -> SHA-256 of the file's content at that commit. A commit's
+# content never changes, so a successful lookup is kept for the life of the
+# process: a long-running API then runs git once per bound file per commit,
+# not on every request. A failed lookup is not kept.
+_COMMITTED_SHA256: dict[tuple[str, Path], str] = {}
+
+
+def _committed_sha256(commit: str, path: Path) -> str | None:
+    """The SHA-256 of `path`'s content at `commit` in the git repository
+    containing it, or `None` if it is not in a repository or not in that
+    commit."""
+    cached = _COMMITTED_SHA256.get((commit, path))
+    if cached is not None:
+        return cached
+    try:
+        top = subprocess.run(
+            ["git", "-C", str(path.parent), "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+        committed = subprocess.run(
+            ["git", "-C", top, "show", f"{commit}:{path.relative_to(Path(top).resolve()).as_posix()}"],
+            capture_output=True, check=True,
+        ).stdout
+    except (OSError, ValueError, subprocess.CalledProcessError):
+        return None
+    digest = hashlib.sha256(committed).hexdigest()
+    _COMMITTED_SHA256[(commit, path)] = digest
+    return digest

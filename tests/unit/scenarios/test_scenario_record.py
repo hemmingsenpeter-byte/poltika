@@ -185,6 +185,31 @@ def test_policy_files_outside_the_committed_repository_are_not_reproducible(tmp_
     assert not run.manifest.reproducible
 
 
+def test_committed_file_lookups_run_git_once_per_commit(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A long-running API must not run `git show` for every bound file on
+    every request: a commit's content never changes, so a lookup is kept."""
+    import poltika.scenarios.record as record_module
+
+    head = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    code = CodeIdentity("0.1.0", head, True, None)
+    record = record_from_yaml(_household())
+    first = run_scenario(record, WFF_POLICY_DIR, AS_POLICY_DIR, code=code)
+
+    calls: list[list[str]] = []
+    real_run = subprocess.run
+
+    def counting_run(args: list[str], **kwargs: Any) -> Any:
+        calls.append(args)
+        return real_run(args, **kwargs)
+
+    monkeypatch.setattr(record_module.subprocess, "run", counting_run)
+    second = run_scenario(record, WFF_POLICY_DIR, AS_POLICY_DIR, code=code)
+    assert calls == []
+    assert second.manifest.policy_files_committed == first.manifest.policy_files_committed
+
+
 def test_committed_policy_files_verify_against_head() -> None:
     code = detect_code_identity(REPO_ROOT)
     run = run_scenario(record_from_yaml(_household()), WFF_POLICY_DIR, AS_POLICY_DIR, code=code)
