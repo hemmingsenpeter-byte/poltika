@@ -16,7 +16,7 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 
 ## Current status
 
-v0.1 is feature-complete and in final review (BUILD_PLAN.md Task 34). It models Working for Families (2026-27) and the Accommodation Supplement (weekly) inside a scoped domain, plus their interaction for one household. The `v0.1.0` tag follows the GPT/Codex half of the Task 34.3 review and Pete's acceptance.
+v0.1.0 is released (tag `v0.1.0`, 25 September 2026). It models Working for Families (2026-27) and the Accommodation Supplement (weekly) inside a scoped domain, plus their interaction for one household. See [CHANGELOG.md](CHANGELOG.md).
 
 Results are conditional simulations built from caller-asserted facts. They are not entitlement determinations.
 
