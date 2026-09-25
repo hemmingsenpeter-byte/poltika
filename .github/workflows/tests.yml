@@ -71,7 +71,10 @@ jobs:
           set -euo pipefail
           docker run -d --name poltika -p 8000:8000 poltika:pilot
           for i in $(seq 1 60); do curl -sf localhost:8000/analyst >/dev/null && break; sleep 1; done
-          curl -sf localhost:8000/analyst | grep -q "Poltika analyst"
+          # Saved first: grep -q exits at its first match, which would cut
+          # curl's write short (exit 23) under pipefail.
+          curl -sf localhost:8000/analyst > analyst.html
+          grep -q "Poltika analyst" analyst.html
           curl -sf localhost:8000/analyst/examples > examples.json
           python3 -c "import json; json.dump(json.load(open('examples.json'))[1]['request'], open('request.json', 'w'))"
           curl -sf -X POST -H 'content-type: application/json' -d @request.json \
