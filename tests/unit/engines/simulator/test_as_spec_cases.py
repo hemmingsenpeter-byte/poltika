@@ -32,6 +32,7 @@ _INDEPENDENTLY_VERIFIED_PARAMETER_IDS = {
     "area_cap_single_no_dependent_children_area2",
     "area_cap_single_no_dependent_children_area3",
     "area_cap_single_no_dependent_children_area4",
+    "rent_board_subsidy_rate",
     "entry_threshold_rent_board_fraction",
     "asset_ceiling_relationship_or_dependent_children",
     "asset_ceiling_other",

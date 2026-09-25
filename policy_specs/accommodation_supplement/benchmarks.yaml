@@ -2,7 +2,11 @@
 # listed scenario facts and dated table inputs; they are not unconditional
 # entitlement determinations. DEC-001 remains unpromoted because no second
 # published fractional-income-excess example was found.
-status: pending_review
+# Status approved 25 September 2026 (Task 34.3 F7, Pete's 34.4 acceptance):
+# independently reviewed in Task 24.4, fixes classified and accepted by Pete
+# in 24.5/24.6 (PR #32, commit 14eea09); the Task 26a.3 additions were
+# reviewed with the Task 26a repair (PR #50).
+status: approved
 benchmarks:
   - id: msd_nadiya_supported_living_rent
     msd_source: as-msd-rent-board-examples

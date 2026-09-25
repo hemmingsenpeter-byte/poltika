@@ -295,8 +295,15 @@ def test_as_calculated_beneficiary_applies_only_r19() -> None:
     result = calculate_accommodation_supplement(as_scenario_from_yaml(case["scenario"]), as_parameters_for_case(case))
     assert result.outcome == "calculated"
     assert result.trace is not None
-    assert [r.split(":")[0] for r in result.trace.calculation_rules] == ["DEC-002", "r 19"]
+    assert [r.split(":")[0] for r in result.trace.calculation_rules] == [
+        "DEC-002",
+        "Schedule 4 Part 7 cl 1-3",
+        "r 19",
+    ]
     assert result.trace.decisions == ("DEC-002",)
+    # Task 34.3 F3: the 70% subsidy rate is a sourced parameter in the trace.
+    rate = next(p for p in result.trace.parameters if p.parameter_id == "rent_board_subsidy_rate")
+    assert rate.value == Decimal("0.7")
     # The table threshold is subtracted directly; the entry fraction is not
     # consulted and no base rate exists (Task 26a repair).
     assert "entry_threshold_rent_board_fraction" not in _ids(result)
@@ -317,6 +324,7 @@ def test_as_non_beneficiary_path_records_dec_001_and_income_parameters() -> None
     assert result.trace.decisions == ("DEC-002", "DEC-001")
     assert [r.split(":")[0] for r in result.trace.calculation_rules] == [
         "DEC-002",
+        "Schedule 4 Part 7 cl 1-3",
         "DEC-002",
         "s 423(3)",
         "r 18(2)",

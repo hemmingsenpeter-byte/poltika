@@ -134,6 +134,7 @@ def parameters(tmp_path: Path):
             _param("area_cap_single_no_dependent_children_area2", "money", "NZD_per_week", "105"),
             _param("area_cap_single_no_dependent_children_area3", "money", "NZD_per_week", "80"),
             _param("area_cap_single_no_dependent_children_area4", "money", "NZD_per_week", "70"),
+            _param("rent_board_subsidy_rate", "fraction", "fraction", "0.7"),
             _param("entry_threshold_rent_board_fraction", "fraction", "fraction", "0.25"),
             _param("asset_ceiling_relationship_or_dependent_children", "money", "NZD", "16200"),
             _param("asset_ceiling_other", "money", "NZD", "8100"),
