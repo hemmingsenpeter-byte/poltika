@@ -35,7 +35,7 @@ from dataclasses import dataclass, fields, is_dataclass, replace
 from datetime import date
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Literal, TypeVar, cast
+from typing import Any, Literal, cast
 
 from poltika.policy.loader import PolicyParameterSet
 
@@ -43,8 +43,6 @@ from poltika.policy.loader import PolicyParameterSet
 # component looked for that the policy does not declare at all (AS's
 # deliberate v0.1 gap for base rates and the income level).
 ParameterUseOutcome = Literal["resolved", "needs_review", "unsupported", "undeclared"]
-
-_T = TypeVar("_T")
 
 # Attribute a recording copy stores its read log under. Set after
 # construction, so reads made by the dataclass's own __init__/__post_init__
@@ -165,7 +163,7 @@ def _recording_class(cls: type) -> type:
     return recording_cls
 
 
-def recording_copy(instance: _T) -> tuple[_T, list[str]]:
+def recording_copy[T](instance: T) -> tuple[T, list[str]]:
     """A copy of a frozen dataclass instance that logs which fields are read.
 
     The copy is an instance of a subclass of `type(instance)`, built from the
@@ -178,7 +176,7 @@ def recording_copy(instance: _T) -> tuple[_T, list[str]]:
     copy = _recording_class(cls)(**values)
     reads: list[str] = []
     object.__setattr__(copy, _READS_ATTR, reads)
-    return cast(_T, copy), reads
+    return cast(T, copy), reads
 
 
 def parameter_uses(parameters: PolicyParameterSet, parameter_ids: list[str]) -> tuple[ParameterUse, ...]:

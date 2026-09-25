@@ -24,7 +24,8 @@ poltika/
 ├── ROADMAP.md
 ├── CHANGELOG.md
 ├── RESEARCH.md         — external papers/prior art, structural reference only (never a policy source; see doctrine/ip-doctrine.md)
-├── pyproject.toml      — dependencies (Pydantic, PyYAML) and dev tooling (pytest, Ruff, mypy strict)
+├── pyproject.toml      — dependencies (Pydantic, PyYAML, FastAPI, SQLAlchemy, psycopg, Alembic) and dev tooling (pytest, Hypothesis, Ruff, mypy strict)
+├── .python-version     — 3.12, the version CI runs
 ├── uv.lock
 │
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
@@ -137,12 +138,14 @@ Only `src/poltika/{data,llm}` (`api/` is now instantiated, Task 21;
 plus everything under `data/`, `config/`, and `scripts/`, remain undone
 from the target tree below — created incrementally as the BUILD_PLAN.md
 tasks that need them are reached, not all at once. `docs/` is partially
-instantiated: `docs/research/` (above) already holds two files; the
+instantiated: `docs/research/` and `docs/demo/v0_1/` (above) exist; the
 target tree's `docs/{data_model.md,policy_model.md,provenance.md,
 assurance.md,glossary.md}` specification files do not exist yet.
 `src/poltika/engines/{discovery,hypothesis}` are correctly still empty
 placeholders; see below. `engines/assurance/` was instantiated by Task 31
-(provenance only; regression and change attribution arrive with Task 30).
+and holds provenance only: Task 30's regression and change attribution
+live in `scenarios/record.py` (run identities and manifests) and
+`tests/regression/test_golden_result_snapshot.py`.
 
 ## Target architecture (create on demand, per task)
 

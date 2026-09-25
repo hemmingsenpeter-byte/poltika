@@ -1,8 +1,9 @@
 # Poltika v0.1 Build Plan
 
 **Date:** 20 September 2026
-**Status:** FROZEN — workflow and roadmap discussion closed. Week 0 Tasks 8
-and 9 are complete.
+**Status:** FROZEN — workflow and roadmap discussion closed. Each task's
+progress is recorded under it below; README.md's Current status says where
+v0.1 stands.
 
 ---
 
