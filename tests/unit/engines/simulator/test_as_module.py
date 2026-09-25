@@ -25,7 +25,7 @@ from typing import Any
 import pytest
 import yaml
 
-from poltika.common.errors import PolicyVersionMismatchError
+from poltika.common.errors import ArtifactHashMismatchError, PolicyVersionMismatchError
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
     AsScenario,
@@ -336,3 +336,26 @@ def test_open_ended_value_is_needs_review(tmp_path: Path) -> None:
 
     assert result.outcome == "needs_review"
     assert "has no effective_to" in (result.reason or "")
+
+
+def test_policy_file_replaced_after_its_parameters_loaded_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The module's own checks must read the same policy.yaml the parameters
+    (and the trace's hash) came from, not a file replaced in between."""
+    import shutil
+
+    import poltika.engines.simulator.accommodation_supplement as as_module
+
+    policy_dir = tmp_path / "accommodation_supplement"
+    shutil.copytree(AS_POLICY_DIR, policy_dir)
+
+    def load_then_replace(*args: Any, **kwargs: Any) -> Any:
+        parameters = load_policy_parameters(*args, **kwargs)
+        with (policy_dir / "policy.yaml").open("a") as f:
+            f.write("\n# replaced after loading\n")
+        return parameters
+
+    monkeypatch.setattr(as_module, "load_policy_parameters", load_then_replace)
+    with pytest.raises(ArtifactHashMismatchError):
+        _run(policy_dir)

@@ -20,6 +20,7 @@ from typing import Literal
 import yaml
 
 from poltika.common.errors import (
+    ArtifactHashMismatchError,
     InvalidSourceCatalogError,
     PolicyNotApprovedError,
     PolicyVersionMismatchError,
@@ -97,6 +98,21 @@ class PolicyParameterSet:
 def load_policy_spec(policy_yaml_path: Path) -> PolicySpec:
     """Parse and validate policy.yaml in isolation. Raises on any structural problem."""
     return _parse_policy_spec(policy_yaml_path.read_bytes())
+
+
+def load_bound_policy_spec(policy_dir: Path, parameters: PolicyParameterSet) -> PolicySpec:
+    """Re-read `policy.yaml` for a module's own checks on `parameters`, which
+    were loaded from it, and refuse it if its bytes are not the ones the
+    parameters were resolved from (their recorded `artifact_sha256`).
+    Otherwise a file replaced between the two reads would have its reference
+    period and intervals checked while the parameters, and the hash every
+    trace records, came from the earlier file."""
+    policy_yaml_bytes = (policy_dir / "policy.yaml").read_bytes()
+    if _sha256(policy_yaml_bytes) != parameters.artifact_sha256.get("policy.yaml"):
+        raise ArtifactHashMismatchError(
+            f"policy '{parameters.policy_id}' policy.yaml is not the file its parameters were loaded from"
+        )
+    return _parse_policy_spec(policy_yaml_bytes)
 
 
 def _parse_policy_spec(policy_yaml_bytes: bytes) -> PolicySpec:

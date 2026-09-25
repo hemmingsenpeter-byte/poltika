@@ -48,8 +48,8 @@ from poltika.engines.simulator.trace import (
     recording_parameters,
     trace_header,
 )
-from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
-from poltika.semantics.schemas.policy_spec import ReferencePeriod, covers
+from poltika.policy.loader import PolicyParameterSet, load_bound_policy_spec, load_policy_parameters
+from poltika.semantics.schemas.policy_spec import PolicySpec, ReferencePeriod, covers
 
 
 class BestStartCohort(str, Enum):
@@ -888,7 +888,7 @@ def _spans_reference_period(
 
 
 def _wff_module_validation_failure(
-    policy_dir: Path, modelled_date: date, parameters: PolicyParameterSet
+    spec: PolicySpec, modelled_date: date, parameters: PolicyParameterSet
 ) -> ComponentResult | None:
     """The three Task 20 module-specific `validation_checks`, in addition
     to the schema-version/approval-status gates `load_policy_parameters()`
@@ -896,7 +896,6 @@ def _wff_module_validation_failure(
     `needs_review` result to use for all four `WffResult` components, or
     `None` if every invariant holds.
     """
-    spec = load_policy_spec(policy_dir / "policy.yaml")
     reference_period = spec.reference_period
 
     # Invariant (2): the loaded parameter set is actually for this module,
@@ -957,7 +956,7 @@ def _wff_module_validation_failure(
         )
         assert matching_value is not None, (
             f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
-            "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
+            "found on re-check -- load_policy_parameters()/load_bound_policy_spec() disagree"
         )
         if matching_value.effective_to is None:
             # v0.1 question set QS-2: SCHEMA.md permits an open-ended final
@@ -1026,12 +1025,14 @@ def run_wff_module(
         policy_dir, modelled_date, requested_policy_version=requested_policy_version
     )
 
+    spec = load_bound_policy_spec(policy_dir, parameters)
+
     # WFF is assessed for the policy's whole reviewed tax year, which the
     # invariants below require every rate to cover.
-    reference_period = load_policy_spec(policy_dir / "policy.yaml").reference_period
+    reference_period = spec.reference_period
     assessment_period = (reference_period.from_, reference_period.to)
 
-    validation_failure = _wff_module_validation_failure(policy_dir, modelled_date, parameters)
+    validation_failure = _wff_module_validation_failure(spec, modelled_date, parameters)
     if validation_failure is not None:
         # No component ran, so the trace carries only the run identity;
         # the reason says which invariant failed.

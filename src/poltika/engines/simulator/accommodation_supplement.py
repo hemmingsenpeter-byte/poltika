@@ -46,8 +46,8 @@ from poltika.engines.simulator.trace import (
     recording_parameters,
     trace_header,
 )
-from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
-from poltika.semantics.schemas.policy_spec import covers
+from poltika.policy.loader import PolicyParameterSet, load_bound_policy_spec, load_policy_parameters
+from poltika.semantics.schemas.policy_spec import PolicySpec, covers
 
 
 class ClaimantCategory(str, Enum):
@@ -765,7 +765,7 @@ def _covers_week(value_effective_from: date, value_effective_to: date | None, we
 
 
 def _as_module_validation_failure(
-    policy_dir: Path, modelled_date: date, assessment_week: AssessmentWeek, parameters: PolicyParameterSet
+    spec: PolicySpec, modelled_date: date, assessment_week: AssessmentWeek, parameters: PolicyParameterSet
 ) -> ComponentResult | None:
     """The AS module-boundary invariants. Returns the shared `needs_review`
     result for the single `accommodation_supplement` component, or `None`
@@ -784,7 +784,6 @@ def _as_module_validation_failure(
     own `_param_value()` resolves an undeclared parameter to `needs_review`
     (Task 23's documented design).
     """
-    spec = load_policy_spec(policy_dir / "policy.yaml")
     reference_period = spec.reference_period
 
     # The loaded parameter set is actually for this module, not an
@@ -834,7 +833,7 @@ def _as_module_validation_failure(
         )
         assert matching_value is not None, (
             f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
-            "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
+            "found on re-check -- load_policy_parameters()/load_bound_policy_spec() disagree"
         )
         if matching_value.effective_to is None:
             # v0.1 question set QS-2: SCHEMA.md permits an open-ended final
@@ -909,7 +908,8 @@ def run_as_module(
     )
 
     assessment_period = (assessment_week.start, assessment_week.end)
-    validation_failure = _as_module_validation_failure(policy_dir, modelled_date, assessment_week, parameters)
+    spec = load_bound_policy_spec(policy_dir, parameters)
+    validation_failure = _as_module_validation_failure(spec, modelled_date, assessment_week, parameters)
     if validation_failure is not None:
         # No calculation ran, so the trace carries only the run identity;
         # the reason says which invariant failed.

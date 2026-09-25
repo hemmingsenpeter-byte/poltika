@@ -17,13 +17,14 @@ import pytest
 import yaml
 
 from poltika.common.errors import (
+    ArtifactHashMismatchError,
     InvalidSourceCatalogError,
     PolicyNotApprovedError,
     PolicyVersionMismatchError,
     UnresolvedSourceIdError,
     UnsupportedSchemaVersionError,
 )
-from poltika.policy.loader import load_policy_parameters
+from poltika.policy.loader import load_bound_policy_spec, load_policy_parameters
 from poltika.semantics.schemas.policy_spec import covers
 
 MODELLED_DATE = date(2026, 6, 1)  # inside the fixtures' 2026-04-01..2027-04-01 interval
@@ -392,3 +393,17 @@ def test_covers_is_half_open() -> None:
     assert covers(start, end, date(2027, 3, 31))
     assert not covers(start, end, end)
     assert covers(start, None, date(2099, 1, 1))
+
+
+def test_bound_policy_spec_is_the_file_the_parameters_came_from(tmp_path: Path) -> None:
+    _write_policy(tmp_path, _base_policy())
+    parameters = load_policy_parameters(tmp_path, MODELLED_DATE)
+    assert load_bound_policy_spec(tmp_path, parameters).policy_id == "test_policy"
+
+
+def test_bound_policy_spec_refuses_a_file_changed_after_loading(tmp_path: Path) -> None:
+    _write_policy(tmp_path, _base_policy())
+    parameters = load_policy_parameters(tmp_path, MODELLED_DATE)
+    _write_policy(tmp_path, _base_policy(reference_period={"from": "2026-04-01", "to": "2028-04-01"}))
+    with pytest.raises(ArtifactHashMismatchError):
+        load_bound_policy_spec(tmp_path, parameters)
