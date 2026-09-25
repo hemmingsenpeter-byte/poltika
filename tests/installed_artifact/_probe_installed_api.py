@@ -163,7 +163,8 @@ def _probe_scenario_store(client_factory: Any) -> str | None:
         if failure:
             return failure
         replayed = client.post(f"/scenarios/{result_id}/replay")
-        if replayed.json() != {"result_id": result_id, "reproduced": True}:
+        # An installed wheel has no commit, so its code never "matches" (F4).
+        if replayed.json() != {"result_id": result_id, "reproduced": True, "code_matches": False}:
             return f"store replay: {replayed.text}"
     return None
 

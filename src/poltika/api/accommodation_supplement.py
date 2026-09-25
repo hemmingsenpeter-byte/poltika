@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictInt
 
 from poltika.engines.simulator.accommodation_supplement import (
     Area,
@@ -88,7 +88,8 @@ class AsCalculationRequest(BaseModel):
     partner_status: PartnerType | None = None
     statistical_area_unit: Area | None = None
     weekly_accommodation_costs: Decimal | None = Field(default=None, ge=0)
-    dependent_children_count: int | None = Field(default=None, ge=0)
+    # StrictInt (Task 34.3 F8): `true` must not be read as one child.
+    dependent_children_count: StrictInt | None = Field(default=None, ge=0)
     cash_assets: Decimal | None = Field(default=None, ge=0)
     exempt_cash_asset_status: FactStatus = FactStatus.UNKNOWN
     weekly_income: Decimal | None = Field(default=None, ge=0)

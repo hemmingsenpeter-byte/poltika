@@ -39,7 +39,7 @@ pages describe current administration but do not override the legislation.
 | AS-07 | A non-beneficiary's weekly chargeable income above the relevant threshold reduces the assessed rate by 25 cents per dollar. The base rate is capped before income reduction, and the final positive amount is rounded up to a whole dollar. | Regulations rr 17-19; `as-msd-income-method`, `as-msd-income-2026`, `as-msd-income-example`. Fractional income handling has a conflicting agency example, recorded below. |
 | AS-08 | MSD says a claimant on a main benefit generally has no separate Accommodation Supplement income test; NZ Superannuation and Veteran's Pension recipients do. | `as-msd-beneficiaries`; Regulations rr 17-18. Do not use non-beneficiary income thresholds for every claimant. |
 | AS-09 | Couples in a joint tenancy are treated as one joint tenant for their qualifying costs, income, and assets; community partners have special rate treatment. | Act s 68 and Schedule 4 Part 7 cl 6A. Check shared-property facts before combining households. |
-| AS-10 | WFF tax credits paid by Inland Revenue are listed by MSD as excluded from non-beneficiary Accommodation Supplement chargeable income. Conversely, IRD excludes non-taxable Accommodation Supplement from WFF family income. | Act Schedule 2 income definition, Schedule 3 cl 8; `as-msd-chargeable-income`, `as-ird-other-income`. The MSD-paid WFF route is not established by that IRD-paid wording. |
+| AS-10 | WFF tax credits paid by Inland Revenue are listed by MSD as excluded from non-beneficiary Accommodation Supplement chargeable income. Conversely, IRD excludes non-taxable Accommodation Supplement from WFF family income. | Act Schedule 2 income definition, Schedule 3 cl 8; `as-msd-chargeable-income`, `as-ird-other-income`. The MSD-paid WFF route is not established by that IRD-paid wording; **resolved by DEC-003** (Task 28.3): WFF tax credits are excluded under Schedule 3 cl 8(1)(l) whichever agency pays them. |
 | AS-11 | Assets, income, housing costs, family status, and location can all change an award; the Act allows refusal, reduction, or cancellation in specified circumstances. | Act s 69; `as-msd-overview`. Change-date and reassessment rules still need mapping. |
 
 ## Qualification and claimant branches
@@ -189,9 +189,8 @@ list that specifically names WFF tax credit, corroborating (not
 independently re-deriving the full text of) `specification.md`'s existing
 AS-10 citation. The deeper question -- whether every *MSD-paid* WFF
 component receives the same treatment as the *IRD-paid* route Schedule 3
-cl 8 and the IRD source both describe -- remains open, exactly as AS-10
-already says, and is Task 28's problem (WFF + AS interaction), not this
-task's.
+cl 8 and the IRD source both describe -- was left to Task 28 and is now
+resolved by DEC-003 (excluded whichever agency pays).
 
 ### Proposed v0.1 supported domain
 
@@ -267,7 +266,12 @@ false zero or a silent default):
 2. Calculate weekly qualifying accommodation costs under the plain-case
    formula (Schedule 4 Part 7 cl 7, `b = c = d = f = 0`): the claimant's
    verified weekly accommodation costs, unreduced.
-3. Select the entry threshold: 25% of the claimant's base rate (rent/board
+3. **Superseded by the Task 26a selector repair (DEC-002, policy 0.1.1;
+   see "Task 26a repair" below): the published MSD rent/board entry
+   threshold for the claimant category and rate household is subtracted
+   directly; no base rate or 25% multiplication is computed. The original
+   Task 22 text is kept below as the record of what was repaired.**
+   Select the entry threshold: 25% of the claimant's base rate (rent/board
    tenure, cl 1-3). The base rate itself is set per claimant category
    (Jobseeker/Sole Parent/Supported Living/non-beneficiary) **and**
    household category (Task 24.1's independent verification found MSD's

@@ -91,7 +91,9 @@ class WffCalculationRequest(BaseModel):
 
     household_eligibility: FactStatus
     extra_instalment_status: FactStatus
-    children: list[ChildFactsRequest] = Field(default_factory=list)
+    # Required (Task 34.3 F8): an omitted child list is a missing fact, not
+    # a verified "no children"; `[]` asserts there are none.
+    children: list[ChildFactsRequest]
     partner_status: PartnerStatus = PartnerStatus.UNKNOWN
     family_scheme_income: VerifiedIncomeRequest | None = None
     net_family_scheme_income: Decimal | None = Field(default=None, ge=0)

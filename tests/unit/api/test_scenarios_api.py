@@ -42,7 +42,9 @@ def test_create_fetch_replay_and_rerun(stored_database: str) -> None:
     assert stored["record"]["as_lookup_date"] == "2026-06-01"
 
     replayed = client.post(f"/scenarios/{result_id}/replay")
-    assert replayed.json() == {"result_id": result_id, "reproduced": True}
+    assert replayed.json()["reproduced"] is True
+    # The stored and running identities agree only on a clean checkout.
+    assert replayed.json()["code_matches"] is stored["reproducible"]
 
     rerun = client.post(f"/scenarios/{result_id}/rerun").json()
     assert rerun["original_result_id"] == result_id

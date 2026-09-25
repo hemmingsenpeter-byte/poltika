@@ -230,18 +230,16 @@ def _param_value(parameters: PolicyParameterSet, parameter_id: str) -> Component
     bug (PR #21) -- every real parameter has been declared since Task 10.
     For AS, an undeclared parameter is an expected state: the published
     entry thresholds and income levels (Task 26a repair, DEC-002) are
-    declared only for supported rows, and until Task 26a.2 populates them
-    none is declared (see `policy.yaml`'s comment above `parameters:`). A
-    bare `KeyError` would be the wrong failure mode for an intentional,
-    documented gap.
+    declared only for supported rows (see `policy.yaml`'s comment above
+    `parameters:`). A bare `KeyError` would be the wrong failure mode for
+    an intentional, documented gap.
     """
     if parameter_id not in parameters.resolutions:
         return ComponentResult(
             outcome="needs_review",
             reason=(
                 f"parameter '{parameter_id}' is not yet declared in policy "
-                f"'{parameters.policy_id}' -- pending independent recalculation "
-                "of its dated source table (Task 24)"
+                f"'{parameters.policy_id}' -- no sourced value exists for this row"
             ),
         )
     resolution = parameters.get(parameter_id)

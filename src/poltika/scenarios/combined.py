@@ -94,6 +94,20 @@ class CombinedResult:
     contradictions: tuple[str, ...] = ()
 
 
+# The Task 28.3 checks, in the order `shared_fact_contradictions` applies them
+# (named in the combined provenance report, Task 34.3 F9).
+SHARED_FACT_CHECKS: tuple[str, ...] = (
+    "precondition: AS claimant is the WFF claimant or their partner",
+    "AS assessment week inside the WFF year",
+    "partner status",
+    "main benefit vs WFF in-work eligibility",
+    "main benefit vs WFF MC 6(b)",
+    "main benefit vs WFF MD 14/15 protected family tax credit",
+    "main benefit vs WFF MG 4 protected Best Start",
+    "dependent children count",
+)
+
+
 def shared_fact_contradictions(
     scenario: CombinedHouseholdScenario, wff_period: tuple[date, date], assessment_week: AssessmentWeek
 ) -> tuple[str, ...]:

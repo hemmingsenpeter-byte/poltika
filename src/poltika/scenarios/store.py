@@ -69,6 +69,7 @@ from poltika.scenarios.record import (
     canonical_json,
     result_payload,
     run_scenario,
+    scenario_id,
 )
 
 metadata = MetaData()
@@ -124,6 +125,12 @@ class StoredRun:
 
 
 @dataclass(frozen=True)
+class ReplayReport:
+    reproduced: bool
+    code_matches: bool
+
+
+@dataclass(frozen=True)
 class DriftReport:
     """A re-run against current files, stored as its own run."""
 
@@ -175,10 +182,14 @@ class ScenarioStore:
             record_json = conn.execute(
                 select(scenario_table.c.record_json).where(scenario_table.c.scenario_id == row.scenario_id)
             ).scalar_one()
+        record = record_from_plain(json.loads(record_json))
+        if scenario_id(record) != row.scenario_id:
+            # Task 34.3 F10: never replay a different scenario than was stored.
+            raise StoreError(f"stored scenario {row.scenario_id} does not rebuild to the same identity")
         return StoredRun(
             result_id=row.result_id,
             scenario_id=row.scenario_id,
-            record=record_from_plain(json.loads(record_json)),
+            record=record,
             manifest=json.loads(row.manifest_json),
             result=json.loads(row.result_json),
             reproducible=row.reproducible,
@@ -201,15 +212,23 @@ class ScenarioStore:
                 path.write_bytes(content)
         return target / "working_for_families", target / "accommodation_supplement"
 
-    def replay(self, result_id: str, workdir: Path) -> bool:
-        """Re-run a stored run against its own retained files. True when the
-        deterministic result and bound file hashes reproduce exactly."""
+    def replay(self, result_id: str, workdir: Path, *, code: CodeIdentity) -> ReplayReport:
+        """Re-run a stored run against its own retained files with the code
+        running now (`code`). `reproduced` when the deterministic result and
+        bound file hashes reproduce exactly; `code_matches` only when both the
+        stored and the current code are identified reproducibly and are the
+        same (Task 34.3 F4: a rerun is never labelled with the stored code)."""
         stored = self.get_run(result_id)
         wff_dir, as_dir = self.restore_artifacts(stored, workdir)
-        rerun = run_scenario(stored.record, wff_dir, as_dir, code=_code(stored.manifest))
+        rerun = run_scenario(stored.record, wff_dir, as_dir, code=code)
         same_result: bool = json.loads(canonical_json(result_payload(rerun.result))) == stored.result
         same_files: bool = [list(item) for item in rerun.manifest.policy_files] == stored.manifest["policy_files"]
-        return same_result and same_files
+        stored_code = _code(stored.manifest)
+        code_matches = stored_code.reproducible and code.reproducible and (
+            (stored_code.source_commit, stored_code.dependency_lock_sha256)
+            == (code.source_commit, code.dependency_lock_sha256)
+        )
+        return ReplayReport(reproduced=same_result and same_files, code_matches=code_matches)
 
     def rerun_against_current(
         self, result_id: str, wff_policy_dir: Path, as_policy_dir: Path, *, code: CodeIdentity

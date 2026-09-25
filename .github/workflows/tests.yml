@@ -46,3 +46,8 @@ jobs:
 
       - name: Installed artifact (wheel, API, store and provenance probe)
         run: uv run --extra dev pytest -q -m installed_artifact
+
+      - name: Code replay (stored run on its retained revision, Task 32.4)
+        env:
+          POLTIKA_REQUIRE_CODE_REPLAY: "1"
+        run: uv run --extra dev pytest -q -m code_replay

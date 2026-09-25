@@ -1,11 +1,10 @@
 # Task 22 approved scoped specification (Pete, 22 September 2026). See
 # specification.md's "Proposed Task 22 scoped calculation contract" section
 # and "Task 22 acceptance" note for the full rationale, DEC-001 (the r 18(2)
-# rounding decision), and why `parameters` below is deliberately empty (a
-# concrete Task 25 schema-stress-test finding, not an oversight -- see the
-# comment above `parameters:`). Approval covers the scoped v0.1 domain and
-# calculation sequence; it is not a claim that every dated MSD rate table
-# has been independently recalculated -- that remains Tasks 23-24's job.
+# rounding decision). Approval covers the scoped v0.1 domain and calculation
+# sequence. The dated MSD table values (entry thresholds, income levels) were
+# added by the Task 26a repair (DEC-002, policy 0.1.1) and checked against the
+# official tables at 1 April 2026 in the Task 34.3 review.
 schema_version: "0.1"
 policy_id: accommodation_supplement
 policy_version: "0.1.1"
@@ -129,18 +128,14 @@ inputs:
 # section) -- review_status: approved reflects that direct statutory
 # verification, not a dated MSD table (none of these values come from one).
 #
-# Deliberately NOT included yet: the published rent/board entry thresholds
+# The published rent/board entry thresholds
 # (as_entry_threshold_<claimant_category>_<rate_household>) and the
 # non-beneficiary income levels (as_income_level_non_beneficiary_<rate_
-# household>), per the Task 26a selector repair and DEC-002 (policy 0.1.1).
-# They come from the dated MSD tables and are populated by Task 26a.2 after
-# the repaired code is reviewed. The Task 25/26 as_base_rate_* ids were a
-# SPEC_ERROR (PR #46) and are not aliases or fallbacks. ParameterSpec.values requires at least one value (SCHEMA.md:
-# "no matching interval means unsupported... not zero"), so a parameter
-# cannot be declared with no sourced value at all; run_as_module() (Task
-# 23's module-boundary entry point, mirroring wff.py's
-# _WFF_REQUIRED_PARAMETER_IDS check) must detect their absence and resolve
-# needs_review rather than crash, not this file inventing a placeholder.
+# household>) are declared further below for the supported rows only (Task
+# 26a.2, DEC-002, policy 0.1.1). An unsupported row has no declared id, and
+# the calculator resolves an undeclared id to needs_review rather than a
+# placeholder value. The Task 25/26 as_base_rate_* ids were a SPEC_ERROR
+# (PR #46) and are not aliases or fallbacks.
 parameters:
   # Schedule 4 Part 7 cl 1-3 area caps, rent/contributions/board tenure.
   # Household category selects which set of four; Area 1-4 selects within

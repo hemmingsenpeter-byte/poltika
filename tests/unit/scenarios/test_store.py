@@ -45,7 +45,10 @@ def test_replay_reproduces_after_the_current_policy_files_change(database_url: s
     # Change the current AS policy after the run (a different threshold).
     policy = as_ / "policy.yaml"
     policy.write_text(policy.read_text().replace("value: 168,", "value: 170,"))
-    assert store.replay(run.result_id, tmp_path / "replay") is True
+    report = store.replay(run.result_id, tmp_path / "replay", code=CODE)
+    assert report.reproduced is True
+    # CODE carries no commit, so the code cannot be shown to match.
+    assert report.code_matches is False
 
 
 def test_rerun_against_current_files_is_a_new_run_reporting_drift(database_url: str, tmp_path: Path) -> None:
@@ -95,6 +98,18 @@ def test_a_stored_id_cannot_be_rewritten(database_url: str) -> None:
         store.save_run(forged, WFF_POLICY_DIR, AS_POLICY_DIR)
 
 
+def test_replay_reports_whether_the_running_code_is_the_stored_code(database_url: str, tmp_path: Path) -> None:
+    """Task 34.3 F4: replay never relabels itself with the stored identity."""
+    store = ScenarioStore.from_url(database_url)
+    stored_code = CodeIdentity("0.1.0", "a" * 40, True, "b" * 64)
+    run = run_scenario(record_from_yaml(_household()), WFF_POLICY_DIR, AS_POLICY_DIR, code=stored_code)
+    store.save_run(run, WFF_POLICY_DIR, AS_POLICY_DIR)
+    same = store.replay(run.result_id, tmp_path / "same", code=stored_code)
+    assert same.reproduced and same.code_matches
+    other = store.replay(run.result_id, tmp_path / "other", code=CodeIdentity("0.1.0", "c" * 40, True, "b" * 64))
+    assert other.reproduced and not other.code_matches
+
+
 def test_replay_fails_explicitly_when_an_artifact_is_missing(database_url: str, tmp_path: Path) -> None:
     # Runs last in this file: the deleted artifact is content-addressed and
     # shared by other stored runs in the session database.
@@ -109,4 +124,5 @@ def test_replay_fails_explicitly_when_an_artifact_is_missing(database_url: str, 
     with create_engine(database_url).begin() as conn:
         conn.execute(delete(artifact_table).where(artifact_table.c.sha256 == sha))
     with pytest.raises(StoreError, match="missing"):
-        store.replay(run.result_id, tmp_path / "replay")
+        store.replay(run.result_id, tmp_path / "replay", code=CODE)
+

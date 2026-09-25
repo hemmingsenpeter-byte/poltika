@@ -16,6 +16,7 @@ assertion (see `poltika.api.main`).
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -36,7 +37,13 @@ from poltika.engines.assurance.provenance import build_combined_provenance_repor
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
 from poltika.engines.simulator.wff import FactStatus
 from poltika.scenarios.combined import CombinedHouseholdScenario
-from poltika.scenarios.record import ScenarioRecord, ScenarioRun, detect_code_identity, run_scenario
+from poltika.scenarios.record import (
+    CodeIdentity,
+    ScenarioRecord,
+    ScenarioRun,
+    detect_code_identity,
+    run_scenario,
+)
 
 router = APIRouter(prefix="/household", tags=["household"])
 
@@ -44,6 +51,18 @@ router = APIRouter(prefix="/household", tags=["household"])
 # wheel there is no git repository, so the run is recorded as not
 # reproducible (Task 30).
 _CODE_ROOT = Path(__file__).resolve().parents[3]
+# Task 34.3 F4: the code this process loaded is the code at startup.
+_STARTUP_CODE = detect_code_identity(_CODE_ROOT)
+
+
+def running_code_identity() -> CodeIdentity:
+    """The startup identity, demoted to not reproducible when the checkout
+    has moved or changed since the process started: a long-running server
+    must not label its runs with a commit it never loaded."""
+    now = detect_code_identity(_CODE_ROOT)
+    if now == _STARTUP_CODE:
+        return _STARTUP_CODE
+    return replace(_STARTUP_CODE, source_tree_clean=False)
 
 
 class HouseholdCalculationRequest(BaseModel):
@@ -91,7 +110,7 @@ def record_from_request(request: HouseholdCalculationRequest) -> ScenarioRecord:
 def execute(record: ScenarioRecord) -> ScenarioRun:
     """Run a record against the internally pinned policy directories."""
     return run_scenario(
-        record, WFF_POLICY_DIR, AS_POLICY_DIR, code=detect_code_identity(_CODE_ROOT)
+        record, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
     )
 
 

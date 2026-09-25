@@ -29,7 +29,13 @@ from poltika.engines.simulator.accommodation_supplement import (
     calculate_accommodation_supplement,
     run_as_module,
 )
-from poltika.engines.simulator.wff import ComponentResult, WffResult, calculate_wff, run_wff_module
+from poltika.engines.simulator.wff import (
+    ComponentResult,
+    FactStatus,
+    WffResult,
+    calculate_wff,
+    run_wff_module,
+)
 from poltika.policy.loader import load_policy_parameters
 from tests.conftest import (
     AS_MODELLED_DATE,
@@ -429,3 +435,36 @@ def test_report_says_when_no_assessment_period_was_stated() -> None:
     assert "Assessment period: not stated (results did not come through a module entry point)" in render_markdown(
         report
     )
+
+
+def test_combined_report_marks_superseded_rules_and_shows_combined_inputs() -> None:
+    """Task 34.3 F9: a component the combined runner replaced keeps its module
+    trace, but its rules are not reported as applied; the runner's own
+    caller-asserted input and checks are shown."""
+    from dataclasses import replace as _replace
+
+    from poltika.engines.assurance.provenance import (
+        build_combined_provenance_report,
+        render_combined_markdown,
+    )
+    from poltika.scenarios.record import CodeIdentity, run_scenario
+    from tests.unit.scenarios.test_scenario_record import _household, record_from_yaml
+
+    record = record_from_yaml(_household("g1_sole_parent_two_children_non_beneficiary"))
+    record = _replace(
+        record,
+        household=_replace(record.household, as_claimant_is_wff_claimant_or_partner=FactStatus.UNKNOWN),
+    )
+    run = run_scenario(record, WFF_POLICY_DIR, AS_POLICY_DIR, code=CodeIdentity("0.1.0", None, None, None))
+    report = build_combined_provenance_report(run, WFF_POLICY_DIR, AS_POLICY_DIR)
+    (as_component,) = report["accommodation_supplement"]["components"]
+    assert as_component["outcome"] == "needs_review"
+    assert as_component["calculation_rules"]  # the original module trace is kept
+    assert as_component["rules_applied"] is False
+    assert report["combined_inputs"] == [
+        {"name": "as_claimant_is_wff_claimant_or_partner", "value": "unknown", "asserted_by": "caller"}
+    ]
+    markdown = render_combined_markdown(report)
+    assert "Calculation rules from the superseded module result (not applied)" in markdown
+    assert "Calculation rules applied" not in markdown.split("## Accommodation Supplement")[1]
+    assert "as_claimant_is_wff_claimant_or_partner: unknown (asserted by caller)" in markdown
