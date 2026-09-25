@@ -77,6 +77,48 @@ class InputUse:
 
 
 @dataclass(frozen=True)
+class CalculationStep:
+    """One arithmetic step on a component's calculated path (v0.1.5 Task
+    2.1), recorded as the calculator performs it, so an explanation can
+    show the intermediate values rather than only the final amount.
+
+    `step_id` is stable across versions (e.g. `WFF_FTC_ABATEMENT`);
+    `rule_id` is the specification rule the step implements (e.g.
+    `WFF-03`). `inputs` are the named operands, in the order the step uses
+    them; `result` is the exact value the calculator carried forward."""
+
+    step_id: str
+    rule_id: str
+    description: str
+    inputs: tuple[tuple[str, Decimal | int], ...]
+    result: Decimal
+
+
+def record_step(
+    steps: list[CalculationStep] | None,
+    step_id: str,
+    rule_id: str,
+    description: str,
+    result: Decimal,
+    **inputs: Decimal | int,
+) -> Decimal:
+    """Append a step to `steps` (when recording) and return `result`
+    unchanged, so a calculator line keeps its own arithmetic:
+    `x = record_step(steps, ..., a - b, a=a, b=b)`."""
+    if steps is not None:
+        steps.append(
+            CalculationStep(
+                step_id=step_id,
+                rule_id=rule_id,
+                description=description,
+                inputs=tuple(inputs.items()),
+                result=result,
+            )
+        )
+    return result
+
+
+@dataclass(frozen=True)
 class ComponentTrace:
     component_id: str
     policy_id: str
@@ -107,6 +149,9 @@ class ComponentTrace:
     # assessment week. Set by the module entry points; `None` for a bare
     # calculator call, which is not told its period.
     assessment_period: tuple[date, date] | None = None
+    # v0.1.5 Task 2.1: the arithmetic steps the component performed, in
+    # order, with their intermediate values. Empty when no step was reached.
+    steps: tuple[CalculationStep, ...] = ()
 
 
 class _RecordingResolutions(dict[str, Any]):

@@ -130,6 +130,20 @@ def build_provenance_report(policy_dir: Path, results: Mapping[str, ComponentRes
                     {"name": use.name, "value": plain(use.value), "asserted_by": use.asserted_by}
                     for use in trace.inputs
                 ],
+                # v0.1.5 Task 2.4: the arithmetic the calculator performed.
+                "steps": [
+                    {
+                        "step_id": step.step_id,
+                        "rule_id": step.rule_id,
+                        # Resolved like every other citation: a step citing
+                        # a rule the specification lacks refuses the report.
+                        "rule_summary": _rule_summary(rule_summaries, step.rule_id),
+                        "description": step.description,
+                        "inputs": {name: plain(value) for name, value in step.inputs},
+                        "result": plain(step.result),
+                    }
+                    for step in trace.steps
+                ],
             }
         )
     return {
@@ -228,6 +242,15 @@ def render_markdown(report: Mapping[str, Any]) -> str:
         if component["decisions"]:
             lines += ["", f"### Decisions {applied}", ""]
             lines += [f"- {d['id']} (`{d['path']}`)" for d in component["decisions"]]
+        if component["steps"]:
+            lines += ["", f"### Calculation steps ({applied})", ""]
+            lines += ["| Step | Rule | What | Inputs | Result |", "| --- | --- | --- | --- | --- |"]
+            for step in component["steps"]:
+                inputs = ", ".join(f"{name} = {value}" for name, value in step["inputs"].items())
+                lines.append(
+                    f"| `{step['step_id']}` | {step['rule_id']} | {_cell(step['description'])} "
+                    f"| {_cell(inputs)} | {step['result']} |"
+                )
         lines += ["", "### Parameters consulted", ""]
         if component["parameters"]:
             lines += [

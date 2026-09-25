@@ -40,10 +40,12 @@ from pathlib import Path
 
 from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
+    CalculationStep,
     ComponentTrace,
     input_uses,
     merge_ids,
     parameter_uses,
+    record_step,
     recording_copy,
     recording_parameters,
     trace_header,
@@ -408,7 +410,7 @@ def _param_value(parameters: PolicyParameterSet, parameter_id: str) -> Component
 
 
 def _family_tax_credit(
-    scenario: WffScenario, parameters: PolicyParameterSet
+    scenario: WffScenario, parameters: PolicyParameterSet, steps: list[CalculationStep] | None = None
 ) -> tuple[ComponentResult, Decimal]:
     """Returns the FTC component result and `remaining_abatement` -- MD
     2(2)(c) applies abatement to family tax credit first, then passes any
@@ -469,10 +471,30 @@ def _family_tax_credit(
         return rate, zero
 
     additional_children = len(scenario.children) - 1
-    family_credit_base = eldest + additional * additional_children
-    abatement = rate * _complete_dollar_excess(scenario.family_scheme_income.combined, threshold)
-    family_credit = _zero_floor(family_credit_base - abatement)
-    remaining_abatement = max(zero, abatement - family_credit_base)
+    income = scenario.family_scheme_income.combined
+    family_credit_base = record_step(
+        steps, "WFF_FTC_GROSS", "WFF-03", "eldest-child amount plus the additional-child amount for each other child",
+        eldest + additional * additional_children,
+        eldest_child_amount=eldest, additional_child_amount=additional, additional_children=additional_children,
+    )
+    excess = record_step(
+        steps, "WFF_FTC_INCOME_EXCESS", "WFF-03", "complete dollars of family scheme income over the abatement threshold",
+        _complete_dollar_excess(income, threshold),
+        family_scheme_income=income, abatement_threshold=threshold,
+    )
+    abatement = record_step(
+        steps, "WFF_FTC_ABATEMENT", "WFF-03", "abatement rate times the income excess",
+        rate * excess, abatement_rate=rate, income_excess=excess,
+    )
+    family_credit = record_step(
+        steps, "WFF_FTC_NET", "WFF-03", "gross family tax credit less abatement, not below zero",
+        _zero_floor(family_credit_base - abatement), gross_family_tax_credit=family_credit_base, abatement=abatement,
+    )
+    remaining_abatement = record_step(
+        steps, "WFF_FTC_REMAINING_ABATEMENT", "WFF-03",
+        "abatement left after family tax credit, passed to in-work tax credit (MD 2(2)(c))",
+        max(zero, abatement - family_credit_base), abatement=abatement, gross_family_tax_credit=family_credit_base,
+    )
 
     return ComponentResult(outcome="calculated", value=family_credit), remaining_abatement
 
@@ -482,6 +504,7 @@ def _in_work_tax_credit(
     parameters: PolicyParameterSet,
     ftc_result: ComponentResult,
     remaining_abatement: Decimal,
+    steps: list[CalculationStep] | None = None,
 ) -> ComponentResult:
     if scenario.mc6a_veterans_payment == FactStatus.EXCLUDED:
         return ComponentResult(
@@ -537,13 +560,23 @@ def _in_work_tax_credit(
 
     num_children = len(scenario.children)
     children_beyond_three = max(0, num_children - 3)
-    iwtc_base = base + additional * children_beyond_three
-    iwtc = _zero_floor(iwtc_base - remaining_abatement)
+    iwtc_base = record_step(
+        steps, "WFF_IWTC_GROSS", "WFF-04", "in-work base plus the additional amount for each child beyond three",
+        base + additional * children_beyond_three,
+        in_work_base=base, additional_child_amount=additional, children_beyond_three=children_beyond_three,
+    )
+    iwtc = record_step(
+        steps, "WFF_IWTC_NET", "WFF-03", "gross in-work tax credit less the abatement remaining after family tax credit",
+        _zero_floor(iwtc_base - remaining_abatement),
+        gross_in_work_tax_credit=iwtc_base, remaining_abatement=remaining_abatement,
+    )
 
     return ComponentResult(outcome="calculated", value=iwtc)
 
 
-def _minimum_family_tax_credit(scenario: WffScenario, parameters: PolicyParameterSet) -> ComponentResult:
+def _minimum_family_tax_credit(
+    scenario: WffScenario, parameters: PolicyParameterSet, steps: list[CalculationStep] | None = None
+) -> ComponentResult:
     if scenario.minimum_family_full_time_earner_weeks == FactStatus.EXCLUDED:
         return ComponentResult(
             outcome="unsupported",
@@ -597,11 +630,17 @@ def _minimum_family_tax_credit(scenario: WffScenario, parameters: PolicyParamete
     if isinstance(prescribed, ComponentResult):
         return prescribed
 
-    mftc = _zero_floor(prescribed - scenario.net_family_scheme_income)
+    mftc = record_step(
+        steps, "WFF_MFTC_TOPUP", "WFF-05", "prescribed amount less net family scheme income, not below zero",
+        _zero_floor(prescribed - scenario.net_family_scheme_income),
+        prescribed_amount=prescribed, net_family_scheme_income=scenario.net_family_scheme_income,
+    )
     return ComponentResult(outcome="calculated", value=mftc)
 
 
-def _best_start(scenario: WffScenario, parameters: PolicyParameterSet) -> ComponentResult:
+def _best_start(
+    scenario: WffScenario, parameters: PolicyParameterSet, steps: list[CalculationStep] | None = None
+) -> ComponentResult:
     if scenario.mc6a_veterans_payment == FactStatus.EXCLUDED:
         return ComponentResult(
             outcome="unsupported",
@@ -680,8 +719,19 @@ def _best_start(scenario: WffScenario, parameters: PolicyParameterSet) -> Compon
     if isinstance(rate, ComponentResult):
         return rate
 
-    abatement = rate * _complete_dollar_excess(scenario.family_scheme_income.combined, threshold)
-    best_start = _zero_floor(annual_amount - abatement)
+    income = scenario.family_scheme_income.combined
+    excess = record_step(
+        steps, "WFF_BS_INCOME_EXCESS", "WFF-06", "complete dollars of family scheme income over the Best Start threshold",
+        _complete_dollar_excess(income, threshold), family_scheme_income=income, abatement_threshold=threshold,
+    )
+    abatement = record_step(
+        steps, "WFF_BS_ABATEMENT", "WFF-06", "Best Start abatement rate times the income excess",
+        rate * excess, abatement_rate=rate, income_excess=excess,
+    )
+    best_start = record_step(
+        steps, "WFF_BS_NET", "WFF-06", "annual Best Start amount less abatement, not below zero",
+        _zero_floor(annual_amount - abatement), annual_amount=annual_amount, abatement=abatement,
+    )
 
     return ComponentResult(outcome="calculated", value=best_start)
 
@@ -712,7 +762,8 @@ def calculate_wff(scenario: WffScenario, parameters: PolicyParameterSet) -> WffR
 
     ftc_scenario, ftc_reads = recording_copy(scenario)
     ftc_parameters, ftc_params = recording_parameters(parameters)
-    ftc_result, remaining_abatement = _family_tax_credit(ftc_scenario, ftc_parameters)
+    ftc_steps: list[CalculationStep] = []
+    ftc_result, remaining_abatement = _family_tax_credit(ftc_scenario, ftc_parameters, ftc_steps)
 
     iwtc_scenario, iwtc_reads = recording_copy(scenario)
     iwtc_parameters, iwtc_params = recording_parameters(parameters)
@@ -720,20 +771,24 @@ def calculate_wff(scenario: WffScenario, parameters: PolicyParameterSet) -> WffR
     # reached MD 2(2)(c)'s dependency on FTC's remaining abatement, so FTC's
     # own parameters and inputs become part of its trace too.
     ftc_seen_by_iwtc, ftc_result_reads = recording_copy(ftc_result)
-    iwtc_result = _in_work_tax_credit(iwtc_scenario, iwtc_parameters, ftc_seen_by_iwtc, remaining_abatement)
+    iwtc_steps: list[CalculationStep] = []
+    iwtc_result = _in_work_tax_credit(iwtc_scenario, iwtc_parameters, ftc_seen_by_iwtc, remaining_abatement, iwtc_steps)
     iwtc_used_ftc = bool(ftc_result_reads)
 
     mftc_scenario, mftc_reads = recording_copy(scenario)
     mftc_parameters, mftc_params = recording_parameters(parameters)
-    mftc_result = _minimum_family_tax_credit(mftc_scenario, mftc_parameters)
+    mftc_steps: list[CalculationStep] = []
+    mftc_result = _minimum_family_tax_credit(mftc_scenario, mftc_parameters, mftc_steps)
 
     best_start_scenario, best_start_reads = recording_copy(scenario)
     best_start_parameters, best_start_params = recording_parameters(parameters)
-    best_start_result = _best_start(best_start_scenario, best_start_parameters)
+    best_start_steps: list[CalculationStep] = []
+    best_start_result = _best_start(best_start_scenario, best_start_parameters, best_start_steps)
 
     return WffResult(
         family_tax_credit=_traced(
-            ftc_result, "family_tax_credit", scenario, parameters, merge_ids(gate_reads, ftc_reads), ftc_params
+            ftc_result, "family_tax_credit", scenario, parameters, merge_ids(gate_reads, ftc_reads), ftc_params,
+            steps=ftc_steps,
         ),
         in_work_tax_credit=_traced(
             iwtc_result,
@@ -743,9 +798,11 @@ def calculate_wff(scenario: WffScenario, parameters: PolicyParameterSet) -> WffR
             merge_ids(gate_reads, iwtc_reads, ftc_reads if iwtc_used_ftc else []),
             merge_ids(iwtc_params, ftc_params if iwtc_used_ftc else []),
             upstream=("family_tax_credit",) if iwtc_used_ftc else (),
+            steps=iwtc_steps,
         ),
         minimum_family_tax_credit=_traced(
-            mftc_result, "minimum_family_tax_credit", scenario, parameters, merge_ids(gate_reads, mftc_reads), mftc_params
+            mftc_result, "minimum_family_tax_credit", scenario, parameters, merge_ids(gate_reads, mftc_reads), mftc_params,
+            steps=mftc_steps,
         ),
         best_start=_traced(
             best_start_result,
@@ -754,6 +811,7 @@ def calculate_wff(scenario: WffScenario, parameters: PolicyParameterSet) -> WffR
             parameters,
             merge_ids(gate_reads, best_start_reads),
             best_start_params,
+            steps=best_start_steps,
         ),
     )
 
@@ -806,6 +864,7 @@ def _traced(
     parameter_ids: list[str],
     *,
     upstream: tuple[str, ...] = (),
+    steps: list[CalculationStep] | None = None,
 ) -> ComponentResult:
     rules: tuple[str, ...] = ()
     if result.outcome == "calculated":
@@ -821,6 +880,7 @@ def _traced(
             inputs=input_uses(scenario, input_names),
             upstream_components=upstream,
             calculation_rules=rules,
+            steps=tuple(steps or ()),
         ),
     )
 
