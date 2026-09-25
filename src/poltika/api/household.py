@@ -33,6 +33,7 @@ from poltika.api.accommodation_supplement import scenario_from_request as as_sce
 from poltika.api.wff import WFF_POLICY_DIR, WffCalculationRequest, WffCalculationResponse
 from poltika.api.wff import ComponentResultResponse as WffComponentResponse
 from poltika.api.wff import scenario_from_request as wff_scenario_from_request
+from poltika.engines.assurance.explanation import explain, explanation_to_dict
 from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
 from poltika.engines.simulator.outcome import FactStatus
@@ -86,6 +87,9 @@ class HouseholdCalculationResponse(BaseModel):
     result_id: str
     reproducible: bool
     provenance: dict[str, Any]
+    # v0.1.5 Phase 3: a deterministic explanation per component, rendered
+    # only from the recorded calculation (engines/assurance/explanation.py).
+    explanations: dict[str, Any]
 
 
 def record_from_request(request: HouseholdCalculationRequest) -> ScenarioRecord:
@@ -138,7 +142,21 @@ def response_from_run(run: ScenarioRun) -> HouseholdCalculationResponse:
         result_id=run.result_id,
         reproducible=run.manifest.reproducible,
         provenance=build_combined_provenance_report(run, WFF_POLICY_DIR, AS_POLICY_DIR),
+        explanations=explanations_for(run),
     )
+
+
+def explanations_for(run: ScenarioRun) -> dict[str, Any]:
+    """Each reported component's explanation, keyed by component id."""
+    wff = run.result.wff
+    components = {
+        "family_tax_credit": wff.family_tax_credit,
+        "in_work_tax_credit": wff.in_work_tax_credit,
+        "minimum_family_tax_credit": wff.minimum_family_tax_credit,
+        "best_start": wff.best_start,
+        "accommodation_supplement": run.result.accommodation_supplement,
+    }
+    return {cid: explanation_to_dict(explain(cid, result)) for cid, result in components.items()}
 
 
 @router.post("/calculate", response_model=HouseholdCalculationResponse)
