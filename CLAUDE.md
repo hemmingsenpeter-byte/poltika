@@ -1,5 +1,46 @@
 # Claude Code Instructions — Poltika
 
+## Start here
+
+1. Check the repository state before relying on anything you read. Several
+   sessions often work in this repository at once, and `main` can move
+   during a session:
+
+   ```sh
+   git status -sb && git log --oneline -5 origin/main && git worktree list
+   ```
+
+   Make changes in your own worktree off `origin/main`, never in the shared
+   checkout another session may be using:
+   `git worktree add -b <branch> /private/tmp/poltika-<name> origin/main`.
+2. Read [docs/ORIENTATION.md](docs/ORIENTATION.md): what v0.1 does now, on
+   one page, with runnable examples.
+
+## v0.1 at a glance
+
+- WFF 2026-27 (FTC, IWTC, MFTC, Best Start; annual) and the Accommodation
+  Supplement (weekly), separately or for one household.
+- Every component is `calculated`, `unsupported` or `needs_review`.
+  `unsupported` outranks `needs_review`. A missing fact is never zero.
+- IWTC is always `needs_review` (`in_work_base` is gated), so there is never a WFF total.
+- Inputs are caller-asserted statuses (`verified`/`excluded`/`unknown`). There is no
+  date of birth, age, child ID, hours or address, and the API rejects unknown fields.
+- WFF covers whole years only: part-year children, relationship changes and
+  shared care are `unsupported`.
+- MFTC needs an attested after-tax income. There is no income tax module.
+- AS is per assessment week: one area, cost and income, rounded up once at the end.
+- WFF and AS results are never added together.
+- WFF runs on policy `0.1.0`; AS on `0.1.1` with an explicit 7-day week.
+
+## What to read, by task
+
+| Task | Read |
+| --- | --- |
+| Running scenarios or answering questions about v0.1 | `docs/ORIENTATION.md` and `docs/demo/v0_1/` |
+| Checking or explaining a result | Also the policy's `specification.md` calculation sequence and `decisions/` |
+| Changing policy logic, statutory values, code or repository structure | Everything under "Before making changes" below |
+| Opening or reviewing a PR | The "Review" section below |
+
 ## Before making changes
 
 Read:

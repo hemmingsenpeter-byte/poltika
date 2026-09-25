@@ -219,5 +219,7 @@ lookup_date, scenario, requested_policy_version=..., assessment_week=...)`.
 
 ## Keeping this page current
 
-If a change makes any statement on this page untrue, update this page in the
-same PR.
+If a change makes any statement on this page untrue, update this page, and
+CLAUDE.md's "v0.1 at a glance" block, in the same PR. CI runs both examples
+above and compares them with the demo summary
+(`tests/acceptance/test_orientation_examples.py`). Nothing checks the prose.

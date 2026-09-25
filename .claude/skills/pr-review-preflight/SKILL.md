@@ -62,6 +62,10 @@ tests. At minimum ask:
   policy directory or call a user assertion independently verified evidence.
 - For shared helpers, check callers outside the changed module and run
   broader tests proportional to the blast radius.
+- Does the change make any statement in `docs/ORIENTATION.md` or CLAUDE.md's
+  "v0.1 at a glance" untrue? Update them in the same PR. CI runs the
+  orientation examples (`tests/acceptance/test_orientation_examples.py`), but
+  nothing checks the prose.
 
 Run and record the actual exit status and output of the relevant commands
 (normally `uv run pytest -q`, `uv run ruff check src tests`, and
