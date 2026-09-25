@@ -54,6 +54,20 @@ def test_create_fetch_replay_and_rerun(stored_database: str) -> None:
 
 
 @pytest.mark.postgres
+def test_the_same_household_with_children_reordered_is_stored_once(stored_database: str) -> None:
+    """Task 34.3 F10: child order is not part of a scenario's identity, so
+    posting the same household with its children reordered is not a 409."""
+    payload = _payload()
+    first, second = payload["wff"]["children"]
+    payload["wff"]["children"] = [{**first, "best_start_no_disqualifying_payment": "unknown"}, second]
+    reordered = {**payload, "wff": {**payload["wff"], "children": payload["wff"]["children"][::-1]}}
+    created = client.post("/scenarios", json=payload)
+    again = client.post("/scenarios", json=reordered)
+    assert (created.status_code, again.status_code) == (201, 201)
+    assert again.json()["result_id"] == created.json()["result_id"]
+
+
+@pytest.mark.postgres
 def test_unknown_result_id_is_404(stored_database: str) -> None:
     for response in (
         client.get(f"/scenarios/{UNKNOWN_ID}"),

@@ -108,12 +108,22 @@ def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def canonical_record(content: dict[str, Any]) -> dict[str, Any]:
+    """A record's plain form (as `canonical_json` writes it) with the WFF
+    children in canonical order. Task 34.3 F10: the calculators ignore child
+    order, so the scenario identity, and the store's check that a stored
+    record is the same scenario, ignore it too."""
+    household = content["household"]
+    wff = household["wff"]
+    children = sorted(
+        wff["children"], key=lambda child: json.dumps(child, sort_keys=True, separators=(",", ":"))
+    )
+    return {**content, "household": {**household, "wff": {**wff, "children": children}}}
+
+
 def scenario_id(record: ScenarioRecord) -> str:
-    """Task 34.3 F10: the calculators ignore child order, so the identity
-    does too -- children are hashed in canonical order."""
-    content = json.loads(canonical_json(record))
-    children = content["household"]["wff"]["children"]
-    children.sort(key=lambda child: json.dumps(child, sort_keys=True, separators=(",", ":")))
+    """Hashes the record in canonical child order (`canonical_record`)."""
+    content = canonical_record(json.loads(canonical_json(record)))
     return _sha256(canonical_json({"type": "combined_household_scenario", "record": content}))
 
 
