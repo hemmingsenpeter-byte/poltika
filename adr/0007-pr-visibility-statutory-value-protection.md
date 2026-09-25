@@ -66,8 +66,9 @@ The mechanism is unchanged; only the list of watched paths has grown, as
 BUILD_PLAN.md asks when a new file holds protected values (Task 28.5):
 
 - `policy_specs/*/golden_households.yaml` (Tasks 28.5 and 29).
-- `tests/fixtures/golden_results_*.json` (the Task 30.4 frozen golden
-  results; one environment variable regenerates it).
+- `tests/fixtures/golden_*.json`: the Task 30.4 frozen golden results and
+  the v0.1.5 Task 7.2 golden traces. One environment variable regenerates
+  each.
 - A second, separately titled list for `policy_specs/*/sources.yaml`,
   `specification.md` and `decisions/`: not values, but the texts they are
   cited from and interpreted by, whose hashes every run binds (Task 31).

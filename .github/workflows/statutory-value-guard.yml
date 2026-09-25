@@ -38,7 +38,7 @@ jobs:
             'policy_specs/*/spec_cases.yaml' \
             'policy_specs/*/golden_households.yaml' \
             'policy_specs/*/policy.yaml' \
-            'tests/fixtures/golden_results_*.json')
+            'tests/fixtures/golden_*.json')
           # The texts those values are cited from and interpreted by. Not
           # values themselves, but every run binds their hashes (Task 31), so
           # an edit changes what a provenance report resolves against.

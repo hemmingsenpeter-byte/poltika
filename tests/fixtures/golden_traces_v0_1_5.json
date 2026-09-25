@@ -1,0 +1,1029 @@
+{
+  "g1_sole_parent_two_children_non_beneficiary": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_relationship_or_dependent_children",
+        "as_entry_threshold_non_beneficiary_sole_parent",
+        "area_cap_with_dependent_children_area2",
+        "rent_board_subsidy_rate",
+        "as_income_level_non_beneficiary_sole_parent",
+        "asset_imputation_threshold_relationship_or_dependent_children",
+        "asset_imputation_step_size",
+        "asset_imputation_amount_per_step",
+        "income_reduction_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "450"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "282"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "197.4"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "197.4"
+        ],
+        [
+          "AS_ASSET_IMPUTATION",
+          "AS-06",
+          "0"
+        ],
+        [
+          "AS_TOTAL_INCOME",
+          "AS-07",
+          "673"
+        ],
+        [
+          "AS_INCOME_REDUCTION",
+          "AS-07",
+          "0"
+        ],
+        [
+          "AS_REDUCED_AMOUNT",
+          "AS-07",
+          "197.4"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "198"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $198 a week.",
+      "value": "198"
+    },
+    "best_start": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is $0 a year. The verified facts establish no entitlement for the whole period, so no arithmetic was needed.",
+      "value": "0"
+    },
+    "family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [
+        [
+          "WFF_FTC_GROSS",
+          "WFF-03",
+          "14375"
+        ],
+        [
+          "WFF_FTC_INCOME_EXCESS",
+          "WFF-03",
+          "0"
+        ],
+        [
+          "WFF_FTC_ABATEMENT",
+          "WFF-03",
+          "0.000"
+        ],
+        [
+          "WFF_FTC_NET",
+          "WFF-03",
+          "14375.000"
+        ],
+        [
+          "WFF_FTC_REMAINING_ABATEMENT",
+          "WFF-03",
+          "0"
+        ]
+      ],
+      "summary": "Family tax credit is $14375.000 a year.",
+      "value": "14375.000"
+    },
+    "in_work_tax_credit": {
+      "category": null,
+      "code": "PARAMETER_NEEDS_REVIEW",
+      "missing_facts": [],
+      "outcome": "needs_review",
+      "parameters": [
+        "in_work_base",
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [],
+      "summary": "In-work tax credit: no amount is produced. It needs review: parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "minimum_family_prescribed_amount"
+      ],
+      "steps": [
+        [
+          "WFF_MFTC_TOPUP",
+          "WFF-05",
+          "1604"
+        ]
+      ],
+      "summary": "Minimum family tax credit is $1604 a year.",
+      "value": "1604"
+    }
+  },
+  "g2_couple_two_children_income_abated_both": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_relationship_or_dependent_children",
+        "as_entry_threshold_non_beneficiary_couple_with_dependent_children",
+        "area_cap_with_dependent_children_area1",
+        "rent_board_subsidy_rate",
+        "as_income_level_non_beneficiary_couple_with_dependent_children",
+        "asset_imputation_threshold_relationship_or_dependent_children",
+        "asset_imputation_step_size",
+        "asset_imputation_amount_per_step",
+        "income_reduction_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "600"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "395"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "276.5"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "276.5"
+        ],
+        [
+          "AS_ASSET_IMPUTATION",
+          "AS-06",
+          "0"
+        ],
+        [
+          "AS_TOTAL_INCOME",
+          "AS-07",
+          "1346"
+        ],
+        [
+          "AS_INCOME_REDUCTION",
+          "AS-07",
+          "57.25"
+        ],
+        [
+          "AS_REDUCED_AMOUNT",
+          "AS-07",
+          "219.25"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "220"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $220 a week.",
+      "value": "220"
+    },
+    "best_start": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is $0 a year. The verified facts establish no entitlement for the whole period, so no arithmetic was needed.",
+      "value": "0"
+    },
+    "family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [
+        [
+          "WFF_FTC_GROSS",
+          "WFF-03",
+          "14375"
+        ],
+        [
+          "WFF_FTC_INCOME_EXCESS",
+          "WFF-03",
+          "25100"
+        ],
+        [
+          "WFF_FTC_ABATEMENT",
+          "WFF-03",
+          "6902.500"
+        ],
+        [
+          "WFF_FTC_NET",
+          "WFF-03",
+          "7472.500"
+        ],
+        [
+          "WFF_FTC_REMAINING_ABATEMENT",
+          "WFF-03",
+          "0"
+        ]
+      ],
+      "summary": "Family tax credit is $7472.500 a year.",
+      "value": "7472.500"
+    },
+    "in_work_tax_credit": {
+      "category": null,
+      "code": "PARAMETER_NEEDS_REVIEW",
+      "missing_facts": [],
+      "outcome": "needs_review",
+      "parameters": [
+        "in_work_base",
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [],
+      "summary": "In-work tax credit: no amount is produced. It needs review: parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "minimum_family_prescribed_amount"
+      ],
+      "steps": [
+        [
+          "WFF_MFTC_TOPUP",
+          "WFF-05",
+          "0"
+        ]
+      ],
+      "summary": "Minimum family tax credit is $0 a year.",
+      "value": "0"
+    }
+  },
+  "g3_childless_couple_as_only": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_relationship_or_dependent_children",
+        "as_entry_threshold_non_beneficiary_couple_no_dependent_children",
+        "area_cap_no_dependent_children_couple_or_sole_parent_one_child_area3",
+        "rent_board_subsidy_rate",
+        "as_income_level_non_beneficiary_couple_no_dependent_children",
+        "asset_imputation_threshold_relationship_or_dependent_children",
+        "asset_imputation_step_size",
+        "asset_imputation_amount_per_step",
+        "income_reduction_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "300"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "142"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "99.4"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "99.4"
+        ],
+        [
+          "AS_ASSET_IMPUTATION",
+          "AS-06",
+          "0"
+        ],
+        [
+          "AS_TOTAL_INCOME",
+          "AS-07",
+          "1000"
+        ],
+        [
+          "AS_INCOME_REDUCTION",
+          "AS-07",
+          "0"
+        ],
+        [
+          "AS_REDUCED_AMOUNT",
+          "AS-07",
+          "99.4"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "100"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $100 a week.",
+      "value": "100"
+    },
+    "best_start": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    },
+    "family_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Family tax credit is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    },
+    "in_work_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "In-work tax credit is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Minimum family tax credit is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    }
+  },
+  "g4_single_jobseeker_cap_binds": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_other",
+        "as_entry_threshold_jobseeker_support_single_no_dependent_children",
+        "area_cap_single_no_dependent_children_area4",
+        "rent_board_subsidy_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "250"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "157"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "109.9"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "70"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "70"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $70 a week.",
+      "value": "70"
+    },
+    "best_start": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    },
+    "family_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Family tax credit is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    },
+    "in_work_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "In-work tax credit is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_NO_DEPENDENT_CHILD",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Minimum family tax credit is not calculated, because this case is outside what v0.1 models: no dependent child in the scenario -- outside WFF's family-scheme membership domain.",
+      "value": null
+    }
+  },
+  "g5_supported_living_couple_two_children": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_relationship_or_dependent_children",
+        "as_entry_threshold_supported_living_payment_couple_with_dependent_children",
+        "area_cap_with_dependent_children_area2",
+        "rent_board_subsidy_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "500"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "273"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "191.1"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "191.1"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "192"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $192 a week.",
+      "value": "192"
+    },
+    "best_start": {
+      "category": "not_modelled",
+      "code": "WFF_MG4_PROTECTED_CREDIT",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is not calculated, because this case is outside what v0.1 models: MG 4 protected Best Start credit month applies -- needs its own specification.",
+      "value": null
+    },
+    "family_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_MD14_15_PROTECTED_CREDIT",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Family tax credit is not calculated, because this case is outside what v0.1 models: MD 14/15 protected family-tax-credit case applies -- needs its own specification, not the ordinary abatement formula.",
+      "value": null
+    },
+    "in_work_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_DIRECT_ABATEMENT_PATHWAY",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "In-work tax credit is not calculated, because this case is outside what v0.1 models: direct-abatement pathway applies (family tax credit unavailable for a child due to a different payment) -- needs its own specification.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": "evidenced_exclusion",
+      "code": "WFF_MC6B_DISQUALIFYING_PAYMENT",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Minimum family tax credit is not calculated, because the verified facts meet a statutory exclusion: MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period.",
+      "value": null
+    }
+  },
+  "g6_sole_parent_support_best_start_child": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_relationship_or_dependent_children",
+        "as_entry_threshold_sole_parent_support_sole_parent",
+        "area_cap_no_dependent_children_couple_or_sole_parent_one_child_area1",
+        "rent_board_subsidy_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "600"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "432"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "302.4"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "235"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "235"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $235 a week.",
+      "value": "235"
+    },
+    "best_start": {
+      "category": "not_modelled",
+      "code": "WFF_MG4_PROTECTED_CREDIT",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is not calculated, because this case is outside what v0.1 models: MG 4 protected Best Start credit month applies -- needs its own specification.",
+      "value": null
+    },
+    "family_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_MD14_15_PROTECTED_CREDIT",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Family tax credit is not calculated, because this case is outside what v0.1 models: MD 14/15 protected family-tax-credit case applies -- needs its own specification, not the ordinary abatement formula.",
+      "value": null
+    },
+    "in_work_tax_credit": {
+      "category": "not_modelled",
+      "code": "WFF_DIRECT_ABATEMENT_PATHWAY",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "In-work tax credit is not calculated, because this case is outside what v0.1 models: direct-abatement pathway applies (family tax credit unavailable for a child due to a different payment) -- needs its own specification.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": "evidenced_exclusion",
+      "code": "WFF_MC6B_DISQUALIFYING_PAYMENT",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Minimum family tax credit is not calculated, because the verified facts meet a statutory exclusion: MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period.",
+      "value": null
+    }
+  },
+  "g7_sole_parent_asset_imputation_and_income_reduction": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_relationship_or_dependent_children",
+        "as_entry_threshold_non_beneficiary_sole_parent",
+        "area_cap_no_dependent_children_couple_or_sole_parent_one_child_area1",
+        "rent_board_subsidy_rate",
+        "as_income_level_non_beneficiary_sole_parent",
+        "asset_imputation_threshold_relationship_or_dependent_children",
+        "asset_imputation_step_size",
+        "asset_imputation_amount_per_step",
+        "income_reduction_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "420"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "252"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "176.4"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "176.4"
+        ],
+        [
+          "AS_ASSET_IMPUTATION",
+          "AS-06",
+          "16"
+        ],
+        [
+          "AS_TOTAL_INCOME",
+          "AS-07",
+          "911"
+        ],
+        [
+          "AS_INCOME_REDUCTION",
+          "AS-07",
+          "1.25"
+        ],
+        [
+          "AS_REDUCED_AMOUNT",
+          "AS-07",
+          "175.15"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "176"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $176 a week.",
+      "value": "176"
+    },
+    "best_start": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is $0 a year. The verified facts establish no entitlement for the whole period, so no arithmetic was needed.",
+      "value": "0"
+    },
+    "family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [
+        [
+          "WFF_FTC_GROSS",
+          "WFF-03",
+          "7921"
+        ],
+        [
+          "WFF_FTC_INCOME_EXCESS",
+          "WFF-03",
+          "600"
+        ],
+        [
+          "WFF_FTC_ABATEMENT",
+          "WFF-03",
+          "165.000"
+        ],
+        [
+          "WFF_FTC_NET",
+          "WFF-03",
+          "7756.000"
+        ],
+        [
+          "WFF_FTC_REMAINING_ABATEMENT",
+          "WFF-03",
+          "0"
+        ]
+      ],
+      "summary": "Family tax credit is $7756.000 a year.",
+      "value": "7756.000"
+    },
+    "in_work_tax_credit": {
+      "category": null,
+      "code": "PARAMETER_NEEDS_REVIEW",
+      "missing_facts": [],
+      "outcome": "needs_review",
+      "parameters": [
+        "in_work_base",
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [],
+      "summary": "In-work tax credit: no amount is produced. It needs review: parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "minimum_family_prescribed_amount"
+      ],
+      "steps": [
+        [
+          "WFF_MFTC_TOPUP",
+          "WFF-05",
+          "0"
+        ]
+      ],
+      "summary": "Minimum family tax credit is $0 a year.",
+      "value": "0"
+    }
+  },
+  "g8_homeowner_wff_only": {
+    "accommodation_supplement": {
+      "category": "not_modelled",
+      "code": "AS_HOMEOWNER",
+      "missing_facts": [],
+      "outcome": "unsupported",
+      "parameters": [],
+      "steps": [],
+      "summary": "Accommodation Supplement is not calculated, because this case is outside what v0.1 models: homeowner accommodation costs (Schedule 4 Part 7 cl 4-6) are outside the v0.1 rent/board-only branch.",
+      "value": null
+    },
+    "best_start": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is $0 a year. The verified facts establish no entitlement for the whole period, so no arithmetic was needed.",
+      "value": "0"
+    },
+    "family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [
+        [
+          "WFF_FTC_GROSS",
+          "WFF-03",
+          "7921"
+        ],
+        [
+          "WFF_FTC_INCOME_EXCESS",
+          "WFF-03",
+          "15100"
+        ],
+        [
+          "WFF_FTC_ABATEMENT",
+          "WFF-03",
+          "4152.500"
+        ],
+        [
+          "WFF_FTC_NET",
+          "WFF-03",
+          "3768.500"
+        ],
+        [
+          "WFF_FTC_REMAINING_ABATEMENT",
+          "WFF-03",
+          "0"
+        ]
+      ],
+      "summary": "Family tax credit is $3768.500 a year.",
+      "value": "3768.500"
+    },
+    "in_work_tax_credit": {
+      "category": null,
+      "code": "PARAMETER_NEEDS_REVIEW",
+      "missing_facts": [],
+      "outcome": "needs_review",
+      "parameters": [
+        "in_work_base",
+        "family_tax_credit_eldest_child",
+        "family_tax_credit_additional_child",
+        "family_tax_credit_abatement_threshold",
+        "family_tax_credit_abatement_rate"
+      ],
+      "steps": [],
+      "summary": "In-work tax credit: no amount is produced. It needs review: parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "minimum_family_prescribed_amount"
+      ],
+      "steps": [
+        [
+          "WFF_MFTC_TOPUP",
+          "WFF-05",
+          "0"
+        ]
+      ],
+      "summary": "Minimum family tax credit is $0 a year.",
+      "value": "0"
+    }
+  },
+  "g9_partner_income_unverified": {
+    "accommodation_supplement": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [
+        "asset_ceiling_relationship_or_dependent_children",
+        "as_entry_threshold_non_beneficiary_couple_with_dependent_children",
+        "area_cap_with_dependent_children_area1",
+        "rent_board_subsidy_rate",
+        "as_income_level_non_beneficiary_couple_with_dependent_children",
+        "asset_imputation_threshold_relationship_or_dependent_children",
+        "asset_imputation_step_size",
+        "asset_imputation_amount_per_step",
+        "income_reduction_rate"
+      ],
+      "steps": [
+        [
+          "AS_QUALIFYING_COSTS",
+          "AS-03",
+          "500"
+        ],
+        [
+          "AS_COST_EXCESS",
+          "AS-04",
+          "295"
+        ],
+        [
+          "AS_SUBSIDY",
+          "AS-04",
+          "206.5"
+        ],
+        [
+          "AS_AREA_CAP",
+          "AS-04",
+          "206.5"
+        ],
+        [
+          "AS_ASSET_IMPUTATION",
+          "AS-06",
+          "0"
+        ],
+        [
+          "AS_TOTAL_INCOME",
+          "AS-07",
+          "1100"
+        ],
+        [
+          "AS_INCOME_REDUCTION",
+          "AS-07",
+          "0"
+        ],
+        [
+          "AS_REDUCED_AMOUNT",
+          "AS-07",
+          "206.5"
+        ],
+        [
+          "AS_ROUNDING",
+          "AS-04",
+          "207"
+        ]
+      ],
+      "summary": "Accommodation Supplement is $207 a week.",
+      "value": "207"
+    },
+    "best_start": {
+      "category": null,
+      "code": null,
+      "missing_facts": [],
+      "outcome": "calculated",
+      "parameters": [],
+      "steps": [],
+      "summary": "Best Start is $0 a year. The verified facts establish no entitlement for the whole period, so no arithmetic was needed.",
+      "value": "0"
+    },
+    "family_tax_credit": {
+      "category": null,
+      "code": "WFF_PARTNER_INCOME_UNVERIFIED",
+      "missing_facts": [
+        "family_scheme_income.partner_amount"
+      ],
+      "outcome": "needs_review",
+      "parameters": [],
+      "steps": [],
+      "summary": "Family tax credit: no amount is produced. It needs review: partnered claimant but the partner's family-scheme income has not been separately verified. Waiting for: family_scheme_income.partner_amount.",
+      "value": null
+    },
+    "in_work_tax_credit": {
+      "category": null,
+      "code": "WFF_IWTC_AWAITS_FAMILY_TAX_CREDIT",
+      "missing_facts": [
+        "family_scheme_income.partner_amount"
+      ],
+      "outcome": "needs_review",
+      "parameters": [],
+      "steps": [],
+      "summary": "In-work tax credit: no amount is produced. It needs review: family tax credit's abatement could not be determined, and MD 2(2)(c) passes any remainder to in-work tax credit: partnered claimant but the partner's family-scheme income has not been separately verified. Waiting for: family_scheme_income.partner_amount.",
+      "value": null
+    },
+    "minimum_family_tax_credit": {
+      "category": null,
+      "code": "WFF_PARTNER_INCOME_UNVERIFIED",
+      "missing_facts": [
+        "family_scheme_income.partner_amount"
+      ],
+      "outcome": "needs_review",
+      "parameters": [],
+      "steps": [],
+      "summary": "Minimum family tax credit: no amount is produced. It needs review: partnered claimant but the partner's family-scheme income has not been separately verified. Waiting for: family_scheme_income.partner_amount.",
+      "value": null
+    }
+  }
+}

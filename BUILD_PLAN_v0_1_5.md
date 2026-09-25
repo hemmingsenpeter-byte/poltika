@@ -292,3 +292,30 @@ Housekeeping runs alongside.
 - **D3: agreement only,** until the repository is public or on a paid plan.
 - **D4: yes.** `unsupported` results carry a machine-readable category:
   `not_modelled` or `evidenced_exclusion` (Task 4.6).
+
+## Progress (25 September 2026)
+
+Built by Claude Code under Pete's delegation ("approve each step yourself and
+keep going"). Each PR was merged with CI green after an author preflight; the
+GPT/Codex audit of each is deferred.
+
+| Task | Status |
+| --- | --- |
+| 0.1 Tag `v0.1.0` | **Pete:** the session cannot push tags (tag `e41871d`) |
+| 0.3 Limitations, 0.4 baseline | Done (PR #86): `docs/releases/` |
+| 0.2, 0.5, 0.6, 1.2 | Open: benchmark metadata (Claude Code); legislation currency, in-work base re-check and source classification (GPT/Codex) |
+| 1.1, 1.3, 1.4 Evidence model and coverage | Done (PR #86); CI prints coverage |
+| 2.1, 2.2, 2.4, 2.5 Calculation steps | Done (PR #82) |
+| 2.3 Step-to-rule mapping review | Open (GPT/Codex) |
+| 3.1-3.5 Deterministic explanations | Done (PR #84) |
+| 4.2, 4.4, 4.6 Reason codes, missing facts, categories | Done (PR #83) |
+| 4.5 Assumption ledger | Done: the facts each result read are listed as caller-asserted (PR #84) |
+| 4.1, 4.3 Fact origin; soft uncertainty | Open: no specification permits a soft case yet |
+| 5.1-5.5 Explanation verification | Done (PR #84); 5.3 via the evidence check (PR #86) |
+| 6.1-6.6 Analyst page | Done (PR #85) |
+| 7.2-7.6 Golden traces, properties, attacks, reproducibility | Done (this PR, #84, #86) |
+| 7.1 100+ explanation fixtures | Done: every WFF and AS spec case, one verified explanation per component (this PR) |
+| 8.1 Pilot container | Done (PR #85); 3.2 pilot guide, `docs/pilot/GUIDE.md` |
+| 8.2-8.5 Pilot | **Pete** |
+| H.1 Review-record clean-up | Open |
+| H.2 Working agreement | Done: `doctrine/development-doctrine.md` |

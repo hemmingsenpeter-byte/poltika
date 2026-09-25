@@ -149,8 +149,10 @@ poltika/
     ├── regression/         — known-historical-issue tests (Task 15) and the
     │                          frozen golden-result snapshot check (Task 30.4)
     └── fixtures/           — golden_results_v0_1.json (Task 30.4 frozen golden
-                               results with bound policy-file hashes; watched by
-                               the statutory-value guard)
+                               results with bound policy-file hashes) and
+                               golden_traces_v0_1_5.json (v0.1.5 Task 7.2 frozen
+                               steps, codes and explanation summaries); both
+                               watched by the statutory-value guard
 ```
 
 Only `src/poltika/{data,llm}` (`api/` is now instantiated, Task 21;
