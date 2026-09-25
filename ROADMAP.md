@@ -25,19 +25,20 @@ the detailed scope and acceptance criteria.
 deterministic, source-traceable results for both policies and passes the frozen
 v0.1 review and test gates.
 
-## v0.1.5 - Evidence intelligence and pilotability
+## v0.1.5 - Evidence and explainability bridge
 
-Make v0.1 usable by someone who did not build it, and keep the evidence
-behind every number visibly current. No new policies or data. Report
-pending, open-ended, expiring and stale rates and sources with each result;
-close the in-work tax credit gap when the evidence allows; ship a
-reproducible deployment and a pilot-user guide; tidy the repository's review
-records. `BUILD_PLAN_v0_1_5.md` holds the tasks (draft, pending Pete's
-approval).
+Turn the v0.1 calculator into a system that shows its work, without
+broadening its scope. Every result carries ordered calculation steps with
+intermediate values, stable rule ids, ranked and period-checked evidence,
+a deterministic plain-language explanation, an assumption ledger and
+structured review reasons. A thin analyst interface and one external pilot
+test it. No new policies, data or simulation. `BUILD_PLAN_v0_1_5.md` holds
+the tasks (draft, pending Pete's approval).
 
-**Exit gate:** A pilot user who did not build Poltika deploys it, answers a
-supported WFF and Accommodation Supplement household question, and sees for
-every number its sources and whether any rate is pending or expiring.
+**Exit gate:** An external pilot user can take any supported WFF and
+Accommodation Supplement result and find where the number came from, which
+rule and source govern it, what was assumed and what is missing, with every
+explanation tested against the calculation and no open P0 or P1 findings.
 
 ## v0.2 - Authoritative data foundation
 
