@@ -1,5 +1,39 @@
 # Changelog
 
+## Unreleased (v0.1.5: the evidence and explainability bridge)
+
+See `BUILD_PLAN_v0_1_5.md` for the plan and its progress table. No
+calculated amount, protected expected value or result identity has changed
+since v0.1.0.
+
+- **Calculation steps:** every result's trace lists the arithmetic it
+  performed, with the rule each step implements and its intermediate
+  values.
+- **Reason codes:** every result that is not calculated has a stable
+  code. `unsupported` results are marked `evidenced_exclusion` or
+  `not_modelled`; `needs_review` results name the facts they are waiting
+  for.
+- **Explanations:** each result gets a deterministic explanation rendered
+  only from its trace (no LLM), and `verify()` proves it agrees with the
+  calculation number for number. The household and stored-scenario API
+  responses include them.
+- **Evidence model:** every source has a type and authority rank. An
+  evidence-coverage check runs in CI and fails on an unranked source, a
+  parameter resting on guidance, or a rule without primary legislation.
+- **Analyst page** at `/analyst`: pick a household, calculate, and open
+  "Why?" for the steps, the facts asserted, and the rates and sources.
+- **Pilot container:** a `Dockerfile` and `compose.yaml` (API plus
+  PostgreSQL), smoke-tested in CI; `docs/pilot/GUIDE.md`.
+- **Hardening:**
+  - golden traces are frozen;
+  - over 100 spec-case explanations are verified;
+  - generated-household properties are tested;
+  - evidence and explanation attack tests are added;
+  - a protected-case metadata check is added.
+- **Release records:** `docs/releases/V0_1_LIMITATIONS.md`, and
+  `V0_1_BASELINE.md` (measured at v0.1.0).
+- **Working agreement:** in `doctrine/development-doctrine.md`.
+
 ## v0.1.0 (25 September 2026)
 
 Accepted by Pete (BUILD_PLAN.md Task 34.5).

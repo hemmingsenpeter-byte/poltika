@@ -303,7 +303,8 @@ GPT/Codex audit of each is deferred.
 | --- | --- |
 | 0.1 Tag `v0.1.0` | **Pete:** the session cannot push tags (tag `e41871d`) |
 | 0.3 Limitations, 0.4 baseline | Done (PR #86): `docs/releases/` |
-| 0.2, 0.5, 0.6, 1.2 | Open: benchmark metadata (Claude Code); legislation currency, in-work base re-check and source classification (GPT/Codex) |
+| 0.2 Case metadata | Done: checked by `tests/unit/policy/test_case_metadata.py` (this PR); no protected file rewritten |
+| 0.5, 0.6, 1.2 | Open (GPT/Codex): legislation currency, in-work base re-check, source classification review |
 | 1.1, 1.3, 1.4 Evidence model and coverage | Done (PR #86); CI prints coverage |
 | 2.1, 2.2, 2.4, 2.5 Calculation steps | Done (PR #82) |
 | 2.3 Step-to-rule mapping review | Open (GPT/Codex) |
