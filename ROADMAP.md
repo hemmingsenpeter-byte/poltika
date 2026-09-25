@@ -2,7 +2,8 @@
 
 This is a release-level direction, not an implementation backlog. Each release
 has a technical purpose and an exit gate. Detailed tasks belong in the active
-release's build plan; `BUILD_PLAN.md` remains the frozen authority for v0.1.
+release's build plan; `BUILD_PLAN.md` remains the frozen authority for v0.1,
+and `BUILD_PLAN_v0_1_5.md` holds v0.1.5's.
 
 ## Planning status
 
@@ -24,11 +25,20 @@ the detailed scope and acceptance criteria.
 deterministic, source-traceable results for both policies and passes the frozen
 v0.1 review and test gates.
 
-## v0.1.5 - Existing interim milestone
+## v0.1.5 - Evidence and explainability bridge
 
-The frozen build plan reserves v0.1.5 for evidence intelligence and
-pilotability. Its scope remains governed by that plan until the roadmap
-conflict above is resolved; the proposal does not silently remove it.
+Turn the v0.1 calculator into a system that shows its work, without
+broadening its scope. Every result carries ordered calculation steps with
+intermediate values, stable rule ids, ranked and period-checked evidence,
+a deterministic plain-language explanation, an assumption ledger and
+structured review reasons. A thin analyst interface and one external pilot
+test it. No new policies, data or simulation. `BUILD_PLAN_v0_1_5.md` holds
+the tasks (approved 25 September 2026).
+
+**Exit gate:** An external pilot user can take any supported WFF and
+Accommodation Supplement result and find where the number came from, which
+rule and source govern it, what was assumed and what is missing, with every
+explanation tested against the calculation and no open P0 or P1 findings.
 
 ## v0.2 - Authoritative data foundation
 

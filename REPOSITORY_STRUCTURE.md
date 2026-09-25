@@ -19,6 +19,7 @@ poltika/
 ├── README.md
 ├── CLAUDE.md
 ├── BUILD_PLAN.md
+├── BUILD_PLAN_v0_1_5.md  — v0.1.5 evidence and explainability tasks and release gate (approved 25 September 2026)
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
 ├── ROADMAP.md
