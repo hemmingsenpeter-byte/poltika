@@ -122,7 +122,9 @@ class AsCalculationResponse(BaseModel):
     accommodation_supplement: AsComponentResultResponse
 
 
-def _scenario_from_request(request: AsCalculationRequest) -> AsScenario:
+def scenario_from_request(request: AsCalculationRequest) -> AsScenario:
+    """The `AsScenario` a request describes. Also used by the combined household
+    route, so both routes build a scenario the same way."""
     return AsScenario(
         household_eligibility=request.household_eligibility,
         claimant_category=request.claimant_category,
@@ -157,7 +159,7 @@ def calculate(request: AsCalculationRequest) -> AsCalculationResponse:
     status rather than a 200.
     """
     try:
-        scenario = _scenario_from_request(request)
+        scenario = scenario_from_request(request)
         assessment_week = AssessmentWeek(start=request.assessment_week_start, end=request.assessment_week_end)
     except ValueError as exc:
         # A structural contradiction the dataclass itself rejects (e.g. a

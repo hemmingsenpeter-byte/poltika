@@ -29,10 +29,10 @@ from poltika.api.accommodation_supplement import (
     AsCalculationRequest,
     AsComponentResultResponse,
 )
-from poltika.api.accommodation_supplement import _scenario_from_request as _as_scenario
+from poltika.api.accommodation_supplement import scenario_from_request as as_scenario_from_request
 from poltika.api.wff import WFF_POLICY_DIR, WffCalculationRequest, WffCalculationResponse
 from poltika.api.wff import ComponentResultResponse as WffComponentResponse
-from poltika.api.wff import _scenario_from_request as _wff_scenario
+from poltika.api.wff import scenario_from_request as wff_scenario_from_request
 from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
 from poltika.engines.simulator.outcome import FactStatus
@@ -94,8 +94,8 @@ def record_from_request(request: HouseholdCalculationRequest) -> ScenarioRecord:
     try:
         return ScenarioRecord(
             household=CombinedHouseholdScenario(
-                wff=_wff_scenario(request.wff),
-                accommodation_supplement=_as_scenario(as_request),
+                wff=wff_scenario_from_request(request.wff),
+                accommodation_supplement=as_scenario_from_request(as_request),
                 as_claimant_is_wff_claimant_or_partner=request.as_claimant_is_wff_claimant_or_partner,
             ),
             wff_lookup_date=request.wff.modelled_date,
