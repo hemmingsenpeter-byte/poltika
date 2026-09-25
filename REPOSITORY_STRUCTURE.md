@@ -33,7 +33,10 @@ poltika/
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
-├── review_packets/     — assembled review packet template/instances
+├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
+│                         holds the scripts that produced its recorded results (review evidence,
+│                         run by hand from the repository root; not production code, and not
+│                         linted or type-checked by CI)
 ├── reviews/           — review and discrepancy records
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
