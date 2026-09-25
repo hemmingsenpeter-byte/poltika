@@ -18,6 +18,14 @@ components are `unsupported` (MD 14/15 and MG 4 protected months).
 plan recommended. The run was made through `POST /scenarios` and stored in
 PostgreSQL, then fetched and replayed.
 
+> **Output contract changed after this run (ADR-0014, 26 September 2026).**
+> The stored run and the files here record what ran at `61564c3`. Run
+> today, Best Start reports `ineligible` $0 instead of `calculated` $0: both
+> children are verified outside Best Start entitlement, which is an
+> evidenced zero. The in-work tax credit also carries
+> `reason_code: unresolved_rule` and a resolution. No amount changes. The
+> demo is re-run from a clean commit after that change merges (Task 34.6).
+
 ## How it was run
 
 - **Request:** [`request.json`](request.json). WFF uses the 2026-27 tax

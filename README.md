@@ -2,7 +2,7 @@
 
 Poltika is a policy-specification and implementation repository for New Zealand support-related policy logic.
 
-It is a deterministic simulator: every rate, threshold and rule comes from a cited primary source. Every result is `calculated`, `needs_review` or `unsupported`; a missing fact is never treated as zero, and each result carries a provenance report.
+It is a deterministic simulator: every rate, threshold and rule comes from a cited primary source. Every result is `calculated`, `ineligible` (an evidenced zero), `needs_review` or `unsupported`; a missing fact is never treated as zero, a result without a number says why and what would resolve it (ADR-0014), and each result carries a provenance report.
 
 ## Where to start
 

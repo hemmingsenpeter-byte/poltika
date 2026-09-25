@@ -160,6 +160,39 @@ def test_each_disagreement_flags_every_non_unsupported_component(
         assert component.outcome == "needs_review"
         assert component.value is None
         assert phrase in (component.reason or "")
+        assert component.reason_code == "conflicting_evidence"
+        assert "Reconcile the disagreeing facts" in (component.resolution or "")
+
+
+def test_a_disputed_ineligible_zero_is_flagged_not_kept() -> None:
+    """ADR-0014: only `unsupported` survives a disagreement. An `ineligible`
+    zero rests on the facts now in dispute, so it becomes needs_review."""
+    assert _run().wff.best_start.outcome == "ineligible"
+    combined = _run(as_=_as(dependent_children_count=2))
+    assert combined.original_wff.best_start.outcome == "ineligible"
+    assert (combined.wff.best_start.outcome, combined.wff.best_start.value) == ("needs_review", None)
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "code", "missing"),
+    [
+        ({"week": AssessmentWeek(start=date(2026, 3, 30), end=date(2026, 4, 6))}, "unsupported_period", ()),
+        ({"precondition": FactStatus.UNKNOWN}, "missing_input", ("as_claimant_is_wff_claimant_or_partner",)),
+    ],
+)
+def test_each_finding_kind_has_its_reason_code(kwargs: dict[str, Any], code: str, missing: tuple[str, ...]) -> None:
+    combined = _run(**kwargs)
+    for component in [*_wff_components(combined.wff), combined.accommodation_supplement]:
+        assert (component.outcome, component.reason_code, component.missing) == ("needs_review", code, missing)
+
+
+def test_the_most_serious_finding_sets_the_code_and_every_kind_gets_a_resolution() -> None:
+    combined = _run(as_=_as(dependent_children_count=2), precondition=FactStatus.UNKNOWN)
+    ftc = combined.wff.family_tax_credit
+    assert ftc.reason_code == "conflicting_evidence"
+    assert ftc.missing == ()
+    assert "Reconcile the disagreeing facts" in (ftc.resolution or "")
+    assert "as_claimant_is_wff_claimant_or_partner" in (ftc.resolution or "")
 
 
 def test_main_benefit_names_each_verified_wff_assertion() -> None:
@@ -251,6 +284,7 @@ def test_excluded_precondition_makes_every_component_unsupported() -> None:
     for component in [*_wff_components(combined.wff), combined.accommodation_supplement]:
         assert component.outcome == "unsupported"
         assert component.value is None
+        assert component.reason_code == "outside_scope"
 
 
 def test_original_results_are_preserved_alongside_replacements() -> None:

@@ -105,7 +105,8 @@ def test_as_spec_case(case: dict[str, Any]) -> None:
     assert result.outcome == expected["outcome"], (
         f"{case['id']}: expected {expected['outcome']}, got {result.outcome} ({result.reason})"
     )
-    if expected["outcome"] == "calculated":
+    # `ineligible` carries an evidenced zero (ADR-0014).
+    if expected["outcome"] in ("calculated", "ineligible"):
         assert result.value == Decimal(expected["value"])
     else:
         assert result.value is None

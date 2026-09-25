@@ -218,7 +218,7 @@ schema:
 | `schema_version` | `policy.yaml`'s `schema_version` | checked before `module_version`, per SCHEMA.md's Task 7 review response |
 | `required_inputs` | `policy.yaml`'s `inputs` | named facts: owner, type, unit, period, `missing_outcome` |
 | `parameters` | `policy.yaml`'s `parameters` | effective-dated, source-linked |
-| `produced_outputs` | `policy.yaml`'s `outputs` | components plus outcome state: `calculated` / `unsupported` / `needs_review` — never a silent zero |
+| `produced_outputs` | `policy.yaml`'s `outputs` | components plus outcome state: `calculated` / `ineligible` (an evidenced zero) / `needs_review` / `unsupported`, each blocked result with a reason code, missing facts and resolution (ADR-0014) — never a silent zero |
 | `assumptions` | `specification.md`'s cited source-rule IDs and "review gates and source checks" | no separate assumptions ledger yet; one may be needed once modules with genuinely competing assumptions coexist (post-v0.1) |
 | `data_dependencies` | canonical variable IDs referenced by `inputs`, per the Data Acquisition Doctrine | e.g. the Stats NZ Statistical Area Unit lookup AS's Task 22a needs; WFF has none identified so far |
 | `dependencies` | **new concept** — other `module_id`s this module's inputs or outputs connect to | empty for WFF v0.1 (Task 20 is single-module simulator integration, not cross-module); becomes real content at v0.3's policy interaction graph, not before |

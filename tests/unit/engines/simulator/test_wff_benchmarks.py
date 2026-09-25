@@ -244,7 +244,8 @@ def test_wff_benchmark(benchmark: dict[str, Any], parameters) -> None:
             f"{benchmark['id']}.{component_id}: expected outcome "
             f"'{expected['outcome']}', got '{actual.outcome}' (reason: {actual.reason})"
         )
-        if expected["outcome"] == "calculated":
+        # `ineligible` carries an evidenced zero (ADR-0014).
+        if expected["outcome"] in ("calculated", "ineligible"):
             assert actual.value == Decimal(expected["value"]), (
                 f"{benchmark['id']}.{component_id}: expected value "
                 f"{expected['value']}, got {actual.value}"

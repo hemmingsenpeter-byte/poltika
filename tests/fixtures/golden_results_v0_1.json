@@ -6,15 +6,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "198"
       },
       "accommodation_supplement_period": [
@@ -23,51 +26,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "198"
       },
       "original_wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "14375.000"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "1604"
         }
       },
       "wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "14375.000"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "1604"
         }
       },
@@ -85,15 +115,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "220"
       },
       "accommodation_supplement_period": [
@@ -102,51 +135,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "220"
       },
       "original_wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "7472.500"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         }
       },
       "wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "7472.500"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         }
       },
@@ -164,15 +224,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "100"
       },
       "accommodation_supplement_period": [
@@ -181,51 +244,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "100"
       },
       "original_wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
       "wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
@@ -243,15 +333,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "70"
       },
       "accommodation_supplement_period": [
@@ -260,51 +353,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "70"
       },
       "original_wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
       "wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
@@ -322,15 +442,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "192"
       },
       "accommodation_supplement_period": [
@@ -339,51 +462,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "192"
       },
       "original_wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MG 4 protected Best Start credit month applies -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MD 14/15 protected family-tax-credit case applies -- needs its own specification, not the ordinary abatement formula",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "direct-abatement pathway applies (family tax credit unavailable for a child due to a different payment) -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
       "wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MG 4 protected Best Start credit month applies -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MD 14/15 protected family-tax-credit case applies -- needs its own specification, not the ordinary abatement formula",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "direct-abatement pathway applies (family tax credit unavailable for a child due to a different payment) -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
@@ -401,15 +551,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "235"
       },
       "accommodation_supplement_period": [
@@ -418,51 +571,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "235"
       },
       "original_wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MG 4 protected Best Start credit month applies -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MD 14/15 protected family-tax-credit case applies -- needs its own specification, not the ordinary abatement formula",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "direct-abatement pathway applies (family tax credit unavailable for a child due to a different payment) -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
       "wff": {
         "best_start": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MG 4 protected Best Start credit month applies -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MD 14/15 protected family-tax-credit case applies -- needs its own specification, not the ordinary abatement formula",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "direct-abatement pathway applies (family tax credit unavailable for a child due to a different payment) -- needs its own specification",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "unsupported",
           "reason": "MC 6(b): a main benefit or a parent's allowance/children's pension was received during the relationship period",
+          "reason_code": "outside_scope",
+          "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
           "value": null
         }
       },
@@ -480,15 +660,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "176"
       },
       "accommodation_supplement_period": [
@@ -497,51 +680,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "176"
       },
       "original_wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "7756.000"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         }
       },
       "wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "7756.000"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         }
       },
@@ -559,15 +769,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "unsupported",
         "reason": "homeowner accommodation costs (Schedule 4 Part 7 cl 4-6) are outside the v0.1 rent/board-only branch",
+        "reason_code": "outside_scope",
+        "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
         "value": null
       },
       "accommodation_supplement_period": [
@@ -576,51 +789,78 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "unsupported",
         "reason": "homeowner accommodation costs (Schedule 4 Part 7 cl 4-6) are outside the v0.1 rent/board-only branch",
+        "reason_code": "outside_scope",
+        "resolution": "Not resolvable by supplying facts: the case is outside the modelled domain and needs its own reviewed specification before Poltika can calculate it.",
         "value": null
       },
       "original_wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "3768.500"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         }
       },
       "wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "3768.500"
         },
         "in_work_tax_credit": {
+          "missing": [],
           "outcome": "needs_review",
           "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here",
+          "reason_code": "unresolved_rule",
+          "resolution": "Parameter 'in_work_base' needs a reviewed, approved value for this date. That is a policy review step, not a caller input.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [],
           "outcome": "calculated",
           "reason": null,
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         }
       },
@@ -638,15 +878,18 @@
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
       "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
       "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "1ced44e69ee3b4aafabc3ed9f1cae4fcb8f8f2c224d7abd2880dd805f50156de",
-      "working_for_families/policy.yaml": "7f83084d52b37e0df1c19ef7e0d7232d2dbe2b56b5f9ef65eb837a2340c47745",
+      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "80afecc64fd5761b75787cbc337da2b089adc4b1dfd9ee15e9f0cd21e6d93ffd"
+      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
     },
     "result": {
       "accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "207"
       },
       "accommodation_supplement_period": [
@@ -655,51 +898,90 @@
       ],
       "contradictions": [],
       "original_accommodation_supplement": {
+        "missing": [],
         "outcome": "calculated",
         "reason": null,
+        "reason_code": null,
+        "resolution": null,
         "value": "207"
       },
       "original_wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [
+            "family_scheme_income.partner_amount"
+          ],
           "outcome": "needs_review",
           "reason": "partnered claimant but the partner's family-scheme income has not been separately verified",
+          "reason_code": "missing_input",
+          "resolution": "Provide the partner's verified family-scheme income. The claimant's income alone, or an unexplained household total, does not establish the combined amount.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [
+            "family_scheme_income.partner_amount"
+          ],
           "outcome": "needs_review",
           "reason": "family tax credit's abatement could not be determined, and MD 2(2)(c) passes any remainder to in-work tax credit: partnered claimant but the partner's family-scheme income has not been separately verified",
+          "reason_code": "missing_input",
+          "resolution": "Provide the partner's verified family-scheme income. The claimant's income alone, or an unexplained household total, does not establish the combined amount.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [
+            "family_scheme_income.partner_amount"
+          ],
           "outcome": "needs_review",
           "reason": "partnered claimant but the partner's family-scheme income has not been separately verified",
+          "reason_code": "missing_input",
+          "resolution": "Provide the partner's verified family-scheme income. The claimant's income alone, or an unexplained household total, does not establish the combined amount.",
           "value": null
         }
       },
       "wff": {
         "best_start": {
-          "outcome": "calculated",
-          "reason": null,
+          "missing": [],
+          "outcome": "ineligible",
+          "reason": "every child is verified outside Best Start entitlement altogether -- an evidenced eligibility-test failure, so the entitlement is zero",
+          "reason_code": null,
+          "resolution": null,
           "value": "0"
         },
         "family_tax_credit": {
+          "missing": [
+            "family_scheme_income.partner_amount"
+          ],
           "outcome": "needs_review",
           "reason": "partnered claimant but the partner's family-scheme income has not been separately verified",
+          "reason_code": "missing_input",
+          "resolution": "Provide the partner's verified family-scheme income. The claimant's income alone, or an unexplained household total, does not establish the combined amount.",
           "value": null
         },
         "in_work_tax_credit": {
+          "missing": [
+            "family_scheme_income.partner_amount"
+          ],
           "outcome": "needs_review",
           "reason": "family tax credit's abatement could not be determined, and MD 2(2)(c) passes any remainder to in-work tax credit: partnered claimant but the partner's family-scheme income has not been separately verified",
+          "reason_code": "missing_input",
+          "resolution": "Provide the partner's verified family-scheme income. The claimant's income alone, or an unexplained household total, does not establish the combined amount.",
           "value": null
         },
         "minimum_family_tax_credit": {
+          "missing": [
+            "family_scheme_income.partner_amount"
+          ],
           "outcome": "needs_review",
           "reason": "partnered claimant but the partner's family-scheme income has not been separately verified",
+          "reason_code": "missing_input",
+          "resolution": "Provide the partner's verified family-scheme income. The claimant's income alone, or an unexplained household total, does not establish the combined amount.",
           "value": null
         }
       },

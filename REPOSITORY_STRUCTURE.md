@@ -110,7 +110,8 @@ poltika/
     │   │                        AS spec/benchmark tests (Task 24.1),
     │   │                        AS module-integration tests (Task 24.7),
     │   │                        per-component trace tests (Task 31),
-    │   │                        AS rate-selector tests (Task 26a repair)
+    │   │                        AS rate-selector tests (Task 26a repair),
+    │   │                        outcome reason-code tests (ADR-0014)
     │   └── api/             — FastAPI TestClient tests (Task 21 WFF,
     │                          Task 24.8 AS, Task 33 household and
     │                          stored scenario routes)

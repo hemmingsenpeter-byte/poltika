@@ -28,7 +28,6 @@ import os
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
-from typing import Literal
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
@@ -36,9 +35,11 @@ from pydantic import BaseModel, ConfigDict, Field
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
+    ComponentOutcome,
     ComponentResult,
     FactStatus,
     PartnerStatus,
+    ReasonCode,
     VerifiedIncome,
     WffScenario,
     run_wff_module,
@@ -119,16 +120,28 @@ class WffCalculationRequest(BaseModel):
 class ComponentResultResponse(BaseModel):
     """Pinned response shape for one WFF component -- see this module's
     docstring for why `value` is `Decimal`, not `float`. `value` is
-    non-null iff `outcome == "calculated"`, mirroring `ComponentResult`'s
-    own "never treat a missing value as zero" contract exactly."""
+    non-null iff `outcome` is `calculated` or `ineligible` (always zero),
+    mirroring `ComponentResult`'s own "never treat a missing value as zero"
+    contract exactly. A `needs_review` or `unsupported` result also carries
+    `reason_code`, `missing` and `resolution` (ADR-0014)."""
 
-    outcome: Literal["calculated", "needs_review", "unsupported"]
+    outcome: ComponentOutcome
     value: Decimal | None = None
     reason: str | None = None
+    reason_code: ReasonCode | None = None
+    missing: list[str] = Field(default_factory=list)
+    resolution: str | None = None
 
     @classmethod
     def from_component_result(cls, result: ComponentResult) -> ComponentResultResponse:
-        return cls(outcome=result.outcome, value=result.value, reason=result.reason)
+        return cls(
+            outcome=result.outcome,
+            value=result.value,
+            reason=result.reason,
+            reason_code=result.reason_code,
+            missing=list(result.missing),
+            resolution=result.resolution,
+        )
 
 
 class WffCalculationResponse(BaseModel):

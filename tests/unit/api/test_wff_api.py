@@ -89,8 +89,10 @@ def test_calculate_returns_calculated_result() -> None:
     assert body["family_tax_credit"]["reason"] is None
     assert body["minimum_family_tax_credit"]["outcome"] == "calculated"
     assert Decimal(body["minimum_family_tax_credit"]["value"]) == Decimal(6604)
-    assert body["best_start"]["outcome"] == "calculated"
+    # No Best Start-eligible child: an evidenced zero, `ineligible` (ADR-0014).
+    assert body["best_start"]["outcome"] == "ineligible"
     assert Decimal(body["best_start"]["value"]) == Decimal(0)
+    assert body["best_start"]["reason_code"] is None
 
 
 def test_calculate_returns_needs_review_without_a_collapsed_value() -> None:
@@ -98,7 +100,8 @@ def test_calculate_returns_needs_review_without_a_collapsed_value() -> None:
     needs_review under the real approved policy.yaml (in_work_base's live
     rate-status gate, Task 10.2) -- must serialize as `{"outcome":
     "needs_review", "value": null, "reason": <non-empty>}`, never a
-    collapsed zero or omitted field."""
+    collapsed zero or omitted field. It also says why and what resolves it
+    (ADR-0014): the rate is unreviewed, which no caller input can fix."""
     response = client.post("/wff/calculate", json=_request_payload("single_ordinary_low_income"))
 
     assert response.status_code == 200
@@ -106,6 +109,9 @@ def test_calculate_returns_needs_review_without_a_collapsed_value() -> None:
     assert component["outcome"] == "needs_review"
     assert component["value"] is None
     assert component["reason"]
+    assert component["reason_code"] == "unresolved_rule"
+    assert component["missing"] == []
+    assert "in_work_base" in component["resolution"]
 
 
 def test_calculate_rejects_malformed_request_body() -> None:

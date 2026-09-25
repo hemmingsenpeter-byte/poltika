@@ -1944,6 +1944,25 @@ and Pete's acceptance):
       Classification was accepted under Pete's delegation. **34.3 and 34.4
       are complete; 34.1 is verified.**
     - **34.5 — Pete.** Pete's acceptance of v0.1.
+    - **34.6 — Claude Code implements; GPT/Codex reviews; Pete accepts.**
+      Outcome states and reason codes (ADR-0014). Pete asked on
+      26 September 2026 that `needs_review` mean "cannot produce a
+      defensible answer because required information is missing, ambiguous
+      or unresolved", and that Poltika say what prevents an answer and what
+      would resolve it. He chose a headline outcome plus a reason code, and
+      chose to land it before the v0.1.0 tag. Evidenced zeros are reported
+      as `ineligible`, applied only to Best Start with every child verified
+      outside entitlement (12 WFF spec cases, 5 golden households and 1
+      interaction case relabelled; no value changed). The r 15 asset ceiling
+      stays `unsupported` (`unresolved_rule`) until AS-06's exceptional
+      asset-limit increase is sourced.
+      **Implemented 26 September 2026** (branch `feat/outcome-reason-codes`;
+      author preflight `review_packets/task_34_6_outcome_reason_codes.md`).
+      **Pending:** GPT/Codex review of the contract and the relabelled
+      protected expectations; GPT/Codex source research on AS-06's
+      exceptional asset-limit increase (then a DEC for r 15); re-running the
+      Task 35.3 demo from a clean commit after merge (needs PostgreSQL).
+      34.5 and the 35.4 tag wait for this review.
 35. **Demo: one real policy question, answered end-to-end.**
     - **35.1 — Pete decides; GPT/Codex proposes candidate questions inside both domains.** The question. It must sit inside both
       supported domains, and it must be chosen knowing 26b's outcome for

@@ -24,6 +24,13 @@
 # the same result (Task 29.2 flag: none). Each WFF net family scheme income
 # is a synthetic, attested ME 3 amount set equal to gross for clear
 # arithmetic; it does not model an actual tax liability.
+#
+# ADR-0014 (26 September 2026, Pete's decision): Best Start for a household
+# whose every child is verified outside Best Start entitlement is reported
+# as `ineligible` with value 0, not `calculated` 0 -- an evidenced
+# eligibility-test failure, per specification.md's "may yield zero for that
+# component". Only the outcome label changed; every value is unchanged, and
+# no other expectation moved.
 status: approved
 households:
   - id: g1_sole_parent_two_children_non_beneficiary
@@ -70,7 +77,7 @@ households:
         family_tax_credit: {outcome: calculated, value: '14375'}
         in_work_tax_credit: {outcome: needs_review}
         minimum_family_tax_credit: {outcome: calculated, value: '1604'}
-        best_start: {outcome: calculated, value: '0'}
+        best_start: {outcome: ineligible, value: '0'}
       accommodation_supplement: {outcome: calculated, value: '198'}
 
   - id: g2_couple_two_children_income_abated_both
@@ -100,7 +107,7 @@ households:
         family_tax_credit: {outcome: calculated, value: '7472.5'}
         in_work_tax_credit: {outcome: needs_review}
         minimum_family_tax_credit: {outcome: calculated, value: '0'}
-        best_start: {outcome: calculated, value: '0'}
+        best_start: {outcome: ineligible, value: '0'}
       accommodation_supplement: {outcome: calculated, value: '220'}
 
   - id: g3_childless_couple_as_only
@@ -274,7 +281,7 @@ households:
         family_tax_credit: {outcome: calculated, value: '7756'}
         in_work_tax_credit: {outcome: needs_review}
         minimum_family_tax_credit: {outcome: calculated, value: '0'}
-        best_start: {outcome: calculated, value: '0'}
+        best_start: {outcome: ineligible, value: '0'}
       accommodation_supplement: {outcome: calculated, value: '176'}
 
   - id: g8_homeowner_wff_only
@@ -301,7 +308,7 @@ households:
         family_tax_credit: {outcome: calculated, value: '3768.5'}
         in_work_tax_credit: {outcome: needs_review}
         minimum_family_tax_credit: {outcome: calculated, value: '0'}
-        best_start: {outcome: calculated, value: '0'}
+        best_start: {outcome: ineligible, value: '0'}
       accommodation_supplement: {outcome: unsupported}
 
   - id: g9_partner_income_unverified
@@ -333,5 +340,5 @@ households:
         family_tax_credit: {outcome: needs_review}
         in_work_tax_credit: {outcome: needs_review}
         minimum_family_tax_credit: {outcome: needs_review}
-        best_start: {outcome: calculated, value: '0'}
+        best_start: {outcome: ineligible, value: '0'}
       accommodation_supplement: {outcome: calculated, value: '207'}

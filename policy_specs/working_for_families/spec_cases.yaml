@@ -39,6 +39,13 @@
 # status field was handled through Task 10, except Pete named Claude Code
 # as decision-maker for this specific acceptance rather than deciding it
 # personally.
+#
+# ADR-0014 (26 September 2026, Pete's decision): Best Start for a household
+# whose every child is verified outside Best Start entitlement is reported
+# as `ineligible` with value 0, not `calculated` 0 -- an evidenced
+# eligibility-test failure, per specification.md's "may yield zero for that
+# component". Only the outcome label changed; every value is unchanged, and
+# no other expectation moved.
 status: approved
 
 spec_cases:
@@ -70,12 +77,13 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "7921"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: calculated, value: "6604"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       FTC: eldest-only base $7921; income $30000 < $44900 threshold, so no
       abatement (MD 13(3)(a)). MFTC: $36604 - $30000 = $6604 (ME 1). Best
-      Start: no Best-Start-eligible child in this scenario -> a genuine
-      calculated zero (MG 1-4), not a scope limitation. IWTC: in_work_base
+      Start: no Best-Start-eligible child in this scenario -> a genuine,
+      evidenced zero (MG 1-4), reported as ineligible (ADR-0014), not a
+      scope limitation. IWTC: in_work_base
       carries review_status needs_review under the real approved
       policy.yaml (Task 10.2 rate-status contract) -- needs_review, not a
       number.
@@ -109,7 +117,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "14375"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: calculated, value: "6604"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       FTC base = eldest $7921 + 1 additional child $6454 = $14375; income
       $30000 is below the $44900 threshold, so no abatement.
@@ -143,7 +151,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "27283"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: calculated, value: "6604"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       FTC base = $7921 + 3 x $6454 = $7921 + $19362 = $27283; no abatement
       at this income.
@@ -176,7 +184,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "0"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: calculated, value: "0"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       FTC: excess = $200000 - $44900 = $155100; abatement = 0.275 x
       $155100 = $42652.5, far exceeding the $7921 base -> floored at $0.
@@ -211,7 +219,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "5143.500"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: calculated, value: "6604"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       Combined income = $30000 + $25000 = $55000; excess over $44900 =
       $10100; abatement = 0.275 x $10100 = $2777.5; FTC = $7921 - $2777.5 =
@@ -254,7 +262,7 @@ spec_cases:
       family_tax_credit: {outcome: needs_review}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: needs_review}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       specification.md requires each partner's individually verified
       amount before the combined-income branch may be used -- an
@@ -593,7 +601,7 @@ spec_cases:
       MG 4's protected-credit case is checked before Best Start's cohort
       logic, so it applies even in a scenario with no Best-Start-eligible
       child -- a known exclusion trigger takes precedence over "no eligible
-      child, calculated zero".
+      child, ineligible zero".
 
   - id: best_start_shared_care_unsupported
     description: Shared care applies -- unsupported for Best Start only.
@@ -655,7 +663,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "7921"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: calculated, value: "0"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       specification.md: "A verified net income at or above $36,604 yields
       no positive top-up" -- included in the reviewed scoped contract as an
@@ -689,7 +697,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "7921"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: unsupported}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       specification.md: "A ME 2(2)-(4) Commissioner-determined employment
       period or part-week case is unsupported" -- outside the 52-verified-
@@ -725,7 +733,7 @@ spec_cases:
       family_tax_credit: {outcome: unsupported}
       in_work_tax_credit: {outcome: unsupported}
       minimum_family_tax_credit: {outcome: calculated, value: "6604"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       specification.md step 2: "Do not apply this ordinary formula to MD
       14 protected-credit or per-child government-payment cases. An
@@ -803,7 +811,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "7921"}
       in_work_tax_credit: {outcome: unsupported}
       minimum_family_tax_credit: {outcome: unsupported}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       Official Income Tax Act 2007 s MC 6(b) text (checked 2026-09-21):
       excludes "an in-work tax credit, parental tax credit, or minimum
@@ -841,7 +849,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "7921"}
       in_work_tax_credit: {outcome: unsupported}
       minimum_family_tax_credit: {outcome: calculated, value: "6604"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       specification.md: a full-year qualifying earner test failure (main
       benefit/Student Allowance period, unpaid break) is a known,
@@ -879,7 +887,7 @@ spec_cases:
       family_tax_credit: {outcome: calculated, value: "7920.725"}
       in_work_tax_credit: {outcome: needs_review}
       minimum_family_tax_credit: {outcome: calculated, value: "6604"}
-      best_start: {outcome: calculated, value: "0"}
+      best_start: {outcome: ineligible, value: "0"}
     source_note: >
       Excess = $44901 - $44900 = $1 complete dollar; abatement = 0.275 x 1
       = $0.275 exactly; FTC = $7921 - $0.275 = $7920.725. specification.md

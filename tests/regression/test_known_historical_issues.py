@@ -235,7 +235,7 @@ def test_md14_15_case_exists_and_is_correct(real_wff_parameters) -> None:
     assert result.family_tax_credit.outcome == "unsupported"
     assert result.in_work_tax_credit.outcome == "unsupported"
     assert result.minimum_family_tax_credit.outcome == "calculated"
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
 
 
 def test_household_income_not_mislabelled_as_claimant_amount() -> None:

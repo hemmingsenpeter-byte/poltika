@@ -230,6 +230,12 @@ def test_as_undeclared_parameter_is_reported_without_a_source(as_policy_copy: Pa
     undeclared = [p for p in component["parameters"] if p["outcome"] == "undeclared"]
     assert [p["parameter_id"] for p in undeclared] == ["as_entry_threshold_jobseeker_support_single_no_dependent_children"]
     assert undeclared[0]["source_id"] is None
+    # ADR-0014: the report says why there is no number and what resolves it.
+    assert component["reason_code"] == "unresolved_rule"
+    assert component["missing"] == []
+    markdown = render_markdown(report)
+    assert "- Reason code: `unresolved_rule`" in markdown
+    assert f"- Resolution: {component['resolution']}" in markdown
 
 
 def test_report_refuses_an_unresolvable_source_id() -> None:
@@ -243,7 +249,7 @@ def test_report_refuses_an_unresolvable_source_id() -> None:
 
 def test_report_refuses_a_result_without_a_trace() -> None:
     with pytest.raises(ProvenanceError, match="no trace"):
-        build_provenance_report(AS_POLICY_DIR, {"accommodation_supplement": ComponentResult(outcome="needs_review")})
+        build_provenance_report(AS_POLICY_DIR, {"accommodation_supplement": ComponentResult.missing_input("x unverified", "x")})
 
 
 def test_report_refuses_a_hand_built_parameter_set(

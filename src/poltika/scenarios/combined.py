@@ -13,8 +13,9 @@ Implements the Task 28.3 interaction contract (the AS specification's "Task
   policies' definitions differ, so a disagreement is escalated, never
   guessed). A disagreement makes every component `needs_review` -- except
   one already `unsupported`, which is kept (the Task 28.1 research gate,
-  confirmed by Pete) -- with a reason naming both
-  assertions. The runner never repairs one input from the other.
+  confirmed by Pete) -- with a reason naming both assertions and the
+  `conflicting_evidence` reason code (ADR-0014). The runner never repairs
+  one input from the other.
 
 Both modules always run, so each replaced result keeps its own provenance
 trace, and the original results are kept alongside ("preserve the
@@ -35,10 +36,10 @@ from poltika.engines.simulator.accommodation_supplement import (
     run_as_module,
 )
 from poltika.engines.simulator.wff import (
-    ComponentOutcome,
     ComponentResult,
     FactStatus,
     PartnerStatus,
+    ReasonCode,
     WffResult,
     WffScenario,
     run_wff_module,
@@ -114,37 +115,64 @@ def shared_fact_contradictions(
     """The Task 28.3 contract's conservative shared-fact checks. A fact that
     is unverified on either side (`None` in AS, `unknown` in WFF) is not
     compared; that policy's own gates handle it."""
+    return tuple(text for _, text in _shared_fact_findings(scenario, wff_period, assessment_week))
+
+
+def _shared_fact_findings(
+    scenario: CombinedHouseholdScenario, wff_period: tuple[date, date], assessment_week: AssessmentWeek
+) -> list[tuple[ReasonCode, str]]:
+    """`shared_fact_contradictions()`'s checks, each with its ADR-0014
+    reason code: an unverified precondition is `missing_input`, a week
+    outside the WFF year is `unsupported_period`, and a disagreement is
+    `conflicting_evidence`."""
     wff, as_ = scenario.wff, scenario.accommodation_supplement
-    found: list[str] = []
+    found: list[tuple[ReasonCode, str]] = []
 
     if scenario.as_claimant_is_wff_claimant_or_partner == FactStatus.UNKNOWN:
-        found.append("precondition: the AS claimant is not verified to be the WFF claimant or their partner")
+        found.append(
+            ("missing_input", "precondition: the AS claimant is not verified to be the WFF claimant or their partner")
+        )
 
     if assessment_week.start < wff_period[0] or assessment_week.end > wff_period[1]:
         found.append(
-            f"AS assessment week [{assessment_week.start}, {assessment_week.end}) is not inside the WFF "
-            f"year [{wff_period[0]}, {wff_period[1]})"
+            (
+                "unsupported_period",
+                (
+                    f"AS assessment week [{assessment_week.start}, {assessment_week.end}) is not inside the WFF "
+                    f"year [{wff_period[0]}, {wff_period[1]})"
+                ),
+            )
         )
 
     as_couple = as_.partner_status in _AS_COUPLE_PARTNER_TYPES or (
         as_.claimant_category == ClaimantCategory.MIXED_BENEFIT_COUPLE
     )
     if wff.partner_status == PartnerStatus.SINGLE and as_couple:
-        found.append("partner status: WFF asserts single, AS describes a couple")
+        found.append(("conflicting_evidence", "partner status: WFF asserts single, AS describes a couple"))
     if wff.partner_status == PartnerStatus.PARTNERED and as_.partner_status == PartnerType.SINGLE:
-        found.append("partner status: WFF asserts partnered, AS asserts single")
+        found.append(("conflicting_evidence", "partner status: WFF asserts partnered, AS asserts single"))
 
     if as_.claimant_category in _MAIN_BENEFIT_CATEGORIES:
         benefit = as_.claimant_category.value
         if wff.in_work_eligibility == FactStatus.VERIFIED:
             found.append(
-                f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts in-work "
-                "eligibility (no main-benefit period in the year) verified"
+                (
+                    "conflicting_evidence",
+                    (
+                        f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts in-work "
+                        "eligibility (no main-benefit period in the year) verified"
+                    ),
+                )
             )
         if wff.mc6b_disqualifying_payment == FactStatus.VERIFIED:
             found.append(
-                f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts MC 6(b) "
-                "(no main benefit received in the period) verified"
+                (
+                    "conflicting_evidence",
+                    (
+                        f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts MC 6(b) "
+                        "(no main benefit received in the period) verified"
+                    ),
+                )
             )
         # Task 34.3 F2: MD 14(1) / MG 4(1) make a month with a main benefit
         # and family scheme income under the MD 13(3)(a)(i) / MG 3(2)(a)
@@ -153,21 +181,63 @@ def shared_fact_contradictions(
         # verified "protected credit does not apply" is flagged.
         if wff.ftc_iwtc_protected_or_direct_abatement == FactStatus.VERIFIED:
             found.append(
-                f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts no MD 14/15 "
-                "protected family tax credit month verified"
+                (
+                    "conflicting_evidence",
+                    (
+                        f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts no MD 14/15 "
+                        "protected family tax credit month verified"
+                    ),
+                )
             )
         if wff.best_start_protected_credit == FactStatus.VERIFIED:
             found.append(
-                f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts no MG 4 "
-                "protected Best Start month verified"
+                (
+                    "conflicting_evidence",
+                    (
+                        f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts no MG 4 "
+                        "protected Best Start month verified"
+                    ),
+                )
             )
 
     if as_.dependent_children_count is not None and as_.dependent_children_count != len(wff.children):
         found.append(
-            f"dependent children: WFF lists {len(wff.children)}, AS asserts {as_.dependent_children_count}"
+            (
+                "conflicting_evidence",
+                f"dependent children: WFF lists {len(wff.children)}, AS asserts {as_.dependent_children_count}",
+            )
         )
 
-    return tuple(found)
+    return found
+
+
+# When several kinds of finding apply, the result carries the most serious
+# as its reason code; the reason text still lists every finding, and the
+# resolution covers each kind found.
+_FINDING_RESOLUTIONS: dict[ReasonCode, str] = {
+    "conflicting_evidence": (
+        "Reconcile the disagreeing facts named in the reason so both policies describe the same "
+        "household. Poltika does not choose between them."
+    ),
+    "unsupported_period": "Choose an AS assessment week inside the WFF tax year.",
+    "missing_input": (
+        "Establish as_claimant_is_wff_claimant_or_partner and supply it; Poltika does not assume an "
+        "unverified fact."
+    ),
+}
+
+
+def _finding_result(findings: list[tuple[ReasonCode, str]]) -> ComponentResult:
+    """The `needs_review` result every flagged component takes."""
+    kinds = [kind for kind in _FINDING_RESOLUTIONS if any(code == kind for code, _ in findings)]
+    reason_code = kinds[0]
+    return ComponentResult(
+        outcome="needs_review",
+        reason="combined household run: shared facts disagree -- " + "; ".join(text for _, text in findings),
+        reason_code=reason_code,
+        missing=("as_claimant_is_wff_claimant_or_partner",) if reason_code == "missing_input" else (),
+        resolution=" ".join(_FINDING_RESOLUTIONS[kind] for kind in kinds),
+    )
 
 
 def run_combined_household(
@@ -202,19 +272,29 @@ def run_combined_household(
     contradictions: tuple[str, ...]
     if scenario.as_claimant_is_wff_claimant_or_partner == FactStatus.EXCLUDED:
         reason = "combined household run: the AS claimant is not the WFF claimant or their partner"
-        wff_result = WffResult(
-            **{f.name: _replace(getattr(wff_result, f.name), "unsupported", reason) for f in fields(WffResult)}
+        replacement = ComponentResult(
+            outcome="unsupported",
+            reason=reason,
+            reason_code="outside_scope",
+            resolution=(
+                "The combined run covers only an AS claimant who is the WFF claimant or their partner. "
+                "Run each policy on its own instead."
+            ),
         )
-        as_result = _replace(as_result, "unsupported", reason)
+        wff_result = WffResult(
+            **{f.name: _replace(getattr(wff_result, f.name), replacement) for f in fields(WffResult)}
+        )
+        as_result = _replace(as_result, replacement)
         contradictions = (reason,)
     else:
-        contradictions = shared_fact_contradictions(scenario, wff_period, assessment_week)
-        if contradictions:
-            reason = "combined household run: shared facts disagree -- " + "; ".join(contradictions)
+        findings = _shared_fact_findings(scenario, wff_period, assessment_week)
+        contradictions = tuple(text for _, text in findings)
+        if findings:
+            flagged = _finding_result(findings)
             wff_result = WffResult(
-                **{f.name: _flag(getattr(wff_result, f.name), reason) for f in fields(WffResult)}
+                **{f.name: _flag(getattr(wff_result, f.name), flagged) for f in fields(WffResult)}
             )
-            as_result = _flag(as_result, reason)
+            as_result = _flag(as_result, flagged)
 
     return CombinedResult(
         wff=wff_result,
@@ -227,14 +307,15 @@ def run_combined_household(
     )
 
 
-def _flag(result: ComponentResult, reason: str) -> ComponentResult:
+def _flag(result: ComponentResult, flagged: ComponentResult) -> ComponentResult:
     """A disagreement makes a component `needs_review`, except one already
-    `unsupported`, which is kept (Task 28.3 contract precedence)."""
+    `unsupported`, which is kept (Task 28.3 contract precedence). An
+    `ineligible` result is flagged too: its evidence is in dispute."""
     if result.outcome == "unsupported":
         return result
-    return _replace(result, "needs_review", reason)
+    return _replace(result, flagged)
 
 
-def _replace(result: ComponentResult, outcome: ComponentOutcome, reason: str) -> ComponentResult:
+def _replace(result: ComponentResult, replacement: ComponentResult) -> ComponentResult:
     """Replace a component's outcome while keeping its provenance trace."""
-    return replace(result, outcome=outcome, value=None, reason=reason)
+    return replace(replacement, trace=result.trace)

@@ -35,7 +35,14 @@ def test_household_route_returns_both_policies_in_native_periods() -> None:
     assert response.status_code == 200
     body = response.json()
     # Golden g2's protected expectations.
-    assert body["wff"]["family_tax_credit"] == {"outcome": "calculated", "value": "7472.500", "reason": None}
+    assert body["wff"]["family_tax_credit"] == {
+        "outcome": "calculated",
+        "value": "7472.500",
+        "reason": None,
+        "reason_code": None,
+        "missing": [],
+        "resolution": None,
+    }
     assert body["wff"]["in_work_tax_credit"]["outcome"] == "needs_review"
     assert body["accommodation_supplement"]["value"] == "220"
     assert body["wff_period"] == ["2026-04-01", "2027-04-01"]

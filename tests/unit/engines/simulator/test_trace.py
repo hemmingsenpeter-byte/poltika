@@ -183,7 +183,7 @@ def test_household_gate_failure_records_only_gate_inputs() -> None:
 
 def test_best_start_evidenced_zero_consults_no_parameters() -> None:
     best_start = _wff_run("single_ordinary_low_income").best_start
-    assert best_start.outcome == "calculated"
+    assert best_start.outcome == "ineligible"
     assert best_start.value == 0
     assert best_start.trace is not None
     assert _ids(best_start) == []

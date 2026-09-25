@@ -220,7 +220,9 @@ def test_generated_wff_entitlements_obey_accounting_invariants(
     result = calculate_wff(_ordinary_wff(income), wff_synthetic_all_approved_parameters)
     components = [getattr(result, field.name) for field in fields(WffResult)]
 
-    assert all(component.outcome == "calculated" for component in components)
+    # The child is verified outside Best Start entitlement, so Best Start is
+    # an evidenced zero (`ineligible`, ADR-0014); the other three calculate.
+    assert [component.outcome for component in components] == ["calculated"] * 3 + ["ineligible"]
     assert all(component.value is not None and component.value >= 0 for component in components)
     assert result.total_annual_entitlement() == sum(
         (component.value for component in components if component.value is not None),

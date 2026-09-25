@@ -183,6 +183,14 @@ numeric zero. A genuine, evidenced failure of an eligibility test may yield
 zero for that component. Do not sum a partial result and present it as total
 WFF entitlement (`policy_specs/SCHEMA.md`; WFF-01/02/07/08).
 
+*Amendment (ADR-0014, Pete's decision, 26 September 2026):* that evidenced
+zero is reported as a fourth outcome, `ineligible`, with value 0, rather than
+as a `calculated` zero. In v0.1 it applies to one case: Best Start when every
+child is verified outside Best Start entitlement. A zero produced by the
+formula, such as a fully abated credit, stays `calculated`. Every
+`needs_review` or `unsupported` result also carries a reason code, the
+missing facts and a resolution. No rule, value or other outcome changes.
+
 ### Temporary in-work base: Task 10.2 rate-status contract
 
 Section 105(1) substituted $7,670 for $5,070 in MD 10(3)(a) from

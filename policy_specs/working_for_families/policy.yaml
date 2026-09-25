@@ -180,5 +180,7 @@ components:
 outputs:
   unit: NZD_per_tax_year
   components: [family_tax_credit_annual, in_work_tax_credit_annual, minimum_family_tax_credit_annual, best_start_annual]
-  outcome_states: [calculated, unsupported, needs_review]
+  # `ineligible` (ADR-0014, 26 September 2026): an evidenced eligibility-test
+  # failure, reported with value 0 -- specification.md's "may yield zero".
+  outcome_states: [calculated, ineligible, unsupported, needs_review]
   note: Annual entitlement is not a weekly or fortnightly instalment.

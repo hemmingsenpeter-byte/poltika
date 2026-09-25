@@ -19,8 +19,12 @@ cited primary sources, a combined household scenario, and provenance.
   policy's native period, with no combined total and no income coupling
   (DEC-003). Conservative shared-fact checks downgrade disagreements to
   `needs_review`.
-- Every component is `calculated`, `needs_review` or `unsupported`. A
-  missing fact never becomes zero.
+- Every component is `calculated`, `ineligible` (an evidenced zero),
+  `needs_review` or `unsupported`. A missing fact never becomes zero. A
+  `needs_review` or `unsupported` result says why (`reason_code`: missing
+  input, conflicting evidence, invalid input, unresolved rule, unsupported
+  period or outside scope), which request fields are `missing`, and what
+  would resolve it (ADR-0014).
 - Provenance: per-component traces and hash-bound artifacts, and
   per-policy and combined provenance reports that resolve sources, rules
   and decisions.

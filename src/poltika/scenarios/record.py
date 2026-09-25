@@ -119,11 +119,19 @@ def scenario_id(record: ScenarioRecord) -> str:
 
 def result_payload(result: CombinedResult) -> dict[str, Any]:
     """The deterministic content of a combined result: every component's
-    outcome, value and reason, the periods and the disagreements. Traces are
-    identified through the manifest, not repeated here."""
+    outcome, value, reason, reason code, missing facts and resolution
+    (ADR-0014), the periods and the disagreements. Traces are identified
+    through the manifest, not repeated here."""
 
     def component(c: ComponentResult) -> dict[str, Any]:
-        return {"outcome": c.outcome, "value": plain(c.value), "reason": c.reason}
+        return {
+            "outcome": c.outcome,
+            "value": plain(c.value),
+            "reason": c.reason,
+            "reason_code": c.reason_code,
+            "missing": list(c.missing),
+            "resolution": c.resolution,
+        }
 
     def wff(r: WffResult) -> dict[str, Any]:
         return {f.name: component(getattr(r, f.name)) for f in fields(WffResult)}

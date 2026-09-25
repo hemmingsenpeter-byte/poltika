@@ -179,7 +179,7 @@ def test_below_all_thresholds_full_entitlement(parameters):
     assert result.in_work_tax_credit.value == Decimal(7670)  # 1 child, no abatement remainder
     assert result.minimum_family_tax_credit.outcome == "calculated"
     assert result.minimum_family_tax_credit.value == Decimal(6604)  # 36604 - 30000
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
     assert result.best_start.value == Decimal(0)  # no cohort child in this scenario
     assert result.total_annual_entitlement() == Decimal(7921) + Decimal(7670) + Decimal(6604)
 
@@ -278,15 +278,15 @@ def test_best_start_single_cohort_child_with_abatement(parameters):
     assert result.best_start.value == Decimal(4041) - Decimal(210)
 
 
-def test_best_start_no_cohort_child_is_a_real_calculated_zero(parameters):
-    """No Best Start-eligible child is a genuine, evidenced zero -- not a
-    scope limitation -- distinct from the multi-child case below, which is
+def test_best_start_no_cohort_child_is_an_ineligible_zero(parameters):
+    """No Best Start-eligible child is a genuine, evidenced zero, reported
+    as `ineligible` (ADR-0014) -- not a scope limitation -- distinct from the multi-child case below, which is
     genuinely out of the v0.1 branch."""
     scenario = _base_scenario(children=[_qualifying_child(best_start_cohort=BestStartCohort.OUTSIDE_BEST_START_ENTITLEMENT)])
 
     result = calculate_wff(scenario, parameters)
 
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
     assert result.best_start.value == Decimal(0)
 
 
@@ -375,7 +375,7 @@ def test_md14_15_protected_credit_unsupported_for_ftc_and_iwtc(parameters):
     assert result.family_tax_credit.outcome == "unsupported"
     assert result.in_work_tax_credit.outcome == "unsupported"
     assert result.minimum_family_tax_credit.outcome == "calculated"
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
 
 
 def test_in_work_eligibility_excluded_only_affects_in_work_credit(parameters):
@@ -386,7 +386,7 @@ def test_in_work_eligibility_excluded_only_affects_in_work_credit(parameters):
     assert result.in_work_tax_credit.outcome == "unsupported"
     assert result.family_tax_credit.outcome == "calculated"
     assert result.minimum_family_tax_credit.outcome == "calculated"
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
 
 
 def test_me2_employment_exclusion_unsupported_only_for_minimum_family_credit(parameters):
@@ -416,7 +416,7 @@ def test_mc6b_disqualifying_payment_unsupported_for_iwtc_and_mftc_not_ftc_or_bes
     assert result.minimum_family_tax_credit.outcome == "unsupported"
     assert "MC 6(b)" in (result.minimum_family_tax_credit.reason or "")
     assert result.family_tax_credit.outcome == "calculated"
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
 
 
 def test_mc6b_disqualifying_payment_unknown_is_needs_review_for_iwtc_and_mftc(parameters):
@@ -427,7 +427,7 @@ def test_mc6b_disqualifying_payment_unknown_is_needs_review_for_iwtc_and_mftc(pa
     assert result.in_work_tax_credit.outcome == "needs_review"
     assert result.minimum_family_tax_credit.outcome == "needs_review"
     assert result.family_tax_credit.outcome == "calculated"
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
 
 
 def test_best_start_shared_care_unsupported_only_for_best_start(parameters):
@@ -507,7 +507,7 @@ def test_best_start_unknown_cohort_child_is_needs_review_not_zero(parameters):
 
 
 def test_best_start_genuine_zero_requires_verified_outside_entitlement(parameters):
-    """The only state that yields a calculated zero is every child verified
+    """The only state that yields an ineligible zero is every child verified
     OUTSIDE_BEST_START_ENTITLEMENT -- distinguishing this from the two tests
     above (OTHER_COHORT_UNSUPPORTED, UNKNOWN) is the whole point of the fix:
     a real, evidenced absence of entitlement, not a default or a scope gap."""
@@ -517,7 +517,7 @@ def test_best_start_genuine_zero_requires_verified_outside_entitlement(parameter
 
     result = calculate_wff(scenario, parameters)
 
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
     assert result.best_start.value == Decimal(0)
 
 
@@ -601,7 +601,7 @@ def test_in_work_base_needs_review_propagates_from_loader(real_wff_parameters):
     # still calculate normally against the real spec.
     assert result.family_tax_credit.outcome == "calculated"
     assert result.minimum_family_tax_credit.outcome == "calculated"
-    assert result.best_start.outcome == "calculated"
+    assert result.best_start.outcome == "ineligible"
 
 
 # --- unsupported takes precedence over needs_review when both are present -----

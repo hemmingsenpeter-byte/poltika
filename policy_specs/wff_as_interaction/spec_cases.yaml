@@ -15,6 +15,13 @@
 # Hand-calculated by Claude Code, which also implemented the runner; Pete
 # waived the author/implementer rotation for Task 28 ("accept and proceed",
 # 24 September 2026), and each value is independently re-checked in review.
+#
+# ADR-0014 (26 September 2026, Pete's decision): Best Start for a household
+# whose every child is verified outside Best Start entitlement is reported
+# as `ineligible` with value 0, not `calculated` 0 -- an evidenced
+# eligibility-test failure, per specification.md's "may yield zero for that
+# component". Only the outcome label changed; every value is unchanged, and
+# no other expectation moved.
 status: approved
 interaction_cases:
   - id: non_beneficiary_sole_parent_receives_both_with_no_income_leak
@@ -63,7 +70,7 @@ interaction_cases:
         family_tax_credit: {outcome: calculated, value: '7921'}
         in_work_tax_credit: {outcome: needs_review}
         minimum_family_tax_credit: {outcome: calculated, value: '0'}
-        best_start: {outcome: calculated, value: '0'}
+        best_start: {outcome: ineligible, value: '0'}
       accommodation_supplement: {outcome: calculated, value: '163'}
 
   - id: sole_parent_support_beneficiary_consistent
