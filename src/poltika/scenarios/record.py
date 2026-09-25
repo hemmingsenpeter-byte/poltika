@@ -40,8 +40,9 @@ from pathlib import Path
 from typing import Any
 
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
+from poltika.engines.simulator.outcome import ComponentResult
 from poltika.engines.simulator.trace import plain
-from poltika.engines.simulator.wff import ComponentResult, WffResult
+from poltika.engines.simulator.wff import WffResult
 from poltika.scenarios.combined import (
     CombinedHouseholdScenario,
     CombinedResult,

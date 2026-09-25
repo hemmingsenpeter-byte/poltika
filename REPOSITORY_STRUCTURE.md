@@ -44,7 +44,9 @@ poltika/
 │   ├── common/            — errors.py (exception hierarchy)
 │   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml)
 │   ├── policy/            — loader.py (Task 11 parameter loader)
-│   ├── engines/simulator/ — wff.py (Task 12 calculate_wff(); Task 20
+│   ├── engines/simulator/ — outcome.py (the ComponentResult/FactStatus
+│   │                        outcome types every module returns, shared by
+│   │                        WFF and AS); wff.py (Task 12 calculate_wff(); Task 20
 │   │                        run_wff_module(), the module integration
 │   │                        entry point over Task 11's loader + Task 12's
 │   │                        calculator, per ARCHITECTURE.md's Simulation

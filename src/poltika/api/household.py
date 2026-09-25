@@ -35,7 +35,7 @@ from poltika.api.wff import ComponentResultResponse as WffComponentResponse
 from poltika.api.wff import _scenario_from_request as _wff_scenario
 from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
-from poltika.engines.simulator.wff import FactStatus
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.scenarios.combined import CombinedHouseholdScenario
 from poltika.scenarios.record import (
     CodeIdentity,

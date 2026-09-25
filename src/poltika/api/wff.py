@@ -33,11 +33,10 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    ComponentResult,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,

@@ -34,10 +34,8 @@ from poltika.engines.simulator.accommodation_supplement import (
     PartnerType,
     run_as_module,
 )
+from poltika.engines.simulator.outcome import ComponentOutcome, ComponentResult, FactStatus
 from poltika.engines.simulator.wff import (
-    ComponentOutcome,
-    ComponentResult,
-    FactStatus,
     PartnerStatus,
     WffResult,
     WffScenario,

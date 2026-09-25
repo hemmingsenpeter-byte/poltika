@@ -22,9 +22,9 @@ from poltika.engines.simulator.accommodation_supplement import (
     calculate_accommodation_supplement,
     run_as_module,
 )
+from poltika.engines.simulator.outcome import ComponentResult
 from poltika.engines.simulator.trace import recording_copy, recording_parameters
 from poltika.engines.simulator.wff import (
-    ComponentResult,
     WffResult,
     WffScenario,
     calculate_wff,

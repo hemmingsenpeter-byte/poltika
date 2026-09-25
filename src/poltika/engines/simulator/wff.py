@@ -37,8 +37,8 @@ from datetime import date
 from decimal import ROUND_FLOOR, Decimal
 from enum import Enum
 from pathlib import Path
-from typing import Literal
 
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
     ComponentTrace,
     input_uses,
@@ -50,37 +50,6 @@ from poltika.engines.simulator.trace import (
 )
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
 from poltika.semantics.schemas.policy_spec import ReferencePeriod
-
-ComponentOutcome = Literal["calculated", "needs_review", "unsupported"]
-
-
-class FactStatus(str, Enum):
-    """Tri-state for any fact that gates a component.
-
-    One shared tri-state covers both flavours of gate this contract uses:
-
-    - A **domain/eligibility precondition** (e.g. "in-work eligibility
-      established"): `VERIFIED` means the condition holds and the branch may
-      proceed; `EXCLUDED` means it's verified *not* to hold, so the scenario
-      is structurally outside this branch (`unsupported`); `UNKNOWN` means
-      it hasn't been verified either way (`needs_review`).
-    - A **known exclusion trigger** (e.g. MD 14/15 protected credit):
-      `VERIFIED` means verified that the trigger does *not* apply (the
-      ordinary branch proceeds); `EXCLUDED` means verified that it *does*
-      apply (`unsupported` -- the protected/direct-abatement/etc. pathway
-      needs its own specification, per specification.md); `UNKNOWN` means
-      unverified applicability (`needs_review`, per specification.md's
-      explicit "unknown applicability is needs_review" language repeated
-      for every one of these triggers).
-
-    Never a bare `bool`: SCHEMA.md forbids silently defaulting a missing
-    fact to a value that would yield entitlement, and a bool has no way to
-    represent "not verified" distinctly from "verified false".
-    """
-
-    VERIFIED = "verified"
-    EXCLUDED = "excluded"
-    UNKNOWN = "unknown"
 
 
 class BestStartCohort(str, Enum):
@@ -304,21 +273,6 @@ class WffScenario:
                 f"is set ({self.family_scheme_income.partner_amount}) -- a single claimant "
                 "cannot have a verified partner amount"
             )
-
-
-@dataclass(frozen=True)
-class ComponentResult:
-    """One component's outcome. `value` is populated only when
-    `outcome == "calculated"` -- Task 12's equivalent of Task 11's
-    `ParameterResolution` contract: never treat a missing value as zero.
-    """
-
-    outcome: ComponentOutcome
-    value: Decimal | None = None
-    reason: str | None = None
-    # Task 31: what this result was computed from. Excluded from equality,
-    # so attaching a trace never changes whether two results compare equal.
-    trace: ComponentTrace | None = field(default=None, compare=False)
 
 
 @dataclass(frozen=True)

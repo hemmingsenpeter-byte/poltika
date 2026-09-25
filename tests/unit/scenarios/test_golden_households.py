@@ -17,7 +17,8 @@ import pytest
 import yaml
 
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
-from poltika.engines.simulator.wff import ComponentResult, FactStatus, WffResult
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
+from poltika.engines.simulator.wff import WffResult
 from poltika.scenarios.combined import CombinedHouseholdScenario, run_combined_household
 from tests.conftest import (
     AS_POLICY_DIR,

@@ -49,8 +49,9 @@ from typing import Any
 import yaml
 
 from poltika.common.errors import ArtifactHashMismatchError, ProvenanceError
+from poltika.engines.simulator.outcome import ComponentResult
 from poltika.engines.simulator.trace import ComponentTrace, ParameterUse, plain
-from poltika.engines.simulator.wff import ComponentResult, WffResult
+from poltika.engines.simulator.wff import WffResult
 from poltika.scenarios.combined import SHARED_FACT_CHECKS
 from poltika.scenarios.record import ScenarioRun
 

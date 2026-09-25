@@ -33,10 +33,10 @@ from poltika.engines.simulator.accommodation_supplement import (
     TenureType,
     calculate_accommodation_supplement,
 )
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffResult,

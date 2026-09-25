@@ -20,13 +20,11 @@ business-use deduction). Anything outside that domain must resolve to
 `unsupported` or `needs_review`, never a silent zero or a guessed number
 (CLAUDE.md's "Ground truth" section).
 
-`ComponentResult`, `ComponentOutcome`, and `FactStatus` are imported from
-`wff.py` rather than duplicated -- both types are already fully
-policy-agnostic (outcome/value/reason; verified/excluded/unknown), and
-Architecture Doctrine's "minimum abstraction demanded by two real
-policies" is exactly satisfied now that a second policy needs them. This
-is a plain import, not a refactor of `wff.py` -- no existing WFF code or
-test changes. AS-specific enums (`ClaimantCategory`, `TenureType`,
+`ComponentResult` and `FactStatus` come from `outcome.py`, shared with
+WFF: they are policy-agnostic (outcome/value/reason;
+verified/excluded/unknown), and Architecture Doctrine's "minimum
+abstraction demanded by two real policies" is satisfied now that a second
+policy uses them. AS-specific enums (`ClaimantCategory`, `TenureType`,
 `PartnerType`, `Area`) are defined here, not shared, since WFF has no
 equivalent concepts.
 """
@@ -39,6 +37,7 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 from enum import Enum
 from pathlib import Path
 
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
     ComponentTrace,
     input_uses,
@@ -47,7 +46,6 @@ from poltika.engines.simulator.trace import (
     recording_parameters,
     trace_header,
 )
-from poltika.engines.simulator.wff import ComponentResult, FactStatus
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
 
 

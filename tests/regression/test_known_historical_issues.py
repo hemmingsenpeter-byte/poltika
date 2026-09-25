@@ -32,10 +32,10 @@ from decimal import Decimal
 
 import pytest
 
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,

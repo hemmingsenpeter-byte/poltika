@@ -22,10 +22,10 @@ import pytest
 import yaml
 
 from poltika.common.errors import PolicyVersionMismatchError
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,

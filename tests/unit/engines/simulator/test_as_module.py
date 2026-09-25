@@ -36,7 +36,7 @@ from poltika.engines.simulator.accommodation_supplement import (
     calculate_accommodation_supplement,
     run_as_module,
 )
-from poltika.engines.simulator.wff import FactStatus
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.policy.loader import load_policy_parameters
 
 AS_POLICY_DIR = Path(__file__).resolve().parents[4] / "policy_specs" / "accommodation_supplement"

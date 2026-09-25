@@ -35,7 +35,7 @@ from poltika.engines.simulator.accommodation_supplement import (
     TenureType,
     calculate_accommodation_supplement,
 )
-from poltika.engines.simulator.wff import FactStatus
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.policy.loader import load_policy_parameters
 from tests.conftest import real_as_parameters_without
 

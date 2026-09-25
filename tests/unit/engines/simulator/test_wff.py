@@ -25,10 +25,10 @@ from pathlib import Path
 import pytest
 import yaml
 
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,

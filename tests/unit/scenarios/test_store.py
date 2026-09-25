@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 from poltika.common.errors import ImmutableRecordError, StoreError
-from poltika.engines.simulator.wff import FactStatus
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.scenarios.record import CodeIdentity, ScenarioRun, run_scenario
 from poltika.scenarios.store import ScenarioStore
 from tests.conftest import AS_POLICY_DIR, WFF_POLICY_DIR
