@@ -80,6 +80,15 @@ def real_as_parameters() -> PolicyParameterSet:
     )
 
 
+def _value(parameters: PolicyParameterSet, parameter_id: str) -> Decimal:
+    """A resolved statutory value, read from the policy rather than restated
+    here: these tests live outside the statutory-value guard's paths, so a
+    literal copy of a protected value could drift unnoticed."""
+    value = parameters.get(parameter_id).value
+    assert value is not None, parameter_id
+    return value
+
+
 def _ordinary_wff(income: Decimal) -> WffScenario:
     return WffScenario(
         household_eligibility=FactStatus.VERIFIED,
@@ -147,13 +156,17 @@ def test_wff_abatement_threshold_five_point_boundary(
     offset: Decimal,
     wff_synthetic_all_approved_parameters: PolicyParameterSet,
 ) -> None:
-    income = Decimal(44900) + offset
-    result = calculate_wff(_ordinary_wff(income), wff_synthetic_all_approved_parameters)
-    complete_dollars = max(Decimal(0), income - Decimal(44900)).to_integral_value(
+    params = wff_synthetic_all_approved_parameters
+    threshold = _value(params, "family_tax_credit_abatement_threshold")
+    income = threshold + offset
+    result = calculate_wff(_ordinary_wff(income), params)
+    complete_dollars = max(Decimal(0), income - threshold).to_integral_value(
         rounding=ROUND_FLOOR
     )
 
-    assert result.family_tax_credit.value == Decimal(7921) - complete_dollars * Decimal("0.275")
+    assert result.family_tax_credit.value == _value(
+        params, "family_tax_credit_eldest_child"
+    ) - complete_dollars * _value(params, "family_tax_credit_abatement_rate")
 
 
 @pytest.mark.parametrize("offset", MONEY_BOUNDARY_OFFSETS, ids=str)
@@ -161,9 +174,13 @@ def test_as_entry_threshold_five_point_boundary(
     offset: Decimal,
     real_as_parameters: PolicyParameterSet,
 ) -> None:
-    costs = Decimal(93) + offset
+    threshold = _value(
+        real_as_parameters, "as_entry_threshold_jobseeker_support_single_no_dependent_children"
+    )
+    costs = threshold + offset
     result = calculate_accommodation_supplement(_ordinary_as(weekly_costs=costs), real_as_parameters)
-    expected = (Decimal("0.7") * max(Decimal(0), offset)).to_integral_value(
+    rate = _value(real_as_parameters, "rent_board_subsidy_rate")
+    expected = (rate * max(Decimal(0), offset)).to_integral_value(
         rounding=ROUND_CEILING
     )
 
@@ -177,7 +194,10 @@ def test_as_asset_ceiling_five_point_boundary(
     real_as_parameters: PolicyParameterSet,
 ) -> None:
     result = calculate_accommodation_supplement(
-        _ordinary_as(weekly_costs=Decimal(250), cash_assets=Decimal(8100) + offset),
+        _ordinary_as(
+            weekly_costs=Decimal(250),
+            cash_assets=_value(real_as_parameters, "asset_ceiling_other") + offset,
+        ),
         real_as_parameters,
     )
 
@@ -206,7 +226,9 @@ def test_generated_wff_entitlements_obey_accounting_invariants(
         start=Decimal(0),
     )
     assert result.family_tax_credit.value is not None
-    assert result.family_tax_credit.value <= Decimal(7921)
+    assert result.family_tax_credit.value <= _value(
+        wff_synthetic_all_approved_parameters, "family_tax_credit_eldest_child"
+    )
 
 
 @settings(max_examples=500, derandomize=True, deadline=None)
@@ -229,7 +251,18 @@ def test_generated_as_cost_increases_are_monotonic_and_capped(
 
     assert lower_result.outcome == upper_result.outcome == "calculated"
     assert lower_result.value is not None and upper_result.value is not None
-    assert Decimal(0) <= lower_result.value <= upper_result.value <= Decimal(70)
+    cap = _value(real_as_parameters, "area_cap_single_no_dependent_children_area4")
+    assert Decimal(0) <= lower_result.value <= upper_result.value <= cap
+    # Exact oracle for this no-income-test beneficiary: r 19 rounds up
+    # min(rate x positive excess, cap); catches rate errors the <= $1
+    # boundary offsets cannot (rounding up masks them there).
+    threshold = _value(
+        real_as_parameters, "as_entry_threshold_jobseeker_support_single_no_dependent_children"
+    )
+    rate = _value(real_as_parameters, "rent_board_subsidy_rate")
+    for costs, result in ((lower, lower_result), (upper, upper_result)):
+        oracle = min(rate * max(Decimal(0), costs - threshold), cap)
+        assert result.value == oracle.to_integral_value(rounding=ROUND_CEILING)
     assert lower_result.value == lower_result.value.to_integral_value()
     assert upper_result.value == upper_result.value.to_integral_value()
 
