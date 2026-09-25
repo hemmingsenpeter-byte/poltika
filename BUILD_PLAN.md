@@ -1938,16 +1938,30 @@ and Pete's acceptance):
 35. **Demo: one real policy question, answered end-to-end.**
     - **35.1 — Pete decides; GPT/Codex proposes candidate questions inside both domains.** The question. It must sit inside both
       supported domains, and it must be chosen knowing 26b's outcome for
-      the in-work tax credit.
+      the in-work tax credit. **Decided 25 September 2026 (Pete delegated:
+      "do what you think is best"):** golden household g2, a couple with two
+      children on $50,000 + $20,000 renting in Area 1 for $600 a week:
+      "what WFF and AS does Poltika calculate, and does either reduce the
+      other?" The in-work tax credit is reported as `needs_review` (26b).
+      Beneficiary households were ruled out by the Task 34.3 F1 correction.
+      No GPT/Codex candidate list was requested; Codex checks the wording in
+      35.3.
     - **35.2 — Pete decides.** The demo surface: API plus the 31.4 report
       (recommended for v0.1), or a first Next.js screen per
-      ARCHITECTURE.md's target stack.
+      ARCHITECTURE.md's target stack. **Decided 25 September 2026
+      (delegated):** the API plus the report, as recommended.
     - **35.3 — Claude Code runs and writes the walkthrough; GPT/Codex checks its limitations wording against both specifications.** Run it as a persisted scenario and produce its provenance
       report. Write a short walkthrough that states the result's
       limitations: conditional on caller-asserted facts, supported domain
-      only.
+      only. **Run and written 25 September 2026:** `docs/demo/v0_1/`
+      (stored through `POST /scenarios` from clean commit `61564c3`;
+      reproducible; replay `reproduced` and `code_matches`). **Pending:**
+      GPT/Codex wording check (brief:
+      `review_packets/task_34_3_codex_brief.md`).
     - **35.4 — Claude Code.** Release: CHANGELOG, tag `v0.1.0`. The deferred v0.1.5 repo
-      taxonomy rework starts after the tag, not before.
+      taxonomy rework starts after the tag, not before. **CHANGELOG drafted
+      25 September 2026; the tag waits for the GPT/Codex half of 34.3, its
+      34.4 classification, and Pete's 34.5 acceptance.**
 
 ---
 

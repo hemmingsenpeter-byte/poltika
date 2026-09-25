@@ -1,0 +1,52 @@
+{
+  "scenario_id": "4b37f0b08a506cba8b9822be8edc96a650e5bdd03836276405f03e69dd393521",
+  "result_id": "c2156938f9c0811f4620478e8a77e756236ed1563d8f2ef140ffbe10f158a5f9",
+  "reproducible": true,
+  "wff_period": [
+    "2026-04-01",
+    "2027-04-01"
+  ],
+  "accommodation_supplement_period": [
+    "2026-06-01",
+    "2026-06-08"
+  ],
+  "contradictions": [],
+  "wff": {
+    "family_tax_credit": {
+      "outcome": "calculated",
+      "value": "7472.500",
+      "reason": null
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "accommodation_supplement": {
+    "outcome": "calculated",
+    "value": "220",
+    "reason": null
+  },
+  "replay": {
+    "result_id": "c2156938f9c0811f4620478e8a77e756236ed1563d8f2ef140ffbe10f158a5f9",
+    "reproduced": true,
+    "code_matches": true
+  },
+  "code": {
+    "dependency_lock_sha256": "c6512e10890220a8258abb2fa89ec6deb894085886bcf1135b2133c2ab07ef98",
+    "package_version": "0.1.0",
+    "source_commit": "61564c35517fb1abf195b511af64f9d2d6defd2e",
+    "source_tree_clean": true
+  }
+}

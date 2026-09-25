@@ -1,0 +1,53 @@
+{
+  "wff": {
+    "household_eligibility": "verified",
+    "extra_instalment_status": "verified",
+    "partner_status": "partnered",
+    "family_scheme_income": {
+      "claimant_amount": "50000",
+      "partner_amount": "20000"
+    },
+    "net_family_scheme_income": "70000",
+    "net_family_scheme_income_me3_attested": true,
+    "in_work_eligibility": "verified",
+    "ftc_iwtc_protected_or_direct_abatement": "verified",
+    "mc6a_veterans_payment": "verified",
+    "mc6b_disqualifying_payment": "verified",
+    "minimum_family_full_time_earner_weeks": "verified",
+    "best_start_no_shared_care": "verified",
+    "best_start_protected_credit": "verified",
+    "children": [
+      {
+        "qualifies_whole_year": "verified",
+        "best_start_cohort": "outside_best_start_entitlement",
+        "best_start_no_disqualifying_payment": "verified"
+      },
+      {
+        "qualifies_whole_year": "verified",
+        "best_start_cohort": "outside_best_start_entitlement",
+        "best_start_no_disqualifying_payment": "verified"
+      }
+    ],
+    "modelled_date": "2026-06-01",
+    "requested_policy_version": "0.1.0"
+  },
+  "accommodation_supplement": {
+    "household_eligibility": "verified",
+    "claimant_category": "non_beneficiary",
+    "tenure_type": "rent_contributions_or_board",
+    "partner_status": "ordinary_couple",
+    "statistical_area_unit": "area1",
+    "weekly_accommodation_costs": "600",
+    "dependent_children_count": 2,
+    "cash_assets": "2000",
+    "exempt_cash_asset_status": "verified",
+    "weekly_income": "1346",
+    "ordinary_rate_status": "verified",
+    "eldest_dependent_child_under_16": "verified",
+    "modelled_date": "2026-06-01",
+    "assessment_week_start": "2026-06-01",
+    "assessment_week_end": "2026-06-08",
+    "requested_policy_version": "0.1.1"
+  },
+  "as_claimant_is_wff_claimant_or_partner": "verified"
+}
