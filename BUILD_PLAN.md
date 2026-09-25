@@ -1945,6 +1945,8 @@ and Pete's acceptance):
       Classification was accepted under Pete's delegation. **34.3 and 34.4
       are complete; 34.1 is verified.**
     - **34.5 — Pete.** Pete's acceptance of v0.1.
+      **Accepted 25 September 2026:** Pete accepted v0.1 at `main`
+      (`d307725`, including PR #79, whose GPT/Codex audit Pete waived).
 35. **Demo: one real policy question, answered end-to-end.**
     - **35.1 — Pete decides; GPT/Codex proposes candidate questions inside both domains.** The question. It must sit inside both
       supported domains, and it must be chosen knowing 26b's outcome for
@@ -1967,9 +1969,9 @@ and Pete's acceptance):
       (stored through `POST /scenarios` from clean commit `61564c3`;
       reproducible; replay `reproduced` and `code_matches`). GPT/Codex wording check done (no change needed; `reviews/2026-09-25-task34-3-codex.md`).
     - **35.4 — Claude Code.** Release: CHANGELOG, tag `v0.1.0`. The deferred v0.1.5 repo
-      taxonomy rework starts after the tag, not before. **CHANGELOG drafted
-      25 September 2026; the tag waits for the GPT/Codex half of 34.3, its
-      34.4 classification, and Pete's 34.5 acceptance.**
+      taxonomy rework starts after the tag, not before. **Done 25 September
+      2026:** CHANGELOG finalised and `v0.1.0` tagged on the release PR's
+      merge commit.
 
 ---
 

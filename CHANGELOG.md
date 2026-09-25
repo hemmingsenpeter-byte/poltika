@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased (drafted for v0.1.0, which is tagged after Task 34.5 acceptance)
+## v0.1.0 (25 September 2026)
+
+Accepted by Pete (BUILD_PLAN.md Task 34.5).
 
 v0.1 is a deterministic foundation: two New Zealand policies modelled from
 cited primary sources, a combined household scenario, and provenance.
@@ -33,6 +35,20 @@ cited primary sources, a combined household scenario, and provenance.
   frozen golden snapshot, an installed-artifact check and code replay, run
   in CI on every PR and push.
 - Demo: `docs/demo/v0_1/`.
+- Post-review fixes (PR #79; author-reviewed, merged on Pete's acceptance
+  without a GPT/Codex audit):
+  - storing the same household with its children in another order no longer
+    returns 409;
+  - each module's checks refuse a `policy.yaml` that changed after its
+    parameters were loaded;
+  - committed policy-file lookups are cached;
+  - the statutory-value guard also lists the golden-results fixture and the
+    source, specification and decision files;
+  - Python is pinned to 3.12;
+  - WFF DEC-001 records when an evidenced eligibility failure is $0 and when
+    it is `unsupported`.
+- Known limitation: no WFF total. The 2026-27 in-work tax credit base rate
+  can be reversed early by Order in Council, so it stays `needs_review`.
 
 ## Scaffolding
 
