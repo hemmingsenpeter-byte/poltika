@@ -77,7 +77,10 @@ poltika/
 │   ├── engines/assurance/ — provenance.py (Task 31: builds the provenance
 │   │                        report from traced results -- verifies the
 │   │                        run's artifact hashes, resolves source/rule/
-│   │                        decision ids, renders JSON and Markdown)
+│   │                        decision ids, renders JSON and Markdown);
+│   │                        explanation.py (v0.1.5 Phase 3: deterministic
+│   │                        explanations rendered only from the recorded
+│   │                        trace, and verify() against the calculation)
 │   └── api/               — Task 21/24.8: FastAPI app (ADR-0010). main.py
 │                            (app instance, exception handling for
 │                            common.errors.PoltikaError subclasses,
