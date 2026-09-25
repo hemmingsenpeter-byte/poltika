@@ -139,7 +139,9 @@ households:
     why: A main beneficiary with no children; the Area 4 single cap binds.
     derivation: >-
       WFF: no dependent child, so unsupported; in-work eligibility and MC 6(b) are recorded as
-      excluded (a main benefit is received), so no main-benefit disagreement. AS: Jobseeker single
+      excluded (a main benefit is received), as are the MD 14/15 and MG 4 protected-credit facts
+      (Task 34.3 F1: a main benefit with income under the thresholds makes a protected month), so
+      no main-benefit disagreement. AS: Jobseeker single
       threshold $93; 70% x ($250 - $93) = $109.90, capped at the cl 3 Area 4 cap of $70; no income
       test; $70.
     precondition: verified
@@ -149,6 +151,8 @@ households:
       net_family_scheme_income: '19000'
       in_work_eligibility: excluded
       mc6b_disqualifying_payment: excluded
+      ftc_iwtc_protected_or_direct_abatement: excluded
+      best_start_protected_credit: excluded
       children: []
     accommodation_supplement:
       <<: *as_base
@@ -169,10 +173,14 @@ households:
       accommodation_supplement: {outcome: calculated, value: '70'}
 
   - id: g5_supported_living_couple_two_children
-    why: Beneficiary couple; FTC and AS calculated, IWTC and MFTC excluded by the main benefit.
+    why: Beneficiary couple; AS calculated, every WFF component unsupported by the main benefit.
     derivation: >-
-      WFF: combined $25,000 + $15,000 = $40,000, below $44,900, FTC $14,375; in-work eligibility and
-      MC 6(b) excluded, so IWTC and MFTC unsupported; Best Start $0. AS: Supported Living couple-with-
+      WFF: combined $25,000 + $15,000 = $40,000, below $44,900, with a Supported Living Payment
+      received, so the months are MD 14(1)(b) protected family tax credit and MG 4(1)(b) protected
+      Best Start months (conservatively: the benefit may be the partner's). The approved WFF
+      specification (steps 2 and 5) makes an established protected month unsupported, so FTC, IWTC
+      and Best Start are unsupported; in-work eligibility and MC 6(b) are excluded, so MFTC is
+      unsupported too. Corrected by Task 34.3 F1 (was FTC $14,375, Best Start $0). AS: Supported Living couple-with-
       children threshold $227; 70% x ($500 - $227) = $191.10, under the cl 1 Area 2 cap of $220; no
       income test; r 19 gives $192.
     precondition: verified
@@ -183,6 +191,8 @@ households:
       net_family_scheme_income: '40000'
       in_work_eligibility: excluded
       mc6b_disqualifying_payment: excluded
+      ftc_iwtc_protected_or_direct_abatement: excluded
+      best_start_protected_credit: excluded
     accommodation_supplement:
       <<: *as_base
       claimant_category: supported_living_payment
@@ -193,18 +203,20 @@ households:
     expected:
       contradictions: 0
       wff:
-        family_tax_credit: {outcome: calculated, value: '14375'}
+        family_tax_credit: {outcome: unsupported}
         in_work_tax_credit: {outcome: unsupported}
         minimum_family_tax_credit: {outcome: unsupported}
-        best_start: {outcome: calculated, value: '0'}
+        best_start: {outcome: unsupported}
       accommodation_supplement: {outcome: calculated, value: '192'}
 
   - id: g6_sole_parent_support_best_start_child
-    why: Best Start calculated for a supported-cohort child; the one-child cl 2 cap binds.
+    why: Sole Parent Support household; the one-child cl 2 cap binds; every WFF component unsupported.
     derivation: >-
-      WFF: FTC $7,921 (income $28,000); IWTC and MFTC unsupported (Sole Parent Support: in-work and MC
-      6(b) excluded); Best Start $4,041 (income below $79,000, no abatement; child in the supported
-      birth cohort, no shared care, no protected month, no MC 6(c) payment). AS: Sole Parent Support
+      WFF: Sole Parent Support is received and income $28,000 is below $44,900 and $79,000, so the
+      months are MD 14(1)(a) protected family tax credit and MG 4(1)(a) protected Best Start months;
+      the approved WFF specification (steps 2 and 5) makes them unsupported, so FTC, IWTC and Best
+      Start are unsupported, and MFTC is unsupported by MC 6(b). Corrected by Task 34.3 F1 (was FTC
+      $7,921, Best Start $4,041). AS: Sole Parent Support
       threshold $168; 70% x ($600 - $168) = $302.40, capped at the cl 2 Area 1 cap of $235 (a sole
       parent with one child; the cl 1 cap would be $305); $235.
     precondition: verified
@@ -214,6 +226,8 @@ households:
       net_family_scheme_income: '28000'
       in_work_eligibility: excluded
       mc6b_disqualifying_payment: excluded
+      ftc_iwtc_protected_or_direct_abatement: excluded
+      best_start_protected_credit: excluded
       children:
         - {qualifies_whole_year: verified, best_start_cohort: in_supported_cohort, best_start_no_disqualifying_payment: verified}
     accommodation_supplement:
@@ -227,10 +241,10 @@ households:
     expected:
       contradictions: 0
       wff:
-        family_tax_credit: {outcome: calculated, value: '7921'}
+        family_tax_credit: {outcome: unsupported}
         in_work_tax_credit: {outcome: unsupported}
         minimum_family_tax_credit: {outcome: unsupported}
-        best_start: {outcome: calculated, value: '4041'}
+        best_start: {outcome: unsupported}
       accommodation_supplement: {outcome: calculated, value: '235'}
 
   - id: g7_sole_parent_asset_imputation_and_income_reduction

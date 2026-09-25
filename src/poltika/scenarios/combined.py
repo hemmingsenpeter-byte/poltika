@@ -132,6 +132,21 @@ def shared_fact_contradictions(
                 f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts MC 6(b) "
                 "(no main benefit received in the period) verified"
             )
+        # Task 34.3 F2: MD 14(1) / MG 4(1) make a month with a main benefit
+        # and family scheme income under the MD 13(3)(a)(i) / MG 3(2)(a)
+        # amount a protected month. Income is annualised per month (MB 2),
+        # which neither side models, so the gate is conservative: any
+        # verified "protected credit does not apply" is flagged.
+        if wff.ftc_iwtc_protected_or_direct_abatement == FactStatus.VERIFIED:
+            found.append(
+                f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts no MD 14/15 "
+                "protected family tax credit month verified"
+            )
+        if wff.best_start_protected_credit == FactStatus.VERIFIED:
+            found.append(
+                f"main benefit: AS asserts {benefit} paid in the assessment week, WFF asserts no MG 4 "
+                "protected Best Start month verified"
+            )
 
     if as_.dependent_children_count is not None and as_.dependent_children_count != len(wff.children):
         found.append(

@@ -567,6 +567,13 @@ _AS_CALCULATION_RULES: tuple[tuple[str | None, str], ...] = (
         ),
     ),
     (
+        "rent_board_subsidy_rate",
+        (
+            "Schedule 4 Part 7 cl 1-3: 70% of the positive excess of costs over the entry threshold, "
+            "capped at the household/area maximum"
+        ),
+    ),
+    (
         "as_income_level_non_beneficiary_",
         "DEC-002: the published non-beneficiary income threshold for the household row is the r 18(3) level",
     ),
@@ -635,11 +642,15 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
     if isinstance(area_cap, ComponentResult):
         return area_cap
 
+    subsidy_rate = _param_value(parameters, "rent_board_subsidy_rate")
+    if isinstance(subsidy_rate, ComponentResult):
+        return subsidy_rate
+
     excess = qualifying_costs - entry_threshold
     if excess <= 0:
         cost_based_amount = zero
     else:
-        cost_based_amount = min(Decimal("0.7") * excess, area_cap)
+        cost_based_amount = min(subsidy_rate * excess, area_cap)
 
     # Step 5: r 18 income reduction -- non-beneficiary route only
     # (AS-08: other supported categories have no separate AS income test).

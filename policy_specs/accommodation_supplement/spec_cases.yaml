@@ -7,7 +7,11 @@
 # previously expressed as 25% of an assumed $300 base; each case's arithmetic
 # and expected value is unchanged. The Task 26a.3 cases at the end use no
 # assumptions and run against the real published values in policy.yaml.
-status: pending_review
+# Status approved 25 September 2026 (Task 34.3 F7, Pete's 34.4 acceptance):
+# independently reviewed in Task 24.4, fixes classified and accepted by Pete
+# in 24.5/24.6 (PR #32, commit 14eea09); the Task 26a.3 additions were
+# reviewed with the Task 26a repair (PR #50).
+status: approved
 spec_cases:
   - id: ordinary_uncapped_jobseeker
     derivation: Assumed entry threshold $75; 70% of ($200 - $75) = $87.50; r 19 rounds up to $88.

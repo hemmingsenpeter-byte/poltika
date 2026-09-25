@@ -164,15 +164,43 @@ def test_each_disagreement_flags_every_non_unsupported_component(
 
 def test_main_benefit_names_each_verified_wff_assertion() -> None:
     combined = _run(as_=_as(claimant_category=ClaimantCategory.SUPPORTED_LIVING_PAYMENT))
-    assert len(combined.contradictions) == 2
+    assert len(combined.contradictions) == 4
     assert any("in-work eligibility" in c for c in combined.contradictions)
     assert any("MC 6(b)" in c for c in combined.contradictions)
+    assert any("MD 14/15" in c for c in combined.contradictions)
+    assert any("MG 4" in c for c in combined.contradictions)
 
 
 def test_main_benefit_is_not_a_contradiction_when_wff_did_not_assert_no_main_benefit() -> None:
-    wff = replace(_wff(), in_work_eligibility=FactStatus.UNKNOWN, mc6b_disqualifying_payment=FactStatus.UNKNOWN)
+    wff = replace(
+        _wff(),
+        in_work_eligibility=FactStatus.UNKNOWN,
+        mc6b_disqualifying_payment=FactStatus.UNKNOWN,
+        ftc_iwtc_protected_or_direct_abatement=FactStatus.UNKNOWN,
+        best_start_protected_credit=FactStatus.UNKNOWN,
+    )
     combined = _run(wff=wff, as_=_as(claimant_category=ClaimantCategory.JOBSEEKER_SUPPORT))
     assert combined.contradictions == ()
+
+
+@pytest.mark.parametrize(
+    ("field", "rule"),
+    [("ftc_iwtc_protected_or_direct_abatement", "MD 14/15"), ("best_start_protected_credit", "MG 4")],
+)
+def test_protected_credit_leak_main_benefit_with_verified_no_protected_month(field: str, rule: str) -> None:
+    """Task 34.3 F2: AS asserts a main benefit while WFF asserts the protected
+    credit verified not to apply -- the fixture pattern behind F1 -- is flagged."""
+    facts = {
+        "in_work_eligibility": FactStatus.UNKNOWN,
+        "mc6b_disqualifying_payment": FactStatus.UNKNOWN,
+        "ftc_iwtc_protected_or_direct_abatement": FactStatus.UNKNOWN,
+        "best_start_protected_credit": FactStatus.UNKNOWN,
+    }
+    wff = replace(_wff(), **{**facts, field: FactStatus.VERIFIED})
+    combined = _run(wff=wff, as_=_as(claimant_category=ClaimantCategory.SOLE_PARENT_SUPPORT))
+    assert len(combined.contradictions) == 1
+    assert rule in combined.contradictions[0]
+    assert combined.wff.family_tax_credit.outcome == "needs_review"
 
 
 def test_unverified_facts_are_left_to_each_policy() -> None:
