@@ -36,6 +36,8 @@ poltika/
 ├── reviews/           — review and discrepancy records
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
+├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
+│                         provenance report for the v0.1 demo question
 │
 ├── src/poltika/
 │   ├── common/            — errors.py (exception hierarchy)
