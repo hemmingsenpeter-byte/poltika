@@ -256,3 +256,17 @@ def test_requested_policy_version_mismatch_still_raises() -> None:
         run_wff_module(
             WFF_POLICY_DIR, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="9.9.9"
         )
+
+
+def test_open_ended_parameter_value_is_needs_review(tmp_path: Path) -> None:
+    """v0.1 question set QS-2: SCHEMA.md permits an open-ended final interval,
+    but a calculation must not rely on one -- a legislative replacement that
+    has not been loaded would otherwise be applied silently."""
+    policy_dir = _write_policy_dir(tmp_path, param_effective_to=None)
+
+    result = run_wff_module(
+        policy_dir, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="0.1.0"
+    )
+
+    assert result.family_tax_credit.outcome == "needs_review"
+    assert "has no effective_to" in (result.family_tax_credit.reason or "")

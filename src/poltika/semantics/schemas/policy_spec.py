@@ -172,6 +172,19 @@ class ParameterSpec(BaseModel):
     values: list[ParameterValue] = Field(min_length=1)
 
     @model_validator(mode="after")
+    def _fraction_values_are_fractions(self) -> ParameterSpec:
+        # v0.1 question set QS-1: a rate stored as a percentage (27.5 for
+        # 0.275) must be refused, not loaded and silently applied.
+        if self.value_type == ParameterValueType.FRACTION:
+            for value in self.values:
+                if not Decimal(0) <= value.value <= Decimal(1):
+                    raise ValueError(
+                        f"parameter '{self.id}' is a fraction but has value {value.value} "
+                        f"(effective {value.effective_from}); fractions must be between 0 and 1"
+                    )
+        return self
+
+    @model_validator(mode="after")
     def _unit_matches_value_type(self) -> ParameterSpec:
         allowed = _VALID_UNITS_BY_VALUE_TYPE[self.value_type]
         if self.unit not in allowed:

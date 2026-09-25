@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from poltika.engines.simulator.wff import (
     BestStartCohort,
@@ -69,18 +69,27 @@ router = APIRouter(prefix="/wff", tags=["wff"])
 
 
 class ChildFactsRequest(BaseModel):
+    # v0.1 question set Q64: an unknown field is rejected, never ignored.
+    model_config = ConfigDict(extra="forbid")
+
     qualifies_whole_year: FactStatus
     best_start_cohort: BestStartCohort = BestStartCohort.UNKNOWN
     best_start_no_disqualifying_payment: FactStatus = FactStatus.UNKNOWN
 
 
 class VerifiedIncomeRequest(BaseModel):
+    # v0.1 question set Q64: an unknown field is rejected, never ignored.
+    model_config = ConfigDict(extra="forbid")
+
     claimant_amount: Decimal = Field(ge=0)
     partner_amount: Decimal | None = Field(default=None, ge=0)
 
 
 class WffCalculationRequest(BaseModel):
     """Mirrors `WffScenario`'s own fields; see this module's docstring."""
+
+    # v0.1 question set Q64: an unknown field is rejected, never ignored.
+    model_config = ConfigDict(extra="forbid")
 
     modelled_date: date
     # Required, no default -- Task 20's explicit version-selection

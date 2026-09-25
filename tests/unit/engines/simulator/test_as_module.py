@@ -325,3 +325,14 @@ def test_validation_failure_trace_records_the_assessment_week(tmp_path: Path) ->
     assert result.outcome == "needs_review"
     assert result.trace is not None
     assert result.trace.assessment_period == (WEEK.start, WEEK.end)
+
+
+def test_open_ended_value_is_needs_review(tmp_path: Path) -> None:
+    """v0.1 question set QS-2: an open-ended value cannot establish that it
+    is still the law for the assessed week."""
+    policy_dir = _write_policy_dir(tmp_path, param_effective_to=None)
+
+    result = _run(policy_dir)
+
+    assert result.outcome == "needs_review"
+    assert "has no effective_to" in (result.reason or "")

@@ -799,3 +799,26 @@ def test_single_claimant_with_partner_amount_rejected() -> None:
             family_scheme_income=_income(30000, partner_amount=10000),
         )
 
+
+
+def test_zero_floor_keeps_the_components_decimal_scale(real_wff_parameters) -> None:  # type: ignore[no-untyped-def]
+    """v0.1 question set QS-3: a floored credit read `0` while its unfloored
+    neighbour read `7920.725`; the zero now keeps the component's scale."""
+    from tests.conftest import wff_scenario_from_yaml
+
+    scenario = wff_scenario_from_yaml(
+        {
+            "household_eligibility": "verified", "extra_instalment_status": "verified",
+            "partner_status": "single", "family_scheme_income": {"claimant_amount": "500000"},
+            "in_work_eligibility": "verified", "ftc_iwtc_protected_or_direct_abatement": "verified",
+            "mc6a_veterans_payment": "verified", "mc6b_disqualifying_payment": "verified",
+            "minimum_family_full_time_earner_weeks": "verified",
+            "best_start_no_shared_care": "verified", "best_start_protected_credit": "verified",
+            "children": [{"qualifies_whole_year": "verified", "best_start_cohort": "in_supported_cohort",
+                          "best_start_no_disqualifying_payment": "verified"}],
+        }
+    )
+    result = calculate_wff(scenario, real_wff_parameters)
+    assert result.family_tax_credit.value == 0
+    assert str(result.family_tax_credit.value) == "0.000"
+    assert str(result.best_start.value) == "0.00"

@@ -833,6 +833,18 @@ def _as_module_validation_failure(
             f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
             "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
         )
+        if matching_value.effective_to is None:
+            # v0.1 question set QS-2: SCHEMA.md permits an open-ended final
+            # interval, but a calculation must not rely on one -- a later
+            # replacement that has not been loaded would be applied silently.
+            return ComponentResult(
+                outcome="needs_review",
+                reason=(
+                    f"parameter '{param.id}' value effective {matching_value.effective_from} has no "
+                    "effective_to -- an open-ended value cannot establish that it is still the "
+                    "law for this period"
+                ),
+            )
         if not _covers_week(matching_value.effective_from, matching_value.effective_to, assessment_week):
             return ComponentResult(
                 outcome="needs_review",
