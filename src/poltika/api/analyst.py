@@ -21,6 +21,7 @@ from fastapi.responses import HTMLResponse
 
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.wff import WFF_POLICY_DIR
+from poltika.engines.assurance.evidence import evidence_coverage
 from poltika.policy.loader import load_policy_spec
 
 router = APIRouter(prefix="/analyst", tags=["analyst"])
@@ -62,6 +63,14 @@ def examples() -> list[dict[str, Any]]:
     return requests
 
 
+@router.get("/evidence")
+def evidence() -> list[dict[str, Any]]:
+    """v0.1.5 Phase 1: each deployed policy's evidence coverage summary and
+    any gaps, so a pilot user can see what the numbers rest on."""
+    reports = [evidence_coverage(d) for d in (WFF_POLICY_DIR, AS_POLICY_DIR)]
+    return [{k: r[k] for k in ("policy_id", "policy_version", "summary", "problems")} for r in reports]
+
+
 @router.get("", response_class=HTMLResponse)
 def page() -> str:
     return _PAGE
@@ -97,6 +106,12 @@ _PAGE = """<!doctype html>
   td, th { border-top: 1px solid var(--line); padding: 4px 6px; text-align: left; vertical-align: top; }
   details { margin-top: 6px; } summary { cursor: pointer; font-weight: 600; }
   .error { color: var(--unsup); white-space: pre-wrap; }
+  fieldset { border: 1px solid var(--line); border-radius: 6px; margin: 8px 0; padding: 6px 10px; }
+  legend { font-weight: 600; padding: 0 4px; }
+  .field { display: grid; grid-template-columns: minmax(180px, 40%) 1fr; gap: 8px; align-items: center; margin: 3px 0; }
+  .field input[type=text], .field select { font: inherit; padding: 2px 4px; background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line); border-radius: 4px; max-width: 100%; }
+  @media (max-width: 600px) { .field { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -106,9 +121,14 @@ determination. Every number shown comes from the API; this page computes nothing
 
 <p><label>Start from an example household:
   <select id="examples"><option value="">(loading)</option></select></label></p>
-<p><label for="request">Household request (JSON, as sent to <code>/household/calculate</code>)</label></p>
+<div id="form"></div>
+<details><summary>Edit as JSON</summary>
+<p><label for="request">Household request, as sent to <code>/household/calculate</code></label></p>
 <textarea id="request" spellcheck="false"></textarea>
+<p><button id="apply-json">Apply JSON to the form</button></p>
+</details>
 <p><button id="run">Calculate</button> <button id="download" disabled>Download case report (JSON)</button></p>
+<p id="evidence" class="note"></p>
 <div id="error" class="error" role="alert"></div>
 <div id="results"></div>
 
@@ -127,6 +147,7 @@ function el(tag, attrs = {}, ...children) {
 }
 
 async function loadExamples() {
+  schemas = (await (await fetch("/openapi.json")).json()).components.schemas;
   const select = document.getElementById("examples");
   examples = await (await fetch("/analyst/examples")).json();
   select.replaceChildren(el("option", {value: ""}, "(choose)"),
@@ -134,8 +155,108 @@ async function loadExamples() {
   if (examples.length) { select.value = "0"; fill(0); }
 }
 
+let schemas = {}, request = null;
+
 function fill(i) {
-  document.getElementById("request").value = JSON.stringify(examples[i].request, null, 2);
+  request = structuredClone(examples[i].request);
+  syncJson(); renderForm();
+}
+
+function syncJson() { document.getElementById("request").value = JSON.stringify(request, null, 2); }
+
+function resolve(schema) {
+  while (schema && schema.$ref) schema = schemas[schema.$ref.split("/").pop()];
+  return schema || {};
+}
+
+// A property schema, its non-null variant, and whether null is allowed.
+function variant(schema) {
+  if (!schema.anyOf) return {base: resolve(schema), nullable: false};
+  const options = schema.anyOf.filter(o => o.type !== "null");
+  const text = options.find(o => o.type === "string" && !o.format) || options[0];
+  return {base: resolve(options.find(o => o.$ref) || text), nullable: options.length < schema.anyOf.length};
+}
+
+// The property's own title, or its name -- never a referenced model's class
+// name (e.g. "VerifiedIncomeRequest").
+function label(key, schema) {
+  const text = schema.$ref ? String(key) : (schema.title || String(key));
+  const words = text.replace(/_/g, " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+function setAt(path, value) {
+  let target = request;
+  for (const key of path.slice(0, -1)) target = target[key];
+  target[path[path.length - 1]] = value;
+  syncJson();
+}
+
+function field(key, schema, value, path) {
+  const {base, nullable} = variant(schema);
+  if (base.properties) {
+    const box = el("fieldset", {}, el("legend", {}, label(key, schema)));
+    if (nullable) {
+      const toggle = el("input", {type: "checkbox"});
+      toggle.checked = value === null || value === undefined;
+      toggle.addEventListener("change", () => {
+        setAt(path, toggle.checked ? null : Object.fromEntries(Object.keys(base.properties).map(k => [k, null])));
+        renderForm();
+      });
+      box.append(el("label", {}, toggle, " not supplied"));
+      if (value === null || value === undefined) return box;
+    }
+    for (const [k, s] of Object.entries(base.properties)) box.append(field(k, s, value[k], [...path, k]));
+    return box;
+  }
+  if (base.type === "array") {
+    const itemSchema = resolve(base.items);
+    const box = el("fieldset", {}, el("legend", {}, label(key, schema) + " (" + value.length + ")"));
+    value.forEach((item, i) => {
+      const inner = field(key + " " + (i + 1), base.items, item, [...path, i]);
+      const remove = el("button", {type: "button"}, "Remove");
+      remove.addEventListener("click", () => { value.splice(i, 1); syncJson(); renderForm(); });
+      inner.append(remove);
+      box.append(inner);
+    });
+    const add = el("button", {type: "button"}, "Add");
+    add.addEventListener("click", () => {
+      const fresh = value.length ? structuredClone(value[value.length - 1])
+        : Object.fromEntries(Object.entries(itemSchema.properties || {}).map(([k, s]) => [k, s.default ?? "unknown"]));
+      value.push(fresh); syncJson(); renderForm();
+    });
+    box.append(add);
+    return box;
+  }
+  const row = el("label", {class: "field"}, label(key, schema));
+  let input;
+  if (base.enum) {
+    input = el("select");
+    if (nullable) input.append(el("option", {value: ""}, "(not supplied)"));
+    base.enum.forEach(v => input.append(el("option", {value: v}, v)));
+    input.value = value ?? "";
+    input.addEventListener("change", () => setAt(path, input.value === "" ? null : input.value));
+  } else if (base.type === "boolean") {
+    input = el("input", {type: "checkbox"});
+    input.checked = !!value;
+    input.addEventListener("change", () => setAt(path, input.checked));
+  } else {
+    input = el("input", {type: "text", placeholder: nullable ? "(not supplied)" : ""});
+    input.value = value ?? "";
+    input.addEventListener("change", () => {
+      const text = input.value.trim();
+      if (text === "") { setAt(path, nullable ? null : ""); return; }
+      setAt(path, base.type === "integer" ? Number(text) : text);
+    });
+  }
+  row.append(input);
+  return row;
+}
+
+function renderForm() {
+  const root = resolve({$ref: "#/components/schemas/HouseholdCalculationRequest"});
+  const form = document.getElementById("form");
+  form.replaceChildren(...Object.entries(root.properties).map(([k, s]) => field(k, s, request[k], [k])));
 }
 
 function component(id, result, explanation) {
@@ -174,7 +295,7 @@ async function run() {
   const error = document.getElementById("error"), results = document.getElementById("results");
   error.textContent = ""; results.replaceChildren();
   let body;
-  try { body = JSON.parse(document.getElementById("request").value); }
+  try { body = request ?? JSON.parse(document.getElementById("request").value); }
   catch (e) { error.textContent = "The request is not valid JSON: " + e.message; return; }
   const response = await fetch("/household/calculate", {method: "POST",
     headers: {"content-type": "application/json"}, body: JSON.stringify(body)});
@@ -198,11 +319,22 @@ async function run() {
 
 document.getElementById("examples").addEventListener("change", e => { if (e.target.value !== "") fill(+e.target.value); });
 document.getElementById("run").addEventListener("click", run);
+document.getElementById("apply-json").addEventListener("click", () => {
+  const error = document.getElementById("error");
+  try { request = JSON.parse(document.getElementById("request").value); error.textContent = ""; renderForm(); }
+  catch (e) { error.textContent = "The JSON is not valid: " + e.message; }
+});
 document.getElementById("download").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(lastReport, null, 2)], {type: "application/json"});
   const link = el("a", {href: URL.createObjectURL(blob), download: "poltika_case_" + lastReport.result_id.slice(0, 12) + ".json"});
   link.click();
 });
+fetch("/analyst/evidence").then(r => r.json()).then(reports => {
+  document.getElementById("evidence").textContent = "Evidence: " + reports.map(r =>
+    r.policy_id + " " + r.policy_version + ": " + r.summary.parameter_values_with_ranked_source + "/" +
+    r.summary.parameter_values + " rate values on ranked sources, " + r.summary.rules_citing_primary_legislation +
+    "/" + r.summary.rules + " rules citing legislation" + (r.problems.length ? ", " + r.problems.length + " gap(s)" : "")).join("; ") + ".";
+}).catch(() => {});
 loadExamples().catch(e => { document.getElementById("error").textContent = "Could not load examples: " + e; });
 </script>
 </body>

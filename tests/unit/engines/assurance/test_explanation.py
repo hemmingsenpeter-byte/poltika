@@ -135,3 +135,55 @@ def test_changing_the_area_changes_the_accommodation_supplement_explanation() ->
     cap_text_after = [s.text for s in explain("accommodation_supplement", after).steps if s.step_id == "AS_AREA_CAP"]
     assert cap_text != cap_text_after
     assert verify(explain("accommodation_supplement", after), after) == []
+
+
+def _spec_case_explanations() -> list[tuple[str, str, ComponentResult]]:
+    """Task 7.1: every WFF and AS spec case, one explanation per component
+    -- ordinary, boundary, zero, capped, missing-fact and unsupported cases
+    alike -- well over 100 explanations."""
+    from poltika.engines.simulator.accommodation_supplement import (
+        calculate_accommodation_supplement,
+    )
+    from poltika.engines.simulator.wff import calculate_wff
+    from poltika.policy.loader import load_policy_parameters
+    from tests.conftest import as_parameters_for_case, as_scenario_from_yaml, load_as_cases
+    from tests.unit.engines.simulator.test_wff_spec_cases import (
+        _load_spec_cases,
+        _scenario_from_yaml,
+    )
+
+    cases: list[tuple[str, str, ComponentResult]] = []
+    for case in _load_spec_cases():
+        lookup = case["modelled_date"]
+        lookup = date.fromisoformat(lookup) if isinstance(lookup, str) else lookup
+        parameters = load_policy_parameters(WFF_POLICY_DIR, lookup, requested_policy_version=case["policy_version"])
+        result = calculate_wff(_scenario_from_yaml(case["scenario"]), parameters)
+        for name in ("family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start"):
+            cases.append((case["id"], name, getattr(result, name)))
+    for case in load_as_cases(AS_POLICY_DIR / "spec_cases.yaml", "spec_cases"):
+        result = calculate_accommodation_supplement(as_scenario_from_yaml(case["scenario"]), as_parameters_for_case(case))
+        cases.append((case["id"], "accommodation_supplement", result))
+    return cases
+
+
+_SPEC_EXPLANATIONS = _spec_case_explanations()
+
+
+def test_there_are_over_a_hundred_explanation_fixtures() -> None:
+    assert len(_SPEC_EXPLANATIONS) > 100
+    outcomes = {result.outcome for _, _, result in _SPEC_EXPLANATIONS}
+    assert outcomes == {"calculated", "needs_review", "unsupported"}
+
+
+@pytest.mark.parametrize(
+    ("case_id", "component_id", "result"),
+    _SPEC_EXPLANATIONS,
+    ids=[f"{c}/{k}" for c, k, _ in _SPEC_EXPLANATIONS],
+)
+def test_spec_case_explanation_verifies(case_id: str, component_id: str, result: ComponentResult) -> None:
+    explanation = explain(component_id, result)
+    assert verify(explanation, result) == []
+    if result.outcome == "needs_review":
+        assert "no amount is produced" in explanation.summary
+    if result.outcome == "unsupported":
+        assert "is not calculated" in explanation.summary

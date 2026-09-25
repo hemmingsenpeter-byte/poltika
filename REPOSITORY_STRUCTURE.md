@@ -149,8 +149,10 @@ poltika/
     ├── regression/         — known-historical-issue tests (Task 15) and the
     │                          frozen golden-result snapshot check (Task 30.4)
     └── fixtures/           — golden_results_v0_1.json (Task 30.4 frozen golden
-                               results with bound policy-file hashes; watched by
-                               the statutory-value guard)
+                               results with bound policy-file hashes) and
+                               golden_traces_v0_1_5.json (v0.1.5 Task 7.2 frozen
+                               steps, codes and explanation summaries); both
+                               watched by the statutory-value guard
 ```
 
 Only `src/poltika/{data,llm}` (`api/` is now instantiated, Task 21;
@@ -166,6 +168,22 @@ placeholders; see below. `engines/assurance/` was instantiated by Task 31
 and holds provenance only: Task 30's regression and change attribution
 live in `scenarios/record.py` (run identities and manifests) and
 `tests/regression/test_golden_result_snapshot.py`.
+
+## Review and research records (v0.1.5 Task H.1)
+
+Three directories hold the project's evidence about itself. Each record
+goes in exactly one of them:
+
+| Directory | Holds | Written by |
+| --- | --- | --- |
+| `docs/research/` | Source research: what a primary source says, dated checks, prior-art glances (clean-room) | GPT/Codex or Claude Code, before implementation |
+| `review_packets/` | Inputs handed to a reviewer: the packet (sources, spec, diff, tests) and any scripts that produced reviewed results | The author, before review |
+| `reviews/` | A reviewer's output: findings, classifications and dispositions | The reviewer |
+
+Existing records stay where they are. Several protected, hash-bound files
+link to them (specifications, a source catalogue, a decision), so moving
+them would change those files' hashes and break the historical links for
+no gain. New records follow the table.
 
 ## Target architecture (create on demand, per task)
 
