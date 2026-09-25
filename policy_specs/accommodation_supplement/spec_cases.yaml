@@ -99,10 +99,28 @@ spec_cases:
   # ceiling, checked against the official Regulations text (latest version)
   # on 26 September 2026. Assets exactly at $8,100 therefore pass; the former
   # case `asset_ceiling_met_is_unsupported` (assets 8100) was a TEST_ERROR.
-  - id: asset_ceiling_exceeded_is_unsupported
+  #
+  # DEC-004 (26 September 2026, policy 0.1.2; Pete asked Claude Code to
+  # decide): over the ceiling, the outcome turns on
+  # `specified_lump_sum_status`, the MSD lump-sum limit increase. This
+  # replaces `asset_ceiling_exceeded_is_unsupported`, which expected
+  # `unsupported` with no such fact.
+  - id: asset_ceiling_exceeded_no_lump_sum_is_ineligible
+    derivation: >-
+      $8,100.01 exceeds the $8,100 ceiling (r 15(1)) and no ACC impairment or
+      Independence Allowance lump sum raises it, so the assets requirement in
+      s 65(1)(b) fails: an evidenced $0.
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, cash_assets: '8100.01', specified_lump_sum_status: verified}
+    expected: {accommodation_supplement: {outcome: ineligible, value: '0'}}
+  - id: asset_ceiling_exceeded_lump_sum_received_is_unsupported
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, cash_assets: '8100.01', specified_lump_sum_status: excluded}
+    expected: *unsupported
+  - id: asset_ceiling_exceeded_lump_sum_unverified_is_needs_review
     parameter_assumptions: {}
     scenario: {<<: *ordinary, cash_assets: '8100.01'}
-    expected: *unsupported
+    expected: {accommodation_supplement: {outcome: needs_review}}
   - id: asset_ceiling_exactly_met_is_eligible
     derivation: >-
       Assets equal to the $8,100 ceiling do not exceed it (r 15(1)), and
@@ -112,6 +130,14 @@ spec_cases:
     parameter_assumptions: {}
     scenario: {<<: *ordinary, cash_assets: '8100'}
     expected: {accommodation_supplement: {outcome: calculated, value: '75'}}
+  - id: zero_accommodation_costs_is_ineligible
+    derivation: >-
+      DEC-005: verified $0 weekly accommodation costs mean the person has no
+      accommodation costs for the week, and s 65(1)(a) requires them: an
+      evidenced $0.
+    parameter_assumptions: {}
+    scenario: {<<: *ordinary, weekly_accommodation_costs: '0'}
+    expected: {accommodation_supplement: {outcome: ineligible, value: '0'}}
 
   - id: household_facts_unverified
     parameter_assumptions: {}
@@ -151,7 +177,7 @@ spec_cases:
     expected: *needs_review
 
   # Task 26a.3 (24 September 2026): cases run against the real approved
-  # policy (0.1.1) with NO parameter assumptions, using the published
+  # policy (0.1.2) with NO parameter assumptions, using the published
   # thresholds populated in Task 26a.2. Hand-calculated independently of the
   # implementation; cases B and C reproduce MSD's own published worked
   # examples (benchmarks msd_nadiya_supported_living_rent and

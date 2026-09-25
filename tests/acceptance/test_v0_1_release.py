@@ -128,6 +128,9 @@ def _ordinary_as(
         cash_assets=cash_assets,
         exempt_cash_asset_status=FactStatus.VERIFIED,
         ordinary_rate_status=FactStatus.VERIFIED,
+        # DEC-004: no ACC impairment or Independence Allowance lump sum raises
+        # the r 15 limit.
+        specified_lump_sum_status=FactStatus.VERIFIED,
     )
 
 
@@ -202,12 +205,14 @@ def test_as_asset_ceiling_five_point_boundary(
     )
 
     # r 15(1): cash assets "must not exceed" the ceiling -- exactly at it passes.
+    # Above it, with no lump sum raising the limit, the assets requirement
+    # fails: an evidenced $0 (DEC-004).
     if offset <= 0:
         assert result.outcome == "calculated"
         assert result.value is not None
     else:
-        assert result.outcome == "unsupported"
-        assert result.value is None
+        assert result.outcome == "ineligible"
+        assert result.value == 0
 
 
 @settings(max_examples=500, derandomize=True, deadline=None)
@@ -236,8 +241,8 @@ def test_generated_wff_entitlements_obey_accounting_invariants(
 
 @settings(max_examples=500, derandomize=True, deadline=None)
 @given(
-    # From 1 cent: $0 costs are an s 65AAA exclusion (unsupported), tested
-    # in test_zero_accommodation_costs_is_unsupported_not_zero.
+    # From 1 cent: $0 costs are an evidenced $0 (ineligible, DEC-005), tested
+    # in test_zero_accommodation_costs_is_ineligible_not_a_calculated_zero.
     first_cost_cents=st.integers(min_value=1, max_value=200_000),
     second_cost_cents=st.integers(min_value=1, max_value=200_000),
 )

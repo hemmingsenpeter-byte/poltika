@@ -44,7 +44,7 @@ def _request_payload(**overrides: Any) -> dict[str, Any]:
         "modelled_date": MODELLED_DATE,
         "assessment_week_start": ASSESSMENT_WEEK_START,
         "assessment_week_end": ASSESSMENT_WEEK_END,
-        "requested_policy_version": "0.1.1",
+        "requested_policy_version": "0.1.2",
         "household_eligibility": "verified",
         "claimant_category": "jobseeker_support",
         "tenure_type": "rent_contributions_or_board",
@@ -82,7 +82,7 @@ def test_policy_dir_defaults_without_env_var(monkeypatch: pytest.MonkeyPatch) ->
 
 
 def test_calculate_real_policy_uses_the_published_threshold() -> None:
-    """End-to-end against the real approved policy (0.1.1), which declares
+    """End-to-end against the real approved policy (0.1.2), which declares
     the published thresholds since Task 26a.2. The request matches the
     `real_policy_jobseeker_single_published_threshold` spec case, whose
     independently hand-calculated value is the expectation -- loaded from
@@ -100,22 +100,31 @@ def test_calculate_real_policy_uses_the_published_threshold() -> None:
     assert component["value"] == case["expected"]["accommodation_supplement"]["value"]
 
 
-def test_calculate_real_policy_asset_ceiling_is_unsupported() -> None:
-    """A real, fully-resolved `unsupported` outcome end-to-end: the r 15
+def test_calculate_real_policy_asset_ceiling_is_ineligible() -> None:
+    """A real, fully-resolved evidenced $0 end-to-end: the r 15
     asset-ceiling parameters *are* declared in the real approved policy
     (unlike the base rates above), so cash_assets above the ceiling
-    ($8,100 for a single claimant with no dependent children) resolves
-    without any test-only parameter assumption."""
+    ($8,100 for a single claimant with no dependent children), with no lump
+    sum raising the limit, resolves without any test-only parameter
+    assumption (DEC-004). The value is the string "0", never a float."""
     response = client.post(
         "/accommodation-supplement/calculate",
-        json=_request_payload(cash_assets="8100.01"),
+        json=_request_payload(cash_assets="8100.01", specified_lump_sum_status="verified"),
     )
 
     assert response.status_code == 200
     component = response.json()["accommodation_supplement"]
-    assert component["outcome"] == "unsupported"
-    assert component["value"] is None
+    assert component["outcome"] == "ineligible"
+    assert component["value"] == "0"
     assert "r 15" in (component["reason"] or "")
+
+
+def test_calculate_asset_ceiling_with_the_lump_sum_fact_omitted_names_it() -> None:
+    response = client.post("/accommodation-supplement/calculate", json=_request_payload(cash_assets="8100.01"))
+
+    component = response.json()["accommodation_supplement"]
+    assert (component["outcome"], component["reason_code"]) == ("needs_review", "missing_input")
+    assert component["missing"] == ["specified_lump_sum_status"]
 
 
 def test_calculate_serializes_fractional_decimal_value_as_json_string(
@@ -211,7 +220,7 @@ def test_500_handler_does_not_leak_exception_detail(tmp_path: Path, monkeypatch:
             {
                 "schema_version": "0.1",
                 "policy_id": "accommodation_supplement",
-                "policy_version": "0.1.1",
+                "policy_version": "0.1.2",
                 "status": "approved",
                 "reference_period": {"from": "2026-03-02", "to": "2027-04-01"},
                 "source_catalog": "does_not_exist.yaml",  # triggers InvalidSourceCatalogError
@@ -295,10 +304,12 @@ def test_calculate_passes_eldest_child_exclusion_through() -> None:
     assert response.json()["accommodation_supplement"]["outcome"] == "unsupported"
 
 
-def test_calculate_refuses_the_pre_repair_policy_version() -> None:
+@pytest.mark.parametrize("old_version", ["0.1.0", "0.1.1"])
+def test_calculate_refuses_an_earlier_policy_version(old_version: str) -> None:
     """No old policy version may be silently interpreted as the new contract:
-    requesting 0.1.0 against the 0.1.1 AS policy is a 409, not a result."""
+    requesting 0.1.0 (before the Task 26a repair) or 0.1.1 (before DEC-004/
+    DEC-005) against the 0.1.2 AS policy is a 409, not a result."""
     response = client.post(
-        "/accommodation-supplement/calculate", json=_request_payload(requested_policy_version="0.1.0")
+        "/accommodation-supplement/calculate", json=_request_payload(requested_policy_version=old_version)
     )
     assert response.status_code == 409

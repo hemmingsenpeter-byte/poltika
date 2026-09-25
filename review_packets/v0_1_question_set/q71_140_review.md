@@ -38,4 +38,7 @@ The scope limits the report lists are genuine v0.1 limits, not defects:
 ## For Pete
 
 - **QS-5:** should an evidenced "not a full-time earner" give MFTC $0, or
-  stay `unsupported`?
+  stay `unsupported`? *Resolved 26 September 2026 by WFF DEC-001: it stays
+  `unsupported`. ME 1(3)(c) pro-rates MFTC by full-time-earner week, so it
+  is a part-year amount, not $0. QS-6's $0 accommodation costs are now
+  `ineligible` $0 (AS DEC-005).*

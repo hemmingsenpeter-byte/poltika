@@ -190,6 +190,9 @@ child is verified outside Best Start entitlement. A zero produced by the
 formula, such as a fully abated credit, stays `calculated`. Every
 `needs_review` or `unsupported` result also carries a reason code, the
 missing facts and a resolution. No rule, value or other outcome changes.
+MFTC with 52 full-time-earner weeks not established stays `unsupported`:
+ME 1(3)(c) pro-rates the credit by full-time-earner week, so this is a
+part-year amount, not an evidenced zero (DEC-001).
 
 ### Temporary in-work base: Task 10.2 rate-status contract
 

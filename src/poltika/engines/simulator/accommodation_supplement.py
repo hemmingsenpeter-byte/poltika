@@ -17,7 +17,8 @@ Payment/non-beneficiary claimant categories (no NZ Superannuation/Veteran's
 Pension, no mixed-benefit couple), the plain-case weekly qualifying
 accommodation costs formula (no boarder/sub-let accommodation income, no
 business-use deduction). Anything outside that domain must resolve to
-`unsupported` or `needs_review`, never a silent zero or a guessed number
+`unsupported` or `needs_review`, never a silent zero or a guessed number;
+an evidenced eligibility failure is `ineligible` $0 (ADR-0014, DEC-004/005)
 (CLAUDE.md's "Ground truth" section).
 
 `ComponentResult`, `ComponentOutcome`, and `FactStatus` are imported from
@@ -200,6 +201,16 @@ class AsScenario:
     # conservative scope restriction, not a finding that older-child
     # households lack entitlement. Not consulted when the count is zero.
     eldest_dependent_child_under_16: FactStatus = FactStatus.UNKNOWN
+
+    # DEC-004: MSD increases the r 15 cash-asset limit by an ACC impairment
+    # lump sum or an Independence Allowance lump sum for 12 months from
+    # receipt (s 69(3), (5)). VERIFIED means verified that neither was
+    # received by the claimant, partner or a dependent child in the 12
+    # months up to the assessment week, so the plain r 15 limit applies.
+    # EXCLUDED (one was) is unsupported: the increased limit is not
+    # modelled. UNKNOWN is needs_review. Consulted only when cash assets
+    # exceed the ceiling.
+    specified_lump_sum_status: FactStatus = FactStatus.UNKNOWN
 
     def __post_init__(self) -> None:
         if self.weekly_accommodation_costs is not None and self.weekly_accommodation_costs < 0:
@@ -432,22 +443,17 @@ def _household_gate_failure(
             "branch's parent rows (a scope restriction, not a finding of no entitlement; DEC-002)"
         )
 
-    # s 65AAA / AS-01: entitlement requires accommodation costs, so a
-    # verified $0 is an evidenced exclusion, not a calculated $0 (v0.1
-    # question set QS-6). Known exclusion, so it runs before the facts below.
-    # ADR-0014: whether this is reported as an `ineligible` $0 is an open
-    # interpretation decision for Pete, so it stays `unsupported` for now.
+    # s 65(1)(a): entitlement requires accommodation costs (defined in
+    # s 65AAA), so verified $0 costs fail an eligibility test -- an
+    # evidenced zero, `ineligible` (DEC-005; v0.1 question set QS-6). Known
+    # exclusion, so it runs before the facts below.
     if scenario.weekly_accommodation_costs is not None and scenario.weekly_accommodation_costs == 0:
         return ComponentResult(
-            outcome="unsupported",
+            outcome="ineligible",
+            value=Decimal(0),
             reason=(
-                "no accommodation costs -- entitlement requires accommodation costs "
-                "(s 65AAA; AS-01), so this is not a calculated $0"
-            ),
-            reason_code="unresolved_rule",
-            resolution=(
-                "Not resolvable by supplying facts. Whether verified $0 accommodation costs are "
-                "reported as a $0 entitlement is pending an interpretation decision (ADR-0014)."
+                "no accommodation costs -- s 65(1)(a) requires accommodation costs (s 65AAA), "
+                "so there is no entitlement (DEC-005)"
             ),
         )
 
@@ -467,22 +473,34 @@ def _household_gate_failure(
     # at the ceiling meet the requirement (v0.1 question set, Q135; the
     # earlier ">=" came from the specification's "below the ceiling").
     if scenario.cash_assets > ceiling:
-        # Not reported as `ineligible` $0 yet: AS-06 says exceptional
-        # asset-limit increases require separate facts, which this branch
-        # does not collect, and no source in the repo yet says what they
-        # are. Pete's decision (26 September 2026, ADR-0014): source-check
-        # that first, then reclassify through a decision artifact.
+        # DEC-004: the only increase to the limit is MSD's for an ACC
+        # impairment or Independence Allowance lump sum (AS-06's
+        # "exceptional asset-limit increases"). Once that is ruled out, a
+        # failed assets requirement (s 65(1)(b)) is an evidenced zero.
+        if scenario.specified_lump_sum_status == FactStatus.EXCLUDED:
+            return ComponentResult.outside_scope(
+                f"cash assets ({scenario.cash_assets}) exceed the r 15 ceiling ({ceiling}), but an ACC "
+                "impairment or Independence Allowance lump sum received in the last 12 months raises "
+                "the limit (s 69(3); DEC-004) -- the increased limit is not modelled"
+            )
+        if scenario.specified_lump_sum_status == FactStatus.UNKNOWN:
+            return ComponentResult.missing_input(
+                f"cash assets ({scenario.cash_assets}) exceed the r 15 ceiling ({ceiling}), but whether an "
+                "ACC impairment or Independence Allowance lump sum raises the limit is unverified (DEC-004)",
+                "specified_lump_sum_status",
+                resolution=(
+                    "Establish whether the claimant, partner or a dependent child received an ACC "
+                    "impairment lump sum or an Independence Allowance lump sum in the 12 months up to "
+                    "the assessment week (specified_lump_sum_status)."
+                ),
+            )
         return ComponentResult(
-            outcome="unsupported",
+            outcome="ineligible",
+            value=Decimal(0),
             reason=(
                 f"cash assets ({scenario.cash_assets}) exceed the r 15 ceiling "
-                f"({ceiling}) -- the assets requirement (r 15) fails"
-            ),
-            reason_code="unresolved_rule",
-            resolution=(
-                "Not resolvable by supplying facts yet. Whether this is a $0 entitlement depends on "
-                "AS-06's exceptional asset-limit increase, which this branch does not model; it is "
-                "pending a source check (ADR-0014)."
+                f"({ceiling}) -- the assets requirement (r 15; s 65(1)(b)) fails, and no lump sum "
+                "raises the limit (DEC-004)"
             ),
         )
 

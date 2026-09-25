@@ -80,15 +80,16 @@ PAYLOAD = {
 
 # The Accommodation Supplement route (Task 24.8) is probed too. This case
 # fails the r 15 cash-asset ceiling, a gate that needs a real parameter from
-# the mounted policy files (`asset_ceiling_other`) and stays `unsupported`
-# whatever base rates Task 26a later adds -- so the probe proves the AS
-# policy directory is read, without depending on unpopulated values. The
-# week is a test week, not Task 28.2's selection.
+# the mounted policy files (`asset_ceiling_other`) and, with no lump sum
+# raising the limit, is an evidenced $0 (`ineligible`, DEC-004) whatever
+# base rates Task 26a later adds -- so the probe proves the AS policy
+# directory is read, without depending on unpopulated values. The week is a
+# test week, not Task 28.2's selection.
 AS_PAYLOAD = {
     "modelled_date": "2026-06-01",
     "assessment_week_start": "2026-06-01",
     "assessment_week_end": "2026-06-08",
-    "requested_policy_version": "0.1.1",
+    "requested_policy_version": "0.1.2",
     "household_eligibility": "verified",
     "claimant_category": "jobseeker_support",
     "tenure_type": "rent_contributions_or_board",
@@ -98,6 +99,7 @@ AS_PAYLOAD = {
     "dependent_children_count": 0,
     "cash_assets": "20000",
     "exempt_cash_asset_status": "verified",
+    "specified_lump_sum_status": "verified",
 }
 
 
@@ -189,7 +191,11 @@ def main() -> int:
         print(f"PROBE_FAILED: AS status {as_response.status_code}: {as_response.text}")
         return 1
     supplement = as_response.json().get("accommodation_supplement", {})
-    if supplement.get("outcome") != "unsupported" or "r 15" not in (supplement.get("reason") or ""):
+    if (
+        supplement.get("outcome") != "ineligible"
+        or supplement.get("value") != "0"
+        or "r 15" not in (supplement.get("reason") or "")
+    ):
         print(f"PROBE_FAILED: unexpected accommodation_supplement shape: {supplement}")
         return 1
 

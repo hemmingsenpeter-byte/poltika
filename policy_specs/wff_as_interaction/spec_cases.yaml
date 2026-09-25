@@ -1,7 +1,7 @@
 # Task 28.5: WFF + Accommodation Supplement interaction spec cases.
 #
 # Each case runs the combined household runner (Task 28.4) against the real
-# approved policies (WFF 0.1.0, AS 0.1.1) under the Task 28.3 contract and
+# approved policies (WFF 0.1.0, AS 0.1.2) under the Task 28.3 contract and
 # the Task 28.2 dates: WFF lookup 2026-06-01 for the 2026-27 year; AS week
 # [2026-06-01, 2026-06-08), lookup 2026-06-01. No parameter assumptions.
 #

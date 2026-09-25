@@ -1953,15 +1953,23 @@ and Pete's acceptance):
       chose to land it before the v0.1.0 tag. Evidenced zeros are reported
       as `ineligible`, applied only to Best Start with every child verified
       outside entitlement (12 WFF spec cases, 5 golden households and 1
-      interaction case relabelled; no value changed). The r 15 asset ceiling
-      stays `unsupported` (`unresolved_rule`) until AS-06's exceptional
-      asset-limit increase is sourced.
-      **Implemented 26 September 2026** (branch `feat/outcome-reason-codes`;
-      author preflight `review_packets/task_34_6_outcome_reason_codes.md`).
-      **Pending:** GPT/Codex review of the contract and the relabelled
-      protected expectations; GPT/Codex source research on AS-06's
-      exceptional asset-limit increase (then a DEC for r 15); re-running the
-      Task 35.3 demo from a clean commit after merge (needs PostgreSQL).
+      interaction case relabelled; no value changed).
+      **Implemented 26 September 2026** (PR #78; author preflight
+      `review_packets/task_34_6_outcome_reason_codes.md`). The same day,
+      Pete asked Claude Code to settle the open items:
+      - AS-06 was sourced as MSD's two lump-sum limit increases. The r 15
+        ceiling is `ineligible` $0 once they are ruled out (DEC-004, new
+        `specified_lump_sum_status` input).
+      - Verified $0 accommodation costs are `ineligible` $0 (DEC-005).
+      - MFTC without 52 full-time-earner weeks stays `unsupported`, because
+        ME 1 pro-rates the credit (WFF DEC-001).
+      - AS moves to policy 0.1.2; WFF stays 0.1.0.
+      - The P1, P2 and P5 design flags were ruled on in ADR-0014.
+      **Pending:**
+      - GPT/Codex review of the contract, the protected-expectation changes,
+        DEC-004, DEC-005 and WFF DEC-001, and the rulings.
+      - Re-running the Task 35.3 demo from a clean commit after merge (needs
+        PostgreSQL).
       34.5 and the 35.4 tag wait for this review.
 35. **Demo: one real policy question, answered end-to-end.**
     - **35.1 — Pete decides; GPT/Codex proposes candidate questions inside both domains.** The question. It must sit inside both

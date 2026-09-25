@@ -179,9 +179,10 @@ third policy needs it, not before.
 
 **`outputs.outcome_states`** lists the outcomes a policy's calculator can
 return. ADR-0014 (26 September 2026) added `ineligible`, an evidenced zero,
-to the original `calculated`, `unsupported` and `needs_review`. WFF lists it
-(Best Start). AS does not yet: its r 15 ceiling stays `unsupported` until
-the AS-06 source check. The field is declarative and no code reads it. A
+to the original `calculated`, `unsupported` and `needs_review`. Both
+policies list it: WFF for Best Start, and AS (policy 0.1.2) for the r 15
+ceiling and $0 accommodation costs (DEC-004, DEC-005). The field is
+declarative and no code reads it. A
 blocked result's reason code, missing facts and resolution belong to the
 calculator's output contract (ADR-0014), not to `policy.yaml`. Adding a
 state is not a `schema_version` change.

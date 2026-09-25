@@ -4,12 +4,15 @@
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -106,19 +109,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "e2d0ac46654dae4dc354da3bff93d71fe3a789d6707668d1e141ed8ce0319f24"
+    "scenario_id": "4690b8cc999a4e78f1c6bbefa6eca9714a38149c755a03d9a74c57c27e42293e"
   },
   "g2_couple_two_children_income_abated_both": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -215,19 +221,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "4b37f0b08a506cba8b9822be8edc96a650e5bdd03836276405f03e69dd393521"
+    "scenario_id": "84f02de56e5739245a18342034e990e258214e1024630a5c1ca838a571de298d"
   },
   "g3_childless_couple_as_only": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -324,19 +333,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "b683c4616ad88977099dfcb5ce3c9cbc31bf7bb93b78ed8228985c928487b93c"
+    "scenario_id": "4628aedfbbd295bd3e0cdef6452d0e2235224be1364b896db14292116fa633d2"
   },
   "g4_single_jobseeker_cap_binds": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -433,19 +445,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "c6387b35fd1f849463009da816ac9c022a6e95cedc7fb310a013686223f2b784"
+    "scenario_id": "2dbdc2482c31e29022a3fda8d397255119f34bf12e9f15cb63f126c95030184c"
   },
   "g5_supported_living_couple_two_children": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -542,19 +557,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "40a6cbd279488fa7ed8e75a775403e371c17dbb8762c97873d0ccf9d306d4961"
+    "scenario_id": "06a226c0587b5b684af124a17a4b726c9f54c75cb9536a38db605abe0de0e931"
   },
   "g6_sole_parent_support_best_start_child": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -651,19 +669,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "3fb812650a0da5cb231ecc00dce540f7efc1553ce70cf25e7433224b3d187c0f"
+    "scenario_id": "1bbfed2ac50e1a3c46a0c4ffe000fca7ba2f3892b4275d8dfafceb28a8620ad1"
   },
   "g7_sole_parent_asset_imputation_and_income_reduction": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -760,19 +781,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "d02848f8a0e26a5f1e7bb19683bc4d8291685c0b5cd86a36ca8bb91579466fd1"
+    "scenario_id": "805f1ae83343f4ec53b5586a7e6c9adf6495da7c7a31ab6aaa295b17986a351d"
   },
   "g8_homeowner_wff_only": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -869,19 +893,22 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "8401c847e686131c2b730a1fe9904c4ca2778476a31bff8c0d335b721151337c"
+    "scenario_id": "9a8adfcc022db4bbfd6dfe5c10f9c56e7947ce4695135be30f0e00013b1903c9"
   },
   "g9_partner_income_unverified": {
     "policy_files": {
       "accommodation_supplement/decisions/DEC-001-income-excess-rounding.md": "36974df5ca3de1b28a83284fd55a62cb482a02f176737b3285b3b0786b8aa7e0",
       "accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md": "5086c2fe0aed7433050be354d119f1094bfb240fb1aafe67b3121e961dd3d146",
       "accommodation_supplement/decisions/DEC-003-msd-paid-wff-income-exclusion.md": "8ecb738044afef3b046c581c52b13c6d10719380dce700f12c2223ec8a55c8e2",
-      "accommodation_supplement/policy.yaml": "d46078bc9ab3cb6babdd304b752de9cc3cec3a2d304c3e6b09fd0bb45ecac180",
-      "accommodation_supplement/sources.yaml": "1063aea45898c771f2bf7af4db0830972288f74618914936c4dd66918a3256e2",
-      "accommodation_supplement/specification.md": "480a428d938013aa38ce578a9e366a30fc1c0d96555c740d39ab48f7a214b74e",
+      "accommodation_supplement/decisions/DEC-004-r15-asset-ceiling-ineligible.md": "1477622f1c27fd98ddf05e5c65bf2ab50bf76edb0e64c376c73c8dcf0a51f476",
+      "accommodation_supplement/decisions/DEC-005-zero-accommodation-costs-ineligible.md": "e6fa9cd39c8e0799408830c6311e0068f9738ea61cbb7e7965cb19ab457fe2be",
+      "accommodation_supplement/policy.yaml": "a3d2c2834788ade73e909548636afaa1280d00ff8a233314c0c53a1e741b8a1a",
+      "accommodation_supplement/sources.yaml": "cd07752ec2357dc6961a61ac4cdabe4de191c570c405e7381a6cf8019e0c1c18",
+      "accommodation_supplement/specification.md": "ef5b1fd82a36f1ba311f17f037be68f859d13731055ae8f8d01bf1b6319f721d",
+      "working_for_families/decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md": "49db807e41b888f4a982d5af29cf64554a9849f32f5d2da435795ede230035b1",
       "working_for_families/policy.yaml": "6c251fe0c87273c12f6a5d2914351edab1c20e08830b7361bc725366b1572ce0",
       "working_for_families/sources.yaml": "7775f9135c8b76e528f4d850518a1083e9c5c4a3e88af46f51e43742085995b3",
-      "working_for_families/specification.md": "c30163b6ff9b9edb3ea0600b597a9ea024ca84207b34b0c3340322c20e3b37a5"
+      "working_for_families/specification.md": "414dde35eea84e73bdeea3e700138d3c8c54f8fbfc595e8c04fe9e49c70bfc89"
     },
     "result": {
       "accommodation_supplement": {
@@ -990,6 +1017,6 @@
         "2027-04-01"
       ]
     },
-    "scenario_id": "2f7532d05377c97611043caeb55636a694e0847d62c38e1fc6fed30d8706e436"
+    "scenario_id": "a909bdf3d9d7e1dd52845524560ffc6cf137cdf2e39ef21be8ff28dc7caa3f28"
   }
 }

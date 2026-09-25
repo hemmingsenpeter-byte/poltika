@@ -89,7 +89,7 @@ def test_real_policy_contains_exactly_the_approved_parameters() -> None:
     values (Task 26a.2). A deliberate list: an unexpected or missing id
     fails here rather than silently changing what the policy declares."""
     parameters = load_policy_parameters(
-        AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version="0.1.1"
+        AS_POLICY_DIR, AS_MODELLED_DATE, requested_policy_version="0.1.2"
     )
     assert len(_PUBLISHED_TABLE_PARAMETER_IDS) == 17
     assert set(parameters.resolutions) == _INDEPENDENTLY_VERIFIED_PARAMETER_IDS | _PUBLISHED_TABLE_PARAMETER_IDS

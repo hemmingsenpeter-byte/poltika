@@ -14,6 +14,12 @@ then.
   scope, selected under Pete's 24 September "resolve and proceed" delegation.
 - [DEC-003-msd-paid-wff-income-exclusion.md](DEC-003-msd-paid-wff-income-exclusion.md):
   identified statutory WFF income exclusion independent of IRD/MSD payer.
+- [DEC-004-r15-asset-ceiling-ineligible.md](DEC-004-r15-asset-ceiling-ineligible.md):
+  cash assets over the r 15 ceiling are `ineligible` $0 once the two MSD
+  lump-sum limit increases are ruled out (policy 0.1.2).
+- [DEC-005-zero-accommodation-costs-ineligible.md](DEC-005-zero-accommodation-costs-ineligible.md):
+  verified $0 accommodation costs are `ineligible` $0 (s 65(1)(a); policy
+  0.1.2).
 
 These decisions do not approve unreviewed implementation or numeric
 parameters. See each artifact's status and residual uncertainty.

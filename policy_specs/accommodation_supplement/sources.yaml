@@ -78,6 +78,25 @@ sources:
         addressed by this text plus the TAA payment provisions, pending
         Pete's acceptance of the cross-Act interpretation after independent
         review. This does not establish a cash-assets exemption.
+    task_34_6_check:
+      checked_on: 2026-09-26
+      version_as_at: 2026-09-04
+      audit_version_url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/
+      locator: ss 65(1), 65AAA (accommodation costs), 69(1)-(5)
+      finding: Section 65(1) entitles a person to an accommodation
+        supplement if (a) they have accommodation costs, (b) they meet the
+        assets requirement in regulations under s 423, and (c) they are not
+        excluded. Section 65AAA defines accommodation costs "for a person and
+        a period" as amounts paid or required for the premises. Section
+        69(3) disapplies s 69(1)'s unrealised-assets refusal power, for 12
+        months, to a specified lump sum received by A or A's spouse or
+        partner; s 69(5) defines it as an ACC impairment lump sum or an
+        Independence Allowance lump sum. Section 69(3A) requires MSD to
+        refuse a grant that would be payable at a rate of zero. No provision
+        in the Act raises the r 15 limit in terms, and no other "exceptional"
+        power relates to AS assets.
+      limitation: Supports DEC-004 and DEC-005. Fetched with the recorded
+        browser user-agent method.
   - id: as-social-security-regulations
     kind: regulations
     title: Social Security Regulations 2018
@@ -140,6 +159,17 @@ sources:
       limitation: Do not infer income-to-assets equivalence. Current scoped
         exemption gates and Task 26a's unresolved base-rate work remain,
         including the paragraph (f) wording and child-age question.
+    task_34_6_check:
+      checked_on: 2026-09-26
+      version_as_at: 2026-09-04
+      audit_version_url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-09-04/
+      locator: Regulations 15(1)-(6), 16; Schedule 8 Part 1
+      finding: Regulation 15(1) sets the assets requirement (cash assets must
+        not exceed $16,200 or $8,100). Regulation 15(2) makes it subject only
+        to s 69(2), (2A) and (2B) of the Act, and r 15(3)-(6) explain those.
+        Neither r 15 nor Schedule 8 Part 1 mentions an increase to the limit
+        or the ACC impairment or Independence Allowance lump sums.
+      limitation: Supports DEC-004.
   - id: as-ftc-rate-order-2025
     kind: amending_legislation
     title: Income Tax (Tax Credit) Order 2025
@@ -227,6 +257,44 @@ sources:
     title: Assets - non-beneficiaries
     url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/assets-non-beneficiaries-01.html
     covers: Cash asset cap and income imputation above the lower asset threshold.
+    task_34_6_check:
+      checked_on: 2026-09-26
+      version_as_at: not stated on the page
+      finding: '"If a non-beneficiary (and any partner) has cash assets greater
+        than the limit shown above, they cannot get Accommodation Supplement.
+        There are two exceptions": lump sum paid for impairment, and lump sum
+        payment of an Independence Allowance (the two entries below). This
+        identifies AS-06''s "exceptional asset-limit increases".'
+      limitation: Supports DEC-004.
+  - id: as-msd-lump-sum-impairment
+    kind: agency_guidance
+    title: Lump sum paid for impairment
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/lump-sum-paid-for-impairment-01.html
+    covers: The r 15 cash asset limit is increased by an ACC impairment lump sum for 12 months.
+    task_34_6_check:
+      checked_on: 2026-09-26
+      version_as_at: not stated on the page
+      finding: '"If the client (partner or dependent child) has received a
+        lump sum paid under the Accident Compensation Act 2001, the cash asset
+        limit is increased by the amount of the lump sum payment for 12
+        months from the date the payment is received."'
+      limitation: Agency guidance. It names a dependent child, while s 69(3)
+        of the Act names A or A's spouse or partner; DEC-004 covers both by
+        asking about all three.
+  - id: as-msd-lump-sum-independence-allowance
+    kind: agency_guidance
+    title: Lump sum payment of an Independence Allowance
+    url: https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/lump-sum-payment-of-an-independence-allowance-01.html
+    covers: The r 15 cash asset limit is increased by an Independence Allowance lump sum for 12 months.
+    task_34_6_check:
+      checked_on: 2026-09-26
+      version_as_at: not stated on the page
+      finding: '"If a client (partner or dependent child) has received a lump
+        sum payment of an Independence Allowance under the Accident Insurance
+        Act 1998 the cash asset limit is increased by the amount of the lump
+        sum payment for 12 months from the date the payment is received."
+        Its legislation list cites Act ss 69 and 197 and Regulations r 15.'
+      limitation: Agency guidance; same party-scope note as the entry above.
   - id: as-msd-chargeable-income
     kind: agency_guidance
     title: Chargeable income - non-beneficiaries

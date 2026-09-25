@@ -4,10 +4,14 @@
 # rounding decision). Approval covers the scoped v0.1 domain and calculation
 # sequence. The dated MSD table values (entry thresholds, income levels) were
 # added by the Task 26a repair (DEC-002, policy 0.1.1) and checked against the
-# official tables at 1 April 2026 in the Task 34.3 review.
+# official tables at 1 April 2026 in the Task 34.3 review. Policy 0.1.2
+# (26 September 2026, ADR-0014): verified $0 accommodation costs (DEC-005)
+# and cash assets over the r 15 ceiling with no specified lump sum
+# (DEC-004) are `ineligible` $0, and the `specified_lump_sum_status` input
+# was added.
 schema_version: "0.1"
 policy_id: accommodation_supplement
-policy_version: "0.1.1"
+policy_version: "0.1.2"
 status: approved
 reference_period:
   from: 2026-03-02
@@ -31,7 +35,7 @@ assessment:
     - s69_discretionary_refusal_reduction_cancellation
     - homeowner_tenure
     - unverified_statistical_area_unit
-    - asset_ceiling_exceeded
+    - asset_limit_increased_by_specified_lump_sum
     - exempt_cash_asset_unverified
     - accommodation_income_or_business_use_qualifying_costs
 
@@ -109,6 +113,13 @@ inputs:
     source_rule_ids: [AS-06]
     missing_outcome: needs_review
     note: Includes partner's assets per s 69(2), subject to s 69(2A)/(2B) exceptions (community spouse/partner cases -- unsupported in this branch). Any exempt cash asset (r 16, Schedule 8 Part 1) must be verified, not assumed absent.
+  - id: specified_lump_sum_status
+    owner: assessment_unit
+    type: verified_fact_status
+    period: assessment_week
+    source_rule_ids: [AS-06]
+    missing_outcome: needs_review
+    note: DEC-004. verified means verified that no ACC impairment lump sum (Accident Compensation Act 2001) and no Independence Allowance lump sum (Accident Insurance Act 1998) was received by the claimant, partner or a dependent child in the 12 months up to the assessment week -- MSD raises the r 15 limit by such a lump sum for 12 months (s 69(3), (5); as-msd-lump-sum-impairment, as-msd-lump-sum-independence-allowance). Consulted only when cash assets exceed the r 15 ceiling. excluded (a lump sum was received) is unsupported -- the increased limit is not modelled; unknown is needs_review.
   - id: weekly_income
     owner: assessment_unit
     type: verified_amount
@@ -397,5 +408,7 @@ components:
 outputs:
   unit: NZD_per_week
   components: [accommodation_supplement_weekly]
-  outcome_states: [calculated, unsupported, needs_review]
+  # `ineligible` (ADR-0014; DEC-004, DEC-005): an evidenced eligibility-test
+  # failure, reported with value 0.
+  outcome_states: [calculated, ineligible, unsupported, needs_review]
   note: Weekly entitlement, not an annual or fortnightly figure. Rounded up to the complete dollar (r 19) only at the final step -- see specification.md for why intermediate steps must not also round.

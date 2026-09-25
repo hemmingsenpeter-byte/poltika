@@ -54,7 +54,7 @@ WFF_POLICY_DIR = Path(__file__).resolve().parent.parent / "policy_specs" / "work
 WFF_MODELLED_DATE = date(2026, 6, 1)
 AS_POLICY_DIR = Path(__file__).resolve().parent.parent / "policy_specs" / "accommodation_supplement"
 AS_MODELLED_DATE = date(2026, 6, 1)
-AS_POLICY_VERSION = "0.1.1"
+AS_POLICY_VERSION = "0.1.2"
 AS_ALLOWED_PARAMETER_ASSUMPTIONS = {"entry_threshold", "income_level"}
 
 
@@ -239,6 +239,7 @@ def as_scenario_from_yaml(raw: dict[str, Any]) -> AsScenario:
         # Absent means unverified, never a silent pass (Task 26a repair).
         ordinary_rate_status=FactStatus(raw.get("ordinary_rate_status", "unknown")),
         eldest_dependent_child_under_16=FactStatus(raw.get("eldest_dependent_child_under_16", "unknown")),
+        specified_lump_sum_status=FactStatus(raw.get("specified_lump_sum_status", "unknown")),
     )
 
 

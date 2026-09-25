@@ -171,26 +171,30 @@ def test_an_out_of_scope_case_says_no_caller_input_resolves_it(real_wff_paramete
     assert best_start.resolution is not None and "Not resolvable by supplying facts" in best_start.resolution
 
 
-def test_the_r15_ceiling_is_not_yet_an_ineligible_zero(real_as_parameters: PolicyParameterSet) -> None:
-    """Pete's decision (26 September 2026): r 15 stays non-zero until AS-06's
-    exceptional asset-limit increase is source-checked."""
-    scenario = as_scenario_from_yaml(_as_case("ordinary_uncapped_jobseeker")["scenario"])
-    result = calculate_accommodation_supplement(replace(scenario, cash_assets=Decimal(20000)), real_as_parameters)
+def test_the_r15_ceiling_names_the_lump_sum_fact_until_it_is_verified(real_as_parameters: PolicyParameterSet) -> None:
+    """DEC-004: over the ceiling, an unverified lump-sum limit increase is a
+    missing fact; once ruled out, the result is an evidenced $0."""
+    scenario = replace(
+        as_scenario_from_yaml(_as_case("ordinary_uncapped_jobseeker")["scenario"]), cash_assets=Decimal(20000)
+    )
+    unverified = calculate_accommodation_supplement(scenario, real_as_parameters)
+    verified = calculate_accommodation_supplement(
+        replace(scenario, specified_lump_sum_status=FactStatus.VERIFIED), real_as_parameters
+    )
 
-    assert (result.outcome, result.value, result.reason_code) == ("unsupported", None, "unresolved_rule")
-    assert result.resolution is not None and "AS-06" in result.resolution
+    assert (unverified.outcome, unverified.missing) == ("needs_review", ("specified_lump_sum_status",))
+    assert unverified.resolution is not None and "Independence Allowance" in unverified.resolution
+    assert (verified.outcome, verified.value) == ("ineligible", 0)
 
 
-def test_zero_accommodation_costs_is_not_yet_an_ineligible_zero(real_as_parameters: PolicyParameterSet) -> None:
-    """Whether verified $0 costs (s 65AAA) are an `ineligible` $0 is open for
-    Pete (ADR-0014); until then the result names that, not a number."""
+def test_zero_accommodation_costs_is_an_ineligible_zero(real_as_parameters: PolicyParameterSet) -> None:
+    """DEC-005: s 65(1)(a) requires accommodation costs."""
     scenario = as_scenario_from_yaml(_as_case("ordinary_uncapped_jobseeker")["scenario"])
     result = calculate_accommodation_supplement(
         replace(scenario, weekly_accommodation_costs=Decimal(0)), real_as_parameters
     )
 
-    assert (result.outcome, result.value, result.reason_code) == ("unsupported", None, "unresolved_rule")
-    assert result.resolution is not None and "interpretation decision" in result.resolution
+    assert (result.outcome, result.value, result.reason_code) == ("ineligible", 0, None)
 
 
 # --- the contract ComponentResult enforces ----------------------------------------
@@ -238,8 +242,10 @@ def _check(label: str, component: ComponentResult, request: type[BaseModel]) -> 
         for name in component.missing:
             assert _is_request_field(name, request), f"{label}: '{name}' is not a request field"
     if component.outcome == "ineligible":
-        # The only reclassification decided so far (ADR-0014).
-        assert label.endswith("best_start"), label
+        # The reclassifications decided so far: Best Start (ADR-0014), and
+        # AS's r 15 ceiling and $0 costs (DEC-004, DEC-005).
+        assert label.endswith(("best_start", "accommodation_supplement")), label
+        assert component.value == 0, label
 
 
 def _as_case(case_id: str) -> dict[str, Any]:

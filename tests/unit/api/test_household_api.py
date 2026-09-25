@@ -23,7 +23,7 @@ def _payload(household_id: str = "g2_couple_two_children_income_abated_both", **
             "modelled_date": "2026-06-01",
             "assessment_week_start": "2026-06-01",
             "assessment_week_end": "2026-06-08",
-            "requested_policy_version": "0.1.1",
+            "requested_policy_version": "0.1.2",
             **as_overrides,
         },
         "as_claimant_is_wff_claimant_or_partner": h["precondition"],

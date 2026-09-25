@@ -62,7 +62,7 @@ def test_april_effective_entry_threshold_calculates_for_a_june_week() -> None:
         AS_POLICY_DIR,
         LOOKUP_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.1",
+        requested_policy_version="0.1.2",
         assessment_week=JUNE_WEEK,
     )
 
@@ -85,11 +85,11 @@ def test_april_effective_area_cap_passes_module_validation(tmp_path: Path) -> No
     scenario = as_scenario_from_yaml(case["scenario"])
 
     result = run_as_module(
-        policy_dir, LOOKUP_DATE, scenario, requested_policy_version="0.1.1", assessment_week=JUNE_WEEK
+        policy_dir, LOOKUP_DATE, scenario, requested_policy_version="0.1.2", assessment_week=JUNE_WEEK
     )
 
     direct = calculate_accommodation_supplement(
-        scenario, load_policy_parameters(policy_dir, LOOKUP_DATE, requested_policy_version="0.1.1")
+        scenario, load_policy_parameters(policy_dir, LOOKUP_DATE, requested_policy_version="0.1.2")
     )
     assert result == direct
     assert "full-year" not in (result.reason or "")

@@ -99,6 +99,9 @@ class AsCalculationRequest(BaseModel):
     # never a silent pass.
     ordinary_rate_status: FactStatus = FactStatus.UNKNOWN
     eldest_dependent_child_under_16: FactStatus = FactStatus.UNKNOWN
+    # DEC-004: omitted means unverified -> needs_review when assets exceed
+    # the r 15 ceiling.
+    specified_lump_sum_status: FactStatus = FactStatus.UNKNOWN
 
 
 class AsComponentResultResponse(BaseModel):
@@ -147,6 +150,7 @@ def _scenario_from_request(request: AsCalculationRequest) -> AsScenario:
         weekly_income=request.weekly_income,
         ordinary_rate_status=request.ordinary_rate_status,
         eldest_dependent_child_under_16=request.eldest_dependent_child_under_16,
+        specified_lump_sum_status=request.specified_lump_sum_status,
     )
 
 

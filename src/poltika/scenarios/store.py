@@ -315,6 +315,9 @@ def record_from_plain(d: dict[str, Any]) -> ScenarioRecord:
         weekly_income=_opt_dec(a["weekly_income"]),
         ordinary_rate_status=FactStatus(a["ordinary_rate_status"]),
         eldest_dependent_child_under_16=FactStatus(a["eldest_dependent_child_under_16"]),
+        # Absent from runs stored before DEC-004 (26 September 2026), whose
+        # scenarios had no such fact: unverified, the field default.
+        specified_lump_sum_status=FactStatus(a.get("specified_lump_sum_status", "unknown")),
     )
     week = d["assessment_week"]
     return ScenarioRecord(

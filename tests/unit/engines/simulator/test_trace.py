@@ -121,8 +121,12 @@ def test_trace_header_matches_the_loaded_policy_and_its_file_hashes() -> None:
     assert ftc.trace.modelled_date == WFF_MODELLED_DATE
     assert dict(ftc.trace.artifact_sha256) == {
         name: hashlib.sha256((WFF_POLICY_DIR / name).read_bytes()).hexdigest()
-        # WFF has no DEC-*.md decision files yet, so these three are all.
-        for name in ("policy.yaml", "sources.yaml", "specification.md")
+        for name in (
+            "policy.yaml",
+            "sources.yaml",
+            "specification.md",
+            "decisions/DEC-001-mftc-full-time-earner-weeks-not-a-zero.md",
+        )
     }
     assert len(ftc.trace.scenario_sha256) == 64
 
@@ -261,7 +265,7 @@ def test_as_real_policy_records_the_published_threshold_and_its_source() -> None
         AS_POLICY_DIR,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.1",
+        requested_policy_version="0.1.2",
         assessment_week=TEST_ASSESSMENT_WEEK,
     )
     assert result.outcome == "calculated"

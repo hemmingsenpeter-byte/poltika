@@ -95,7 +95,7 @@ def _write_policy_dir(
     policy = {
         "schema_version": "0.1",
         "policy_id": policy_id,
-        "policy_version": "0.1.1",
+        "policy_version": "0.1.2",
         "status": "approved",
         "reference_period": {"from": reference_from, "to": reference_to},
         "source_catalog": "sources.yaml",
@@ -121,7 +121,7 @@ WEEK = AssessmentWeek(start=date(2026, 6, 1), end=date(2026, 6, 8))
 
 def _run(policy_dir: Path, *, week: AssessmentWeek = WEEK, modelled_date: date = MODELLED_DATE) -> Any:
     return run_as_module(
-        policy_dir, modelled_date, _ordinary_scenario(), requested_policy_version="0.1.1", assessment_week=week
+        policy_dir, modelled_date, _ordinary_scenario(), requested_policy_version="0.1.2", assessment_week=week
     )
 
 
@@ -129,7 +129,7 @@ def _passes_module_validation(policy_dir: Path, week: AssessmentWeek, modelled_d
     """True when run_as_module() reaches the calculator: its result then
     equals calling the calculator directly on the same parameters."""
     direct = calculate_accommodation_supplement(
-        _ordinary_scenario(), load_policy_parameters(policy_dir, modelled_date, requested_policy_version="0.1.1")
+        _ordinary_scenario(), load_policy_parameters(policy_dir, modelled_date, requested_policy_version="0.1.2")
     )
     return bool(_run(policy_dir, week=week, modelled_date=modelled_date) == direct)
 

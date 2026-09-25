@@ -23,8 +23,10 @@ PostgreSQL, then fetched and replayed.
 > today, Best Start reports `ineligible` $0 instead of `calculated` $0: both
 > children are verified outside Best Start entitlement, which is an
 > evidenced zero. The in-work tax credit also carries
-> `reason_code: unresolved_rule` and a resolution. No amount changes. The
-> demo is re-run from a clean commit after that change merges (Task 34.6).
+> `reason_code: unresolved_rule` and a resolution. No amount changes. AS
+> is now policy 0.1.2 (DEC-004, DEC-005), so `request.json`'s pinned 0.1.1 is
+> refused. The demo is re-run from a clean commit after the change merges
+> (Task 34.6).
 
 ## How it was run
 

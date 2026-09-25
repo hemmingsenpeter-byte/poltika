@@ -129,6 +129,8 @@ def test_report_artifacts_are_the_exact_file_hashes() -> None:
             "decisions/DEC-001-income-excess-rounding.md",
             "decisions/DEC-002-published-thresholds-and-rate-scope.md",
             "decisions/DEC-003-msd-paid-wff-income-exclusion.md",
+            "decisions/DEC-004-r15-asset-ceiling-ineligible.md",
+            "decisions/DEC-005-zero-accommodation-costs-ineligible.md",
         )
     }
     assert {a["path"]: a["sha256"] for a in report["artifacts"]} == expected
@@ -137,7 +139,7 @@ def test_report_artifacts_are_the_exact_file_hashes() -> None:
 def _as_real_run() -> ComponentResult:
     case = _as_case("ordinary_uncapped_jobseeker")
     return run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
+        AS_POLICY_DIR, AS_MODELLED_DATE, as_scenario_from_yaml(case["scenario"]), requested_policy_version="0.1.2", assessment_week=TEST_ASSESSMENT_WEEK
     )
 
 
@@ -170,7 +172,7 @@ def test_report_refuses_a_changed_decision_file(as_policy_copy: Path) -> None:
         as_policy_copy,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK,
+        requested_policy_version="0.1.2", assessment_week=TEST_ASSESSMENT_WEEK,
     )
     decision = as_policy_copy / "decisions" / "DEC-001-income-excess-rounding.md"
     with decision.open("a") as f:
@@ -185,7 +187,7 @@ def test_as_real_file_run_reports_dec_001_decision_artifact(as_policy_copy: Path
         as_policy_copy,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK,
+        requested_policy_version="0.1.2", assessment_week=TEST_ASSESSMENT_WEEK,
     )
     assert result.outcome == "calculated"
     assert str(result.value) == case["expected"]["accommodation_supplement"]["value"]
@@ -221,7 +223,7 @@ def test_as_undeclared_parameter_is_reported_without_a_source(as_policy_copy: Pa
         as_policy_copy,
         AS_MODELLED_DATE,
         as_scenario_from_yaml(case["scenario"]),
-        requested_policy_version="0.1.1",
+        requested_policy_version="0.1.2",
         assessment_week=TEST_ASSESSMENT_WEEK,
     )
     report = build_provenance_report(as_policy_copy, {"accommodation_supplement": result})
@@ -414,11 +416,11 @@ def test_report_refuses_the_same_household_for_different_weeks() -> None:
     case = _as_case("ordinary_uncapped_jobseeker")
     scenario = as_scenario_from_yaml(case["scenario"])
     first = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.1", assessment_week=TEST_ASSESSMENT_WEEK
+        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.2", assessment_week=TEST_ASSESSMENT_WEEK
     )
     other_week = AssessmentWeek(start=date(2026, 5, 29), end=date(2026, 6, 5))
     second = run_as_module(
-        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.1", assessment_week=other_week
+        AS_POLICY_DIR, AS_MODELLED_DATE, scenario, requested_policy_version="0.1.2", assessment_week=other_week
     )
     assert first.trace is not None and second.trace is not None
     assert first.trace.scenario_sha256 == second.trace.scenario_sha256

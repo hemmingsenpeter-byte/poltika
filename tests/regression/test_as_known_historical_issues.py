@@ -252,16 +252,18 @@ def test_r15_asset_ceiling_preempts_an_unrelated_needs_review_trigger() -> None:
     precedence-discipline docstring. Reproduced against the real approved
     policy: cash_assets above the r 15 ceiling ($8,100, single claimant, no
     dependent children) together with an unrelated unverified fact
-    (household_eligibility) must resolve `unsupported` for the evidenced
-    asset exclusion, not `needs_review` for the unrelated unverified fact."""
+    (household_eligibility) must resolve to the evidenced asset exclusion,
+    not `needs_review` for the unrelated unverified fact. Since DEC-004 that
+    exclusion is `ineligible` $0, once no lump sum raises the limit."""
     parameters = load_policy_parameters(AS_POLICY_DIR, AS_MODELLED_DATE)
     scenario = _ordinary_as_scenario(
         household_eligibility=FactStatus.UNKNOWN,
         cash_assets=Decimal("8100.01"),
+        specified_lump_sum_status=FactStatus.VERIFIED,
     )
 
     result = calculate_accommodation_supplement(scenario, parameters)
 
-    assert result.outcome == "unsupported"
+    assert (result.outcome, result.value) == ("ineligible", 0)
     assert "r 15" in (result.reason or "")
     assert "household_eligibility" not in (result.reason or "")

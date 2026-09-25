@@ -240,13 +240,15 @@ false zero or a silent default):
   a false zero") -- the calculator and its test
   (`test_asset_ceiling_exceeded_is_unsupported_not_zero`) were always
   correct (`unsupported`); only this parenthetical's wording was wrong.
-  *ADR-0014 (26 September 2026):* the result carries
-  `reason_code: unresolved_rule`. It is not yet reported as `ineligible` $0
-  because AS-06 says exceptional asset-limit increases require separate
-  facts: this branch does not collect them, and no catalogued source yet
-  says what they are. **Open for GPT/Codex source research:** the rule for
-  an exceptional asset-limit increase. Pete decides the reclassification
-  through a decision artifact once that is sourced.
+  *Superseded by DEC-004 (26 September 2026, policy 0.1.2):* AS-06's
+  "exceptional asset-limit increases" are MSD's two lump-sum exceptions:
+  an ACC impairment lump sum and an Independence Allowance lump sum, which
+  raise the limit for 12 months (s 69(3), (5); `as-msd-lump-sum-impairment`,
+  `as-msd-lump-sum-independence-allowance`). With
+  `specified_lump_sum_status: verified` (none received by the claimant,
+  partner or a dependent child in the 12 months up to the week), assets over
+  the ceiling are `ineligible` $0. `excluded` is `unsupported`, because the
+  increased limit is not modelled, and `unknown` is `needs_review`.
 - Any exempt cash asset requiring Part 1 of Schedule 8's own
   determination (r 16) -- not modelled in this branch; exemptions must be
   verified, not assumed absent.
@@ -261,10 +263,9 @@ false zero or a silent default):
 
 ### Scoped calculation sequence (v0.1 domain only)
 
-1. Verify household eligibility: accommodation costs exist (s 65AAA; a
-   verified $0 cost is `unsupported`, not a calculated $0, with
-   `reason_code: unresolved_rule` until Pete decides whether it is an
-   `ineligible` $0, ADR-0014), no
+1. Verify household eligibility: accommodation costs exist (s 65(1)(a),
+   s 65AAA; a verified $0 cost is `ineligible` $0, not a calculated $0,
+   DEC-005), no
    social-housing exclusion (s 66), no other-funding exclusion applicable
    (s 67, including the disability/care branch), no s 69 refusal/
    reduction/cancellation ground applicable, cash assets not exceeding the r 15

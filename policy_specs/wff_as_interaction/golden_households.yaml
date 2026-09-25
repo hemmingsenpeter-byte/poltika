@@ -1,7 +1,7 @@
 # Task 29: golden household suite across WFF and Accommodation Supplement.
 #
 # Nine complete households run through the combined household runner (Task
-# 28.4) against the real approved policies (WFF 0.1.0, AS 0.1.1) with the
+# 28.4) against the real approved policies (WFF 0.1.0, AS 0.1.2) with the
 # Task 28.2 dates -- WFF 2026-27 year, lookup 2026-06-01; AS week
 # [2026-06-01, 2026-06-08), lookup 2026-06-01 -- and NO parameter
 # assumptions. Protected by the statutory-value guard.

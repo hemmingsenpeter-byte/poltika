@@ -25,6 +25,11 @@ cited primary sources, a combined household scenario, and provenance.
   input, conflicting evidence, invalid input, unresolved rule, unsupported
   period or outside scope), which request fields are `missing`, and what
   would resolve it (ADR-0014).
+- `ineligible` is used for WFF Best Start with no eligible child, and for AS
+  cash assets over the r 15 ceiling with no ACC impairment or Independence
+  Allowance lump sum raising the limit (DEC-004). It is also used for AS
+  verified $0 accommodation costs (DEC-005). AS is policy 0.1.2, with a new
+  `specified_lump_sum_status` input.
 - Provenance: per-component traces and hash-bound artifacts, and
   per-policy and combined provenance reports that resolve sources, rules
   and decisions.

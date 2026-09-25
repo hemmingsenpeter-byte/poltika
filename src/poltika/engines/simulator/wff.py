@@ -67,17 +67,16 @@ ReasonCode = Literal[
 ]
 
 # The v0.1 headlines were accepted before reason codes existed and stay
-# unchanged (ADR-0014), so two codes appear under both: the Task 20/24.7
-# module-boundary checks report `needs_review` for a period while a
-# parameter with no interval for the date reports `unsupported`, and the
-# AS r 15 ceiling stays `unsupported` while its AS-06 exception is
-# unresolved. Facts the caller can supply or correct are always
+# unchanged (ADR-0014), so the period code appears under both: the Task
+# 20/24.7 module-boundary checks report `needs_review` for a period, while
+# a parameter with no interval for the date reports `unsupported`. Facts
+# the caller can supply or correct, and rules not yet resolved, are always
 # `needs_review`; an out-of-scope case is always `unsupported`.
 _REASON_CODES_BY_OUTCOME: dict[str, frozenset[str]] = {
     "needs_review": frozenset(
         {"missing_input", "conflicting_evidence", "invalid_input", "unresolved_rule", "unsupported_period"}
     ),
-    "unsupported": frozenset({"outside_scope", "unsupported_period", "unresolved_rule"}),
+    "unsupported": frozenset({"outside_scope", "unsupported_period"}),
 }
 
 _OUTSIDE_SCOPE_RESOLUTION = (

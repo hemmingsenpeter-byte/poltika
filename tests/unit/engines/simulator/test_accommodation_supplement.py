@@ -297,17 +297,36 @@ def test_unsupported_household_gate_triggers(
     assert expected_reason_fragment in (result.reason or "")
 
 
-def test_asset_ceiling_exceeded_is_unsupported_not_zero(parameters) -> None:
-    """cash_assets above the r 15 ceiling ($8,100 for a single claimant
-    with no dependent children) fails the assets requirement (r 15) -- a
-    genuine, evidenced exclusion, not a calculated zero."""
-    scenario = _ordinary_scenario(cash_assets=Decimal("8100.01"))
+@pytest.mark.parametrize(
+    ("lump_sum", "outcome", "value", "reason_code"),
+    [
+        (FactStatus.VERIFIED, "ineligible", Decimal(0), None),
+        (FactStatus.EXCLUDED, "unsupported", None, "outside_scope"),
+        (FactStatus.UNKNOWN, "needs_review", None, "missing_input"),
+    ],
+)
+def test_asset_ceiling_exceeded_turns_on_the_lump_sum_limit_increase(
+    parameters, lump_sum, outcome, value, reason_code
+) -> None:
+    """DEC-004: cash_assets above the r 15 ceiling ($8,100 for a single
+    claimant with no dependent children) fail the assets requirement -- an
+    evidenced $0 -- once the MSD lump-sum limit increase is ruled out. A
+    lump sum received means the increased limit, which is not modelled; an
+    unverified one is a missing fact. Never a calculated zero."""
+    scenario = _ordinary_scenario(cash_assets=Decimal("8100.01"), specified_lump_sum_status=lump_sum)
 
     result = calculate_accommodation_supplement(scenario, parameters)
 
-    assert result.outcome == "unsupported"
-    assert result.value is None
-    assert "assets requirement" in (result.reason or "")
+    assert (result.outcome, result.value, result.reason_code) == (outcome, value, reason_code)
+    assert "r 15 ceiling" in (result.reason or "")
+
+
+def test_the_lump_sum_fact_is_not_consulted_at_or_below_the_ceiling(parameters) -> None:
+    result = calculate_accommodation_supplement(_ordinary_scenario(cash_assets=Decimal(8100)), parameters)
+
+    assert result.outcome == "calculated"
+    assert result.trace is not None
+    assert "specified_lump_sum_status" not in [use.name for use in result.trace.inputs]
 
 
 @pytest.mark.parametrize(
@@ -371,13 +390,12 @@ def test_assets_exactly_at_the_r15_ceiling_meet_the_requirement(parameters) -> N
     assert at_ceiling.value == below.value
 
 
-def test_zero_accommodation_costs_is_unsupported_not_zero(parameters) -> None:
-    """v0.1 question set QS-6: s 65AAA / AS-01 -- entitlement requires
-    accommodation costs, so a verified $0 is an exclusion, not $0."""
+def test_zero_accommodation_costs_is_ineligible_not_a_calculated_zero(parameters) -> None:
+    """v0.1 question set QS-6 and DEC-005: s 65(1)(a) requires accommodation
+    costs, so verified $0 costs are an evidenced $0 (`ineligible`)."""
     result = calculate_accommodation_supplement(
         _ordinary_scenario(weekly_accommodation_costs=Decimal(0)), parameters
     )
 
-    assert result.outcome == "unsupported"
-    assert result.value is None
-    assert "s 65AAA" in (result.reason or "")
+    assert (result.outcome, result.value) == ("ineligible", Decimal(0))
+    assert "s 65(1)(a)" in (result.reason or "")
