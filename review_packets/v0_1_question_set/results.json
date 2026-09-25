@@ -1,0 +1,938 @@
+{
+  "Q14": {
+    "family_tax_credit": {
+      "outcome": "calculated",
+      "value": "7893.500",
+      "reason": null
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "Q15": {
+    "family_tax_credit": {
+      "outcome": "calculated",
+      "value": "7893.225",
+      "reason": null
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "Q16": {
+    "1": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "1018.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    },
+    "2": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "7472.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    },
+    "3": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "13926.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    }
+  },
+  "Q17": {
+    "in_supported_cohort": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "2393.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "4041.00",
+        "reason": null
+      }
+    },
+    "other_cohort_unsupported": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "2393.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "a child's Best Start birth cohort/period is outside the v0.1 narrow calculable branch (e.g. a later birth cohort, or an in-year birth/third birthday) -- real entitlement, not calculated here"
+      }
+    }
+  },
+  "Q18": {
+    "family_tax_credit": {
+      "outcome": "calculated",
+      "value": "2393.500",
+      "reason": null
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+    },
+    "best_start": {
+      "outcome": "unsupported",
+      "value": null,
+      "reason": "a child's Best Start birth cohort/period is outside the v0.1 narrow calculable branch (e.g. a later birth cohort, or an in-year birth/third birthday) -- real entitlement, not calculated here"
+    }
+  },
+  "Q20": {
+    "family_tax_credit": {
+      "outcome": "calculated",
+      "value": "7921.000",
+      "reason": null
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "Q21": {
+    "family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "partnered claimant but the partner's family-scheme income has not been separately verified"
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "family tax credit's abatement could not be determined, and MD 2(2)(c) passes any remainder to in-work tax credit: partnered claimant but the partner's family-scheme income has not been separately verified"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "partnered claimant but the partner's family-scheme income has not been separately verified"
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "Q22": {
+    "family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "partnered claimant but the partner's family-scheme income has not been separately verified"
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "family tax credit's abatement could not be determined, and MD 2(2)(c) passes any remainder to in-work tax credit: partnered claimant but the partner's family-scheme income has not been separately verified"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "partnered claimant but the partner's family-scheme income has not been separately verified"
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "Q23": {
+    "2026-03-31": {
+      "family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "modelled_date 2026-03-31 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "modelled_date 2026-03-31 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "modelled_date 2026-03-31 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+      },
+      "best_start": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "modelled_date 2026-03-31 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+      }
+    },
+    "2026-04-01": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "6518.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    }
+  },
+  "Q41": {
+    "family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "modelled_date 2025-06-01 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "modelled_date 2025-06-01 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "modelled_date 2025-06-01 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+    },
+    "best_start": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "modelled_date 2025-06-01 is outside policy 'working_for_families''s reviewed reference_period [2026-04-01, 2027-04-01)"
+    }
+  },
+  "Q24": {
+    "family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01-2026-07-01 covers the requested 2026-05-15 but does not span the complete reference period 2026-04-01-2027-04-01 -- a point-in-time match cannot verify a full-year rate"
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01-2026-07-01 covers the requested 2026-05-15 but does not span the complete reference period 2026-04-01-2027-04-01 -- a point-in-time match cannot verify a full-year rate"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01-2026-07-01 covers the requested 2026-05-15 but does not span the complete reference period 2026-04-01-2027-04-01 -- a point-in-time match cannot verify a full-year rate"
+    },
+    "best_start": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'family_tax_credit_eldest_child' value effective 2026-04-01-2026-07-01 covers the requested 2026-05-15 but does not span the complete reference period 2026-04-01-2027-04-01 -- a point-in-time match cannot verify a full-year rate"
+    }
+  },
+  "Q28": {
+    "status": 422,
+    "detail": [
+      {
+        "loc": [
+          "body",
+          "family_scheme_income",
+          "claimant_amount"
+        ],
+        "msg": "Input should be greater than or equal to 0"
+      }
+    ]
+  },
+  "Q61": {
+    "status": 422,
+    "detail": [
+      {
+        "loc": [
+          "body",
+          "family_scheme_income",
+          "claimant_amount"
+        ],
+        "msg": "Input should be a valid decimal"
+      }
+    ]
+  },
+  "Q64": {
+    "status": 422,
+    "detail": [
+      {
+        "loc": [
+          "body",
+          "children"
+        ],
+        "msg": "Field required"
+      }
+    ]
+  },
+  "Q40": {
+    "status": 422,
+    "detail": [
+      {
+        "loc": [
+          "body",
+          "modelled_date"
+        ],
+        "msg": "Field required"
+      }
+    ]
+  },
+  "Q29": {
+    "base": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "1972.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    },
+    "plus_1": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "1972.225",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    }
+  },
+  "Q30": {
+    "no_children": {
+      "family_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "in_work_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "best_start": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      }
+    },
+    "two_children": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "1972.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    }
+  },
+  "Q33": {
+    "family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    },
+    "best_start": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    }
+  },
+  "Q34": {
+    "family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    },
+    "best_start": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "a child's whole-year qualification (age, care, dependency) is unverified"
+    }
+  },
+  "Q35": {
+    "family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "household eligibility_facts (residence, principal care, competing caregiver) unverified"
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "household eligibility_facts (residence, principal care, competing caregiver) unverified"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "household eligibility_facts (residence, principal care, competing caregiver) unverified"
+    },
+    "best_start": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "household eligibility_facts (residence, principal care, competing caregiver) unverified"
+    }
+  },
+  "Q42": {
+    "family_tax_credit": {
+      "outcome": "calculated",
+      "value": "6518.500",
+      "reason": null
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "in-work eligibility unverified"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "Q36_Q37": {
+    "no_children_partner_missing": {
+      "family_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "in_work_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "best_start": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      }
+    },
+    "no_children_partner_zero": {
+      "family_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "in_work_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      },
+      "best_start": {
+        "outcome": "unsupported",
+        "value": null,
+        "reason": "no dependent child in the scenario -- outside WFF's family-scheme membership domain"
+      }
+    },
+    "one_child_partner_missing": {
+      "family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "partnered claimant but the partner's family-scheme income has not been separately verified"
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "family tax credit's abatement could not be determined, and MD 2(2)(c) passes any remainder to in-work tax credit: partnered claimant but the partner's family-scheme income has not been separately verified"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "partnered claimant but the partner's family-scheme income has not been separately verified"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    },
+    "one_child_partner_zero": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "6518.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    }
+  },
+  "Q43": {
+    "ftc_44900.00": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "7921.000",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    },
+    "ftc_44900.01": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "7921.000",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    },
+    "ftc_44901.00": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "7920.725",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    },
+    "bs_79000.00": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "4041.00",
+        "reason": null
+      }
+    },
+    "bs_79000.01": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "4041.00",
+        "reason": null
+      }
+    },
+    "bs_79001.00": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "4040.79",
+        "reason": null
+      }
+    }
+  },
+  "Q44": {
+    "step_counts": {
+      "family_tax_credit": {
+        "0.000": 4900,
+        "-0.275": 28803,
+        "-0.175": 1,
+        "0": 26296
+      },
+      "best_start": {
+        "0.00": 39000,
+        "-0.21": 19242,
+        "-0.18": 1,
+        "0": 1757
+      }
+    },
+    "first_income_with_a_change": {
+      "family_tax_credit": 44901,
+      "best_start": 79001
+    }
+  },
+  "Q45": {
+    "runs": 10000,
+    "distinct_outputs": 1
+  },
+  "Q56_Q57": {
+    "family_tax_credit": {
+      "outcome": "calculated",
+      "value": "6518.500",
+      "reason": null
+    },
+    "in_work_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+    },
+    "minimum_family_tax_credit": {
+      "outcome": "needs_review",
+      "value": null,
+      "reason": "full-time-earner weeks (MA 7 / ME 2) unverified"
+    },
+    "best_start": {
+      "outcome": "calculated",
+      "value": "0",
+      "reason": null
+    }
+  },
+  "Q62": {
+    "loaded": true,
+    "result": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    }
+  },
+  "Q63": {
+    "loaded": true,
+    "result": {
+      "family_tax_credit": {
+        "outcome": "calculated",
+        "value": "6518.500",
+        "reason": null
+      },
+      "in_work_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "parameter 'in_work_base' value effective 2026-04-01 has review_status 'needs_review', not 'approved' -- Task 11.4: this must reach the calculator contract, not be resolved to a number here"
+      },
+      "minimum_family_tax_credit": {
+        "outcome": "needs_review",
+        "value": null,
+        "reason": "net_family_scheme_income not attested as an ME 3 derivation (adjusted income minus adjusted tax liability plus MB 1(2)/(3) amounts)"
+      },
+      "best_start": {
+        "outcome": "calculated",
+        "value": "0",
+        "reason": null
+      }
+    }
+  },
+  "Q70": {
+    "component": "family_tax_credit",
+    "value": "7472.500",
+    "parameters": [
+      [
+        "family_tax_credit_eldest_child",
+        "7921",
+        "wff-tax-credit-order-2025",
+        "clause 4; Income Tax Act s MD 3(4)(a)"
+      ],
+      [
+        "family_tax_credit_additional_child",
+        "6454",
+        "wff-tax-credit-order-2025",
+        "clause 4; Income Tax Act s MD 3(4)(b)"
+      ],
+      [
+        "family_tax_credit_abatement_threshold",
+        "44900",
+        "wff-budget-measures-2025",
+        "section 7; Income Tax Act s MD 13(3)(a)(i)"
+      ],
+      [
+        "family_tax_credit_abatement_rate",
+        "0.275",
+        "wff-budget-measures-2025",
+        "section 7; Income Tax Act s MD 13(3)(a)(i)"
+      ]
+    ],
+    "inputs": [
+      "children",
+      "household_eligibility",
+      "extra_instalment_status",
+      "mc6a_veterans_payment",
+      "ftc_iwtc_protected_or_direct_abatement",
+      "family_scheme_income",
+      "partner_status"
+    ],
+    "calculation_rules": [
+      "MD 13(3)(a): the abatement rate applies to complete dollars of family scheme income over the threshold (excess floored to a whole dollar)",
+      "MD 2(2)(c): abatement applies to family tax credit first; any remainder passes to in-work tax credit"
+    ],
+    "source_rules": [
+      "WFF-01",
+      "WFF-02",
+      "WFF-03",
+      "WFF-07",
+      "WFF-08"
+    ]
+  }
+}
