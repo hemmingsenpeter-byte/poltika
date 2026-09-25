@@ -15,8 +15,9 @@ since v0.1.0.
   for.
 - **Explanations:** each result gets a deterministic explanation rendered
   only from its trace (no LLM), and `verify()` proves it agrees with the
-  calculation number for number. The household and stored-scenario API
-  responses include them.
+  calculation number for number. Every calculation route includes them
+  (`/wff/calculate`, `/accommodation-supplement/calculate`,
+  `/household/calculate`, `/scenarios`).
 - **Evidence model:** every source has a type and authority rank. An
   evidence-coverage check runs in CI and fails on an unranked source, a
   parameter resting on guidance, or a rule without primary legislation.

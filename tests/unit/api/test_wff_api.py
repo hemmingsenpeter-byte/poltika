@@ -197,3 +197,19 @@ def test_startup_fails_loudly_if_policy_directory_is_missing(
 
     with pytest.raises(RuntimeError, match="has no policy.yaml"), TestClient(app):
         pass
+
+
+def test_route_response_carries_an_explanation_per_component() -> None:
+    """v0.1.5 Phase 3: the per-policy route explains each component."""
+    import yaml
+
+    from tests.unit.api.test_household_api import GOLDEN_PATH
+
+    household = next(
+        h for h in yaml.safe_load(GOLDEN_PATH.read_text())["households"] if h["id"] == "g2_couple_two_children_income_abated_both"
+    )
+    body = client.post(
+        "/wff/calculate", json={**household["wff"], "modelled_date": "2026-06-01", "requested_policy_version": "0.1.0"}
+    ).json()
+    assert set(body["explanations"]) == {"family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start"}
+    assert body["explanations"]["family_tax_credit"]["summary"] == "Family tax credit is $7472.500 a year."

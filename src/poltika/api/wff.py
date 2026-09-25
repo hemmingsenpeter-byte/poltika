@@ -28,11 +28,12 @@ import os
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
+from poltika.engines.assurance.explanation import explain, explanation_to_dict
 from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
@@ -150,6 +151,15 @@ class WffCalculationResponse(BaseModel):
     best_start: ComponentResultResponse
 
 
+class WffRouteResponse(WffCalculationResponse):
+    """`/wff/calculate`'s response: the four components plus, per v0.1.5
+    Phase 3, a deterministic explanation of each. (The household response
+    nests `WffCalculationResponse` and carries its explanations at the top
+    level instead.)"""
+
+    explanations: dict[str, Any]
+
+
 def scenario_from_request(request: WffCalculationRequest) -> WffScenario:
     """The `WffScenario` a request describes. Also used by the combined household
     route, so both routes build a scenario the same way."""
@@ -185,8 +195,8 @@ def scenario_from_request(request: WffCalculationRequest) -> WffScenario:
     )
 
 
-@router.post("/calculate", response_model=WffCalculationResponse)
-def calculate(request: WffCalculationRequest) -> WffCalculationResponse:
+@router.post("/calculate", response_model=WffRouteResponse)
+def calculate(request: WffCalculationRequest) -> WffRouteResponse:
     """Calculate WFF entitlement for one scenario.
 
     **This is a conditional simulation, not a verified entitlement
@@ -221,7 +231,11 @@ def calculate(request: WffCalculationRequest) -> WffCalculationResponse:
         requested_policy_version=request.requested_policy_version,
     )
 
-    return WffCalculationResponse(
+    return WffRouteResponse(
+        explanations={
+            name: explanation_to_dict(explain(name, getattr(result, name)))
+            for name in ("family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start")
+        },
         family_tax_credit=ComponentResultResponse.from_component_result(result.family_tax_credit),
         in_work_tax_credit=ComponentResultResponse.from_component_result(result.in_work_tax_credit),
         minimum_family_tax_credit=ComponentResultResponse.from_component_result(

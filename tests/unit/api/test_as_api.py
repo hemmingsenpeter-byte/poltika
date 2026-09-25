@@ -16,6 +16,7 @@ real policy) end-to-end through the API.
 
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,7 @@ import poltika.api.accommodation_supplement as as_api
 from poltika.api.accommodation_supplement import _as_policy_dir
 from poltika.api.main import app
 from poltika.engines.simulator.outcome import ComponentResult
+from poltika.engines.simulator.trace import ComponentTrace
 from tests.conftest import AS_POLICY_DIR, load_as_cases
 
 client = TestClient(app)
@@ -132,7 +134,21 @@ def test_calculate_serializes_fractional_decimal_value_as_json_string(
     monkeypatch.setattr(
         as_api,
         "run_as_module",
-        lambda *args, **kwargs: ComponentResult(outcome="calculated", value=Decimal("129.5500")),
+        # A real module result always carries its trace (v0.1.5: the route
+        # explains the result from it), so the stub carries a minimal one.
+        lambda *args, **kwargs: ComponentResult(
+            outcome="calculated",
+            value=Decimal("129.5500"),
+            trace=ComponentTrace(
+                component_id="accommodation_supplement",
+                policy_id="accommodation_supplement",
+                policy_version="0.1.1",
+                schema_version="0.1",
+                modelled_date=date(2026, 6, 1),
+                artifact_sha256=(),
+                scenario_sha256="0" * 64,
+            ),
+        ),
     )
 
     response = client.post("/accommodation-supplement/calculate", json=_request_payload())
@@ -302,3 +318,10 @@ def test_calculate_refuses_the_pre_repair_policy_version() -> None:
         "/accommodation-supplement/calculate", json=_request_payload(requested_policy_version="0.1.0")
     )
     assert response.status_code == 409
+
+
+def test_route_response_carries_an_explanation() -> None:
+    """v0.1.5 Phase 3: the per-policy route explains its result."""
+    body = client.post("/accommodation-supplement/calculate", json=_request_payload()).json()
+    assert body["explanation"]["outcome"] == body["accommodation_supplement"]["outcome"]
+    assert body["explanation"]["summary"]
