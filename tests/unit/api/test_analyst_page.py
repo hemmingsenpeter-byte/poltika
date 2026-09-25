@@ -36,3 +36,9 @@ def test_every_example_request_runs() -> None:
             "best_start",
             "accommodation_supplement",
         }
+
+
+def test_evidence_summary_reports_no_gaps_for_the_deployed_policies() -> None:
+    reports = client.get("/analyst/evidence").json()
+    assert [r["policy_id"] for r in reports] == ["working_for_families", "accommodation_supplement"]
+    assert all(r["problems"] == [] for r in reports)

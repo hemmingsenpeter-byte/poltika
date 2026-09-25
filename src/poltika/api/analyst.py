@@ -21,6 +21,7 @@ from fastapi.responses import HTMLResponse
 
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.wff import WFF_POLICY_DIR
+from poltika.engines.assurance.evidence import evidence_coverage
 from poltika.policy.loader import load_policy_spec
 
 router = APIRouter(prefix="/analyst", tags=["analyst"])
@@ -60,6 +61,14 @@ def examples() -> list[dict[str, Any]]:
             }
         )
     return requests
+
+
+@router.get("/evidence")
+def evidence() -> list[dict[str, Any]]:
+    """v0.1.5 Phase 1: each deployed policy's evidence coverage summary and
+    any gaps, so a pilot user can see what the numbers rest on."""
+    reports = [evidence_coverage(d) for d in (WFF_POLICY_DIR, AS_POLICY_DIR)]
+    return [{k: r[k] for k in ("policy_id", "policy_version", "summary", "problems")} for r in reports]
 
 
 @router.get("", response_class=HTMLResponse)
@@ -119,6 +128,7 @@ determination. Every number shown comes from the API; this page computes nothing
 <p><button id="apply-json">Apply JSON to the form</button></p>
 </details>
 <p><button id="run">Calculate</button> <button id="download" disabled>Download case report (JSON)</button></p>
+<p id="evidence" class="note"></p>
 <div id="error" class="error" role="alert"></div>
 <div id="results"></div>
 
@@ -319,6 +329,12 @@ document.getElementById("download").addEventListener("click", () => {
   const link = el("a", {href: URL.createObjectURL(blob), download: "poltika_case_" + lastReport.result_id.slice(0, 12) + ".json"});
   link.click();
 });
+fetch("/analyst/evidence").then(r => r.json()).then(reports => {
+  document.getElementById("evidence").textContent = "Evidence: " + reports.map(r =>
+    r.policy_id + " " + r.policy_version + ": " + r.summary.parameter_values_with_ranked_source + "/" +
+    r.summary.parameter_values + " rate values on ranked sources, " + r.summary.rules_citing_primary_legislation +
+    "/" + r.summary.rules + " rules citing legislation" + (r.problems.length ? ", " + r.problems.length + " gap(s)" : "")).join("; ") + ".";
+}).catch(() => {});
 loadExamples().catch(e => { document.getElementById("error").textContent = "Could not load examples: " + e; });
 </script>
 </body>
