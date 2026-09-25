@@ -14,7 +14,8 @@ from typing import Any
 import yaml
 
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
-from poltika.engines.simulator.wff import FactStatus, VerifiedIncome
+from poltika.engines.simulator.outcome import FactStatus
+from poltika.engines.simulator.wff import VerifiedIncome
 from poltika.scenarios.combined import (
     CombinedHouseholdScenario,
     CombinedResult,

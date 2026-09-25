@@ -27,7 +27,7 @@ from fastapi.testclient import TestClient
 import poltika.api.accommodation_supplement as as_api
 from poltika.api.accommodation_supplement import _as_policy_dir
 from poltika.api.main import app
-from poltika.engines.simulator.wff import ComponentResult
+from poltika.engines.simulator.outcome import ComponentResult
 from tests.conftest import AS_POLICY_DIR, load_as_cases
 
 client = TestClient(app)

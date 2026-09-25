@@ -1,8 +1,9 @@
 # Poltika v0.1 Build Plan
 
 **Date:** 20 September 2026
-**Status:** FROZEN — workflow and roadmap discussion closed. Week 0 Tasks 8
-and 9 are complete.
+**Status:** FROZEN — workflow and roadmap discussion closed. Each task's
+progress is recorded under it below; README.md's Current status says where
+v0.1 stands.
 
 ---
 
@@ -1981,7 +1982,10 @@ and Pete's acceptance):
   by two structurally different policies -- Task 25 found no schema
   revision needed; amended from "schema v0.2" by Pete's Task 27.1(a)
   decision, 24 September 2026)
-- Three-layer testing in place, statutory values CI-protected
+- Three-layer testing in place; statutory expected-value changes surfaced in
+  PR CI and independently reviewed before merging (ADR-0007: visibility, not
+  a merge gate) -- amended from "statutory values CI-protected", which
+  predated ADR-0007, on Pete's delegation of 25 September 2026
 - Any interpretation ambiguity encountered has a recorded decision artifact
   with evidence considered, rationale, decision owner and date
 - One real cross-policy household scenario answerable end-to-end, deterministically,

@@ -37,8 +37,8 @@ from datetime import date
 from decimal import ROUND_FLOOR, Decimal
 from enum import Enum
 from pathlib import Path
-from typing import Literal
 
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
     ComponentTrace,
     input_uses,
@@ -48,39 +48,8 @@ from poltika.engines.simulator.trace import (
     recording_parameters,
     trace_header,
 )
-from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
-from poltika.semantics.schemas.policy_spec import ReferencePeriod
-
-ComponentOutcome = Literal["calculated", "needs_review", "unsupported"]
-
-
-class FactStatus(str, Enum):
-    """Tri-state for any fact that gates a component.
-
-    One shared tri-state covers both flavours of gate this contract uses:
-
-    - A **domain/eligibility precondition** (e.g. "in-work eligibility
-      established"): `VERIFIED` means the condition holds and the branch may
-      proceed; `EXCLUDED` means it's verified *not* to hold, so the scenario
-      is structurally outside this branch (`unsupported`); `UNKNOWN` means
-      it hasn't been verified either way (`needs_review`).
-    - A **known exclusion trigger** (e.g. MD 14/15 protected credit):
-      `VERIFIED` means verified that the trigger does *not* apply (the
-      ordinary branch proceeds); `EXCLUDED` means verified that it *does*
-      apply (`unsupported` -- the protected/direct-abatement/etc. pathway
-      needs its own specification, per specification.md); `UNKNOWN` means
-      unverified applicability (`needs_review`, per specification.md's
-      explicit "unknown applicability is needs_review" language repeated
-      for every one of these triggers).
-
-    Never a bare `bool`: SCHEMA.md forbids silently defaulting a missing
-    fact to a value that would yield entitlement, and a bool has no way to
-    represent "not verified" distinctly from "verified false".
-    """
-
-    VERIFIED = "verified"
-    EXCLUDED = "excluded"
-    UNKNOWN = "unknown"
+from poltika.policy.loader import PolicyParameterSet, load_bound_policy_spec, load_policy_parameters
+from poltika.semantics.schemas.policy_spec import PolicySpec, ReferencePeriod, covers
 
 
 class BestStartCohort(str, Enum):
@@ -304,21 +273,6 @@ class WffScenario:
                 f"is set ({self.family_scheme_income.partner_amount}) -- a single claimant "
                 "cannot have a verified partner amount"
             )
-
-
-@dataclass(frozen=True)
-class ComponentResult:
-    """One component's outcome. `value` is populated only when
-    `outcome == "calculated"` -- Task 12's equivalent of Task 11's
-    `ParameterResolution` contract: never treat a missing value as zero.
-    """
-
-    outcome: ComponentOutcome
-    value: Decimal | None = None
-    reason: str | None = None
-    # Task 31: what this result was computed from. Excluded from equality,
-    # so attaching a trace never changes whether two results compare equal.
-    trace: ComponentTrace | None = field(default=None, compare=False)
 
 
 @dataclass(frozen=True)
@@ -912,18 +866,6 @@ _WFF_REQUIRED_PARAMETER_IDS = frozenset(
 )
 
 
-def _covers(value_effective_from: date, value_effective_to: date | None, target_date: date) -> bool:
-    """Same interval-membership test as `poltika.policy.loader`'s private
-    `_covers()` -- duplicated deliberately, not imported: that function is
-    a loader implementation detail, and this file must not reach into it
-    (REPOSITORY_STRUCTURE.md's dependency boundary is one-directional,
-    engines/simulator -> policy, not the reverse of poking at policy's
-    private helpers)."""
-    if target_date < value_effective_from:
-        return False
-    return value_effective_to is None or target_date < value_effective_to
-
-
 def _zero_floor(amount: Decimal) -> Decimal:
     """`max(0, amount)` at the amount's own decimal scale (v0.1 question set
     QS-3): a floored credit reads `0.000`, like its unfloored `7920.725`,
@@ -946,7 +888,7 @@ def _spans_reference_period(
 
 
 def _wff_module_validation_failure(
-    policy_dir: Path, modelled_date: date, parameters: PolicyParameterSet
+    spec: PolicySpec, modelled_date: date, parameters: PolicyParameterSet
 ) -> ComponentResult | None:
     """The three Task 20 module-specific `validation_checks`, in addition
     to the schema-version/approval-status gates `load_policy_parameters()`
@@ -954,7 +896,6 @@ def _wff_module_validation_failure(
     `needs_review` result to use for all four `WffResult` components, or
     `None` if every invariant holds.
     """
-    spec = load_policy_spec(policy_dir / "policy.yaml")
     reference_period = spec.reference_period
 
     # Invariant (2): the loaded parameter set is actually for this module,
@@ -990,7 +931,7 @@ def _wff_module_validation_failure(
     # Invariant (1): the requested date actually falls within the period
     # this policy version was reviewed to cover, not merely within some
     # individual parameter's own interval.
-    if not _covers(reference_period.from_, reference_period.to, modelled_date):
+    if not covers(reference_period.from_, reference_period.to, modelled_date):
         return ComponentResult(
             outcome="needs_review",
             reason=(
@@ -1010,12 +951,12 @@ def _wff_module_validation_failure(
             # invariant would add.
             continue
         matching_value = next(
-            (v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)),
+            (v for v in param.values if covers(v.effective_from, v.effective_to, modelled_date)),
             None,
         )
         assert matching_value is not None, (
             f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
-            "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
+            "found on re-check -- load_policy_parameters()/load_bound_policy_spec() disagree"
         )
         if matching_value.effective_to is None:
             # v0.1 question set QS-2: SCHEMA.md permits an open-ended final
@@ -1084,12 +1025,14 @@ def run_wff_module(
         policy_dir, modelled_date, requested_policy_version=requested_policy_version
     )
 
+    spec = load_bound_policy_spec(policy_dir, parameters)
+
     # WFF is assessed for the policy's whole reviewed tax year, which the
     # invariants below require every rate to cover.
-    reference_period = load_policy_spec(policy_dir / "policy.yaml").reference_period
+    reference_period = spec.reference_period
     assessment_period = (reference_period.from_, reference_period.to)
 
-    validation_failure = _wff_module_validation_failure(policy_dir, modelled_date, parameters)
+    validation_failure = _wff_module_validation_failure(spec, modelled_date, parameters)
     if validation_failure is not None:
         # No component ran, so the trace carries only the run identity;
         # the reason says which invariant failed.

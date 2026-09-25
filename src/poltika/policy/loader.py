@@ -20,6 +20,7 @@ from typing import Literal
 import yaml
 
 from poltika.common.errors import (
+    ArtifactHashMismatchError,
     InvalidSourceCatalogError,
     PolicyNotApprovedError,
     PolicyVersionMismatchError,
@@ -31,6 +32,7 @@ from poltika.semantics.schemas.policy_spec import (
     ParameterSpec,
     PolicySpec,
     PolicyStatus,
+    covers,
 )
 
 # Task 11.2: reject any schema_version outside this set before interpreting
@@ -96,6 +98,21 @@ class PolicyParameterSet:
 def load_policy_spec(policy_yaml_path: Path) -> PolicySpec:
     """Parse and validate policy.yaml in isolation. Raises on any structural problem."""
     return _parse_policy_spec(policy_yaml_path.read_bytes())
+
+
+def load_bound_policy_spec(policy_dir: Path, parameters: PolicyParameterSet) -> PolicySpec:
+    """Re-read `policy.yaml` for a module's own checks on `parameters`, which
+    were loaded from it, and refuse it if its bytes are not the ones the
+    parameters were resolved from (their recorded `artifact_sha256`).
+    Otherwise a file replaced between the two reads would have its reference
+    period and intervals checked while the parameters, and the hash every
+    trace records, came from the earlier file."""
+    policy_yaml_bytes = (policy_dir / "policy.yaml").read_bytes()
+    if _sha256(policy_yaml_bytes) != parameters.artifact_sha256.get("policy.yaml"):
+        raise ArtifactHashMismatchError(
+            f"policy '{parameters.policy_id}' policy.yaml is not the file its parameters were loaded from"
+        )
+    return _parse_policy_spec(policy_yaml_bytes)
 
 
 def _parse_policy_spec(policy_yaml_bytes: bytes) -> PolicySpec:
@@ -241,16 +258,9 @@ def _specification_and_decision_hashes(policy_dir: Path) -> dict[str, str]:
     return hashes
 
 
-def _covers(value_effective_from: date, value_effective_to: date | None, modelled_date: date) -> bool:
-    if modelled_date < value_effective_from:
-        return False
-    # effective_to is exclusive when present; None means open-ended (no upper bound).
-    return value_effective_to is None or modelled_date < value_effective_to
-
-
 def _resolve_parameter(param: ParameterSpec, modelled_date: date) -> ParameterResolution:
     matching = [
-        v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)
+        v for v in param.values if covers(v.effective_from, v.effective_to, modelled_date)
     ]
 
     if not matching:

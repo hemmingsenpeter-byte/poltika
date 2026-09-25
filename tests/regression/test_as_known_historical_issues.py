@@ -20,7 +20,7 @@ from poltika.engines.simulator.accommodation_supplement import (
     _household_category,
     calculate_accommodation_supplement,
 )
-from poltika.engines.simulator.wff import FactStatus
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.policy.loader import (
     PolicyParameterSet,
     load_policy_parameters,

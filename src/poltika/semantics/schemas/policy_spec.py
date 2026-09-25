@@ -124,6 +124,16 @@ class ReferencePeriod(BaseModel):
     to: date
 
 
+def covers(start: date, end: date | None, target: date) -> bool:
+    """Whether `target` falls in `[start, end)`, where `end is None` is
+    open-ended. The one interval-membership test for effective-dated values:
+    `ParameterValue.effective_to` and `ReferencePeriod.to` are both
+    exclusive."""
+    if target < start:
+        return False
+    return end is None or target < end
+
+
 class ParameterValue(BaseModel):
     """One effective-dated, source-linked value of a parameter."""
 

@@ -34,16 +34,13 @@ from poltika.engines.simulator.accommodation_supplement import (
     PartnerType,
     run_as_module,
 )
+from poltika.engines.simulator.outcome import ComponentOutcome, ComponentResult, FactStatus
 from poltika.engines.simulator.wff import (
-    ComponentOutcome,
-    ComponentResult,
-    FactStatus,
     PartnerStatus,
     WffResult,
     WffScenario,
     run_wff_module,
 )
-from poltika.policy.loader import load_policy_spec
 
 # AS partner types that describe a couple for the partner-status comparison.
 # community_spouse_or_partner is deliberately not compared (Pete's Task 28.3
@@ -194,8 +191,11 @@ def run_combined_household(
         requested_policy_version=requested_as_policy_version,
         assessment_week=assessment_week,
     )
-    reference = load_policy_spec(wff_policy_dir / "policy.yaml").reference_period
-    wff_period = (reference.from_, reference.to)
+    # The WFF module records the tax year it assessed on every component's
+    # trace, from the same policy file its parameters came from.
+    wff_trace = wff_result.family_tax_credit.trace
+    assert wff_trace is not None and wff_trace.assessment_period is not None
+    wff_period = wff_trace.assessment_period
     as_period = (assessment_week.start, assessment_week.end)
 
     original_wff, original_as = wff_result, as_result

@@ -21,11 +21,11 @@ from typing import Any
 import pytest
 import yaml
 
-from poltika.common.errors import PolicyVersionMismatchError
+from poltika.common.errors import ArtifactHashMismatchError, PolicyVersionMismatchError
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,
@@ -270,3 +270,26 @@ def test_open_ended_parameter_value_is_needs_review(tmp_path: Path) -> None:
 
     assert result.family_tax_credit.outcome == "needs_review"
     assert "has no effective_to" in (result.family_tax_credit.reason or "")
+
+
+def test_policy_file_replaced_after_its_parameters_loaded_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The module's own checks must read the same policy.yaml the parameters
+    (and every trace's hash) came from, not a file replaced in between."""
+    import shutil
+
+    import poltika.engines.simulator.wff as wff_module
+
+    policy_dir = tmp_path / "working_for_families"
+    shutil.copytree(WFF_POLICY_DIR, policy_dir)
+
+    def load_then_replace(*args: Any, **kwargs: Any) -> Any:
+        parameters = load_policy_parameters(*args, **kwargs)
+        with (policy_dir / "policy.yaml").open("a") as f:
+            f.write("\n# replaced after loading\n")
+        return parameters
+
+    monkeypatch.setattr(wff_module, "load_policy_parameters", load_then_replace)
+    with pytest.raises(ArtifactHashMismatchError):
+        run_wff_module(policy_dir, MODELLED_DATE, _ordinary_scenario(), requested_policy_version="0.1.0")

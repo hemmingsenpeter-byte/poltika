@@ -20,13 +20,11 @@ business-use deduction). Anything outside that domain must resolve to
 `unsupported` or `needs_review`, never a silent zero or a guessed number
 (CLAUDE.md's "Ground truth" section).
 
-`ComponentResult`, `ComponentOutcome`, and `FactStatus` are imported from
-`wff.py` rather than duplicated -- both types are already fully
-policy-agnostic (outcome/value/reason; verified/excluded/unknown), and
-Architecture Doctrine's "minimum abstraction demanded by two real
-policies" is exactly satisfied now that a second policy needs them. This
-is a plain import, not a refactor of `wff.py` -- no existing WFF code or
-test changes. AS-specific enums (`ClaimantCategory`, `TenureType`,
+`ComponentResult` and `FactStatus` come from `outcome.py`, shared with
+WFF: they are policy-agnostic (outcome/value/reason;
+verified/excluded/unknown), and Architecture Doctrine's "minimum
+abstraction demanded by two real policies" is satisfied now that a second
+policy uses them. AS-specific enums (`ClaimantCategory`, `TenureType`,
 `PartnerType`, `Area`) are defined here, not shared, since WFF has no
 equivalent concepts.
 """
@@ -39,6 +37,7 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 from enum import Enum
 from pathlib import Path
 
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
     ComponentTrace,
     input_uses,
@@ -47,8 +46,8 @@ from poltika.engines.simulator.trace import (
     recording_parameters,
     trace_header,
 )
-from poltika.engines.simulator.wff import ComponentResult, FactStatus
-from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
+from poltika.policy.loader import PolicyParameterSet, load_bound_policy_spec, load_policy_parameters
+from poltika.semantics.schemas.policy_spec import PolicySpec, covers
 
 
 class ClaimantCategory(str, Enum):
@@ -732,17 +731,6 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
 _AS_MODULE_ID = "accommodation_supplement"
 
 
-def _covers(value_effective_from: date, value_effective_to: date | None, target_date: date) -> bool:
-    """Same interval-membership test as `wff.py`'s own `_covers()` (itself
-    duplicated from `poltika.policy.loader`'s private helper) -- duplicated
-    again here rather than imported across sibling simulator files, for the
-    same reason: this is a small, self-contained predicate, not a shared
-    abstraction two real policies are asking for."""
-    if target_date < value_effective_from:
-        return False
-    return value_effective_to is None or target_date < value_effective_to
-
-
 @dataclass(frozen=True)
 class AssessmentWeek:
     """The AS assessment week a calculation is for: `[start, end)`.
@@ -777,7 +765,7 @@ def _covers_week(value_effective_from: date, value_effective_to: date | None, we
 
 
 def _as_module_validation_failure(
-    policy_dir: Path, modelled_date: date, assessment_week: AssessmentWeek, parameters: PolicyParameterSet
+    spec: PolicySpec, modelled_date: date, assessment_week: AssessmentWeek, parameters: PolicyParameterSet
 ) -> ComponentResult | None:
     """The AS module-boundary invariants. Returns the shared `needs_review`
     result for the single `accommodation_supplement` component, or `None`
@@ -796,7 +784,6 @@ def _as_module_validation_failure(
     own `_param_value()` resolves an undeclared parameter to `needs_review`
     (Task 23's documented design).
     """
-    spec = load_policy_spec(policy_dir / "policy.yaml")
     reference_period = spec.reference_period
 
     # The loaded parameter set is actually for this module, not an
@@ -823,7 +810,7 @@ def _as_module_validation_failure(
         )
 
     # Parameters are looked up at a date inside the week they are for.
-    if not _covers(assessment_week.start, assessment_week.end, modelled_date):
+    if not covers(assessment_week.start, assessment_week.end, modelled_date):
         return ComponentResult(
             outcome="needs_review",
             reason=(
@@ -841,12 +828,12 @@ def _as_module_validation_failure(
             # Already needs_review/unsupported for its own reason.
             continue
         matching_value = next(
-            (v for v in param.values if _covers(v.effective_from, v.effective_to, modelled_date)),
+            (v for v in param.values if covers(v.effective_from, v.effective_to, modelled_date)),
             None,
         )
         assert matching_value is not None, (
             f"parameter '{param.id}' resolved for {modelled_date} but no matching interval "
-            "found on re-check -- load_policy_parameters()/load_policy_spec() disagree"
+            "found on re-check -- load_policy_parameters()/load_bound_policy_spec() disagree"
         )
         if matching_value.effective_to is None:
             # v0.1 question set QS-2: SCHEMA.md permits an open-ended final
@@ -921,7 +908,8 @@ def run_as_module(
     )
 
     assessment_period = (assessment_week.start, assessment_week.end)
-    validation_failure = _as_module_validation_failure(policy_dir, modelled_date, assessment_week, parameters)
+    spec = load_bound_policy_spec(policy_dir, parameters)
+    validation_failure = _as_module_validation_failure(spec, modelled_date, assessment_week, parameters)
     if validation_failure is not None:
         # No calculation ran, so the trace carries only the run identity;
         # the reason says which invariant failed.

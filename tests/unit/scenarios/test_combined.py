@@ -20,9 +20,8 @@ from poltika.engines.simulator.accommodation_supplement import (
     TenureType,
     run_as_module,
 )
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.wff import (
-    ComponentResult,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffResult,

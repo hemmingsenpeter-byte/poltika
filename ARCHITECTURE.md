@@ -23,26 +23,26 @@ Poltika does not treat model memory or external implementations as authoritative
 
 ## Technology stack
 
-### v0.1, as actually implemented so far
+### v0.1, as actually implemented
 
-This is what exists in the repo today (Tasks 11-14: parameter loader,
-calculator, spec tests, benchmark tests) — the lean subset the doctrine
-below calls for, not the full long-term target.
+This is what exists in the repo today: the lean subset of the long-term
+stack below that v0.1's tasks have needed, not the full target.
 
 | Layer | Stack |
 | --- | --- |
-| Core language | Python 3.10+ (managed via `uv`) |
+| Core language | Python 3.12 (managed via `uv`; `.python-version`, `requires-python >= 3.12`) |
 | Schemas / validation | Pydantic v2 |
-| Data format | PyYAML (`policy.yaml`, `spec_cases.yaml`, `benchmarks.yaml`, `sources.yaml`) |
-| Testing | pytest |
+| Data format | PyYAML (`policy.yaml`, `spec_cases.yaml`, `benchmarks.yaml`, `sources.yaml`, `golden_households.yaml`) |
+| Backend/API | FastAPI (ADR-0010); policy directory set at deploy time (ADR-0011) |
+| Database | PostgreSQL via SQLAlchemy 2 + psycopg, migrations by Alembic (ADR-0013); used only by the stored `/scenarios` routes |
+| Testing | pytest + Hypothesis (the v0.1 acceptance suite) |
 | Lint/type checking | Ruff + mypy (`strict = true`) |
 | Build | setuptools, `src/` layout |
-| CI/CD | GitHub Actions (`statutory-value-guard.yml`, visibility-only) |
+| CI/CD | GitHub Actions: `tests.yml` (lint, strict mypy, full suite with PostgreSQL, installed artifact, code replay) and `statutory-value-guard.yml`; both visibility only, neither can block merge (ADR-0007) |
 
-No API, frontend, or database exists yet — Task 21 ("Add API") is gated on
-the pure calculator passing acceptance, and the frontend/database layers
-below are the target to build toward as later BUILD_PLAN.md tasks reach
-them, not something to start now.
+There is no frontend, LLM layer, `data/` pipeline or container setup yet;
+those rows of the target stack below are built when a BUILD_PLAN.md or
+ROADMAP.md task needs them, not before.
 
 ### Long-term target stack
 

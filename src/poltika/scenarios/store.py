@@ -11,7 +11,8 @@ change (Task 32.4). Code replay uses the manifest's git commit and is
 exercised separately (Task 34.2).
 
 Saving an id again with identical content is a no-op; with different
-content it raises `ImmutableRecordError`. Saving a run whose bound files no
+content it raises `ImmutableRecordError`. A scenario's content is compared
+in canonical child order, as its id is (Task 34.3 F10). Saving a run whose bound files no
 longer match their recorded hashes is refused, as is replaying from missing
 or hash-mismatched artifacts.
 
@@ -24,6 +25,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
@@ -53,10 +55,10 @@ from poltika.engines.simulator.accommodation_supplement import (
     PartnerType,
     TenureType,
 )
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,
@@ -67,6 +69,7 @@ from poltika.scenarios.record import (
     ScenarioRecord,
     ScenarioRun,
     canonical_json,
+    canonical_record,
     result_payload,
     run_scenario,
     scenario_id,
@@ -158,7 +161,14 @@ class ScenarioStore:
                 raise StoreError(f"{key} no longer matches the run's recorded hash; refusing to store")
             artifacts[sha] = content
         with self._engine.begin() as conn:
-            _insert_once(conn, scenario_table, "scenario_id", run.scenario_id, {"record_json": canonical_json(run.record)})
+            _insert_once(
+                conn,
+                scenario_table,
+                "scenario_id",
+                run.scenario_id,
+                {"record_json": canonical_json(run.record)},
+                equivalent={"record_json": _same_record},
+            )
             for sha, content in artifacts.items():
                 _insert_once(conn, artifact_table, "sha256", sha, {"content": content})
             _insert_once(
@@ -249,14 +259,34 @@ class ScenarioStore:
         )
 
 
-def _insert_once(conn: Any, table: Table, key: str, value: str, columns: dict[str, Any]) -> None:
+def _insert_once(
+    conn: Any,
+    table: Table,
+    key: str,
+    value: str,
+    columns: dict[str, Any],
+    *,
+    equivalent: dict[str, Callable[[Any, Any], bool]] | None = None,
+) -> None:
+    """Insert a row, or check an existing row has the same content. A column
+    in `equivalent` is compared with its own test instead of `==`."""
     existing = conn.execute(select(table).where(table.c[key] == value)).one_or_none()
     if existing is None:
         conn.execute(table.insert().values({key: value, **columns}))
         return
     for name, new in columns.items():
-        if getattr(existing, name) != new:
+        same = (equivalent or {}).get(name)
+        stored = getattr(existing, name)
+        if not (same(stored, new) if same else stored == new):
             raise ImmutableRecordError(f"{table.name} {value} is already stored with different {name}")
+
+
+def _same_record(stored_json: str, new_json: str) -> bool:
+    """Whether two stored records are the same scenario. Task 34.3 F10: the
+    scenario id ignores child order, so the same household with its children
+    in another order is the same record; the first order saved is kept."""
+    stored, new = (canonical_record(json.loads(text)) for text in (stored_json, new_json))
+    return canonical_json(stored) == canonical_json(new)
 
 
 def _code(manifest: dict[str, Any]) -> CodeIdentity:

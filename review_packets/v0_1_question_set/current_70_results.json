@@ -224,7 +224,7 @@
     },
     "minimum_family_tax_credit": {
       "outcome": "unsupported",
-      "reason": "ME 2(2)-(4) Commissioner-determined employment period or a part-week case applies -- outside the 52-verified-week v0.1 branch",
+      "reason": "52 full-time-earner weeks (MA 7 / ME 2) are not established -- the claimant is not a full-time earner for every week, or an ME 2(2)-(4) Commissioner-determined employment period or part-week case applies; outside the 52-verified-week v0.1 branch",
       "value": null
     },
     "total_annual_entitlement": null
@@ -550,13 +550,13 @@
       "value": "110"
     },
     "8100": {
-      "outcome": "unsupported",
-      "reason": "cash assets (8100) meet or exceed the r 15 ceiling (8100) -- the assets requirement (r 15) fails",
-      "value": null
+      "outcome": "calculated",
+      "reason": null,
+      "value": "110"
     },
     "8101": {
       "outcome": "unsupported",
-      "reason": "cash assets (8101) meet or exceed the r 15 ceiling (8100) -- the assets requirement (r 15) fails",
+      "reason": "cash assets (8101) exceed the r 15 ceiling (8100) -- the assets requirement (r 15) fails",
       "value": null
     }
   },

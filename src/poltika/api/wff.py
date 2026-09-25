@@ -33,11 +33,10 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
+from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    ComponentResult,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,
@@ -138,7 +137,9 @@ class WffCalculationResponse(BaseModel):
     best_start: ComponentResultResponse
 
 
-def _scenario_from_request(request: WffCalculationRequest) -> WffScenario:
+def scenario_from_request(request: WffCalculationRequest) -> WffScenario:
+    """The `WffScenario` a request describes. Also used by the combined household
+    route, so both routes build a scenario the same way."""
     family_scheme_income = None
     if request.family_scheme_income is not None:
         family_scheme_income = VerifiedIncome(
@@ -191,7 +192,7 @@ def calculate(request: WffCalculationRequest) -> WffCalculationResponse:
     status rather than a 200.
     """
     try:
-        scenario = _scenario_from_request(request)
+        scenario = scenario_from_request(request)
     except ValueError as exc:
         # A structural contradiction the dataclasses themselves reject
         # (e.g. a negative amount past Pydantic's own `ge=0`, or a SINGLE

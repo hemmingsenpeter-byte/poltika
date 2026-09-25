@@ -22,9 +22,9 @@ from poltika.engines.simulator.accommodation_supplement import (
     calculate_accommodation_supplement,
     run_as_module,
 )
+from poltika.engines.simulator.outcome import ComponentResult
 from poltika.engines.simulator.trace import recording_copy, recording_parameters
 from poltika.engines.simulator.wff import (
-    ComponentResult,
     WffResult,
     WffScenario,
     calculate_wff,
@@ -121,8 +121,12 @@ def test_trace_header_matches_the_loaded_policy_and_its_file_hashes() -> None:
     assert ftc.trace.modelled_date == WFF_MODELLED_DATE
     assert dict(ftc.trace.artifact_sha256) == {
         name: hashlib.sha256((WFF_POLICY_DIR / name).read_bytes()).hexdigest()
-        # WFF has no DEC-*.md decision files yet, so these three are all.
-        for name in ("policy.yaml", "sources.yaml", "specification.md")
+        for name in (
+            "policy.yaml",
+            "sources.yaml",
+            "specification.md",
+            "decisions/DEC-001-evidenced-ineligibility-outcome.md",
+        )
     }
     assert len(ftc.trace.scenario_sha256) == 64
 

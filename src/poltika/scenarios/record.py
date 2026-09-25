@@ -40,8 +40,9 @@ from pathlib import Path
 from typing import Any
 
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
+from poltika.engines.simulator.outcome import ComponentResult
 from poltika.engines.simulator.trace import plain
-from poltika.engines.simulator.wff import ComponentResult, WffResult
+from poltika.engines.simulator.wff import WffResult
 from poltika.scenarios.combined import (
     CombinedHouseholdScenario,
     CombinedResult,
@@ -108,12 +109,22 @@ def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def canonical_record(content: dict[str, Any]) -> dict[str, Any]:
+    """A record's plain form (as `canonical_json` writes it) with the WFF
+    children in canonical order. Task 34.3 F10: the calculators ignore child
+    order, so the scenario identity, and the store's check that a stored
+    record is the same scenario, ignore it too."""
+    household = content["household"]
+    wff = household["wff"]
+    children = sorted(
+        wff["children"], key=lambda child: json.dumps(child, sort_keys=True, separators=(",", ":"))
+    )
+    return {**content, "household": {**household, "wff": {**wff, "children": children}}}
+
+
 def scenario_id(record: ScenarioRecord) -> str:
-    """Task 34.3 F10: the calculators ignore child order, so the identity
-    does too -- children are hashed in canonical order."""
-    content = json.loads(canonical_json(record))
-    children = content["household"]["wff"]["children"]
-    children.sort(key=lambda child: json.dumps(child, sort_keys=True, separators=(",", ":")))
+    """Hashes the record in canonical child order (`canonical_record`)."""
+    content = canonical_record(json.loads(canonical_json(record)))
     return _sha256(canonical_json({"type": "combined_household_scenario", "record": content}))
 
 
@@ -229,17 +240,36 @@ def _files_match_commit(
     for key, sha in policy_files:
         policy_id, relative = key.split("/", 1)
         path = (policy_dirs[policy_id] / relative).resolve()
-        try:
-            top = subprocess.run(
-                ["git", "-C", str(path.parent), "rev-parse", "--show-toplevel"],
-                capture_output=True, text=True, check=True,
-            ).stdout.strip()
-            committed = subprocess.run(
-                ["git", "-C", top, "show", f"{commit}:{path.relative_to(Path(top).resolve()).as_posix()}"],
-                capture_output=True, check=True,
-            ).stdout
-        except (OSError, ValueError, subprocess.CalledProcessError):
-            return False
-        if hashlib.sha256(committed).hexdigest() != sha:
+        if _committed_sha256(commit, path) != sha:
             return False
     return True
+
+
+# (commit, file) -> SHA-256 of the file's content at that commit. A commit's
+# content never changes, so a successful lookup is kept for the life of the
+# process: a long-running API then runs git once per bound file per commit,
+# not on every request. A failed lookup is not kept.
+_COMMITTED_SHA256: dict[tuple[str, Path], str] = {}
+
+
+def _committed_sha256(commit: str, path: Path) -> str | None:
+    """The SHA-256 of `path`'s content at `commit` in the git repository
+    containing it, or `None` if it is not in a repository or not in that
+    commit."""
+    cached = _COMMITTED_SHA256.get((commit, path))
+    if cached is not None:
+        return cached
+    try:
+        top = subprocess.run(
+            ["git", "-C", str(path.parent), "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+        committed = subprocess.run(
+            ["git", "-C", top, "show", f"{commit}:{path.relative_to(Path(top).resolve()).as_posix()}"],
+            capture_output=True, check=True,
+        ).stdout
+    except (OSError, ValueError, subprocess.CalledProcessError):
+        return None
+    digest = hashlib.sha256(committed).hexdigest()
+    _COMMITTED_SHA256[(commit, path)] = digest
+    return digest

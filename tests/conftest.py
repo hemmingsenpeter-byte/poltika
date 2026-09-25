@@ -39,10 +39,10 @@ from poltika.engines.simulator.accommodation_supplement import (
     _income_level_parameter_id,
     _rate_household,
 )
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import (
     BestStartCohort,
     ChildFacts,
-    FactStatus,
     PartnerStatus,
     VerifiedIncome,
     WffScenario,

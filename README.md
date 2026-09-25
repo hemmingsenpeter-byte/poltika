@@ -20,6 +20,13 @@ v0.1 is feature-complete and in final review (BUILD_PLAN.md Task 34). It models 
 
 Results are conditional simulations built from caller-asserted facts. They are not entitlement determinations.
 
+**No WFF total yet.** The 2026-27 in-work tax credit base rate is still
+`needs_review` in `policy.yaml`: the temporary rate can be reversed early by
+Order in Council, so it is not confirmed for the whole year (Task 26b). The
+in-work tax credit is therefore never `calculated`, and the WFF total is only
+given when all four components are, so v0.1 gives no WFF total for any
+household. The other three components are unaffected.
+
 ## Running it
 
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
