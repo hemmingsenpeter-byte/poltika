@@ -1982,7 +1982,10 @@ and Pete's acceptance):
   by two structurally different policies -- Task 25 found no schema
   revision needed; amended from "schema v0.2" by Pete's Task 27.1(a)
   decision, 24 September 2026)
-- Three-layer testing in place, statutory values CI-protected
+- Three-layer testing in place; statutory expected-value changes surfaced in
+  PR CI and independently reviewed before merging (ADR-0007: visibility, not
+  a merge gate) -- amended from "statutory values CI-protected", which
+  predated ADR-0007, on Pete's delegation of 25 September 2026
 - Any interpretation ambiguity encountered has a recorded decision artifact
   with evidence considered, rationale, decision owner and date
 - One real cross-policy household scenario answerable end-to-end, deterministically,
