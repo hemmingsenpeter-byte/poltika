@@ -2,7 +2,7 @@
 
 Poltika is a policy-specification and implementation repository for New Zealand support-related policy logic.
 
-This repository is intentionally scaffolded in a minimal, source-first structure so that authoritative policy sources and decisions are captured before implementation begins.
+It is a deterministic simulator: every rate, threshold and rule comes from a cited primary source. Every result is `calculated`, `needs_review` or `unsupported`; a missing fact is never treated as zero, and each result carries a provenance report.
 
 ## Where to start
 
@@ -11,7 +11,31 @@ This repository is intentionally scaffolded in a minimal, source-first structure
 - [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — where every component belongs and the dependency rules between layers
 - [ROADMAP.md](ROADMAP.md) — what comes after v0.1
 - `doctrine/` — decisions that are fixed and not to be re-litigated
+- [docs/demo/v0_1/](docs/demo/v0_1/README.md) — one household run end to end through both policies, with its provenance report and limitations
+- [CHANGELOG.md](CHANGELOG.md) — what v0.1 contains
 
 ## Current status
 
-This is the v0.1 project seed. The repository is intentionally sparse while policy sources are reviewed and the schema is stabilized.
+v0.1 is feature-complete and in final review (BUILD_PLAN.md Task 34). It models Working for Families (2026-27) and the Accommodation Supplement (weekly) inside a scoped domain, plus their interaction for one household. The `v0.1.0` tag follows the GPT/Codex half of the Task 34.3 review and Pete's acceptance.
+
+Results are conditional simulations built from caller-asserted facts. They are not entitlement determinations.
+
+## Running it
+
+Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
+
+```sh
+uv sync --extra dev
+uv run --extra dev pytest -q                       # spec, benchmark and regression tests
+uv run --extra dev uvicorn poltika.api.main:app    # API; see /docs for the routes
+```
+
+- **Policy files:** the API reads `policy_specs/` from the checkout. Set `POLTIKA_POLICY_SPECS_DIR` to use a mounted copy (ADR-0011).
+- **Stored scenarios:** the `/scenarios` routes need PostgreSQL. Set `POLTIKA_DATABASE_URL`, for example `postgresql+psycopg://user@host/db` (ADR-0013). Without it they return 503; the other routes still work.
+- **Database schema:** the API doesn't migrate the database itself. Before first use, and after upgrading, run:
+
+  ```sh
+  uv run python -c "import os; from poltika.scenarios.store import migrate; migrate(os.environ['POLTIKA_DATABASE_URL'])"
+  ```
+- **Store tests:** tests marked `postgres` start a throwaway server when `initdb` and `pg_ctl` are on PATH, and skip otherwise.
+- **Slower tests:** `-m installed_artifact` builds and runs the wheel; `-m code_replay` replays a stored run on its original commit. CI runs both.
