@@ -6,6 +6,11 @@
 2026-06-01 to 2026-06-08 (end exclusive)  
 **Executable evidence:** `run_current_70.py` and `current_70_results.json`
 
+**Regenerated:** 25 September 2026 (PR #79), after PR #75's fixes. Three
+entries changed: Q47 (exactly the $8,100 ceiling) now passes, Q48's $8,101
+reason says "exceed", and Q20's minimum family tax credit reason is fuller.
+Every other entry is unchanged.
+
 These are model outputs, not entitlement determinations. “Verified” facts are
 caller assertions. A question that omits a required fact does not receive an
 invented value. For Q31-Q33 and Q54-Q57, a separately labelled **g2 worked
@@ -188,12 +193,16 @@ and total WFF is unavailable even when FTC, MFTC and Best Start calculate.
 46. **AS `unsupported`, value null.** The homeowner branch remains outside
     v0.1 even if a mortgage payment is supplied.
 
-47. **Not eligible in this branch; AS `unsupported`, value null.** Cash assets
-    meeting the applicable ceiling fail the asset requirement. The modelled
-    childless-single ceiling is $8,100; the other ceiling is $16,200.
+47. **The asset gate passes (corrected).** Cash assets exactly at the
+    applicable ceiling meet the asset requirement, because r 15(1) says they
+    "must not exceed" it. The executable childless-single example at $8,100
+    calculates $110/week. This run originally answered `unsupported`; PR #75
+    corrected the boundary (Q135). The modelled childless-single ceiling is
+    $8,100; the other ceiling is $16,200.
 
-48. **Same exclusion as Q47.** One dollar above the ceiling is
-    `unsupported`, not a calculated zero.
+48. **Not eligible in this branch; AS `unsupported`, value null.** One dollar
+    above the ceiling fails the asset requirement: `unsupported`, not a
+    calculated zero.
 
 49. **The asset gate passes one dollar below the ceiling.** Final AS then
     depends on the remaining inputs. The executable childless-single example
