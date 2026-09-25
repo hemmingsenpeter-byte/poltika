@@ -5,8 +5,9 @@
   question set Q71-Q140 in a fresh session.
 - **Checkout:** `main` at `27aa811` when the session started. `main` moved
   to `5a73539` (PR #74) during the session.
-- **Status:** S1 decided (below). S2 and S3 started on 26 September 2026.
-  The other subtasks have not started.
+- **Status (26 September 2026):** S1 decided. S2-S7 and S9 are done in
+  PR #77. S8 is open (location, and a doctrine concern). S10 runs after #77
+  merges.
 
 ## Goal
 
@@ -117,7 +118,7 @@ Claude Code drafts; Pete accepts.
   - **Decided 26 September 2026 (Pete, "proceed"):** S2 starts now, before
     the `v0.1.0` tag, at `docs/ORIENTATION.md`. The S8 helper's location is
     still open.
-- [ ] **S2: write `docs/ORIENTATION.md`.** Sections:
+- [x] **S2: write `docs/ORIENTATION.md`.** (PR #77) Sections:
   - what v0.1 models and what it doesn't;
   - outcome states and which one wins;
   - the facts that always hold (F-3);
@@ -131,11 +132,11 @@ Claude Code drafts; Pete accepts.
   Write it against `main` after the in-flight branches land, or update it
   when they do. `fix/q71-140-review` changes the r 15 asset test and adds an
   s 65AAA gate. `feat/outcome-reason-codes` changes `ComponentResult`.
-- [ ] **S3: add the new file to REPOSITORY_STRUCTURE.md** in the same PR as
+- [x] **S3: add the new file to REPOSITORY_STRUCTURE.md** (PR #77) in the same PR as
   S2.
-- [ ] **S4: add a "v0.1 at a glance" block to CLAUDE.md.** 15 lines at most:
+- [x] **S4: add a "v0.1 at a glance" block to CLAUDE.md.** (PR #77) 15 lines at most:
   one line per F-3 fact, plus a link to the orientation doc.
-- [ ] **S5: key CLAUDE.md's reading list by task.**
+- [x] **S5: key CLAUDE.md's reading list by task.** (PR #77)
   - Running scenarios or answering questions: the orientation doc and the
     demo.
   - Checking results: add the relevant specification's calculation
@@ -143,23 +144,32 @@ Claude Code drafts; Pete accepts.
   - Changing policy logic: the current full list, unchanged.
 
   The ground-truth, implementation and review rules stay as they are.
-- [ ] **S6: add a "check state first" rule to CLAUDE.md.** At the start,
+- [x] **S6: add a "check state first" rule to CLAUDE.md.** (PR #77) At the start,
   run `git status -sb`, `git log --oneline -5 origin/main` and
   `git worktree list`. Make edits in a `/private/tmp/poltika-*` worktree off
   `origin/main`, not in the shared checkout, because several sessions run at
   once.
-- [ ] **S7: make CI run the orientation example**, so the doc fails the
+- [x] **S7: make CI run the orientation example** (PR #77:
+  `tests/acceptance/test_orientation_examples.py`), so the doc fails the
   build when the contract changes. For example, keep the example in a
   module that a test imports and runs.
 - [ ] **S8 (can follow later): extract one shared scenario-builder helper**
   from the three question-set scripts, and point the orientation example at
   it. Its location is decided in S1.
-- [ ] **S9: add a check to prevent staleness.** Add a step to
+  - **Open, and not only on location.** A helper that defaults every fact to
+    `verified` must not live in production code: it would make it easy for a
+    missing fact to count as verified, which SCHEMA.md forbids. If built, it
+    belongs with test or script code and must be named as a test
+    convenience.
+- [x] **S9: add a check to prevent staleness.** (PR #77) Add a step to
   `.claude/skills/pr-review-preflight/SKILL.md`: "Does this PR change a fact
   in `docs/ORIENTATION.md`? If so, update it in the same PR."
 - [ ] **S10: run the fresh-context check.** Start a new session with only
   CLAUDE.md and the orientation doc. It answers the questions below and runs
   the example. Record the result in `reviews/`.
+  - **Runs after #77 merges**, in a new session or a subagent that is given
+    only CLAUDE.md and `docs/ORIENTATION.md`. The questions below must not
+    be shown to it with their expected answers.
 
 ### Check questions for S10
 
