@@ -298,10 +298,10 @@ def test_unsupported_household_gate_triggers(
 
 
 def test_asset_ceiling_exceeded_is_unsupported_not_zero(parameters) -> None:
-    """cash_assets at/above the r 15 ceiling ($8,100 for a single claimant
+    """cash_assets above the r 15 ceiling ($8,100 for a single claimant
     with no dependent children) fails the assets requirement (r 15) -- a
     genuine, evidenced exclusion, not a calculated zero."""
-    scenario = _ordinary_scenario(cash_assets=Decimal(8100))
+    scenario = _ordinary_scenario(cash_assets=Decimal("8100.01"))
 
     result = calculate_accommodation_supplement(scenario, parameters)
 
@@ -359,3 +359,25 @@ def test_real_policy_undeclared_base_rate_is_needs_review_not_a_crash(real_as_pa
     assert result.value is None
     assert "as_entry_threshold_jobseeker_support_single_no_dependent_children" in (result.reason or "")
     assert "not yet declared" in (result.reason or "")
+
+
+def test_assets_exactly_at_the_r15_ceiling_meet_the_requirement(parameters) -> None:
+    """r 15(1): cash assets "must not exceed" the ceiling, so exactly $8,100
+    passes (v0.1 question set Q135; the old ">=" wrongly excluded it)."""
+    at_ceiling = calculate_accommodation_supplement(_ordinary_scenario(cash_assets=Decimal(8100)), parameters)
+    below = calculate_accommodation_supplement(_ordinary_scenario(cash_assets=Decimal(1000)), parameters)
+
+    assert at_ceiling.outcome == "calculated"
+    assert at_ceiling.value == below.value
+
+
+def test_zero_accommodation_costs_is_unsupported_not_zero(parameters) -> None:
+    """v0.1 question set QS-6: s 65AAA / AS-01 -- entitlement requires
+    accommodation costs, so a verified $0 is an exclusion, not $0."""
+    result = calculate_accommodation_supplement(
+        _ordinary_scenario(weekly_accommodation_costs=Decimal(0)), parameters
+    )
+
+    assert result.outcome == "unsupported"
+    assert result.value is None
+    assert "s 65AAA" in (result.reason or "")

@@ -229,7 +229,9 @@ false zero or a silent default):
   verified Area 1-4 classification must not silently default to Area 4
   (`as-msd-areas`; already stated in the Task 2 map, restated here as a
   binding contract term).
-- Cash assets at or above the r 15 ceiling (a genuine, evidenced
+- Cash assets above the r 15 ceiling (r 15(1): cash assets "must not
+  exceed" it, so assets exactly at the ceiling pass; corrected 26 September
+  2026 from "at or above", v0.1 question set Q135) (a genuine, evidenced
   *exclusion* via the assets requirement failing -- `unsupported`, not a
   calculated zero, and not a scope limitation either; distinct from the
   s 423(3) imputation above, which applies *below* that ceiling). PR #25
@@ -252,10 +254,11 @@ false zero or a silent default):
 
 ### Scoped calculation sequence (v0.1 domain only)
 
-1. Verify household eligibility: accommodation costs exist (s 65AAA), no
+1. Verify household eligibility: accommodation costs exist (s 65AAA; a
+   verified $0 cost is `unsupported`, not a calculated $0), no
    social-housing exclusion (s 66), no other-funding exclusion applicable
    (s 67, including the disability/care branch), no s 69 refusal/
-   reduction/cancellation ground applicable, cash assets below the r 15
+   reduction/cancellation ground applicable, cash assets not exceeding the r 15
    ceiling for the claimant's relationship/dependent-child category
    ($16,200 or $8,100, checked directly against the regulation text,
    2026-09-22), Statistical Area Unit verified to an Area 1-4

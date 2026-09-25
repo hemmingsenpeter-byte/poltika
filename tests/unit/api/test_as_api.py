@@ -103,12 +103,12 @@ def test_calculate_real_policy_uses_the_published_threshold() -> None:
 def test_calculate_real_policy_asset_ceiling_is_unsupported() -> None:
     """A real, fully-resolved `unsupported` outcome end-to-end: the r 15
     asset-ceiling parameters *are* declared in the real approved policy
-    (unlike the base rates above), so cash_assets at/above the ceiling
+    (unlike the base rates above), so cash_assets above the ceiling
     ($8,100 for a single claimant with no dependent children) resolves
     without any test-only parameter assumption."""
     response = client.post(
         "/accommodation-supplement/calculate",
-        json=_request_payload(cash_assets="8100"),
+        json=_request_payload(cash_assets="8100.01"),
     )
 
     assert response.status_code == 200
