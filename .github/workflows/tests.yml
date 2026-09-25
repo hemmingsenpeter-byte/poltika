@@ -51,3 +51,27 @@ jobs:
         env:
           POLTIKA_REQUIRE_CODE_REPLAY: "1"
         run: uv run --extra dev pytest -q -m code_replay
+
+  pilot-image:
+    # v0.1.5 Task 8.1: the pilot container builds and serves a household
+    # calculation and the analyst page. The scenario store is exercised by
+    # the test job above; here the image runs without a database.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the pilot image
+        run: docker build -t poltika:pilot .
+
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          docker run -d --name poltika -p 8000:8000 poltika:pilot
+          for i in $(seq 1 60); do curl -sf localhost:8000/analyst >/dev/null && break; sleep 1; done
+          curl -sf localhost:8000/analyst | grep -q "Poltika analyst"
+          curl -sf localhost:8000/analyst/examples > examples.json
+          python3 -c "import json; json.dump(json.load(open('examples.json'))[1]['request'], open('request.json', 'w'))"
+          curl -sf -X POST -H 'content-type: application/json' -d @request.json \
+            localhost:8000/household/calculate > response.json
+          python3 -c "import json; r = json.load(open('response.json')); assert r['accommodation_supplement']['outcome'] == 'calculated'; assert r['explanations']"
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8000/scenarios/$(printf '0%.0s' $(seq 1 64)))" = 503

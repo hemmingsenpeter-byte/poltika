@@ -645,6 +645,9 @@ dev = [
     { name = "types-pyyaml" },
     { name = "uvicorn" },
 ]
+serve = [
+    { name = "uvicorn" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -661,8 +664,9 @@ requires-dist = [
     { name = "sqlalchemy", specifier = ">=2.0" },
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0" },
     { name = "uvicorn", marker = "extra == 'dev'", specifier = ">=0.30" },
+    { name = "uvicorn", marker = "extra == 'serve'", specifier = ">=0.30" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["serve", "dev"]
 
 [[package]]
 name = "psycopg"

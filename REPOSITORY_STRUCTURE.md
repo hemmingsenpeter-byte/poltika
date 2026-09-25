@@ -27,6 +27,9 @@ poltika/
 ├── RESEARCH.md         — external papers/prior art, structural reference only (never a policy source; see doctrine/ip-doctrine.md)
 ├── pyproject.toml      — dependencies (Pydantic, PyYAML, FastAPI, SQLAlchemy, psycopg, Alembic) and dev tooling (pytest, Hypothesis, Ruff, mypy strict)
 ├── .python-version     — 3.12, the version CI runs
+├── Dockerfile, compose.yaml, .dockerignore, deploy/entrypoint.sh
+│                       — v0.1.5 Task 8.1 pilot container: API + PostgreSQL,
+│                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
 │
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
@@ -41,6 +44,7 @@ poltika/
 ├── reviews/           — review and discrepancy records
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
+├── docs/pilot/        — v0.1.5 pilot guide (and, after the pilot, its findings)
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question
 │
@@ -95,7 +99,9 @@ poltika/
 │                            route over scenarios/), and scenarios.py
 │                            (Task 33.2: create/fetch/replay/re-run over
 │                            the Task 32 store; 503 when
-│                            POLTIKA_DATABASE_URL is unset) — no llm/
+│                            POLTIKA_DATABASE_URL is unset), analyst.py
+│                            (v0.1.5 Phase 6: the thin analyst page and its
+│                            example requests) — no llm/
 │                            layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy

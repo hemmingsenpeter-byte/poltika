@@ -37,6 +37,7 @@ from fastapi.responses import JSONResponse
 
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.accommodation_supplement import router as as_router
+from poltika.api.analyst import router as analyst_router
 from poltika.api.household import router as household_router
 from poltika.api.scenarios import router as scenarios_router
 from poltika.api.wff import WFF_POLICY_DIR
@@ -95,6 +96,7 @@ app.include_router(wff_router)
 app.include_router(as_router)
 app.include_router(household_router)
 app.include_router(scenarios_router)
+app.include_router(analyst_router)
 
 
 @app.exception_handler(StoredRunNotFoundError)

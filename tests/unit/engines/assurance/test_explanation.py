@@ -66,6 +66,7 @@ def test_g2_family_tax_credit_explanation_reads_from_the_trace() -> None:
     assert [s.step_id for s in explanation.steps][:2] == ["WFF_FTC_GROSS", "WFF_FTC_INCOME_EXCESS"]
     assert any("family_scheme_income" in a for a in explanation.assumptions)
     assert all("not verified by Poltika" in a for a in explanation.assumptions)
+    assert "household_eligibility = verified (" in "\n".join(explanation.assumptions)
 
 
 def test_a_needs_review_explanation_says_what_is_missing() -> None:

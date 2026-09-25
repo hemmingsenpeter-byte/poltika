@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any
 
 from poltika.common.errors import ProvenanceError
@@ -223,6 +224,8 @@ def render_text(explanation: Explanation) -> str:
 
 
 def _fact(value: Any) -> str:
+    if isinstance(value, Enum):
+        return _fact(value.value)
     if value is None:
         return "(not supplied)"
     if isinstance(value, list):
