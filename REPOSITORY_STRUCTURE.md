@@ -119,6 +119,12 @@ poltika/
     │                          standalone (ADR-0011); marked
     │                          installed_artifact, excluded from the
     │                          default fast suite (pyproject.toml addopts)
+    ├── acceptance/         — v0.1 release acceptance suite (GPT/Codex): threshold
+    │                          boundaries, Hypothesis-generated invariants, cross-policy
+    │                          leakage, explanation equivalence, repeat-run determinism;
+    │                          statutory values read from the policy, never restated
+    ├── code_replay/        — Task 32.4 replay of a stored run on its retained code
+    │                          revision (marked code_replay, opt-in; CI runs it)
     ├── regression/         — known-historical-issue tests (Task 15) and the
     │                          frozen golden-result snapshot check (Task 30.4)
     └── fixtures/           — golden_results_v0_1.json (Task 30.4 frozen golden
