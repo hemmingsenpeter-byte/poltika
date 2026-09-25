@@ -39,9 +39,11 @@ from pathlib import Path
 
 from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
+    CalculationStep,
     ComponentTrace,
     input_uses,
     parameter_uses,
+    record_step,
     recording_copy,
     recording_parameters,
     trace_header,
@@ -536,7 +538,8 @@ def calculate_accommodation_supplement(
     """
     recorded_scenario, input_names = recording_copy(scenario)
     recorded_parameters, parameter_ids = recording_parameters(parameters)
-    result = _accommodation_supplement(recorded_scenario, recorded_parameters)
+    steps: list[CalculationStep] = []
+    result = _accommodation_supplement(recorded_scenario, recorded_parameters, steps)
 
     rules: tuple[str, ...] = ()
     decisions: tuple[str, ...] = ()
@@ -562,6 +565,7 @@ def calculate_accommodation_supplement(
             inputs=input_uses(scenario, input_names),
             calculation_rules=rules,
             decisions=decisions,
+            steps=tuple(steps),
         ),
     )
 
@@ -606,7 +610,9 @@ _AS_DECISIONS: tuple[tuple[str, str], ...] = (
 )
 
 
-def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterSet) -> ComponentResult:
+def _accommodation_supplement(
+    scenario: AsScenario, parameters: PolicyParameterSet, steps: list[CalculationStep] | None = None
+) -> ComponentResult:
     """The calculation itself -- see `calculate_accommodation_supplement()`
     for the contract. Step 3 and the r 18(3) income level follow the Task
     26a selector repair (specification.md, DEC-002)."""
@@ -632,7 +638,10 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
     # weekly accommodation costs, unreduced (Schedule 4 Part 7 cl 7,
     # b = c = d = f = 0 -- accommodation income/business-use scenarios are
     # already excluded by the household gate above).
-    qualifying_costs = scenario.weekly_accommodation_costs
+    qualifying_costs = record_step(
+        steps, "AS_QUALIFYING_COSTS", "AS-03", "weekly qualifying costs: the verified weekly costs (plain case)",
+        scenario.weekly_accommodation_costs, weekly_accommodation_costs=scenario.weekly_accommodation_costs,
+    )
 
     # Two separate household selectors (Task 26a repair): the published
     # table row for the entry threshold and income level, and the Schedule
@@ -658,11 +667,24 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
     if isinstance(subsidy_rate, ComponentResult):
         return subsidy_rate
 
-    excess = qualifying_costs - entry_threshold
+    excess = record_step(
+        steps, "AS_COST_EXCESS", "AS-04", "weekly qualifying costs less the entry threshold",
+        qualifying_costs - entry_threshold, weekly_qualifying_costs=qualifying_costs, entry_threshold=entry_threshold,
+    )
     if excess <= 0:
-        cost_based_amount = zero
+        cost_based_amount = record_step(
+            steps, "AS_COST_BASED_AMOUNT", "AS-04", "no positive excess over the entry threshold",
+            zero, cost_excess=excess,
+        )
     else:
-        cost_based_amount = min(subsidy_rate * excess, area_cap)
+        subsidy = record_step(
+            steps, "AS_SUBSIDY", "AS-04", "subsidy rate times the positive excess",
+            subsidy_rate * excess, subsidy_rate=subsidy_rate, cost_excess=excess,
+        )
+        cost_based_amount = record_step(
+            steps, "AS_AREA_CAP", "AS-04", "the subsidy, limited to the household and area maximum",
+            min(subsidy, area_cap), subsidy=subsidy, area_maximum=area_cap,
+        )
 
     # Step 5: r 18 income reduction -- non-beneficiary route only
     # (AS-08: other supported categories have no separate AS income test).
@@ -695,12 +717,24 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
         # "every $100... over $X".
         asset_excess = scenario.cash_assets - imputation_threshold
         if asset_excess <= 0:
-            imputed_income = zero
+            imputed_income = record_step(
+                steps, "AS_ASSET_IMPUTATION", "AS-06", "cash assets at or below the imputation threshold impute no income",
+                zero, cash_assets=scenario.cash_assets, imputation_threshold=imputation_threshold,
+            )
         else:
             complete_steps = (asset_excess / imputation_step).to_integral_value(rounding=ROUND_FLOOR)
-            imputed_income = complete_steps * imputation_amount_per_step
+            imputed_income = record_step(
+                steps, "AS_ASSET_IMPUTATION", "AS-06",
+                "income imputed per complete step of cash assets over the imputation threshold",
+                complete_steps * imputation_amount_per_step,
+                cash_assets=scenario.cash_assets, imputation_threshold=imputation_threshold,
+                step_size=imputation_step, complete_steps=complete_steps, amount_per_step=imputation_amount_per_step,
+            )
 
-        total_income = scenario.weekly_income + imputed_income
+        total_income = record_step(
+            steps, "AS_TOTAL_INCOME", "AS-07", "weekly income plus imputed asset income",
+            scenario.weekly_income + imputed_income, weekly_income=scenario.weekly_income, imputed_income=imputed_income,
+        )
 
         income_reduction_rate = _param_value(parameters, "income_reduction_rate")
         if isinstance(income_reduction_rate, ComponentResult):
@@ -710,11 +744,21 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
         # do NOT floor it to a whole dollar first.
         income_excess = total_income - income_level
         if income_excess <= 0:
-            reduction = zero
+            reduction = record_step(
+                steps, "AS_INCOME_REDUCTION", "AS-07", "income at or below the income level gives no reduction",
+                zero, total_income=total_income, income_level=income_level,
+            )
         else:
-            reduction = income_reduction_rate * income_excess
+            reduction = record_step(
+                steps, "AS_INCOME_REDUCTION", "AS-07", "reduction rate times the exact income excess (DEC-001)",
+                income_reduction_rate * income_excess,
+                total_income=total_income, income_level=income_level, reduction_rate=income_reduction_rate,
+            )
 
-        pre_rounding_amount = max(zero, cost_based_amount - reduction)
+        pre_rounding_amount = record_step(
+            steps, "AS_REDUCED_AMOUNT", "AS-07", "cost-based amount less the income reduction, not below zero",
+            max(zero, cost_based_amount - reduction), cost_based_amount=cost_based_amount, income_reduction=reduction,
+        )
     else:
         pre_rounding_amount = cost_based_amount
 
@@ -723,7 +767,10 @@ def _accommodation_supplement(scenario: AsScenario, parameters: PolicyParameterS
     if pre_rounding_amount <= 0:
         final_amount = zero
     else:
-        final_amount = pre_rounding_amount.to_integral_value(rounding=ROUND_CEILING)
+        final_amount = record_step(
+            steps, "AS_ROUNDING", "AS-04", "a positive weekly amount rounded up to the complete dollar (r 19)",
+            pre_rounding_amount.to_integral_value(rounding=ROUND_CEILING), amount_before_rounding=pre_rounding_amount,
+        )
 
     return ComponentResult(outcome="calculated", value=final_amount)
 
