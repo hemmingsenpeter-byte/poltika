@@ -1,14 +1,14 @@
 # Fact catalogue (ADR-0016, v0.3 Task 1b.1) for facts the combined household
-# run reports. Not a statutory file. Wording drafted; awaits GPT/Codex review.
+# run reports. Not a statutory file. Review: reviews/2026-09-27-pr109.md.
 schema_version: "0.1"
 policy_id: wff_as_interaction
-wording_status: drafted
+wording_status: reviewed
 facts:
   - id: as_claimant_is_wff_claimant_or_partner
     scope: household
     rule: Task 28.3
     question: >-
-      Is the Accommodation Supplement claimant the Working for Families
-      claimant or their partner?
+      Is the Accommodation Supplement claimant for this assessment week
+      the Working for Families claimant for the tax year or their partner?
     kind: fact_status
     answers: {verified: "Yes", excluded: "No, someone else"}

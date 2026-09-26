@@ -1,10 +1,10 @@
 # Fact catalogue (ADR-0016, v0.3 Task 1b.1). One entry per fact the WFF engine
 # can report in `missing_facts`. Not a statutory file: no rate, threshold or
 # rule is stated here. Question wording is drafted from the engine's field
-# definitions and specification.md, and awaits GPT/Codex wording review.
+# definitions and specification.md; review: reviews/2026-09-27-pr109.md.
 schema_version: "0.1"
 policy_id: working_for_families
-wording_status: drafted
+wording_status: reviewed
 facts:
   - id: household_eligibility
     scope: wff
@@ -33,8 +33,8 @@ facts:
     scope: wff
     rule: WFF-02
     question: >-
-      What is the claimant's (and any partner's) verified family scheme income
-      for the tax year?
+      What is the claimant's own verified family scheme income for the tax
+      year, excluding the partner's separately supplied amount?
     kind: money
     unit: NZD per tax year
   - id: family_scheme_income.partner_amount
@@ -55,16 +55,17 @@ facts:
     scope: wff
     rule: WFF-05
     question: >-
-      Has the net family scheme income been derived as section ME 3 requires
-      (adjusted income less adjusted tax liability), not just labelled after
-      tax?
+      Has the family's net family scheme income for the tax year been derived
+      as section ME 3 requires (adjusted income less adjusted income-tax
+      liability, plus the specified MB 1(2) amount received and minus the
+      MB 1(3) amount paid), not just labelled after tax?
     kind: attestation
   - id: mc6a_veterans_payment
     scope: wff
     rule: WFF-06
     question: >-
       Was a specified veterans' payment received during the relationship
-      period?
+      period being assessed?
     kind: fact_status
     answers: {verified: "No such payment", excluded: "Yes, such a payment"}
   - id: mc6b_disqualifying_payment
@@ -72,7 +73,7 @@ facts:
     rule: WFF-08
     question: >-
       Was a main benefit, parent's allowance or children's pension received
-      during the relationship period?
+      during the relationship period being assessed?
     kind: fact_status
     answers: {verified: "No", excluded: "Yes"}
   - id: in_work_eligibility
@@ -80,8 +81,9 @@ facts:
     rule: WFF-04
     question: >-
       Has it been verified that the family meets the in-work tax credit
-      conditions for the whole year (a qualifying earner, with no main benefit
-      or Student Allowance period and no unpaid work break)?
+      conditions modelled here for the whole tax year (a qualifying salary
+      or wage earner, with no main benefit or Student Allowance period and
+      no unpaid work break)?
     kind: fact_status
     answers: {verified: "Yes, verified", excluded: "No, not met"}
   - id: ftc_iwtc_protected_or_direct_abatement
@@ -89,7 +91,7 @@ facts:
     rule: WFF-03
     question: >-
       Does a protected family tax credit or direct in-work abatement case apply
-      to this family?
+      to this family during the tax year?
     kind: fact_status
     answers: {verified: "No, it does not apply", excluded: "Yes, it applies"}
   - id: minimum_family_full_time_earner_weeks
@@ -104,13 +106,13 @@ facts:
   - id: best_start_no_shared_care
     scope: wff
     rule: WFF-07
-    question: Is any child in shared care for Best Start purposes?
+    question: Is any child in shared care for Best Start purposes during the tax year?
     kind: fact_status
     answers: {verified: "No shared care", excluded: "Yes, shared care"}
   - id: best_start_protected_credit
     scope: wff
     rule: WFF-06
-    question: Does a protected Best Start credit month apply?
+    question: Does a protected Best Start credit month apply to this family during the tax year?
     kind: fact_status
     answers: {verified: "No, it does not apply", excluded: "Yes, it applies"}
   - id: children.qualifies_whole_year
@@ -124,17 +126,18 @@ facts:
   - id: children.best_start_cohort
     scope: wff
     rule: WFF-06
-    question: Which Best Start group is this child in?
+    question: Which Best Start group is this child in for the 2026-27 tax year modelled here?
     kind: enum
     values:
-      in_supported_cohort: "In the supported Best Start cohort"
-      outside_best_start_entitlement: "Outside Best Start entitlement"
-      other_cohort_unsupported: "Another cohort (not modelled)"
+      in_supported_cohort: "Born 1 April 2024 to 31 March 2025 and eligible for the whole tax year"
+      outside_best_start_entitlement: "Verified outside Best Start entitlement for the whole tax year"
+      other_cohort_unsupported: "Within Best Start's age window, but another birth cohort or part-year case (not modelled)"
   - id: children.best_start_no_disqualifying_payment
     scope: wff
     rule: WFF-06
     question: >-
       Has a same-child parental leave or preterm baby payment, parental tax
-      credit or specified veterans' payment been received for this child?
+      credit or specified veterans' payment been received for this child
+      during the period being assessed?
     kind: fact_status
     answers: {verified: "No such payment", excluded: "Yes, such a payment"}

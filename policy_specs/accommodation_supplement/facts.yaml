@@ -1,10 +1,10 @@
 # Fact catalogue (ADR-0016, v0.3 Task 1b.1). One entry per fact the
 # Accommodation Supplement engine can report in `missing_facts`. Not a
 # statutory file. Wording is drafted from the engine's field definitions and
-# specification.md, and awaits GPT/Codex wording review.
+# specification.md; review: reviews/2026-09-27-pr109.md.
 schema_version: "0.1"
 policy_id: accommodation_supplement
-wording_status: drafted
+wording_status: reviewed
 facts:
   - id: household_eligibility
     scope: accommodation_supplement
@@ -17,19 +17,21 @@ facts:
   - id: claimant_category
     scope: accommodation_supplement
     rule: AS-08
-    question: Which of these describes the claimant's benefit status this week?
+    question: >-
+      Which category describes the claimant this week, taking account of
+      any mixed-benefit couple status?
     kind: enum
     values:
       jobseeker_support: "Jobseeker Support"
       sole_parent_support: "Sole Parent Support"
       supported_living_payment: "Supported Living Payment"
-      non_beneficiary: "Not on a main benefit"
+      non_beneficiary: "No main benefit, NZ Super or Veteran's Pension; not a mixed-benefit couple"
       pension_or_veterans: "NZ Super or Veteran's Pension (not modelled)"
       mixed_benefit_couple: "A mixed-benefit couple (not modelled)"
   - id: tenure_type
     scope: accommodation_supplement
     rule: AS-02
-    question: Does the household rent (or pay board), or own its home?
+    question: Does the household rent (or pay board), or own its home this week?
     kind: enum
     values:
       rent_contributions_or_board: "Rents or pays board"
@@ -41,14 +43,14 @@ facts:
     kind: enum
     values:
       single: "Single"
-      ordinary_couple: "A couple"
+      ordinary_couple: "An ordinary couple, not a joint-tenancy or community-partner case"
       joint_tenancy: "A couple in a joint tenancy"
       community_spouse_or_partner: "A community spouse or partner (not modelled)"
   - id: statistical_area_unit
     scope: accommodation_supplement
     rule: AS-05
     question: >-
-      Which Accommodation Supplement area is the home in, from its verified
+      Which Accommodation Supplement area is the home in this week, from its verified
       Statistical Area Unit (not a suburb or city name)?
     kind: enum
     values: {area1: "Area 1", area2: "Area 2", area3: "Area 3", area4: "Area 4"}
@@ -66,7 +68,7 @@ facts:
   - id: cash_assets
     scope: accommodation_supplement
     rule: AS-06
-    question: What are the claimant's (and any partner's) cash assets?
+    question: What are the claimant's and any partner's combined cash assets for this assessment week?
     kind: money
     unit: NZD
   - id: weekly_income
@@ -74,7 +76,7 @@ facts:
     rule: AS-07
     question: >-
       What is the claimant's and any partner's combined weekly chargeable
-      income?
+      income for this assessment week, before any asset-income imputation?
     kind: money
     unit: NZD per week
   - id: ordinary_rate_status
@@ -82,7 +84,9 @@ facts:
     rule: AS-04
     question: >-
       Does the ordinary published rate row apply for the whole week (no
-      protected, mixed-benefit, special-care or other unrepresented subtype)?
+      protected, mixed-benefit, special-care or other unrepresented subtype,
+      including verified applicability of the age-25 rate for a single
+      beneficiary under 25)?
     kind: fact_status
     answers: {verified: "Yes, the ordinary row applies", excluded: "No, another subtype applies"}
   - id: eldest_dependent_child_under_16

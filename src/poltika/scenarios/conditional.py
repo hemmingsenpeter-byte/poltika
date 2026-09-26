@@ -23,8 +23,8 @@ What it returns (`Resolution`):
   is complete only when every branch is calculated.
 - `next_question`: the unknown fact whose answer matters most. Facts that
   unblock the most components come first, then those that change the most
-  outcomes, then those with the widest spread of amounts, then catalogue
-  order. Impact is measured by rerunning the base household once per
+  outcomes, then those with the widest spread of amounts, then rule and
+  catalogue order. Impact is measured by rerunning the household once per
   admissible value of each fact.
 
 Numeric facts (income, costs, assets) have no finite domain. They are
@@ -65,6 +65,10 @@ FactIndex = dict[tuple[str, str], FactEntry]
 
 class UncataloguedFactError(LookupError):
     """An engine reported a missing fact that has no catalogue entry."""
+
+
+class IncompatibleAssignmentError(ValueError):
+    """An enum answer contradicts facts already supplied to the scenario."""
 
 
 @dataclass(frozen=True, order=True)
@@ -160,7 +164,6 @@ def resolve(
     base = run(record)
     missing = _missing(record, base, facts)
     order = _impact_order(record, base, [m for m in missing if m.branchable], run)
-    rank = {m.slot: i for i, m in enumerate(order)}
 
     leaves: list[tuple[tuple[tuple[Slot, str], ...], ScenarioRecord, CombinedResult]] = [
         ((), record, base)
@@ -170,22 +173,20 @@ def resolve(
         expanded = False
         next_leaves: list[tuple[tuple[tuple[Slot, str], ...], ScenarioRecord, CombinedResult]] = []
         for i, (assignment, rec, result) in enumerate(leaves):
-            open_slots = sorted(
-                (m.slot for m in _missing(rec, result, facts) if m.branchable),
-                key=lambda s: (rank.get(s, len(rank)), s),
+            candidates = _impact_order(
+                rec, result, [m for m in _missing(rec, result, facts) if m.branchable], run
             )
-            if not open_slots:
+            if not candidates:
                 next_leaves.append((assignment, rec, result))
                 continue
-            slot = open_slots[0]
-            values = facts[_key(slot)].domain()
-            projected = len(next_leaves) + len(values) + (len(leaves) - i - 1)
+            slot = candidates[0].slot
+            assignments = _assignments(rec, candidates[0])
+            projected = len(next_leaves) + len(assignments) + (len(leaves) - i - 1)
             if projected > max_branches:
                 capped = True
                 next_leaves.append((assignment, rec, result))
                 continue
-            for value in values:
-                branch_record = assign(rec, slot, value)
+            for value, branch_record in assignments:
                 next_leaves.append(
                     ((*assignment, (slot, value)), branch_record, run(branch_record))
                 )
@@ -247,7 +248,25 @@ def assign(record: ScenarioRecord, slot: Slot, value: str) -> ScenarioRecord:
 
 
 def _set(obj: Any, name: str, value: str) -> Any:
-    return replace(obj, **{name: _enum_type(type(obj), name)(value)})
+    typed = _enum_type(type(obj), name)(value)
+    try:
+        return replace(obj, **{name: typed})
+    except ValueError as exc:
+        raise IncompatibleAssignmentError(str(exc)) from exc
+
+
+def _assignments(record: ScenarioRecord, missing: MissingFact) -> list[tuple[str, ScenarioRecord]]:
+    assignments = []
+    for value in missing.entry.domain():
+        try:
+            assigned = assign(record, missing.slot, value)
+        except IncompatibleAssignmentError:
+            # Keep supplied facts intact; only structurally valid scenarios can run.
+            continue
+        assignments.append((value, assigned))
+    if not assignments:
+        raise ValueError(f"No compatible answers for {missing.slot.label}")
+    return assignments
 
 
 def _enum_type(cls: type, name: str) -> type[Enum]:
@@ -261,10 +280,6 @@ def _enum_type(cls: type, name: str) -> type[Enum]:
         if isinstance(candidate, type) and issubclass(candidate, Enum):
             return candidate
     raise TypeError(f"{cls.__name__}.{name} is not an enum field")
-
-
-def _key(slot: Slot) -> tuple[str, str]:
-    return (slot.scope, slot.fact_id)
 
 
 def _entry(facts: FactIndex, scope: str, fact_id: str) -> tuple[str, FactEntry]:
@@ -309,9 +324,18 @@ def _missing(record: ScenarioRecord, result: CombinedResult, facts: FactIndex) -
             scope, entry = _entry(facts, own_scope, fact_id)
             for slot in _slots(record, scope, entry):
                 found.setdefault(slot, (entry, set()))[1].add(name)
+    catalog_order = {key: i for i, key in enumerate(facts)}
+    ordered = sorted(
+        found.items(),
+        key=lambda item: (
+            item[1][0].rule,
+            catalog_order[(item[0].scope, item[0].fact_id)],
+            item[0],
+        ),
+    )
     return [
         MissingFact(slot, entry, tuple(sorted(blocks)))
-        for slot, (entry, blocks) in sorted(found.items())
+        for slot, (entry, blocks) in ordered
     ]
 
 
@@ -322,7 +346,7 @@ def _impact_order(
     run: typing.Callable[[ScenarioRecord], CombinedResult],
 ) -> list[MissingFact]:
     def impact(m: MissingFact) -> tuple[int, int, Decimal]:
-        results = [run(assign(record, m.slot, v)) for v in m.entry.domain()]
+        results = [run(assigned) for _, assigned in _assignments(record, m)]
         unblocked = changed = 0
         spread = Decimal(0)
         for name in COMPONENTS:
@@ -341,7 +365,7 @@ def _impact_order(
     scored = [(impact(m), m) for m in candidates]
     return [
         m
-        for score, m in sorted(scored, key=lambda sm: (-sm[0][0], -sm[0][1], -sm[0][2], sm[1].slot))
+        for score, m in sorted(scored, key=lambda sm: (-sm[0][0], -sm[0][1], -sm[0][2]))
     ]
 
 
