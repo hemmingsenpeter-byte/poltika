@@ -57,9 +57,32 @@ about twice the PRs of WFF", not as an exact split.
   interacting policies in v0.3 will need the same, which is why v0.3
   Phase 0.3 records every interaction first.
 
+## Where the PRs went
+
+Every v0.1 PR (58 unique PRs up to #81; #9, #11 and #41 each had two
+merge commits, counted once) is classified by the files it changed: a policy's `policy_specs/` directory, engine or API module;
+the interaction directory or combined runner; or neither.
+
+| Class | PRs |
+| --- | --- |
+| Infrastructure only (no policy files: schema, loader, provenance, API framework, store, CI, doctrine, demo, acceptance suite) | 30 |
+| WFF only | 6 |
+| Accommodation Supplement only | 10 |
+| Both policies (mostly cross-cutting changes such as traces and schema) | 10 |
+| Touching the interaction (overlaps the rows above) | 7 |
+
+About half of v0.1 was one-off infrastructure every later policy reuses.
+Per policy it was 6 (WFF) to 10 (AS) PRs of its own, plus half of the
+shared and interaction ones: roughly 15 on average (about 13 for WFF and
+17 for AS), not the 25-30 first estimated here.
+
 ## Planning figure for v0.3
 
-A v0.1-shaped policy costs roughly 25-30 merged PRs, 2-4 decision records
-and one review cycle per slice (58 PRs over two policies plus their
-interaction). Treat it as a starting estimate. v0.3's progress tables
-record the actual figures (W2.5), and the next plan uses those instead.
+- **Under v0.1's slicing:** about 15 PRs per policy.
+- **Under the five-PR standard** (`.claude/skills/new-policy/SKILL.md`,
+  W2.6): 5-8 PRs per policy and 2-4 decision records. The saving comes
+  from fixing review findings in the same PR and grouping tasks by review
+  type, not from reviewing less.
+
+v0.3's progress tables record the actual figures (W2.5), and the next plan
+uses those instead.
