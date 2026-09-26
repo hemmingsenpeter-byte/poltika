@@ -26,6 +26,7 @@ from poltika.common.errors import (
 )
 from poltika.policy.loader import load_bound_policy_spec, load_policy_parameters
 from poltika.semantics.schemas.policy_spec import covers
+from tests.conftest import WFF_MODELLED_DATE, WFF_POLICY_DIR
 
 MODELLED_DATE = date(2026, 6, 1)  # inside the fixtures' 2026-04-01..2027-04-01 interval
 
@@ -407,3 +408,13 @@ def test_bound_policy_spec_refuses_a_file_changed_after_loading(tmp_path: Path) 
     _write_policy(tmp_path, _base_policy(reference_period={"from": "2026-04-01", "to": "2028-04-01"}))
     with pytest.raises(ArtifactHashMismatchError):
         load_bound_policy_spec(tmp_path, parameters)
+
+
+def test_bound_spec_cache_returns_independent_copies() -> None:
+    """v0.2 Task 7.4: the parse is reused by hash, but a caller changing its
+    spec can't change what the next caller gets."""
+    params = load_policy_parameters(WFF_POLICY_DIR, WFF_MODELLED_DATE)
+    first = load_bound_policy_spec(WFF_POLICY_DIR, params)
+    first.parameters.clear()
+    second = load_bound_policy_spec(WFF_POLICY_DIR, params)
+    assert second.parameters and second is not first

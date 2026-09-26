@@ -108,11 +108,27 @@ def load_bound_policy_spec(policy_dir: Path, parameters: PolicyParameterSet) -> 
     period and intervals checked while the parameters, and the hash every
     trace records, came from the earlier file."""
     policy_yaml_bytes = (policy_dir / "policy.yaml").read_bytes()
-    if _sha256(policy_yaml_bytes) != parameters.artifact_sha256.get("policy.yaml"):
+    digest = _sha256(policy_yaml_bytes)
+    if digest != parameters.artifact_sha256.get("policy.yaml"):
         raise ArtifactHashMismatchError(
             f"policy '{parameters.policy_id}' policy.yaml is not the file its parameters were loaded from"
         )
-    return _parse_policy_spec(policy_yaml_bytes)
+    # v0.2 Task 7.4: a population run calls this twice per household, and
+    # parsing the YAML was nearly all of its time. The bytes are still read
+    # and hashed on every call, so the check above is unchanged; only the
+    # parse of bytes already seen is reused, by their hash. Callers get a
+    # deep copy, so no caller can change another's spec.
+    cached = _BOUND_SPECS.get(digest)
+    if cached is None:
+        cached = _parse_policy_spec(policy_yaml_bytes)
+        if len(_BOUND_SPECS) >= _BOUND_SPEC_CACHE_SIZE:
+            _BOUND_SPECS.pop(next(iter(_BOUND_SPECS)))
+        _BOUND_SPECS[digest] = cached
+    return cached.model_copy(deep=True)
+
+
+_BOUND_SPEC_CACHE_SIZE = 16
+_BOUND_SPECS: dict[str, PolicySpec] = {}
 
 
 def _parse_policy_spec(policy_yaml_bytes: bytes) -> PolicySpec:
