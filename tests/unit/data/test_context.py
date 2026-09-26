@@ -58,6 +58,15 @@ def test_get_returns_value_with_full_lineage(data_root: Callable[..., Path]) -> 
     assert len(lin.raw_sha256) == 64
 
 
+def test_snapshot_changed_before_lazy_read_is_refused(data_root: Callable[..., Path]) -> None:
+    root = data_root((RAW_CSV, manifest_for(RAW_CSV)))
+    ctx = DataContext(root, _registry())
+    snapshot = ctx.registry.resolve("synthetic_series")
+    snapshot.path.write_bytes(RAW_CSV.replace(b",105", b",999"))
+    with pytest.raises(DataContextError, match="sha256"):
+        ctx.get("test.synthetic.level", date(2021, 1, 1))
+
+
 def test_no_observation_for_date_or_variable(data_root: Callable[..., Path]) -> None:
     ctx = DataContext(data_root((RAW_CSV, manifest_for(RAW_CSV))), _registry())
     with pytest.raises(NoObservationError, match="no observation covering"):

@@ -5,6 +5,8 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
+import pytest
+
 from poltika.scenarios.microsim.validation import (
     RecordStatus,
     validate_household,
@@ -52,6 +54,25 @@ def test_consistent_household_is_valid() -> None:
 def test_bad_facts_are_invalid_and_have_no_record() -> None:
     facts = _golden_consistent()
     facts["household"]["wff"]["household_eligibility"] = "maybe"
+    result = validate_household(_consistent(facts=facts))
+    assert result.status is RecordStatus.INVALID
+    assert result.record is None
+
+
+@pytest.mark.parametrize(
+    ("section", "field", "value"),
+    [
+        ("wff", "net_family_scheme_income_me3_attested", "false"),
+        ("wff", "net_family_scheme_income_me3_attested", 1),
+        ("wff", "net_family_scheme_income", "Infinity"),
+        ("accommodation_supplement", "dependent_children_count", 1.5),
+        ("accommodation_supplement", "dependent_children_count", True),
+        ("accommodation_supplement", "weekly_income", "Infinity"),
+    ],
+)
+def test_malformed_primitive_facts_are_invalid(section: str, field: str, value: Any) -> None:
+    facts = _golden_consistent()
+    facts["household"][section][field] = value
     result = validate_household(_consistent(facts=facts))
     assert result.status is RecordStatus.INVALID
     assert result.record is None

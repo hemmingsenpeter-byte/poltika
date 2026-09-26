@@ -16,6 +16,7 @@ variable is an error until a source-precedence rule is decided.
 
 from __future__ import annotations
 
+import hashlib
 from datetime import date
 from itertools import pairwise
 from pathlib import Path
@@ -112,7 +113,10 @@ class DataContext:
         )
         variables = self.dictionary.by_id()
         observations: list[Observation] = []
-        for row in t.fn(snapshot.path.read_bytes(), m):
+        raw = snapshot.path.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != m.sha256:
+            raise DataContextError(f"{m.manifest_name}: raw snapshot sha256 changed before transformation")
+        for row in t.fn(raw, m):
             where = f"{m.manifest_name}: {row.variable_id} [{row.period_start}, {row.period_end})"
             if row.variable_id not in m.canonical_variable_mapping:
                 raise DataContextError(f"{where}: variable is not in the manifest's mapping")
