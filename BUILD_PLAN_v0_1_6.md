@@ -117,6 +117,12 @@ Claude Code for implementation, and the other model reviews.
   `docs/releases/` (limitations for 2027-28, and a new baseline), and run
   the release-gate tests. Pete tags `v0.1.6`.
 
+## Progress
+
+| Task | State |
+| --- | --- |
+| 2.1 | Done: `engines/assurance/currency.py`, `.github/workflows/source-currency.yml`. On 26 September 2026 it reports the open `in_work_base` value and two cited WFF sources with no structured check (`wff-tax-credit-order-2025`, `wff-budget-measures-2025`), which 2.3 should cover. |
+
 ## Sequence
 
 | When | Work |

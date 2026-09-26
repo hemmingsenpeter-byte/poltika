@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased (v0.1.6: keep v0.1 current)
+
+See `BUILD_PLAN_v0_1_6.md`.
+
+- **Source-currency report** (Task 2.1): a weekly workflow lists parameter
+  values ending within 90 days, values not approved or with no end date,
+  and cited sources with no structured check in 180 days, and opens an
+  issue when anything is due. It fetches nothing.
+  `python -m poltika.engines.assurance.currency <policy_dir>...` runs it
+  locally.
+
 ## Unreleased (v0.1.5: the evidence and explainability bridge)
 
 See `BUILD_PLAN_v0_1_5.md` for the plan and its progress table. No
