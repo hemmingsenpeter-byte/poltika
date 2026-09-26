@@ -223,7 +223,7 @@ goes in exactly one of them:
 | Directory | Holds | Written by |
 | --- | --- | --- |
 | `docs/research/` | Source research: what a primary source says, dated checks, prior-art glances (clean-room) | GPT/Codex or Claude Code, before implementation |
-| `review_packets/` | Inputs handed to a reviewer: the packet (sources, spec, diff, tests) and any scripts that produced reviewed results | The author, before review |
+| `review_packets/` | Inputs handed to a reviewer: the packet (sources, spec, diff, tests) and any scripts that produced reviewed results; `review_queue.md` lists merged PRs awaiting independent review (the review-debt cap) | The author, before review |
 | `reviews/` | A reviewer's output: findings, classifications and dispositions | The reviewer |
 
 Existing records stay where they are. Several protected, hash-bound files
