@@ -1,25 +1,43 @@
 dataset_id: stats_nz_household_income_housing_costs
 raw_file: stats_nz/stats_nz_household_income_housing_costs/v1/household-income-and-housing-cost-statistics-year-ended-june-2025-corrected.zip
 sha256: ad702314285caaa7c0e6680d0bc86a6292a10d2ff9533e9d065a92e112815a41
-vintage: "Year ended June 2025, corrected release (CSV files dated 26 May 2026 in the archive)"
+vintage: Year ended June 2025, corrected release (CSV files dated 26 May 2026 in the archive)
 transformation_id: stats_nz_hes_tables
 source_organisation: Stats NZ
-dataset_series: "Household income and housing-cost statistics: Year ended June 2025 (Tables 1-13 and inc-csv-codes.xlsx)"
-source_url_or_identifier: "https://www.stats.govt.nz/assets/Uploads/Household-income-and-housing-cost-statistics/Household-income-and-housing-cost-statistics-Year-ended-June-2025/Download-data/household-income-and-housing-cost-statistics-year-ended-june-2025-corrected.ZIP"
+dataset_series: 'Household income and housing-cost statistics: Year ended June 2025 (Tables 1-13 and inc-csv-codes.xlsx)'
+source_url_or_identifier: https://www.stats.govt.nz/assets/Uploads/Household-income-and-housing-cost-statistics/Household-income-and-housing-cost-statistics-Year-ended-June-2025/Download-data/household-income-and-housing-cost-statistics-year-ended-june-2025-corrected.ZIP
 retrieval_date: 2026-09-27
 observation_reference_period:
   from: 2006-07-01
   to: 2025-07-01
-units: "Mixed by table, as inc-csv-codes.xlsx defines each code: NZD (annual income, average weekly housing expenditure), thousands of households or people, percentages and ratios"
-geography_population: "New Zealand: total New Zealand and regional council areas; households and people in households as covered by the release"
+units: 'Mixed by table, as inc-csv-codes.xlsx defines each code: NZD (annual household income, average
+  weekly housing expenditure), thousands of households or people, percentages and ratios'
+geography_population: 'New Zealand: total New Zealand and regional council areas; households and people
+  in households as covered by the release'
 retrieval_method: manual_download
 raw_snapshot_version: 1
 transformation_version: 1
 canonical_variable_mapping:
-  - household.count_total
-  - household.composition_estimate
-  - household.tenure_estimate
-  - household.region_estimate
-  - household.gross_income_annual_mean
-  - household.gross_income_annual_median
-  - household.housing_cost_weekly_mean
+- household.count.total
+- household.gross_income.mean
+- household.gross_income.median
+- household.people.all_households
+- household.people.couple_one_dependent_child
+- household.people.couple_only
+- household.people.couple_three_plus_dependent_children
+- household.people.couple_two_dependent_children
+- household.people.one_parent_dependent_children
+- household.people.one_person_household
+- household.people.region.auckland
+- household.people.region.bay_of_plenty
+- household.people.region.canterbury
+- household.people.region.gisborne_hawkes_bay
+- household.people.region.manawatu_whanganui
+- household.people.region.northland
+- household.people.region.otago
+- household.people.region.southland
+- household.people.region.taranaki
+- household.people.region.tasman_nelson_marlborough_west_coast
+- household.people.region.waikato
+- household.people.region.wellington
+- household.rent.weekly_mean_paying_households
