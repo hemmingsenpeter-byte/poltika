@@ -192,3 +192,17 @@ def test_weights_sum_exactly_and_are_nearly_equal(represents: str, households: i
     weights = [h.weight for h in population.households]
     assert sum(weights) == D(represents)
     assert max(weights) - min(weights) <= D("0.000001")
+
+
+def test_sub_millionth_population_weight_is_rejected() -> None:
+    with pytest.raises(ValueError, match="decimal places"):
+        generate(_spec(households=3, represents="1.0000001"))
+
+
+def test_calibration_uses_the_actual_rounded_weights() -> None:
+    population, calibration = generate(_spec(seed=0, households=3, represents="0.000004"))
+    for row in calibration:
+        if row.dimension == "region":
+            weight = sum((h.weight for h in population.households
+                          if h.characteristics.region == row.key), D(0))
+            assert row.generated == weight / D("0.000004")

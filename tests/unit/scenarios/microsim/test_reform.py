@@ -76,6 +76,14 @@ def _reform(*overrides: tuple[str, str, str, str]) -> Reform:
 WFF = "working_for_families"
 
 
+@pytest.mark.parametrize(("operation", "value"), [("set", "0"), ("multiply", "0"), ("add", "-100")])
+def test_zero_asset_imputation_divisor_is_refused(operation: str, value: str) -> None:
+    _, parameters = _params(GOLDEN[0])
+    reform = _reform(("accommodation_supplement", "asset_imputation_step_size", operation, value))
+    with pytest.raises(InvalidReformError, match="positive"):
+        apply_reform(parameters, reform)
+
+
 @pytest.mark.parametrize("record", GOLDEN, ids=lambda r: str(r.wff_lookup_date))
 def test_preloaded_parameters_give_identical_results(record: ScenarioRecord) -> None:
     wff, as_ = _params(record)

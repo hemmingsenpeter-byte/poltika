@@ -60,6 +60,14 @@ def test_a_rule_citing_an_unknown_source_is_a_problem(tmp_path: Path) -> None:
     assert any("unknown source" in p for p in evidence_coverage(policy_dir)["problems"])
 
 
+def test_a_deleted_rule_row_is_a_problem(tmp_path: Path) -> None:
+    policy_dir = _copy(tmp_path)
+    spec = policy_dir / "specification.md"
+    spec.write_text("\n".join(line for line in spec.read_text().splitlines()
+                              if not line.startswith("| AS-07 |")))
+    assert any("AS-07" in p and "missing" in p for p in evidence_coverage(policy_dir)["problems"])
+
+
 def test_a_deleted_source_is_a_problem(tmp_path: Path) -> None:
     policy_dir = _copy(tmp_path)
     catalog = yaml.safe_load((policy_dir / "sources.yaml").read_text())

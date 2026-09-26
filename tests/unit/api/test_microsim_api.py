@@ -121,6 +121,18 @@ def test_unknown_run_is_404(configured: Path) -> None:
     assert client.get("/microsim/runs/not-a-hash").status_code == 422
 
 
+def test_fetch_measure_is_explicit_and_not_overwritten_by_another_request(configured: Path) -> None:
+    first = client.post("/microsim/runs", json={"reform": THRESHOLD}).json()
+    other = client.post("/microsim/runs", json={
+        "reform": THRESHOLD, "component_set": ["accommodation_supplement"],
+    }).json()
+    assert first["run_id"] == other["run_id"]
+    url = f"/microsim/runs/{first['run_id']}"
+    assert client.get(url).json() == first
+    assert client.get(url, params={"component_set": "accommodation_supplement"}).json() == other
+    assert client.get(url, params={"component_set": "unknown"}).status_code == 422
+
+
 def test_page_is_self_contained_and_shows_every_tab() -> None:
     response = client.get("/analyst/microsim")
     assert response.status_code == 200 and response.headers["content-type"].startswith("text/html")

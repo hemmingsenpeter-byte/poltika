@@ -145,7 +145,7 @@ class SyntheticSpec(BaseModel):
     version: int = Field(ge=1)
     seed: int
     households: int = Field(ge=1)
-    represents: Decimal = Field(gt=0)
+    represents: Decimal = Field(gt=0, decimal_places=6)
     sources: tuple[str, ...] = Field(min_length=1)
 
     household_type: dict[str, Decimal]
@@ -228,7 +228,7 @@ def generate(spec: SyntheticSpec) -> tuple[PopulationDataset, list[CalibrationRo
     rng = random.Random(spec.seed)
     weights = _equal_weights(spec.represents, spec.households)
     households = []
-    drawn: dict[str, dict[str, int]] = {}
+    drawn: dict[str, dict[str, Decimal]] = {}
 
     def pick(dimension: str, shares: dict[str, Decimal]) -> str:
         roll = Decimal(repr(rng.random()))
@@ -240,8 +240,8 @@ def generate(spec: SyntheticSpec) -> tuple[PopulationDataset, list[CalibrationRo
             if roll < cumulative:
                 choice = key
                 break
-        drawn.setdefault(dimension, {}).setdefault(choice, 0)
-        drawn[dimension][choice] += 1
+        drawn.setdefault(dimension, {}).setdefault(choice, Decimal(0))
+        drawn[dimension][choice] += weights[n]
         return choice
 
     def band(dimension: str, bands: list[Band]) -> int:
@@ -369,7 +369,7 @@ def _record(
     )
 
 
-def _calibration(spec: SyntheticSpec, drawn: dict[str, dict[str, int]]) -> list[CalibrationRow]:
+def _calibration(spec: SyntheticSpec, drawn: dict[str, dict[str, Decimal]]) -> list[CalibrationRow]:
     targets: dict[str, dict[str, Decimal]] = {
         "household_type": spec.household_type,
         "children_count": spec.children_count,

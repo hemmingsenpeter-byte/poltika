@@ -99,6 +99,16 @@ def test_a_tampered_step_is_caught() -> None:
     assert verify(wrong_value, ftc)
 
 
+def test_altered_citations_and_omitted_evidence_fail_verification() -> None:
+    ftc = _run(_record("g2_couple_two_children_income_abated_both"))["family_tax_credit"]
+    explanation = explain("family_tax_credit", ftc)
+    wrong_rule = replace(explanation.steps[0], rule_id="AS-07")
+    assert verify(replace(explanation, steps=(wrong_rule, *explanation.steps[1:])), ftc)
+    assert verify(replace(explanation, evidence=()), ftc)
+    assert verify(replace(explanation, assumptions=()), ftc)
+    assert verify(replace(explanation, summary=explanation.summary + " Extra payment: $999."), ftc)
+
+
 def test_changing_income_changes_result_trace_and_explanation_consistently() -> None:
     """Task 5.5: $1,000 more claimant income abates family tax credit by
     exactly the abatement rate, and the explanation follows."""

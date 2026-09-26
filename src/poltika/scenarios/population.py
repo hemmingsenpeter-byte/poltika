@@ -34,7 +34,28 @@ class HouseholdType(str, Enum):
 
 def scenario_record(household: PopulationHousehold) -> ScenarioRecord:
     try:
-        return record_from_plain(household.facts)
+        record = record_from_plain(household.facts)
+        wff = record.household.wff
+        as_ = record.household.accommodation_supplement
+        # The stored-record decoder assumes canonical types; external
+        # population facts have not passed the API's input validation.
+        if type(wff.net_family_scheme_income_me3_attested) is not bool:
+            raise ValueError("net_family_scheme_income_me3_attested must be a boolean")
+        count = as_.dependent_children_count
+        if count is not None and type(count) is not int:
+            raise ValueError("dependent_children_count must be an integer or null")
+        amounts = [
+            wff.net_family_scheme_income, as_.weekly_accommodation_costs,
+            as_.cash_assets, as_.weekly_income,
+        ]
+        if wff.family_scheme_income is not None:
+            amounts.extend([
+                wff.family_scheme_income.claimant_amount,
+                wff.family_scheme_income.partner_amount,
+            ])
+        if any(amount is not None and not amount.is_finite() for amount in amounts):
+            raise ValueError("income, costs and assets must be finite")
+        return record
     except (KeyError, TypeError, ValueError, ArithmeticError) as exc:
         raise InvalidHouseholdFacts(
             f"household '{household.household_id}': facts are not a valid scenario record ({exc!r})"

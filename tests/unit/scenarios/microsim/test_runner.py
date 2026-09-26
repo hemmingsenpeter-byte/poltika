@@ -131,6 +131,14 @@ def test_reproducible_identity(threshold_run: PopulationRun) -> None:
     }
 
 
+def test_household_order_does_not_change_run_identity(threshold_run: PopulationRun) -> None:
+    population = _population()
+    reordered = population.model_copy(update={"households": tuple(reversed(population.households))})
+    run = run_population(reordered, THRESHOLD, WFF_POLICY_DIR, AS_POLICY_DIR, code=CODE)
+    assert run.results_sha256 == threshold_run.results_sha256
+    assert run.run_id == threshold_run.run_id
+
+
 def test_invalid_households_are_not_run_and_review_households_are_flagged() -> None:
     bad = _facts(0)
     bad["household"]["wff"]["household_eligibility"] = "maybe"
