@@ -5,9 +5,8 @@
   question set Q71-Q140 in a fresh session.
 - **Checkout:** `main` at `27aa811` when the session started. `main` moved
   to `5a73539` (PR #74) during the session.
-- **Status (26 September 2026):** S1 decided. S2-S7 and S9 are done in
-  PR #77. S8 is open (location, and a doctrine concern). S10 runs after #77
-  merges.
+- **Status (26 September 2026):** S1-S7, S9 and S10 are done (PR #77). S8 is
+  not being built (see below).
 
 ## Goal
 
@@ -153,10 +152,10 @@ Claude Code drafts; Pete accepts.
   `tests/acceptance/test_orientation_examples.py`), so the doc fails the
   build when the contract changes. For example, keep the example in a
   module that a test imports and runs.
-- [ ] **S8 (can follow later): extract one shared scenario-builder helper**
+- [x] **S8 (closed, not built): extract one shared scenario-builder helper**
   from the three question-set scripts, and point the orientation example at
   it. Its location is decided in S1.
-  - **Open, and not only on location.** A helper that defaults every fact to
+  - **Closed 26 September 2026: not built.** The orientation page's example now shows how to build each scenario. A helper that defaults every fact to
     `verified` must not live in production code: it would make it easy for a
     missing fact to count as verified, which SCHEMA.md forbids. If built, it
     belongs with test or script code and must be named as a test
@@ -164,12 +163,18 @@ Claude Code drafts; Pete accepts.
 - [x] **S9: add a check to prevent staleness.** (PR #77) Add a step to
   `.claude/skills/pr-review-preflight/SKILL.md`: "Does this PR change a fact
   in `docs/ORIENTATION.md`? If so, update it in the same PR."
-- [ ] **S10: run the fresh-context check.** Start a new session with only
+- [x] **S10: run the fresh-context check.** Start a new session with only
   CLAUDE.md and the orientation doc. It answers the questions below and runs
   the example. Record the result in `reviews/`.
-  - **Runs after #77 merges**, in a new session or a subagent that is given
-    only CLAUDE.md and `docs/ORIENTATION.md`. The questions below must not
-    be shown to it with their expected answers.
+  - **Done 26 September 2026**, twice, by a subagent given only CLAUDE.md and
+    `docs/ORIENTATION.md` (questions without answers). First run: 6/6
+    correct, question 2 hedged; it listed 11 gaps (IWTC reason in the
+    example, "gated", decimals, `None` for unknowns, the age rule, the
+    shared-fact list, the week end, Act names, named `ChildFacts`
+    arguments), all fixed in #77. Second run, on the v0.1.5-updated page:
+    6/6 correct; two remaining gaps (part-year input value, unknown-assets
+    effect) fixed in #77's last commit. The page is about 240 lines, over
+    the 200-line target, because v0.1.5 content and these fixes were added.
 
 ### Check questions for S10
 
