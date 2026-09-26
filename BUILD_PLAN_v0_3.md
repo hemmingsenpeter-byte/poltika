@@ -130,75 +130,222 @@ it. That shape is the aim, not an assumed rule. v0.3 delivers:
 ### Phase 1b: intake questions and conditional answers (ADR-0016)
 
 Built on WFF and the Accommodation Supplement first, so every Tier 1
-domain is born with it.
+domain is born with it. Each task below lists its subtasks, the owner,
+and a "done when" a reviewer can check. The PR grouping follows the
+working agreement: one PR per kind of review, review findings fixed in
+the same PR.
 
-- **1b.1 — GPT/Codex writes the wording, Claude Code the schema. Fact
-  catalogues.** `policy_specs/<policy>/facts.yaml` for WFF and the
-  Accommodation Supplement. Each entry has:
-  - an id matching the engine's `missing_facts`;
-  - a plain-language question;
-  - admissible values;
-  - the governing rule id;
-  - optional per-component monotonicity with its rule id.
-
-  Tests: every `missing_facts` id an engine can emit has an entry, and
-  every domain matches the engine's input type.
-- **1b.2 — Claude Code. Conditional answers**
-  (`scenarios/conditional.py`):
-  - joint branches over finite missing facts, each an ordinary engine run
-    with its own verified explanation;
-  - a branch cap, with high-impact facts first;
-  - bounds when every branch is calculated, and an explicit partial range
-    otherwise;
-  - numeric ranges evaluated only where a component is declared monotone;
-  - unresolved parameters branched only over candidate values the
-    specification records, labelled as scenario assumptions;
-  - `next_question`.
-- **1b.3 — Claude Code. Differential and property tests:**
-  - every branch equals a direct engine run with that fact supplied;
-  - any value inside a monotone range falls within the reported bounds
-    (Hypothesis);
-  - no conditional result is ever `calculated`;
-  - totals are summed only within one joint assignment.
-- **1b.4 — Claude Code. Intake planner** (`scenarios/intake.py`). Given
-  partial facts and the question asked, it:
-  - returns the next question ranked by impact;
-  - records "don't know" as `unknown` (asked and declined), distinct
-    from never asked;
-  - stops when nothing blocking remains.
-
-  Tests: the planner's question order is deterministic, and supplying its
-  questions' answers reaches a fully calculated result on every golden
-  household.
+- **1b.1 — Fact catalogues.** `policy_specs/<policy>/facts.yaml` for WFF,
+  the Accommodation Supplement and the combined run. Each entry has an id
+  matching the engine's `missing_facts`, a plain-language question,
+  admissible values, the governing rule id, and optional per-component
+  monotonicity with its rule id.
+  - **1b.1a — Claude Code. Schema and completeness tests.** Done (#109):
+    `FactEntry`/`FactCatalog`, the loader, and tests that every emitted
+    id has an entry, every entry is emitted, domains match the engine
+    fields, and rule ids exist.
+  - **1b.1b — GPT/Codex. Wording review.** Check every question against
+    its rule: it asks for exactly the fact the rule tests, it doesn't
+    lead toward an answer, it names the period and person, and each
+    admissible value reads as a plain answer. Record findings in
+    `reviews/`, fix them in the same PR, then set `wording_status:
+    reviewed`.
+    *Done when:* all three catalogues are `reviewed`, and a review record
+    names the reviewer and each change.
+  - **1b.1c — Claude Code. Gate on wording.** A release-gate row fails if
+    any catalogue a release ships is still `drafted`.
+    *Done when:* the row exists and the v0.3 gate test runs it.
+- **1b.2 — Conditional answers** (`scenarios/conditional.py`).
+  - **1b.2a — Claude Code. Finite branches.** Done (#109): joint branches
+    over finite missing facts, impact-ranked expansion, the 32-branch cap,
+    per-component and WFF-total bounds, and `next_question`.
+  - **1b.2b — Claude Code (schema, evaluation), GPT/Codex (declarations).
+    Numeric ranges.**
+    - Add `monotone: {<component>: {direction: increasing | decreasing,
+      rule: <rule id>}}` to `FactEntry`, allowed only on numeric kinds
+      (money, count).
+    - GPT/Codex declares it only where a cited rule implies it (for
+      example family tax credit decreasing in family scheme income above
+      the threshold, WFF abatement rule). A declaration without a rule id
+      fails the schema.
+    - `resolve()` takes caller-supplied ranges (`{slot: (low, high)}`).
+      For a component declared monotone in every ranged fact, it runs the
+      endpoint corners and reports true bounds. Otherwise it runs the
+      chosen points and labels them "values at these points, not bounds".
+      With no range, the fact stays listed as missing with no branch.
+    - A range with low above high, a negative money value, or a
+      non-integer count is refused.
+    *Done when:* ranges produce bounds only for declared components, and
+    `Bounds` records which kind (true bounds or points) it holds.
+  - **1b.2c — GPT/Codex (candidate values), Claude Code (branching).
+    Unresolved parameters.**
+    - Today the only candidate record is prose: `in_work_base` 2026-27 is
+      `needs_review` at 7670, and its note says s 105(2) may reverse it
+      to 5070. GPT/Codex adds a structured `candidates` list to that
+      value row (each value with `source_id`, `locator` and the condition
+      it depends on). That changes a protected file, so it goes through
+      `doctrine/test-doctrine.md`.
+    - Claude Code extends the loader to read `candidates`, and `resolve()`
+      branches over them with a parameter override, one branch per
+      candidate, each labelled a scenario assumption naming the
+      condition. Nothing without a recorded candidate is branched.
+    - The branch outcome stays `needs_review`. A candidate branch is never
+      `calculated`, even if the rest of the run is.
+    *Done when:* a household blocked only by the unresolved in-work base
+    gets two labelled branches (7670 and 5070) and a range, and a
+    parameter with no `candidates` still gives a bare `needs_review`.
+  - **1b.2d — Claude Code. Rendering.** A plain-language summary of a
+    `Resolution`: "Poltika can't give one figure without X. If X is …,
+    the result is …", built from catalogue labels and branch values only,
+    with the explanation-verification pattern v0.1.5 uses.
+    *Done when:* every rendered figure is checked against its branch
+    result by a test.
+- **1b.3 — Claude Code. Differential and property tests.**
+  - **1b.3a** Done (#109): every branch equals a direct engine run with
+    that fact supplied, every branch explanation verifies, the base
+    result is never changed, and the cap holds.
+  - **1b.3b** Hypothesis: for each declared monotone component, any value
+    drawn inside a range gives a result within the reported bounds, and
+    the declaration itself holds (the result moves only in the declared
+    direction across the fact's domain) on generated households.
+  - **1b.3c** No conditional result is ever `calculated`: a test sweeps
+    every golden household with each fact removed in turn and checks the
+    blocked components' outcomes.
+  - **1b.3d** Totals are summed only within one joint assignment: a test
+    builds a household where the per-component extremes come from
+    different assignments, and checks the total's bounds are narrower
+    than the sum of the component bounds.
+  - **1b.3e** Candidate branches (1b.2c) each equal a direct run with the
+    parameter overridden to that candidate.
+  *Done when:* all five run in CI.
+- **1b.4 — Claude Code. Intake planner** (`scenarios/intake.py`).
+  - **1b.4a** `next_step()`: given partial facts, the asked components
+    and the declined facts, return `ready`, `ask` (with the next
+    question) or `incomplete`. Order: finite facts that unblock an asked
+    component, by impact; then numeric facts, in catalogue order; then
+    the remaining finite facts. Ties go by specification rule order.
+    (Implemented locally, with `Resolution.ranked` and
+    `Resolution.unblocks` added to `conditional.py`.)
+  - **1b.4b** `apply_answer()`: record an answer typed as the engine field
+    requires. Finite facts are checked against the domain, attestations
+    take yes or no, counts take a whole number, money takes a
+    non-negative amount, and a partner's family scheme income needs the
+    claimant's first. An inadmissible answer is refused, never coerced.
+  - **1b.4c** "Don't know" is `declined`: never asked again, never
+    defaulted, and distinct from never asked. When only declined facts
+    block, the planner returns `incomplete` and the caller gets
+    `resolve()`'s conditional answer.
+  - **1b.4d** Tests:
+    - the question order is deterministic (same input, same question);
+    - for every golden household, removing its facts and answering the
+      planner's questions from the golden values reaches `ready`, with a
+      result identical to the golden run;
+    - declining a fact gives `incomplete`, and the resolution matches a
+      direct `resolve()`;
+    - inadmissible answers are refused for each kind.
+  *Done when:* those tests pass.
 - **1b.5 — Claude Code. API and page.**
-  - `resolution` on calculation responses.
-  - `POST /household/intake`, returning the next question or "ready".
-  - The analyst page asks the questions first, then shows branches,
-    ranges and the next question. The page and any LLM front end only
-    phrase catalogue questions and map replies to admissible values, with
-    confirmation. They never choose values or calculate
-    (`doctrine/llm_boundaries.md`).
-- **1b.6 — Claude Code. Population ranges.** The microsimulation reports
-  the calculated total, the low-to-high range from `needs_review`
-  households' bounds, and the unboundable weight. They are always
-  separate, never added.
+  - **1b.5a** `resolution` on calculation responses
+    (`api/household.py`, and `api/wff.py` and
+    `api/accommodation_supplement.py` for their own components): present
+    only when something is missing. Existing fields and result ids are
+    unchanged, so stored runs replay byte-identically.
+  - **1b.5b** `POST /household/intake`: takes the household so far, the
+    asked components and the declined facts, and returns the next
+    question (id, catalogue wording, admissible values, rule id), `ready`
+    or `incomplete` with the resolution. It is stateless: the caller
+    sends everything each time.
+  - **1b.5c** Answer route or field: an answer is validated with
+    `apply_answer()`, and an inadmissible one gets a 422 naming the
+    admissible values.
+  - **1b.5d** The analyst page asks the questions first, then shows
+    branches, ranges and the next question, labelled as conditional. The
+    page and any LLM front end only phrase catalogue questions and map
+    replies to admissible values, with confirmation. They never choose
+    values or calculate (`doctrine/llm_boundaries.md`).
+  - **1b.5e** API tests (every route, each status, a 422) and an
+    acceptance test driving a golden household to `ready` through the
+    routes.
+  *Done when:* those tests pass and the OpenAPI schema lists the new
+  route and field.
+- **1b.6 — Claude Code. Population ranges.**
+  - **1b.6a** For each `needs_review` household, the runner computes
+    `resolve()` bounds (baseline and reform, same assignments). Bounds
+    are computed only for those households.
+  - **1b.6b** The fiscal summary reports three things, always separately:
+    the calculated weighted total, the low-to-high weighted range from
+    boundable `needs_review` households, and the unboundable weight. They
+    are never added together.
+  - **1b.6c** Explanations and the microsim page show the range with its
+    household count, labelled synthetic until real data runs.
+  - **1b.6d** Tests: the calculated total is unchanged from v0.2 on the
+    synthetic population; the range brackets each household's own
+    bounds, weighted; the three figures reconcile to the population's
+    total weight.
+  - **1b.6e** Performance: a scaling check against
+    `docs/releases/V0_2_SCALING_MODEL.md`, with the extra cost reported.
+  *Done when:* those tests pass and the run stays within the scaling
+  model's budget, or the overrun is recorded.
+
+**PR grouping for the rest of Phase 1b:**
+
+1. Intake planner (1b.4), with 1b.3c.
+2. Wording review (1b.1b), GPT/Codex.
+3. Monotone declarations and candidate values (the GPT/Codex parts of
+   1b.2b and 1b.2c): a protected-value PR.
+4. Numeric ranges, candidate branching and rendering (the Claude Code
+   parts of 1b.2b-1b.2d), with 1b.3b, 1b.3d and 1b.3e.
+5. API and page (1b.5).
+6. Population ranges (1b.6). This builds on v0.2's merged runner and
+   doesn't wait for v0.2's release.
+
+PRs 2 and 3 can be written while PR 1 is in review.
 
 ### Phase 2: income tax (v0.1 method)
 
-Follow the `new-policy` skill's five PRs: sources and specification,
-values and expected results, implementation, interactions, release. One
-vertical slice:
+Follow the `new-policy` skill's five PRs. Each subtask is one of them,
+and the skill's table sets its exit check. Income tax is born on the
+Phase 1 household model and with its Phase 1b fact catalogue.
 
-- sources (0.1);
-- specification with rule ids;
-- `policy.yaml` with dated, approved values;
-- spec cases hand-calculated by GPT/Codex;
-- benchmarks from official worked examples;
-- golden households;
-- evidence and currency coverage;
-- calculation steps and explanation templates;
-- review;
-- release-gate rows.
+- **2.1 — GPT/Codex. Sources and specification (PR 1).**
+  `policy_specs/income_tax/sources.yaml` from 0.1; `specification.md`
+  with rule ids (`IT-NN`) for the supported slice (income types, tax
+  year, basis); a decision record for every ambiguity; out-of-scope
+  cases listed, each mapped to `unsupported` with a category.
+  *Done when:* every rule row cites a rank 1-2 source, and Pete has
+  decided every decision record.
+- **2.2 — GPT/Codex. Values and expected results (PR 2).**
+  - `policy.yaml`: dated brackets and rates, each with `source_id`,
+    `locator` and `review_status`, and a rate-status contract for any
+    rate that can change mid-year, with candidate values (1b.2c).
+  - `facts.yaml`: every input fact, with question, admissible values,
+    rule id, and monotonicity where a rule implies it (tax is
+    non-decreasing in taxable income).
+  - `spec_cases.yaml`, hand-calculated with no code: each bracket
+    boundary, $1 either side, zero income, and each out-of-scope case.
+  - `benchmarks.yaml` from Inland Revenue worked examples.
+  *Done when:* the evidence report has no problems, the currency report
+  shows nothing due, and every bracket boundary has a case.
+- **2.3 — Claude Code. Implementation (PR 3).**
+  - `engines/simulator/income_tax.py`, reading the household model
+    through a named mapping (1.2).
+  - `record_step` calls and `STEP_TEMPLATES` entries for each step;
+    reason codes and categories.
+  - Unit, spec-case and benchmark tests; the fact-catalogue
+    completeness test extended to income tax; golden households (single
+    earner, two earners, each boundary).
+  *Done when:* every spec case and benchmark passes, `verify()` holds for
+  every result, and the catalogue test covers every emitted fact.
+- **2.4 — GPT/Codex specifies, Claude Code implements. Interactions (PR
+  4).** The Phase 0.3 edges income tax takes part in (for example which
+  benefits are taxable income), as graph edges citing their rule. It
+  lands with Phase 4 if the graph runner isn't ready.
+  *Done when:* every edge cites a source, and existing WFF and AS results
+  are unchanged.
+- **2.5 — Claude Code. Release (PR 5).** Gate rows, CHANGELOG,
+  limitations, the README coverage row, the maintenance line (W5.4) and
+  throughput actuals (W2.5) in this plan's Progress table.
+  *Done when:* the gate passes, or skips only for named reasons.
 
 ### Phase 3: the three core main benefits (v0.1 method)
 
@@ -207,6 +354,26 @@ The same slice for each benefit in Phase 0.2's order, each as the
 benefit while Claude Code implements the current one. Each benefit's
 golden households cover single, couple and sole-parent cases, and at
 least one where the benefit's result changes another policy's input.
+
+- **3.1 — Jobseeker Support.** 3.1.1 sources and specification (`JS-NN`)
+  → 3.1.2 values, `facts.yaml` and expected results (rate categories,
+  partner and family rates, each abatement threshold $1 either side) →
+  3.1.3 implementation → 3.1.4 interactions (AS claimant category, WFF
+  main-benefit rules, taxable income) → 3.1.5 release.
+- **3.2 — Sole Parent Support.** The same five steps (`SPS-NN`). 3.2.1
+  starts when 3.1.1 is decided. The eligibility gates on the youngest
+  child's age are finite facts in `facts.yaml`, never inferred from other
+  ages.
+- **3.3 — Supported Living Payment.** The same five steps (`SLP-NN`).
+  3.3.1 starts when 3.2.1 is decided. Medical and capacity criteria stay
+  asserted facts with catalogue questions; Poltika never assesses them.
+- **3.4 — Claude Code. Cross-benefit checks.** A household can't receive
+  two main benefits at once unless a specification says otherwise: a
+  test over the golden households, and an intake question when the
+  household model leaves it open.
+
+For each benefit, *done when* is the skill's exit check for each of its
+five PRs, with throughput recorded in the Progress table.
 
 ### Phase 4: household dependency graph (W7)
 
@@ -253,19 +420,39 @@ least one where the benefit's result changes another policy's input.
 
 ### Phase 6: real-data pipeline (W3.3-W3.5)
 
-- **6.1** Secure-environment runner: no network, no repository writes,
-  configured population path, aggregate-only export.
-- **6.2** Output checks from W3.1's published rules.
-- **6.3** Survey adapter onto the household model, with GPT/Codex review.
-- **6.4** A synthetic population extended to the new policies' facts.
-  Every result keeps the synthetic label until real data runs.
+- **6.1 — Claude Code. Secure-environment runner.**
+  - 6.1a A runner entry point with no network access (it refuses to
+    start if a socket can be opened) and no repository writes.
+  - 6.1b The population path from configuration, never from the
+    repository or a default.
+  - 6.1c Aggregate-only export: the only writer takes checked tables
+    (6.2). A test proves no household-level record can reach it.
+  *Done when:* those tests pass in CI with a synthetic population.
+- **6.2 — Claude Code, rules from W3.1. Output checks.** Minimum cell
+  counts, rounding and dominance rules, implemented from W3.1's published
+  rules with each rule cited. A table that fails is suppressed with a
+  reason, never altered.
+  *Done when:* each rule has a failing and a passing test table.
+- **6.3 — Claude Code, reviewed by GPT/Codex. Survey adapter** onto the
+  household model: a documented field mapping, with each unmapped or
+  derived field named, and a fact left unknown (never defaulted) where
+  the survey doesn't record it, so it flows to `needs_review` and to
+  population ranges (1b.6).
+  *Done when:* GPT/Codex has reviewed the mapping, and a round-trip test
+  on synthetic survey-shaped records passes.
+- **6.4 — Claude Code. Synthetic population** extended to income tax and
+  the three benefits' facts, with every result keeping the synthetic
+  label until real data runs.
+  *Done when:* a population run covers every Tier 1 component.
 
 ### Phase 7: release
 
-- **7.1** Release-gate test, including W1's review-queue row.
-- **7.2** CHANGELOG, `docs/releases/` limitations, the maintenance line
-  per policy (W5.4), and throughput actuals (W2.5).
-- **7.3** Pete tags `v0.3.0`.
+- **7.1 — Claude Code. Release-gate test.** One row per exit-gate item
+  below, including W1's review-queue row and 1b.1c's wording row.
+- **7.2 — Claude Code. Release documents.** CHANGELOG,
+  `docs/releases/` limitations, the maintenance line per policy (W5.4),
+  throughput actuals (W2.5), and the README coverage table.
+- **7.3 — Pete.** Tags `v0.3.0`.
 
 ## Progress
 
@@ -276,10 +463,11 @@ or for Phase 0.
 
 | Task | State |
 | --- | --- |
-| 1b.1 | Done. Catalogues for WFF (17 facts), the Accommodation Supplement (11) and the combined run (1). Tests show every id an engine emits has an entry, every entry is emitted, domains match the engine fields exactly, and rule ids exist. Writing them found three emitted facts with no entry: `mc6a_veterans_payment`, `mc6b_disqualifying_payment` and `net_family_scheme_income_me3_attested`, the last a new non-branchable `attestation` kind. **Wording is `drafted`: GPT/Codex reviews it.** |
-| 1b.2 | Part done: `scenarios/conditional.py` covers joint branches over finite facts, impact-ranked expansion, the 32-branch cap, per-component and WFF-total bounds, and `next_question`. Numeric ranges (monotone declarations) and branches over unresolved rate values come next. |
-| 1b.3 | Part done: every branch equals a direct engine run, every branch result's explanation verifies, the base result is never changed, and the cap holds. Hypothesis range checks come with the numeric ranges. |
-| 1b.4-1b.6 | Not started. |
+| 1b.1 | 1b.1a done (#109): catalogues for WFF (17 facts), the Accommodation Supplement (11) and the combined run (1), with completeness tests. Writing them found three emitted facts with no entry: `mc6a_veterans_payment`, `mc6b_disqualifying_payment` and `net_family_scheme_income_me3_attested`, the last a new non-branchable `attestation` kind. 1b.1b (GPT/Codex wording review) and 1b.1c (gate row) not started. |
+| 1b.2 | 1b.2a done (#109). 1b.2b (numeric ranges) and 1b.2c (candidate values; needs a structured `candidates` list from GPT/Codex first) not started. 1b.2d not started. |
+| 1b.3 | 1b.3a done (#109). 1b.3b-1b.3e not started. |
+| 1b.4 | In progress: `next_step()` and `apply_answer()` written, with `Resolution.ranked` and `unblocks` added to `conditional.py`. Tests (1b.4d) next. |
+| 1b.5-1b.6 | Not started. |
 
 ## Sequence
 
@@ -337,9 +525,8 @@ or for Phase 0.
 - **D1:** Each Tier 1 domain's supported slice, from Phase 0's sourcing.
 - **D2:** The disposable-income definition (0.4).
 - **D3:** The income-adequacy measures to report (5.3).
-- **D5:** Accept ADR-0016 (intake questions and conditional answers),
-  including the branch cap (32 proposed) and the population-range
-  reporting. Recommended.
+- **D5 (decided 26 September 2026):** ADR-0016 accepted, with the
+  32-branch cap and population-range reporting.
 - **D4 (decided 26 September 2026):** v0.3 ships with all three core
   main benefits (W10 Tier 1). Tier 2 domains follow as v0.3.x coverage
   releases.
