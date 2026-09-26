@@ -22,8 +22,8 @@ poltika/
 ├── BUILD_PLAN_v0_1_5.md  — v0.1.5 evidence and explainability tasks and release gate (approved 25 September 2026)
 ├── BUILD_PLAN_v0_1_6.md  — v0.1.6 tasks: the 2027-28 year and source currency (approved 26 September 2026)
 ├── BUILD_PLAN_v0_2.md    — v0.2 tasks: static population microsimulation (approved 26 September 2026; ADR-0014)
-├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (draft; ADR-0015 proposed)
-├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (draft; ADR-0015 proposed)
+├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015)
+├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015)
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
 ├── ROADMAP.md
@@ -270,8 +270,8 @@ poltika/
 │       ├── engines/
 │       │   ├── simulator/   — deterministic policy calculations (v0.1)
 │       │   ├── assurance/   — provenance, regression, change attribution (v0.1)
-│       │   ├── discovery/   — capability-driven, post-v0.2 (Roadmap Doctrine)
-│       │   └── hypothesis/  — capability-driven, post-v0.2 (Roadmap Doctrine)
+│       │   ├── discovery/   — capability-driven, post-v1.0 (Roadmap Doctrine, ADR-0015)
+│       │   └── hypothesis/  — capability-driven, post-v1.0 (Roadmap Doctrine, ADR-0015)
 │       ├── scenarios/       — scenario definitions, runner, results
 │       ├── llm/             — orchestration, prompts, guardrails (never calculates — see doctrine/llm_boundaries.md)
 │       ├── api/             — FastAPI app; HTTP request/response boundary only (Task 21, ADR-0010)
@@ -292,7 +292,7 @@ poltika/
 ```
 
 `engines/discovery/` and `engines/hypothesis/` are placeholders only:
-Roadmap Doctrine puts Discovery and Hypothesis capabilities after v0.2, so
+Roadmap Doctrine puts Discovery and Hypothesis capabilities after v1.0 (ADR-0015), so
 these subdirectories should not be created, or populated, for v0.1. Listing
 them here is about naming the eventual slot, not authorizing early work.
 

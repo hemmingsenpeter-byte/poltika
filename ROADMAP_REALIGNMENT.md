@@ -1,9 +1,12 @@
 # Roadmap realignment plan
 
 **Date:** 26 September 2026
-**Status:** DRAFT for Pete's approval (decisions D1-D8 at the end).
-**Decision record:** ADR-0015 (proposed).
-**Detailed v0.3 tasks:** `BUILD_PLAN_v0_3.md` (draft).
+**Status:** Approved 26 September 2026 with the recommended decisions
+(D1 yes; D3 apply now; D4 a cap of five; D7 pipelining; D8 release v0.2
+on the labelled synthetic population). D2 waits on the Phase 0 scoping,
+and D5-D6 are due before v0.4.
+**Decision record:** ADR-0015 (accepted).
+**Detailed v0.3 tasks:** `BUILD_PLAN_v0_3.md`.
 
 This plan fixes what a whole-roadmap review found on 26 September 2026:
 

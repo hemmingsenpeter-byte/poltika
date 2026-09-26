@@ -149,37 +149,46 @@ sequence and the dependency reasoning behind its order, not the detail.
 
 v0.1 (deterministic foundation) → v0.1.5 (evidence intelligence /
 pilotability) → v0.1.6 (keep v0.1 current) → v0.2 (static population
-microsimulation, per ADR-0014) → v0.3 (authoritative fiscal baseline and
-policy interaction graph) → v0.4 (scenario engine) → v0.5 (uncertainty and
-assurance) → v0.6 (Discovery engine) → v0.7 (Hypothesis engine) → v0.8
-(long-term NZ system model) → v0.9 (decision-intelligence product) → v1.0
-(production hardening) → beyond v1.0, an unnumbered capability-track
-sequence (Economic Digital Twin, Physical NZ, Adaptive Digital Twin,
-National Decision Intelligence).
+microsimulation, per ADR-0014) → v0.3 (income tax, main benefits and the
+household graph) → v0.4 (scenario engine) → v0.5 (uncertainty, assurance and
+the historical baseline) → v0.6 (long-term NZ fiscal model) → v0.7
+(decision-intelligence product) → v1.0 (production hardening), per
+ADR-0015 → beyond v1.0, the Discovery and Hypothesis engines and an
+unnumbered capability-track sequence (Economic Digital Twin, Physical NZ,
+Adaptive Digital Twin, National Decision Intelligence).
 
-**Why this order, not another:** v0.2→v0.3→v0.4 is dependency-ordered.
-v0.2's static microsimulation needs only a data layer and the existing
-combined runner, because WFF and the Accommodation Supplement don't feed
-each other's income tests (AS-10, WFF DEC-003; ADR-0014). Historical
-reconstruction needs authoritative connectors and series (v0.3), and any
-policy that does feed another (income tax, benefits, wages) needs the
-dependency graph (v0.3) before it joins a scenario. Multi-year,
-multi-policy scenarios (v0.4) need both.
-v0.5 (Assurance) sits before Discovery/Hypothesis, not after: it hardens the
-deterministic core — backtesting, sensitivity, stress-testing the v0.1–v0.4
-Simulator/Scenario engine — before anything exploratory or uncertain is
-allowed near it, the same "deterministic correctness before probabilistic
-sophistication" principle as the frozen Scope Doctrine, applied one level
-up. v0.6 (Discovery) before v0.7 (Hypothesis) is forced by logic, not a
-style choice: a hypothesis cannot be tested before Discovery has proposed a
-candidate relationship to test it against — the Simulator promotion gate is
-`Discovery → Hypothesis → evidence → validation → human approval → model
-specification → tests → Simulator`, and nothing re-enters the hardened
-Simulator without passing all of it.
+**Why this order, not another:** each release is on the path to the v1.0
+definition below (ADR-0015).
 
-The Stats NZ API connector and equivalents are pinned to v0.3 (moved from
-v0.2 by ADR-0014, since v0.2's manually acquired calibration tables don't
-need them) rather than left unpinned — this resolves the original
+- **v0.2.** Static microsimulation needs only a data layer and the
+  existing combined runner, because WFF and the Accommodation Supplement
+  don't feed each other's income tests (AS-10, WFF DEC-003; ADR-0014).
+- **v0.3.** Adds the policies almost every later capability needs
+  (income tax, main benefits), and the household dependency graph the
+  first policies that do feed each other require. The graph's edges come
+  only from specifications.
+- **v0.4.** Multi-year, multi-policy scenarios need those policies and
+  that graph.
+- **v0.5.** Assurance and uncertainty harden the v0.1-v0.4 simulator and
+  scenario engine (backtesting, sensitivity, stress tests). Its
+  backtesting is the first consumer of the historical fiscal baseline,
+  which therefore lives there. This is the same "deterministic
+  correctness before probabilistic sophistication" principle as the
+  frozen Scope Doctrine, applied one level up.
+- **v0.6.** The long-term fiscal model is transparent accounting on
+  stated assumptions, and needs v0.5's assumption register and
+  sensitivity.
+- **v0.7.** The product comes last.
+- **After v1.0.** Discovery and Hypothesis are exploratory capabilities
+  with a human gate. They extend a hardened system after v1.0. Discovery
+  still precedes Hypothesis, and nothing re-enters the simulator without
+  passing the promotion gate `Discovery → Hypothesis → evidence →
+  validation → human approval → model specification → tests →
+  Simulator`.
+
+The Stats NZ API connector and equivalents are pinned to v0.5 (moved from
+v0.2 by ADR-0014 and to v0.5 by ADR-0015, with the historical baseline that
+needs them) rather than left unpinned — this resolves the original
 doctrine's deliberate vagueness about "whichever later phase needs it", not
 a reversal of the underlying principle that automation follows real need.
 

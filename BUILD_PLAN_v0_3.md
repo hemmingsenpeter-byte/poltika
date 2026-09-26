@@ -1,8 +1,9 @@
 # Poltika v0.3 Build Plan: tax, benefits and the household graph
 
 **Date:** 26 September 2026
-**Status:** DRAFT. It depends on ADR-0015 (proposed) and on decision D2
-in `ROADMAP_REALIGNMENT.md`, which scopes the new policies from sources.
+**Status:** Approved 26 September 2026 with ADR-0015 (accepted). The
+policies themselves wait on decision D2 in `ROADMAP_REALIGNMENT.md`, made
+from Phase 0's sourced scoping.
 **Starts:** after v0.2 ships and W1's review queue is below its cap.
 Phase 0 can start as soon as ADR-0015 is accepted.
 

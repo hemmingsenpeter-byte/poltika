@@ -1,8 +1,9 @@
 # ADR-0015: Realign the roadmap to the v1.0 critical path
 
 **Date:** 26 September 2026
-**Status:** proposed. Drafted by Claude Code from its whole-roadmap review
-on 26 September 2026, for Pete's decision (`ROADMAP_REALIGNMENT.md` D1).
+**Status:** accepted. Pete accepted it on 26 September 2026, with the
+recommended decisions in `ROADMAP_REALIGNMENT.md`. Drafted by Claude Code
+from its whole-roadmap review.
 It amends ADR-0014 and, through it, ADR-0008's sequence.
 
 ## Context
@@ -88,13 +89,12 @@ promotion gate still governs anything they produce.
 
 ## Consequences
 
-- On acceptance:
-  - update `BUILD_PLAN.md`'s Roadmap Doctrine sequence and "why this
-    order" paragraph, and move its connector pin from v0.3 to v0.5;
-  - rewrite `ROADMAP.md`'s v0.3-v0.9 sections;
-  - `BUILD_PLAN_v0_3.md` becomes the v0.3 plan.
-
-  Until then all three stay as they are.
+- Done on acceptance:
+  - `BUILD_PLAN.md`'s Roadmap Doctrine sequence, "why this order" and
+    connector pin are updated;
+  - `ROADMAP.md`'s v0.3-v0.9 sections are rewritten into v0.3-v0.7, with
+    Discovery and Hypothesis kept under "Beyond v1.0";
+  - `BUILD_PLAN_v0_3.md` is the v0.3 plan.
 - Release numbering shortens. v1.0 is reached after v0.7, not v0.9, with
   the same v1.0 definition.
 - Two risks the roadmap didn't name become tracked work in

@@ -18,5 +18,10 @@ Poltika follows a source-first, review-driven workflow.
   delegation and the author's preflight when the other model is unavailable).
 - One bounded task per pull request, one commit per logical change.
 - Merge with a merge commit, and tag releases on the merge commit on `main`.
+- Review debt is capped (`ROADMAP_REALIGNMENT.md` W1.4, decided 26 September
+  2026). When five or more merged implementation PRs await independent
+  review (`review_packets/review_queue.md`), no further implementation PR
+  merges until the queue is below five. Plan, documentation and
+  review-fix PRs are exempt.
 - Branch protection is not enforced on this plan (ADR-0007), so this is
   kept by agreement (v0.1.5 decision D3).
