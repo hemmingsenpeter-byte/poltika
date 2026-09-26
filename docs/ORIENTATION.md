@@ -144,7 +144,7 @@ field; `docs/demo/v0_1/request.json` is a complete household request.
 | Sources, specification, parameters, cases, decisions | `policy_specs/<policy>/` |
 | Cross-policy cases and golden households | `policy_specs/wff_as_interaction/` |
 | Parameter loader; source catalogue model | `src/poltika/policy/loader.py`; `semantics/schemas/source_catalog.py` |
-| Calculators; shared outcome types; trace and steps | `engines/simulator/wff.py`, `accommodation_supplement.py`; `outcome.py`; `trace.py` |
+| Calculators; shared outcome types; trace and steps | `src/poltika/engines/simulator/wff.py`, `src/poltika/engines/simulator/accommodation_supplement.py`; `src/poltika/engines/simulator/outcome.py`; `src/poltika/engines/simulator/trace.py` |
 | Provenance, evidence and explanations | `engines/assurance/provenance.py`, `evidence.py`, `explanation.py` |
 | Combined runner; scenario records and store | `src/poltika/scenarios/combined.py`; `record.py`, `store.py` |
 | HTTP API and analyst page | `src/poltika/api/` |
