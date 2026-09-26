@@ -27,8 +27,6 @@ import json
 import os
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date
-from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -47,29 +45,13 @@ from sqlalchemy import (
 )
 
 from poltika.common.errors import ImmutableRecordError, StoredRunNotFoundError, StoreError
-from poltika.engines.simulator.accommodation_supplement import (
-    Area,
-    AsScenario,
-    AssessmentWeek,
-    ClaimantCategory,
-    PartnerType,
-    TenureType,
-)
-from poltika.engines.simulator.outcome import FactStatus
-from poltika.engines.simulator.wff import (
-    BestStartCohort,
-    ChildFacts,
-    PartnerStatus,
-    VerifiedIncome,
-    WffScenario,
-)
-from poltika.scenarios.combined import CombinedHouseholdScenario
 from poltika.scenarios.record import (
     CodeIdentity,
     ScenarioRecord,
     ScenarioRun,
     canonical_json,
     canonical_record,
+    record_from_plain,
     result_payload,
     run_scenario,
     scenario_id,
@@ -292,70 +274,3 @@ def _same_record(stored_json: str, new_json: str) -> bool:
 def _code(manifest: dict[str, Any]) -> CodeIdentity:
     c = manifest["code"]
     return CodeIdentity(c["package_version"], c["source_commit"], c["source_tree_clean"], c["dependency_lock_sha256"])
-
-
-def _opt_dec(v: Any) -> Decimal | None:
-    return None if v is None else Decimal(v)
-
-
-def record_from_plain(d: dict[str, Any]) -> ScenarioRecord:
-    """Rebuild a `ScenarioRecord` from its canonical JSON form."""
-    h = d["household"]
-    w, a = h["wff"], h["accommodation_supplement"]
-    income = w["family_scheme_income"]
-    wff = WffScenario(
-        household_eligibility=FactStatus(w["household_eligibility"]),
-        extra_instalment_status=FactStatus(w["extra_instalment_status"]),
-        children=[
-            ChildFacts(
-                qualifies_whole_year=FactStatus(c["qualifies_whole_year"]),
-                best_start_cohort=BestStartCohort(c["best_start_cohort"]),
-                best_start_no_disqualifying_payment=FactStatus(c["best_start_no_disqualifying_payment"]),
-            )
-            for c in w["children"]
-        ],
-        partner_status=PartnerStatus(w["partner_status"]),
-        family_scheme_income=None
-        if income is None
-        else VerifiedIncome(Decimal(income["claimant_amount"]), _opt_dec(income["partner_amount"])),
-        net_family_scheme_income=_opt_dec(w["net_family_scheme_income"]),
-        net_family_scheme_income_me3_attested=w["net_family_scheme_income_me3_attested"],
-        in_work_eligibility=FactStatus(w["in_work_eligibility"]),
-        ftc_iwtc_protected_or_direct_abatement=FactStatus(w["ftc_iwtc_protected_or_direct_abatement"]),
-        mc6a_veterans_payment=FactStatus(w["mc6a_veterans_payment"]),
-        mc6b_disqualifying_payment=FactStatus(w["mc6b_disqualifying_payment"]),
-        minimum_family_full_time_earner_weeks=FactStatus(w["minimum_family_full_time_earner_weeks"]),
-        best_start_no_shared_care=FactStatus(w["best_start_no_shared_care"]),
-        best_start_protected_credit=FactStatus(w["best_start_protected_credit"]),
-    )
-
-    def opt(enum: Any, v: Any) -> Any:
-        return None if v is None else enum(v)
-
-    as_ = AsScenario(
-        household_eligibility=FactStatus(a["household_eligibility"]),
-        claimant_category=opt(ClaimantCategory, a["claimant_category"]),
-        tenure_type=opt(TenureType, a["tenure_type"]),
-        partner_status=opt(PartnerType, a["partner_status"]),
-        statistical_area_unit=opt(Area, a["statistical_area_unit"]),
-        weekly_accommodation_costs=_opt_dec(a["weekly_accommodation_costs"]),
-        dependent_children_count=a["dependent_children_count"],
-        cash_assets=_opt_dec(a["cash_assets"]),
-        exempt_cash_asset_status=FactStatus(a["exempt_cash_asset_status"]),
-        weekly_income=_opt_dec(a["weekly_income"]),
-        ordinary_rate_status=FactStatus(a["ordinary_rate_status"]),
-        eldest_dependent_child_under_16=FactStatus(a["eldest_dependent_child_under_16"]),
-    )
-    week = d["assessment_week"]
-    return ScenarioRecord(
-        household=CombinedHouseholdScenario(
-            wff=wff,
-            accommodation_supplement=as_,
-            as_claimant_is_wff_claimant_or_partner=FactStatus(h["as_claimant_is_wff_claimant_or_partner"]),
-        ),
-        wff_lookup_date=date.fromisoformat(d["wff_lookup_date"]),
-        as_lookup_date=date.fromisoformat(d["as_lookup_date"]),
-        assessment_week=AssessmentWeek(date.fromisoformat(week["start"]), date.fromisoformat(week["end"])),
-        requested_wff_policy_version=d["requested_wff_policy_version"],
-        requested_as_policy_version=d["requested_as_policy_version"],
-    )

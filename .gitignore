@@ -19,10 +19,10 @@ build/
 .env.*
 !.env.example
 
-# Data (raw/processed datasets are large and/or provenance-tracked, not diffed as code)
-data/raw/
+# Data. Raw snapshots under data/raw/ ARE committed: they are the
+# immutable, checksummed provenance record every run depends on (v0.2 Phase
+# 1, data/README.md). Processed output is regenerated deterministically.
 data/processed/
-!data/raw/.gitkeep
 !data/processed/.gitkeep
 
 # Editors / OS

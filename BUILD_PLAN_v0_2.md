@@ -240,6 +240,14 @@ All Claude Code. Every figure carries its coverage (R4).
 - **10.3 — Claude Code.** CHANGELOG, `docs/releases/` limitations and
   methodology, and a v0.2 release-gate test. Pete tags `v0.2.0`.
 
+## Progress
+
+| Task | State |
+| --- | --- |
+| Phase 1 (1.1-1.7) | Done. `src/poltika/data/`, `data/`, `semantics/variables.py`, the `data-snapshot-guard` workflow and `tests/unit/data/`. Raw snapshots are committed rather than gitignored, so the registry can verify them. No real dataset yet: the dictionary is empty until 3.1 names the publications. |
+| 2.1-2.2 | Done. `semantics/population.py` and `scenarios/population.py`. One family per household (the family is the household's facts). Facts use the stored scenario-record form, so the adapter is `record_from_plain`, moved from `store.py` to `record.py`. |
+| 2.3 | Open (GPT/Codex review of the adapter's mapping). |
+
 ## Sequence
 
 | Sprint | Work |
