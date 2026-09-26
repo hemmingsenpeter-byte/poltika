@@ -21,7 +21,7 @@ poltika/
 ├── BUILD_PLAN.md
 ├── BUILD_PLAN_v0_1_5.md  — v0.1.5 evidence and explainability tasks and release gate (approved 25 September 2026)
 ├── BUILD_PLAN_v0_1_6.md  — v0.1.6 tasks: the 2027-28 year and source currency (approved 26 September 2026)
-├── BUILD_PLAN_v0_2.md    — v0.2 tasks: the authoritative data foundation (approved 26 September 2026)
+├── BUILD_PLAN_v0_2.md    — v0.2 tasks: static population microsimulation (draft; ADR-0014 proposed)
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
 ├── ROADMAP.md

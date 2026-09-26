@@ -1,213 +1,309 @@
-# Poltika v0.2 Build Plan: authoritative data foundation
+# Poltika v0.2 Build Plan: static population microsimulation
 
 **Date:** 26 September 2026
-**Status:** Approved 26 September 2026, with the recommended decisions below
-(D1's date is fixed at Task 5.1).
-**Starts:** Sprint 1 needs no external data and touches no v0.1 file, so it
-can start now. The later sprints follow once v0.1.5 ships. It runs alongside
-v0.1.6 (`BUILD_PLAN_v0_1_6.md`), which touches different files.
+**Status:** DRAFT for Pete's approval. It depends on ADR-0014 (proposed),
+which moves static microsimulation into v0.2 ahead of the roadmap's
+original order.
+**Starts:** Phase 1 needs no external data and touches no v0.1 file, so it
+can start now. Everything else follows once v0.1.5 ships. It runs alongside
+v0.1.6 (`BUILD_PLAN_v0_1_6.md`).
 
-`BUILD_PLAN.md`'s doctrines apply unchanged. The ones that matter most here:
+## What changes
 
-- **Data Acquisition Doctrine:** authoritative source → acquisition →
-  immutable raw snapshot → transformation and validation → canonical
-  variable → simulator → Assurance. Only the datasets a slice needs.
-- **Dependency boundary** (`REPOSITORY_STRUCTURE.md`): nothing outside
-  `src/poltika/data/` reads a raw or processed file. Everything downstream
-  reads canonical variables.
-- **Ground truth:** every value comes from a cited publication. If a
-  manifest field can't be verified from the source, stop and flag it
-  (`.claude/skills/provenance/SKILL.md`).
+| Release | Question |
+| --- | --- |
+| v0.1 | Can Poltika correctly calculate this household? |
+| v0.1.5 | Can Poltika prove and explain why? |
+| **v0.2** | **What happens across a modelled population if Working for Families or Accommodation Supplement settings change?** |
 
-## What v0.2 delivers
+v0.2 runs the existing v0.1 engine across a weighted population. It runs
+it twice, under current law and a reform, and aggregates the differences
+into fiscal, distributional and household-type results. Every result has
+the same evidence and reproducibility record a single household has.
 
-`ROADMAP.md`'s exit gate:
+**The rule that governs the whole release:** there is no second policy
+engine. The v0.1 engines stay the only place statutory rules are
+calculated. A microsimulation is many calls to them.
 
-> For a historical date, Poltika reconstructs the major fiscal and economic
-> baseline from authoritative NZ data and traces every material input.
+`BUILD_PLAN.md`'s doctrines apply unchanged:
 
-The roadmap lists the full scope: connectors, scheduled refreshes, a wide
-range of series. This plan builds it as one thin vertical slice first:
+- primary sources only;
+- the three test classes;
+- protected values changed only through the test doctrine;
+- ambiguity escalated rather than resolved;
+- the Data Acquisition Doctrine and the dependency boundary;
+- external implementations never a source of policy logic
+  (`doctrine/ip-doctrine.md`).
 
-1. a few datasets, acquired manually;
-2. carried through every layer;
-3. reconstructing one historical baseline.
+## Review of the proposed v0.2 specification
 
-Connectors and broader coverage follow once that slice passes. That is the
-same approach v0.1 took with two policies.
+The v0.2 specification Pete pasted on 26 September 2026 (Modules A-Z, the
+20 questions and the exit test) is the basis of this plan. Checking it
+against the repository changes these points.
 
-**Not in v0.2:**
+| # | Finding | Effect on this plan |
+| --- | --- | --- |
+| R1 | **It reorders the roadmap.** ADR-0008 put data in v0.2, the interaction graph in v0.3 and the scenario engine in v0.4, arguing that scenario comparison needs a dependency graph first. For WFF and the Accommodation Supplement that argument doesn't hold: their interaction is fixed by rule (R2), and the existing combined runner already handles it. | ADR-0014 (proposed) moves static microsimulation into v0.2. The historical macro baseline (GDP, debt, operating balance) moves to v0.3, beside the graph. The proposal's reordering of later releases (behaviour at v0.4, graph at v0.6) is **not** adopted. It needs its own decision. |
+| R2 | **No WFF-to-AS interaction exists in the modelled law.** AS-10 and DEC-003 exclude WFF tax credits from AS chargeable income, and IRD excludes Accommodation Supplement from WFF family income. The proposal's "AS interaction: -$110m" can't arise. | Module Q becomes an invariant test: a WFF-only reform leaves every household's Accommodation Supplement unchanged. The output states that there is no modelled interaction and cites the rule. |
+| R3 | **Income tax and main benefits aren't modelled**, so there is no disposable income. | **No poverty or income-adequacy measures in v0.2 (Module O is dropped).** They need full disposable income and the official measures' own definitions. Module P is reported only as *WFF and AS withdrawal rates*, never as effective marginal tax rates. |
+| R4 | **The 2026-27 in-work tax credit is `needs_review`** (the Task 10.2 rate-status contract), so a total WFF figure can't be calculated for 2026-27. Abatement falls on family tax credit first, then the in-work tax credit (WFF-03, MD 2). | Every population result reports its weighted coverage: calculated, `needs_review` and `unsupported`. `needs_review` is never counted as zero. The exit test reports the in-work tax credit's coverage honestly, and becomes complete once v0.1.6 adds 2027-28. |
+| R5 | **Real survey unit records are restricted-access.** They can't be committed or run in CI. | v0.2 is built and tested on a **synthetic development population** calibrated to published aggregate tables, and every output is labelled as not an estimate for New Zealand. A real-microdata adapter is D2. |
+| R6 | **Entitlement is not expenditure.** WFF and the Accommodation Supplement are paid only to people who claim. | The fiscal output is a *static entitlement cost at full take-up*, unless a sourced take-up assumption is registered. It is never labelled as spending. |
+| R7 | **Reform values are assumptions, not law.** | Overrides are never written to `policy.yaml` and never marked `approved`. A run records its statutory baseline (hash-bound, as today) separately from its overrides, and every reform output says which values were assumed. |
+| R8 | **Speed.** A combined household run takes about 200 ms today, mostly reloading the policy files. | The batch runner loads each policy once. Profile before adding Parquet, Polars or DuckDB (D6). |
+| R9 | **The proposal's example figures** ($3.21b, $260m, 412,000 households) are illustrative. | None of them enters a test or a document as a fact. Population tests use tiny hand-calculated populations, invariants and published benchmarks. |
+| R10 | **Attribution.** Splitting a cost by component or by group is exact: the parts add up. Splitting it across several parameters changed at once depends on the order they are applied. | v0.2 explains cost by component and by group. Attribution across parameters is only for single-parameter scenarios, until an order rule is decided. |
+| R11 | **Treasury's TAWA** is a useful methodology benchmark. | Read it under `.claude/skills/clean-room-research/`, for concepts only. It is never a source of rules, values or code. |
+| R12 | **Existing pieces cover part of the proposal.** The Task 32 scenario store and run records, `result_id`, the provenance report, the explanations and the analyst page are all reusable. | Extend them rather than build a parallel stack (Modules U, Y, Z). |
 
-- a third policy;
-- the policy interaction graph (v0.3);
-- scenario costing (v0.4);
-- Monte Carlo or sensitivity analysis (v0.5, per ADR-0008's sequence);
-- Stats NZ microdata or IDI access.
+## Not in v0.2
 
-## Tasks
+- Poverty or income-adequacy measures (R3).
+- Income tax, main benefits, or any policy beyond WFF and the
+  Accommodation Supplement.
+- Behavioural responses, labour supply, or take-up modelling beyond a
+  registered assumption.
+- Macroeconomic, GDP, inflation or debt modelling, including the
+  historical fiscal baseline (moved to v0.3).
+- Monte Carlo, distributions or uncertainty ranges (v0.5). Deterministic
+  sweeps are in scope.
+- Calibration or raking of weights.
+- The full policy interaction graph.
+- LLM policy generation, Discovery, Hypothesis, agents or optimisation.
+
+## Phases
 
 Owners follow the v0.1 roles: GPT/Codex for sources and interpretation,
 Claude Code for implementation, and the other model reviews.
 
-### 1. The data layer
+### Phase 1: data layer (Claude Code)
 
-- **1.1 — Claude Code. Create the `data/` tree and `src/poltika/data/`**,
-  exactly as `REPOSITORY_STRUCTURE.md`'s target architecture places them:
-  - `data/raw/<organisation>/` holds immutable snapshots;
-  - `data/processed/` holds machine-generated output;
-  - `data/metadata/datasets/` and `data/metadata/variables/` hold the
-    manifests and the dictionary.
+The population and its calibration tables are datasets, so they need the
+data layer first.
 
-  Move each directory's "target" entry to "instantiated" in the same PR.
-- **1.2 — Claude Code. Manifest schema.** A Pydantic model for the eleven
-  provenance fields in the provenance skill, plus a SHA-256 of the raw
-  file. Validation fails on any missing field.
-- **1.3 — Claude Code. Immutability guard.** A CI check fails if a
-  committed raw snapshot or its checksum changes. A correction is a new
-  snapshot version, never an edit. This extends the protected-path guard
-  pattern.
-- **1.4 — Claude Code. Dataset registry.** Lists every snapshot and its
-  manifest, and resolves "dataset X as at vintage V".
+- **1.1** Create the `data/` tree and `src/poltika/data/` as
+  `REPOSITORY_STRUCTURE.md` places them.
+- **1.2** A manifest schema covering the eleven provenance fields, plus a
+  SHA-256, vintage and transformation id.
+- **1.3** An immutability guard: CI fails if a committed snapshot or
+  manifest is edited or deleted.
+- **1.4** A dataset registry, resolving "dataset X at vintage V".
+- **1.5** A canonical variable dictionary and versioned transformation
+  registry.
+- **1.6** A read interface (`CanonicalContext`), so downstream code never
+  sees a file.
+- **1.7** An import-boundary test: nothing outside `poltika.data` imports
+  it or reads `data/`.
 
-### 2. Canonical variables
+### Phase 2: population schema (Module A)
 
-- **2.1 — Claude Code, reviewed by GPT/Codex. Data dictionary.** Each
-  canonical variable in `src/poltika/semantics/` has:
-  - an id, meaning and unit;
-  - a frequency;
-  - nominal or real, and the price base if real;
-  - stock or flow;
-  - a geography or population;
-  - its valid period.
-- **2.2 — Claude Code. Transformation registry.** Every raw → processed →
-  canonical step is a named, versioned, pure function. The output records
-  which transformation version produced it.
-- **2.3 — Claude Code. Read interface.** Downstream code gets values by
-  canonical id, date and vintage (`context.get("prices.cpi.all_groups",
-  ...)`). It never sees a file, column or source format.
+- **2.1 — Claude Code.** Canonical `PersonRecord`, `FamilyRecord` and
+  `HouseholdRecord`, plus `PopulationDataset` (records, weights, version,
+  manifest). Every fact the v0.1 engines need is a field. An unknown fact
+  is recorded as unknown, never as zero.
+- **2.2 — Claude Code.** Adapters from a household record to the existing
+  `ScenarioRecord` / WFF / AS inputs. A population record runs through
+  exactly the path a single household does.
+- **2.3 — GPT/Codex review.** Check the mapping against both
+  specifications' input definitions: family, partner, dependent child,
+  family scheme income, chargeable income and housing costs.
 
-### 3. First datasets, acquired manually
+### Phase 3: synthetic development population (Module B)
 
-Each dataset has a named consumer in Task 5 or Task 6, or it isn't
-acquired.
+- **3.1 — GPT/Codex.** Identify the published aggregate tables to
+  calibrate against:
+  - household and family composition, number and ages of children;
+  - income distribution;
+  - tenure and housing costs;
+  - Accommodation Supplement areas;
+  - total household counts.
 
-- **3.1 — GPT/Codex. Identify the exact publications** for:
+  Record each table's publication, table and vintage.
+- **3.2 — Pete or GPT/Codex.** Acquire them as manifest-tracked snapshots
+  (Phase 1).
+- **3.3 — Claude Code.** A seeded, deterministic generator. The same seed
+  and snapshots give a byte-identical population. The population is itself
+  a versioned dataset, with a report of how it matches each calibration
+  table.
+- **3.4 — Claude Code.** Labelling. Every output from a synthetic
+  population carries "synthetic development population, not an estimate
+  for New Zealand", from the API through to the analyst page.
 
-  | Area | Series |
-  | --- | --- |
-  | Prices | CPI, all groups |
-  | People | Estimated resident population |
-  | Economy | Nominal GDP |
-  | Crown finances | Core Crown revenue, expenses, operating balance, net debt and finance costs |
-  | Households | Household income distribution by type |
+### Phase 4: population validation (Module C)
 
-  The likely publishers are Stats NZ and the Treasury's Financial
-  Statements of the Government and fiscal time series. Record the
-  publication, table, vintage and any known revision practice for each.
-- **3.2 — Pete or GPT/Codex. Acquire the snapshots**
-  (`retrieval_method: manual_download`) and write their manifests. Claude
-  Code does not download source data unless network access is granted (D3),
-  and then only as a reviewed step.
-- **3.3 — Claude Code. Transformations and mappings** from each snapshot to
-  its canonical variables.
+- **4.1 — Claude Code.** Record checks: impossible ages, negative amounts,
+  duplicate ids, orphan children, invalid structures, unknown AS areas,
+  missing or non-positive weights. Each record is `valid`, `warning`,
+  `needs_review` or `invalid`.
+- **4.2 — Claude Code.** A coverage report: weighted and unweighted shares
+  with enough facts for each WFF and AS component. For example, "x% of
+  weighted households can be calculated for family tax credit".
 
-### 4. Validation
+### Phase 5: weighting (Module D)
 
-- **4.1 — Claude Code. Checks run on every snapshot:**
-  - schema and types;
-  - units against the dictionary;
-  - missing and duplicate records;
-  - declared ranges;
-  - period continuity;
-  - checksums.
-- **4.2 — Claude Code. Revision handling.** Two vintages of the same series
-  can coexist. The registry reports which observations changed between
-  them.
-- **4.3 — Claude Code. Ingestion tests in CI.** Each snapshot → canonical
-  path is a regression test with frozen expected values. Those values are
-  taken from the publication, not from the code.
+- **5.1 — Claude Code.** Weighted totals, counts, means and quantiles,
+  each defined once. The weighted-quantile definition is stated and tested.
+  Unit tests use populations whose answers are known by hand.
 
-### 5. Historical baseline
+### Phase 6: scenarios (Modules E, F)
 
-- **5.1 — GPT/Codex, with Pete deciding. Choose the reference date (D1)**
-  and define the baseline:
-  - revenue, expenses and operating balance;
-  - net debt and finance costs;
-  - nominal GDP and debt to GDP;
-  - real and per-person views, using CPI and population.
-- **5.2 — Claude Code. Baseline reconstruction.** A deterministic module
-  produces the baseline for the chosen date. Each figure carries its full
-  chain:
+- **6.1 — Claude Code.** A reform schema: baseline (law as at a date),
+  plus overrides by parameter id with the operations `set`, `add` and
+  `multiply`. It extends the Task 32 scenario store.
+- **6.2 — Claude Code.** Validation before running:
+  - the parameter exists;
+  - the value type and unit match the schema;
+  - money is not negative and rates are in [0, 1];
+  - no parameter is overridden twice;
+  - the date is inside the reference period.
 
-  `value → transformation → dataset → source → publication → vintage → retrieval date`
-- **5.3 — GPT/Codex. Benchmark cases.** Hand-check the reconstructed
-  figures against the published totals: the Financial Statements and
-  Treasury's fiscal tables. Every difference is explained by a named
-  transformation, or it is a finding under the Review Doctrine.
-- **5.4 — Claude Code. Explanations.** The baseline gets the same kind of
-  deterministic plain-language explanation as v0.1.5 results, tested
-  against the figures.
+  A request for an unmodelled policy is `unsupported`, never approximated.
+  Whether a valid value is *sensible policy* is not Poltika's call.
+- **6.3 — Claude Code.** Scenario provenance (R7). The baseline's hashes,
+  the overrides and the reform parameter hash are recorded, and reform
+  values are marked `scenario_assumption`.
 
-### 6. Bridge to v0.1 (small)
+### Phase 7: microsimulation runner (Modules G-I, U, X)
 
-- **6.1 — Claude Code. Real household types.** Run the existing WFF and
-  Accommodation Supplement calculations for household types taken from the
-  income-distribution data. The output is per-household results with the
-  data's provenance attached, not a population costing (v0.4). The v0.1
-  results stay byte-identical.
+- **7.1 — Claude Code.** A batch runner. It loads each policy once and runs
+  every household under the baseline and under the reform, through the v0.1
+  engines. It is deterministic and order-independent, with a run id.
+- **7.2 — Claude Code.** Per-household deltas by component. A household is
+  `needs_review` if either run is.
+- **7.3 — Claude Code.** A run record, extending Task 32. It holds:
+  - the code identity and lock hash;
+  - the policy hashes;
+  - the population version;
+  - the scenario;
+  - a results hash.
 
-### 7. Connectors (after the manual slice passes)
+  Rerunning it reproduces the hash.
+- **7.4 — Claude Code.** Profile the full synthetic population. Optimise
+  only what the profile shows (D6).
 
-- **7.1 — Claude Code. Stats NZ and Treasury connectors** as a second
-  `retrieval_method`. They write the same raw snapshot and manifest as the
-  manual path, so nothing downstream changes. A connector run that changes
-  a snapshot creates a new vintage and never overwrites one.
-- **7.2 — Claude Code. Scheduled refresh** that proposes new vintages as a
-  PR for review and never merges them itself.
-- The manual path stays, for sources without APIs.
+### Phase 8: analytics (Modules J-N, P, R)
 
-### 8. Release
+- **8.1** Winners and losers: gain, loss, no change, `needs_review`. Report
+  weighted counts, means, medians and extremes.
+- **8.2** Income deciles, on the basis chosen in D3.
+- **8.3** Household types: sole parent, couple with children, number of
+  children, renter or owner, working or not.
+- **8.4** Geography: Accommodation Supplement areas, and regions where the
+  population carries them. Tables only.
+- **8.5** Static entitlement cost (R6): baseline, reform and delta by
+  component, which add up exactly to the total.
+- **8.6** WFF and AS withdrawal rates for chosen households along an income
+  path. This shows cliffs and high-withdrawal zones (R3 wording).
+- **8.7** Deterministic sweeps: one parameter over a list of values, one
+  run each.
 
-- **8.1 — Claude Code.** Write the CHANGELOG and `docs/releases/`
-  limitations, and add a v0.2 release-gate test that maps each exit-gate
-  item to a test. Pete tags `v0.2.0`.
+All Claude Code. Every figure carries its coverage (R4).
+
+### Phase 9: explanation and assurance (Modules S, T, V, W)
+
+- **9.1 — Claude Code. Population explanations.** Deterministic, tested
+  against the figures like v0.1.5's. They cover:
+  - the cost by component and group (R10);
+  - the size and make-up of the affected population;
+  - the rule and source behind each driver;
+  - what was assumed.
+- **9.2 — Claude Code, reviewed by GPT/Codex. Invariant tests:**
+  - an identity reform changes nothing;
+  - a WFF-only reform leaves Accommodation Supplement unchanged (R2);
+  - a higher family tax credit rate never lowers any household's family
+    tax credit;
+  - ineligible households are unaffected;
+  - doubling every weight doubles every total.
+- **9.3 — GPT/Codex. Hand-calculated population cases.** Small
+  populations with independently calculated totals, deciles and winner
+  counts.
+- **9.4 — GPT/Codex, Claude Code. Cross-validation report.** Compare
+  modelled recipients and entitlement with published programme figures.
+  Every difference is explained: synthetic population, take-up, scope.
+  None is tuned away.
+
+### Phase 10: interface (Modules Y, Z)
+
+- **10.1 — Claude Code.** API routes under the existing scenarios API:
+  - create a scenario;
+  - run a simulation;
+  - fetch its fiscal, distribution, household and explanation results.
+- **10.2 — Claude Code.** Analyst page tabs, extending v0.1.5's page:
+  - Overview
+  - Distribution
+  - Households
+  - Areas
+  - Fiscal
+  - Evidence
+  - Methodology
+
+  The synthetic label shows on every tab.
+- **10.3 — Claude Code.** CHANGELOG, `docs/releases/` limitations and
+  methodology, and a v0.2 release-gate test. Pete tags `v0.2.0`.
 
 ## Sequence
 
 | Sprint | Work |
 | --- | --- |
-| 1 | 1.1-1.4, 2.1-2.3, 3.1 |
-| 2 | 3.2-3.3, 4.1-4.3 |
-| 3 | 5.1-5.4, 6.1 |
-| 4 | 7.1-7.2, 8.1 |
-
-Sprint 1 needs no external data. The manual slice (sprints 1-3) passes the
-exit gate on its own. Sprint 4 only changes how the snapshots arrive.
+| 1 | Phase 1, 2.1-2.2, 3.1 |
+| 2 | 2.3, 3.2-3.4, Phase 4, Phase 5 |
+| 3 | Phase 6, Phase 7 |
+| 4 | Phase 8, 9.1-9.2 |
+| 5 | 9.3-9.4, Phase 10 |
 
 ## Exit gate
 
-- For the chosen reference date, the baseline figures in 5.1 are produced
-  deterministically. Each one reconciles to its published total, or its
-  difference is explained.
-- Every material input traces from value to retrieval date. A test fails
-  if any link is missing.
-- Every raw snapshot has a complete, validated manifest and a fixed
-  checksum. None has been edited since it was committed.
-- No code outside `src/poltika/data/` reads a raw or processed file. An
-  import-boundary test enforces this.
+In one reproducible run on the synthetic development population, with no
+code edited, Poltika takes this scenario:
+
+> raise the family tax credit abatement threshold from the 2026-27 value
+> in `policy.yaml` to $50,000.
+
+It produces:
+
+- affected households, winners and losers;
+- impact by income decile, household type and Accommodation Supplement
+  area;
+- the static entitlement cost by component;
+- the Accommodation Supplement interaction (none, with the rule that makes
+  it none);
+- weighted coverage, including the `needs_review` share (R4);
+- an explanation of the main drivers, with the governing rules and
+  sources;
+- the population's methodology and synthetic label;
+- a reproducibility record whose rerun gives the same results hash.
+
+Also:
+
+- The invariant, hand-calculated and cross-validation checks in Phase 9
+  pass or are explained.
 - The v0.1 and v0.1.5 results and release-gate tests are unchanged.
+
+Of the proposal's 20 questions:
+
+- **Answered, for the synthetic population:** 1-13 and 15-20.
+- **Answered as WFF and AS withdrawal rates only:** 14 (R3).
+
+Real New Zealand estimates wait for D2.
 
 ## Open decisions for Pete
 
-- **D1: Which reference date?** Recommended: the latest year-end with
-  audited Financial Statements of the Government, so the benchmarks are
-  final published numbers.
-- **D2: Scope.** Recommended: data only, with no third policy, as above.
-- **D3: Network access.** Allow `www.stats.govt.nz`, `api.stats.govt.nz`
-  and `www.treasury.govt.nz` in this environment's network settings for
-  Task 7. Until then, snapshots are acquired outside it.
-- **D4: Scope Doctrine wording.** `BUILD_PLAN.md`'s Scope Doctrine still
-  says sensitivity analysis is "deferred to v0.2". ADR-0008's sequence puts
-  it in v0.5. Recommended: follow ADR-0008 and leave the frozen doctrine
-  text unchanged. This plan records that it is superseded, rather than
-  editing the doctrine.
+- **D1: Adopt ADR-0014?** It moves static microsimulation into v0.2 and
+  the historical macro baseline into v0.3. Nothing later changes.
+  Recommended.
+- **D2: Microdata.** Synthetic only in v0.2 (recommended), or start a
+  Stats NZ access process for real survey microdata now. That needs an
+  approved project and can't be committed to this repository.
+- **D3: Decile basis.** Which income ranks households? Recommended: gross
+  household income from the population record, stated on every output.
+  Equivalisation waits for a sourced scale.
+- **D4: Tax year.** Build on 2026-27, with in-work tax credit coverage
+  gaps reported, then add 2027-28 when v0.1.6 lands. Recommended.
+- **D5: Network access** for Stats NZ and Treasury hosts, so calibration
+  tables can be fetched here. Until then they're acquired outside.
+- **D6: New dependencies** (Parquet, Polars, DuckDB) only if the Phase 7
+  profile needs them. Recommended.
+- **D7: Scope Doctrine wording.** `BUILD_PLAN.md` says sensitivity
+  analysis is "deferred to v0.2". This plan does deterministic sweeps only.
+  Ranges and distributions stay in v0.5. Record that here rather than
+  editing the frozen text. Recommended.

@@ -3,8 +3,8 @@
 This is a release-level direction, not an implementation backlog. Each release
 has a technical purpose and an exit gate. Detailed tasks belong in the active
 release's build plan; `BUILD_PLAN.md` remains the frozen authority for v0.1,
-`BUILD_PLAN_v0_1_5.md` holds v0.1.5's, and `BUILD_PLAN_v0_1_6.md` and
-`BUILD_PLAN_v0_2.md` hold the next two (approved 26 September 2026).
+`BUILD_PLAN_v0_1_5.md` holds v0.1.5's, and `BUILD_PLAN_v0_1_6.md` holds v0.1.6's
+(approved 26 September 2026), and `BUILD_PLAN_v0_2.md` is the draft for v0.2.
 
 ## Planning status
 
@@ -72,8 +72,11 @@ Every material input retains its chain:
 
 `value -> transformation -> dataset -> source -> publication -> vintage -> retrieval date`
 
-`BUILD_PLAN_v0_2.md` holds the tasks: a thin manually acquired slice
-first, then connectors.
+**Proposed change (ADR-0014, not yet accepted):** `BUILD_PLAN_v0_2.md`
+makes v0.2 static population microsimulation for WFF and the Accommodation
+Supplement, on a data layer and a synthetic population. The historical
+baseline below would move to v0.3. This section stays as it is until Pete
+decides.
 
 **Exit gate:** For a historical date, Poltika reconstructs the major fiscal
 and economic baseline from authoritative NZ data and traces every material
