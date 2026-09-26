@@ -44,7 +44,7 @@ poltika/
 ├── reviews/           — review and discrepancy records
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
-├── docs/releases/     — per-release limitations and measured baselines (v0.1.5 Tasks 0.3-0.4)
+├── docs/releases/     — per-release limitations, measured baselines and the v0.1.5 gate map
 ├── docs/pilot/        — v0.1.5 pilot guide (and, after the pilot, its findings)
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question

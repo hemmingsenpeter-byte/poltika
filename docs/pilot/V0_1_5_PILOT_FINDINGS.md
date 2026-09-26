@@ -73,8 +73,8 @@ v0.1.5 does not ship with an open P0 or P1.
 
 ## Pilot user
 
-- Name and background (public policy, tax/welfare modelling, government
-  analysis):
+- Pilot user:
+- Background (public policy, tax/welfare modelling, government analysis):
 - Date:
 - Facilitator:
 - Could the user answer questions 1-5 unaided? For which cases?
