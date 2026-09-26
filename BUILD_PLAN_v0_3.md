@@ -1,9 +1,11 @@
 # Poltika v0.3 Build Plan: tax, benefits and the household graph
 
 **Date:** 26 September 2026
-**Status:** Approved 26 September 2026 with ADR-0015 (accepted). The
-policies themselves wait on decision D2 in `ROADMAP_REALIGNMENT.md`, made
-from Phase 0's sourced scoping.
+**Status:** Approved 26 September 2026 with ADR-0015 (accepted). Scope
+is Tier 1 of the policy kernel coverage map (`ROADMAP_REALIGNMENT.md` W10,
+decided 26 September 2026): personal income tax, Jobseeker Support, Sole
+Parent Support and Supported Living Payment. Phase 0 sets each one's
+supported slice from sources.
 **Starts:** after v0.2 ships and W1's review queue is below its cap.
 Phase 0 can start as soon as ADR-0015 is accepted.
 
@@ -17,12 +19,27 @@ them.
 ## What v0.3 delivers
 
 v0.2 runs two policies that don't feed each other (AS-10, WFF DEC-003).
-v0.3 adds the policies almost every later capability needs, and the
-machinery for policies that do feed each other:
+v0.3 starts the **deterministic policy kernel**: one engine that turns a
+household's state into its fiscal position under a policy configuration,
 
-1. **Income tax** on the income types the v0.2 household types have.
-2. **The main benefits** needed for disposable income, scoped in Phase 0
-   (D2).
+`household state → policy dependency graph → household fiscal position`
+
+rather than a set of separate calculators. A scenario then compares the
+same households under two configurations, which gives the change in
+disposable income, and with weights the change in Crown cost
+(`ROADMAP_REALIGNMENT.md` W10).
+
+The target calculation shape is roughly:
+
+`gross earnings → income tax → main benefits → WFF → AS → (Tier 2: childcare and supplementary assistance) → disposable income`
+
+The actual order is whatever the source-derived edges (Phase 0.3) make
+it. That shape is the aim, not an assumed rule. v0.3 delivers:
+
+1. **Personal income tax** on the income types the v0.2 household types
+   have.
+2. **The three core main benefits**: Jobseeker Support, Sole Parent
+   Support and Supported Living Payment (Tier 1).
 3. **One household model** that every policy reads, replacing per-policy
    input types.
 4. **A household-level dependency graph** whose edges come only from the
@@ -42,7 +59,10 @@ machinery for policies that do feed each other:
 - the historical fiscal baseline (v0.5, per ADR-0015);
 - GST, company tax or other revenue (the v0.6 long-term model);
 - behavioural responses;
-- any policy beyond Phase 0's scope.
+- the Tier 2 and Tier 3 domains of the coverage map (Temporary
+  Additional Support, Disability Allowance, childcare subsidies, NZ
+  Super, Paid Parental Leave, student support and the rest). Tier 2 ships
+  as v0.3.x coverage releases alongside v0.4.
 
 ## Phases
 
@@ -53,10 +73,13 @@ machinery for policies that do feed each other:
   withholding or annual-assessment basis, and what is out of scope,
   each with primary sources. Record a v0.1-style source pack in
   `policy_specs/income_tax/sources.yaml`.
-- **0.2 — GPT/Codex. Source-scope the main benefits.** Which benefits are
-  needed to compute disposable income for v0.2's household types, and for
-  each its eligibility gates, rates and abatement. Rank them by coverage,
-  so v0.3 can ship with the first and add the rest.
+- **0.2 — GPT/Codex. Source-scope the three core main benefits**
+  (Jobseeker Support, Sole Parent Support, Supported Living Payment). For
+  each, record its eligibility gates, rate categories, partner and family
+  treatment, and income abatement, with a v0.1-style source pack. Set the
+  implementation order (proposed: Jobseeker Support, Sole Parent Support,
+  Supported Living Payment), unless the sources show a dependency that
+  changes it.
 - **0.3 — GPT/Codex, Pete deciding. Record every interaction the
   specifications state:**
   - what counts as income for each income test;
@@ -64,9 +87,20 @@ machinery for policies that do feed each other:
   - what each policy excludes.
 
   Each gets a decision record where the law is ambiguous. These become
-  the graph's edges (Phase 4). The existing ones (AS-10, WFF DEC-003) are
-  restated in the same form.
-- **0.4 — Pete. Decide the scope (D2)**, and the disposable-income
+  the graph's edges (Phase 4). Restate in the same form the ones the
+  specifications already record:
+  - WFF-08: a main benefit with family tax credit and Best Start, but
+    normally not the in-work or minimum family tax credits;
+  - the WFF "Earner and benefits" row;
+  - WFF MB 1-2's allocation of main-benefit income into family scheme
+    income;
+  - AS's claimant-category thresholds by benefit ("Claimant rate class");
+  - AS-10 and WFF DEC-003.
+
+  Then add each new one from sources, including which government
+  payments enter which income test, and whether and how each main benefit
+  is taxed.
+- **0.4 — Pete. Confirm each domain's supported slice (D1)**, and the disposable-income
   definition used for measures. It must be a sourced definition (for
   example an official statistical one), recorded as a decision, not
   assumed.
@@ -108,10 +142,13 @@ Follow the W2.2 onboarding skill, one vertical slice:
 - review;
 - release-gate rows.
 
-### Phase 3: main benefits (v0.1 method)
+### Phase 3: the three core main benefits (v0.1 method)
 
-The same slice for the first benefit in Phase 0's ranking, then each
-further benefit in scope, one bounded PR sequence per benefit.
+The same slice for each benefit in Phase 0.2's order, one bounded PR
+sequence per benefit, pipelined (W2.4). GPT/Codex specifies the next
+benefit while Claude Code implements the current one. Each benefit's
+golden households cover single, couple and sole-parent cases, and at
+least one where the benefit's result changes another policy's input.
 
 ### Phase 4: household dependency graph (W7)
 
@@ -131,6 +168,16 @@ further benefit in scope, one bounded PR sequence per benefit.
 - **4.5 — Claude Code.** The combined runner becomes the graph runner.
   WFF and AS, which have no edge between them, keep byte-identical
   results.
+- **4.6 — Claude Code. Calculated, not asserted.** Facts that WFF and AS
+  take today as asserted inputs, and that a Tier 1 domain now calculates,
+  come from the graph instead:
+  - the AS claimant category (which benefit, or non-beneficiary);
+  - WFF benefit-status and earner facts, as far as the specifications
+    define them.
+
+  An asserted value that contradicts the calculated one is a
+  `needs_review` contradiction, as in Task 28.3, never silently
+  overridden.
 
 ### Phase 5: disposable income and measures
 
@@ -175,9 +222,25 @@ further benefit in scope, one bounded PR sequence per benefit.
 
 ## Exit gate
 
-- **Income tax and at least the first main benefit** are specified,
+- **Income tax and all three core main benefits** are specified,
   implemented, independently reviewed and benchmarked to v0.1's
   standard.
+- **The kernel household** is a golden household built from the
+  realignment example:
+  - a couple aged 32 and 30;
+  - children aged 1 and 4;
+  - earnings of $48,000 and $15,000;
+  - rent of $650 a week;
+  - a verified AS statistical area unit (the AS spec forbids inferring
+    an area from a city name such as "Auckland");
+  - childcare of 25 hours a week;
+  - cash assets of $5,000.
+
+  It runs through the kernel to a disposable-income result. Every
+  modelled component is calculated or explained, and components outside
+  Tier 1 (childcare assistance) are `unsupported` with a named reason,
+  never zero. GPT/Codex hand-calculates its expected values
+  independently.
 - **Every golden household** runs through the shared household model and
   the dependency graph. WFF and AS results are byte-identical to v0.2.
 - **One policy's output feeds another's input.** For a household where
@@ -194,9 +257,9 @@ further benefit in scope, one bounded PR sequence per benefit.
 
 ## Open decisions for Pete
 
-- **D1:** The Phase 0 scope (from `ROADMAP_REALIGNMENT.md` D2).
+- **D1:** Each Tier 1 domain's supported slice, from Phase 0's sourcing.
 - **D2:** The disposable-income definition (0.4).
 - **D3:** The income-adequacy measures to report (5.3).
-- **D4:** Whether v0.3 ships with one main benefit or waits for all of
-  Phase 0's ranked list. Recommended: ship with the first, and add the
-  rest as v0.3.x releases, so each one is a bounded, reviewed slice.
+- **D4 (decided 26 September 2026):** v0.3 ships with all three core
+  main benefits (W10 Tier 1). Tier 2 domains follow as v0.3.x coverage
+  releases.
