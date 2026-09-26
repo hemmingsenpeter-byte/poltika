@@ -32,6 +32,14 @@ sources:
       claim: MD 3 uses entitlement-period days in its formula; MF 4 separately governs instalment calculation and notice display. The approved full-year calculator is not an instalment calculator.
       scope: Period semantics only. No new parameter approval or historical whole-year law audit; the approved 2026-27 domain and Task 10.2 gate remain binding.
       access_method: Official HTML fetched with curl and a browser user agent after the web tool could not retrieve it.
+    task_0_5_check:
+      checked_on: 2026-09-26
+      url: "https://www.legislation.govt.nz/act/public/2007/97/en/latest/"
+      version_as_at: 2026-09-04
+      finding: "Latest consolidation is still the 4 September 2026 version recorded by the earlier checks. The only later-enacted Act found that touches it, 2026 No 55 (in force 4 September 2026), renames the CW 52B headings and inserts CW 52B(3) (exempt income: MSD disability-support payments); the 4 September consolidation already contains CW 52B(3). No Part M provision used by v0.1 was found amended."
+      effect_on_v0_1: "None. CW 52B exempt income bears on what a caller counts as family scheme income, which v0.1 takes as a verified input."
+      limitation: "Public Acts 2026 Nos 55-69 were scanned for references to this Act; earlier 2026 Acts were not re-read. Nos 67 and 70-75 returned 404 (not published or not assigned); No 71 returned 504, then 404."
+      method: "Official HTML fetched with curl and a browser user agent (bare fetches 403); Claude Code on a local machine, not the independent GPT/Codex check."
   - id: wff-income-tax-act-part-c
     kind: legislation
     title: Income Tax Act 2007, Part C - allowances and benefits
@@ -82,6 +90,13 @@ sources:
         request. A claimant category alone does not prove the actual payer.
       limitation: No payment schedule reconstructed; abated-payment Order
         authorisations and individual payer agreements are not audited here.
+    task_0_5_check:
+      checked_on: 2026-09-26
+      url: "https://www.legislation.govt.nz/act/public/1994/166/en/latest/"
+      version_as_at: 2026-09-04
+      finding: "Latest version is still as at 4 September 2026; none of 2026 Nos 55-69 references this Act."
+      effect_on_v0_1: "None."
+      method: "Official HTML fetched with curl and a browser user agent (bare fetches 403); Claude Code on a local machine, not the independent GPT/Codex check."
   - id: wff-budget-measures-2026
     kind: future_amending_legislation
     title: Taxation (Budget Measures) Act 2026
@@ -111,6 +126,16 @@ sources:
       interval_evidence_covers: 2026-04-01 to 2026-09-24 (as-of observation only).
       disposition: The 28.2 WFF interval is the full 2026-27 year [2026-04-01, 2027-04-01), which extends beyond this check. Under specification.md's Task 10.2 rate-status table ("Interval extends beyond the last Order check"), an unconditional annual in-work amount stays needs_review; in_work_base review_status is unchanged. Recheck for any later modelled interval; an Order commencing inside an interval invokes the unsupported split-period row.
       limitation: A targeted search of the secondary-legislation register was attempted but the search URL used returned 404, so the section's own record is the evidence relied on, the same method as the 21 September order_check. Not a Gazette search.
+    task_0_6_check:
+      checked_on: 2026-09-26
+      url: "https://www.legislation.govt.nz/act/public/2026/0008/latest/whole.html"
+      source_version: "Official 2026 No 8 text, latest version as at 30 March 2026 (as enacted)."
+      locator: "Section 2(43)-(45) and the section's secondary-legislation record."
+      finding: "Immediately after section 2(45) the official page still states: There is no secondary legislation made under this section currently on this website. No Order in Council setting an earlier date for section 105(2), which reverses the temporary $7,670 in-work base, has been published as at the check date."
+      interval_evidence_covers: "2026-04-01 to 2026-09-26 (as-of observation only)."
+      disposition: "The WFF interval is the full 2026-27 year [2026-04-01, 2027-04-01), which extends beyond this check. Under specification.md's Task 10.2 rate-status table (Interval extends beyond the last Order check), in_work_base stays review_status needs_review. It can be settled only after 1 April 2027 (BUILD_PLAN_v0_1_6.md)."
+      limitation: "A Gazette search was attempted but the search URL returned 404, so the section's own record on the legislation website is the evidence relied on, the same method as the 21 and 24 September checks."
+      method: "Official HTML fetched with curl and a browser user agent (bare fetches 403); Claude Code on a local machine, not the independent GPT/Codex check."
 
   - id: wff-ird-interpretation-2026
     kind: agency_interpretation

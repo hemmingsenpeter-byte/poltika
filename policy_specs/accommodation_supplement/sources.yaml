@@ -78,6 +78,13 @@ sources:
         addressed by this text plus the TAA payment provisions, pending
         Pete's acceptance of the cross-Act interpretation after independent
         review. This does not establish a cash-assets exemption.
+    task_0_5_check:
+      checked_on: 2026-09-26
+      url: "https://www.legislation.govt.nz/act/public/2018/32/en/latest/"
+      version_as_at: 2026-09-04
+      finding: "Latest consolidation is still the 4 September 2026 version recorded by the earlier checks. Disability Support Services Act 2026 (2026 No 55, in force 4 September 2026) replaced s 67(d)(i)-(ii) (other-funding exclusion, disability/care branch); the 4 September consolidation already contains the new wording. Social Security (Jobseeker Support and Accommodation Supplement) Amendment Act 2026 (2026 No 54) is not yet in force and not consolidated (see as-2026-amendment). Oranga Tamariki (Responding to Serious Youth Offending) Amendment Act 2026 (2026 No 65) amends only the Schedule 2 definition of CYPFA order or agreement."
+      effect_on_v0_1: "None. s 67(d) is a caller-asserted household_eligibility gate, not a parameter; no rate, cap, threshold or Schedule 4 Part 7 clause 1-3 value changed."
+      method: "Official HTML fetched with curl and a browser user agent (bare fetches 403); Claude Code on a local machine, not the independent GPT/Codex check."
   - id: as-social-security-regulations
     kind: regulations
     title: Social Security Regulations 2018
@@ -140,6 +147,13 @@ sources:
       limitation: Do not infer income-to-assets equivalence. Current scoped
         exemption gates and Task 26a's unresolved base-rate work remain,
         including the paragraph (f) wording and child-age question.
+    task_0_5_check:
+      checked_on: 2026-09-26
+      url: "https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/latest/"
+      version_as_at: 2026-09-04
+      finding: "Latest version is still as at 4 September 2026. 2026 No 55 replaced r 162(c)(iii), which is not an Accommodation Supplement regulation; no Act found amends rr 15-19. The older /regulation/public/2018/0202/latest/ URL now returns 404; the secondary-legislation URL above is current."
+      effect_on_v0_1: "None."
+      method: "Official HTML fetched with curl and a browser user agent (bare fetches 403); Claude Code on a local machine, not the independent GPT/Codex check."
   - id: as-ftc-rate-order-2025
     kind: amending_legislation
     title: Income Tax (Tax Credit) Order 2025
@@ -182,6 +196,13 @@ sources:
       locator: Section 2(1)-(2); Part 2; Schedule 2 inserting Schedule 1 Part 18 clauses 131-132.
       claim: Part 2's homeowner threshold changes commence and apply on 1 April 2027. Part 1 separately commences on 2 November 2026 and concerns Jobseeker eligibility; the two dates must not be conflated.
       scope: The approved AS domain excludes homeowners and ends before 1 April 2027. Later candidate weeks still require verification of relevant claimant-category facts and operative law; this check does not approve them.
+    task_0_5_check:
+      checked_on: 2026-09-26
+      url: "https://www.legislation.govt.nz/act/public/2026/0054/latest/whole.html"
+      source_version: "As enacted, version as at 3 September 2026; the official page still labels it Not yet in force."
+      finding: "This is the September 2026 Accommodation Supplement legislation named in BUILD_PLAN_v0_1_5.md. Section 2: Part 1 (Jobseeker Support parental income requirement for specified young people) commences 2 November 2026; Part 2 (Accommodation Supplement) commences 1 April 2027 and, by new Schedule 1 Part 18 clause 132, applies on and after that date. Part 2 replaces Schedule 4 Part 7 clauses 4-6A: the homeowner entry threshold becomes 40% of the base rate, or 30% for a specified person (Supported Living Payment on restricted work capacity, total blindness or caring grounds, NZ Superannuation or Veteran's Pension, or their partner). Homeowner caps are unchanged. Part 1's Schedule 3 amendments concern parental income and do not touch clause 8."
+      effect_on_v0_1: "None for v0.1's domain (rent or board only; weeks end before 2027-04-01). From 2 November 2026 Jobseeker Support eligibility tightens for young applicants, but v0.1 takes claimant_category as a caller-asserted fact. Relevant to the 2027-28 year (BUILD_PLAN_v0_1_6.md) only if homeowner tenure is ever supported."
+      method: "Official HTML fetched with curl and a browser user agent (bare fetches 403); Claude Code on a local machine, not the independent GPT/Codex check."
   - id: as-msd-overview
     kind: agency_guidance
     title: Accommodation Supplement

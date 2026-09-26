@@ -301,10 +301,11 @@ GPT/Codex audit of each is deferred.
 
 | Task | Status |
 | --- | --- |
-| 0.1 Tag `v0.1.0` | **Pete:** the session cannot push tags (tag `e41871d`) |
+| 0.1 Tag `v0.1.0` | Done: tagged on `e41871d` and released, 26 September 2026 |
 | 0.3 Limitations, 0.4 baseline | Done (PR #86): `docs/releases/` |
 | 0.2 Case metadata | Done: checked by `tests/unit/policy/test_case_metadata.py` (this PR); no protected file rewritten |
-| 0.5, 0.6, 1.2 | Open (GPT/Codex): legislation currency, in-work base re-check, source classification review |
+| 0.5, 0.6 | Author check done 26 September 2026 by Claude Code from a host with legislation.govt.nz access (`reviews/2026-09-26-legislation-currency-check.md`; `task_0_5_check`/`task_0_6_check` in both `sources.yaml` files). No v0.1 value affected; no reversal Order published; `in_work_base` stays `needs_review`. Independent GPT/Codex re-check still open |
+| 1.2 | Open (GPT/Codex): source classification review |
 | 1.1, 1.3, 1.4 Evidence model and coverage | Done (PR #86); CI prints coverage |
 | 2.1, 2.2, 2.4, 2.5 Calculation steps | Done (PR #82) |
 | 2.3 Step-to-rule mapping review | Author check done in Sprint 2 S2.5 (AS_ROUNDING corrected to AS-07); independent GPT/Codex review open (`review_packets/v0_1_5_codex_audit.md`) |
