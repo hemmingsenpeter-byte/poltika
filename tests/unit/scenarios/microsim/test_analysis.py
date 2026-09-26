@@ -116,6 +116,7 @@ def _run(results: tuple[HouseholdResult, ...] = RESULTS) -> PopulationRun:
         ),
         code=CodeIdentity("t", None, None, None),
         policy_artifacts=(),
+        overridden=(),
         validation=validate_population(population),
         households=results,
     )
