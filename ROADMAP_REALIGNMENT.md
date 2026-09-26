@@ -315,11 +315,11 @@ need every policy to hold several years.
 
 | Item | State |
 | --- | --- |
-| W1.1 | Done: `review_packets/review_queue.md`. 17 open implementation rows, so the cap is reached. |
+| W1.1 | Done: `review_packets/review_queue.md`. 18 open implementation rows (including #103), so the cap is reached. |
 | W1.4 | Done: the cap is in `doctrine/development-doctrine.md`. |
 | W2.1 | Done: `docs/research/policy_onboarding_cost.md`. About 25-30 merged PRs and 2-4 decision records per v0.1-shaped policy. |
 | W4.1 | Done: `docs/releases/V0_2_SCALING_MODEL.md`. Deterministic runs stay practical. Population-scale Monte Carlo doesn't (days to years on one core). |
-| W1.5, W5.2 | Done in a PR held behind the review cap. The gates' review rows skip, naming the open PRs, and the currency workflow discovers every `policy_specs/*/policy.yaml`. |
+| W1.5, W5.2 | Done: PR #103, merged under Pete's exemption from the cap. The gates' review rows skip, naming the open PRs, and the currency workflow discovers every `policy_specs/*/policy.yaml`. |
 
 ## Sequence
 
