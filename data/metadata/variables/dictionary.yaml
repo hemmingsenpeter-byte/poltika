@@ -1,5 +1,71 @@
 # The canonical variable dictionary (poltika.semantics.variables.DataDictionary).
 # Entries record a publication's own definitions (unit, frequency, price
 # base), so each is added with the dataset that feeds it (v0.2 Task 3.1),
-# never from memory.
-variables: []
+# never from memory. Definitions below quote the Stats NZ release's
+# inc-csv-codes.xlsx and MSD's Definitions of areas page (v0.2 Task 3.2,
+# 27 September 2026).
+variables:
+  - id: household.count_total
+    meaning: "Total number of households (HES Table 10, DwCode D003A: 'Total number of households in thousands (000)'), year ending June."
+    unit: thousands of households
+    frequency: annual
+    price_basis: not_applicable
+    measure: stock
+    geography_population: Total New Zealand
+    valid_from: 2018-07-01
+  - id: household.composition_estimate
+    meaning: "HES Table 5 estimate by household composition (HdCode H003A-H003J: couple only; couple with one, two, or three or more dependent children; other couples with children; one parent with dependent children; other one-parent; other one-family; one-person; all other), by equivalised disposable income quintile. The codes workbook describes the Estimate column as 'Number of people in thousands or median / mean income'; whether it counts households or people must be confirmed before it is used as a household share."
+    unit: thousands (people, as the codes workbook states; to be confirmed)
+    frequency: annual
+    price_basis: not_applicable
+    measure: stock
+    geography_population: Total New Zealand
+    valid_from: 2024-07-01
+  - id: household.tenure_estimate
+    meaning: "HES Table 5 estimate by tenure of household (HdCode H004A-H006D: owned or partly owned, with or without mortgage payments; not owned, making or not making rent payments; held in a family trust). Same Estimate-unit caveat as household.composition_estimate."
+    unit: thousands (people, as the codes workbook states; to be confirmed)
+    frequency: annual
+    price_basis: not_applicable
+    measure: stock
+    geography_population: Total New Zealand
+    valid_from: 2024-07-01
+  - id: household.region_estimate
+    meaning: "HES Table 5 estimate by regional council area (HdCode H007A-H007L; Gisborne/Hawke's Bay and Tasman/Nelson/Marlborough/West Coast are combined). Same Estimate-unit caveat as household.composition_estimate."
+    unit: thousands (people, as the codes workbook states; to be confirmed)
+    frequency: annual
+    price_basis: not_applicable
+    measure: stock
+    geography_population: New Zealand regional council areas
+    valid_from: 2024-07-01
+  - id: household.gross_income_annual_mean
+    meaning: "Average annual household gross income (HES Table 3, MsCode M001, IncCode I001A), year ending June."
+    unit: NZD per household per year
+    frequency: annual
+    price_basis: nominal
+    measure: flow
+    geography_population: Total New Zealand
+    valid_from: 2006-07-01
+  - id: household.gross_income_annual_median
+    meaning: "Median annual household gross income (HES Table 3, MsCode M002, IncCode I001A), year ending June."
+    unit: NZD per household per year
+    frequency: annual
+    price_basis: nominal
+    measure: flow
+    geography_population: Total New Zealand
+    valid_from: 2006-07-01
+  - id: household.housing_cost_weekly_mean
+    meaning: "Average weekly household expenditure on housing costs, by housing cost type, for all households (HES Table 8, MsCode M001, ExpCode E001-E011), year ending June."
+    unit: NZD per household per week
+    frequency: annual
+    price_basis: nominal
+    measure: flow
+    geography_population: Total New Zealand
+    valid_from: 2006-07-01
+  - id: as.area_by_statistical_area_unit_2017
+    meaning: "The Accommodation Supplement area (1 to 4) of each Statistics New Zealand Statistical Area Unit 2017, as MSD's Definitions of areas page lists them, used from 1 April 2018."
+    unit: classification (Area 1-4)
+    frequency: annual
+    price_basis: not_applicable
+    measure: stock
+    geography_population: New Zealand, Statistical Area Units 2017
+    valid_from: 2018-04-01
