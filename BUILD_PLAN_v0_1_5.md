@@ -307,7 +307,7 @@ GPT/Codex audit of each is deferred.
 | 0.5, 0.6, 1.2 | Open (GPT/Codex): legislation currency, in-work base re-check, source classification review |
 | 1.1, 1.3, 1.4 Evidence model and coverage | Done (PR #86); CI prints coverage |
 | 2.1, 2.2, 2.4, 2.5 Calculation steps | Done (PR #82) |
-| 2.3 Step-to-rule mapping review | Open (GPT/Codex); packet ready: `review_packets/v0_1_5_codex_audit.md` |
+| 2.3 Step-to-rule mapping review | Author check done in Sprint 2 S2.5 (AS_ROUNDING corrected to AS-07); independent GPT/Codex review open (`review_packets/v0_1_5_codex_audit.md`) |
 | 3.1-3.5 Deterministic explanations | Done (PR #84; per-policy routes in PR #88) |
 | 4.2, 4.4, 4.6 Reason codes, missing facts, categories | Done (PR #83) |
 | 4.5 Assumption ledger | Done: the facts each result read are listed as caller-asserted (PR #84) |
@@ -320,3 +320,24 @@ GPT/Codex audit of each is deferred.
 | 8.2-8.5 Pilot | **Pete** |
 | H.1 Review-record clean-up | Done as a documented taxonomy in `REPOSITORY_STRUCTURE.md` (this PR); files not moved, because protected hash-bound files link to them |
 | H.2 Working agreement | Done: `doctrine/development-doctrine.md` |
+
+## Sprint 1 accepted (26 September 2026)
+
+Pete accepted the Sprint 1 work, PRs #82-#88 ("Accept and progress all of the
+above"). The deferred GPT/Codex audit (`review_packets/v0_1_5_codex_audit.md`)
+stays open. Acceptance does not stand in for it.
+
+## Sprint 2 (from 26 September 2026)
+
+Goal: be ready to run the pilot and to check the release gate, and settle
+what the author can settle before the independent audit.
+
+| Subtask | Owner | What |
+| --- | --- | --- |
+| S2.1 | Claude Code | Record Sprint 1's acceptance and this plan |
+| S2.2 | Claude Code | A pilot case pack: 15 households across every outcome, loadable on the analyst page (Task 8.3 preparation) |
+| S2.3 | Claude Code | The pilot findings template and session script (Tasks 8.3-8.4) |
+| S2.4 | Claude Code | An executable release-gate check: every automatable gate row is a test; the rest are named |
+| S2.5 | Claude Code | An author check of the audit packet's questions and the step-to-rule mapping (not the independent review) |
+| S2.6 | GPT/Codex, or Claude Code once the host is allowed | Tasks 0.5 and 0.6. `www.legislation.govt.nz` is blocked by this environment's network policy, so the source checks cannot run here. Note: 0.6 cannot clear the in-work base before 1 April 2027 either way; the Task 10.2 rate-status table keeps it `needs_review` while the year extends past the last Order check |
+| S2.7 | Pete | Tag `v0.1.0`, name the pilot user, and run the session with the S2.2 pack and S2.3 template |

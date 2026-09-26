@@ -13,6 +13,7 @@ The page only displays what the API returns. It computes nothing.
 
 from __future__ import annotations
 
+import copy
 from typing import Any
 
 import yaml
@@ -61,6 +62,75 @@ def examples() -> list[dict[str, Any]]:
             }
         )
     return requests
+
+
+# v0.1.5 Sprint 2 (S2.2): the pilot case pack. Each case is a golden
+# household with named facts changed, and a question for the pilot user.
+# It fixes inputs only; every answer comes from Poltika. Paths are
+# (section, field) or (section, field, subfield); None means not supplied.
+_PILOT_CASES: tuple[tuple[str, str, str, dict[tuple[str, ...], Any]], ...] = (
+    ("p01_couple_two_children", "g2_couple_two_children_income_abated_both",
+     "Where does each number come from? Pick one and trace it to its source.", {}),
+    ("p02_sole_parent_two_children", "g1_sole_parent_two_children_non_beneficiary",
+     "Which facts did Poltika take from you, and which did it check?", {}),
+    ("p03_single_jobseeker_cap", "g4_single_jobseeker_cap_binds",
+     "Why is the Accommodation Supplement not 70% of the costs over the threshold?", {}),
+    ("p04_supported_living_couple", "g5_supported_living_couple_two_children",
+     "Why is there no Working for Families total?", {}),
+    ("p05_best_start_child", "g6_sole_parent_support_best_start_child",
+     "Which rule gives the Best Start amount?", {}),
+    ("p06_asset_imputation", "g7_sole_parent_asset_imputation_and_income_reduction",
+     "How do cash assets change the Accommodation Supplement?", {}),
+    ("p07_partner_income_unknown", "g2_couple_two_children_income_abated_both",
+     "The partner's income is not supplied. What can and can't Poltika say?",
+     {("wff", "family_scheme_income", "partner_amount"): None}),
+    ("p08_children_disagree", "g2_couple_two_children_income_abated_both",
+     "The two policies are told different numbers of children. What happens?",
+     {("accommodation_supplement", "dependent_children_count"): 3}),
+    ("p09_assets_over_ceiling", "g1_sole_parent_two_children_non_beneficiary",
+     "Cash assets are $20,000. Is this 'not entitled' or 'not modelled'?",
+     {("accommodation_supplement", "cash_assets"): "20000"}),
+    ("p10_homeowner", "g1_sole_parent_two_children_non_beneficiary",
+     "The household owns its home. What does Poltika tell you?",
+     {("accommodation_supplement", "tenure_type"): "homeowner"}),
+    ("p11_area_unknown", "g4_single_jobseeker_cap_binds",
+     "The area is not known. Why doesn't Poltika assume one?",
+     {("accommodation_supplement", "statistical_area_unit"): None}),
+    ("p12_high_income", "g2_couple_two_children_income_abated_both",
+     "Income is $150,000. Which credits abate to zero, and how can you tell?",
+     {("wff", "family_scheme_income", "claimant_amount"): "130000"}),
+    ("p13_main_benefit_payment", "g2_couple_two_children_income_abated_both",
+     "A main benefit was received during the year. Which credits does it affect?",
+     {("wff", "mc6b_disqualifying_payment"): "excluded"}),
+    ("p14_no_accommodation_costs", "g1_sole_parent_two_children_non_beneficiary",
+     "There are no accommodation costs. Why is that not a calculated $0?",
+     {("accommodation_supplement", "weekly_accommodation_costs"): "0"}),
+    ("p15_claimant_link_unverified", "g2_couple_two_children_income_abated_both",
+     "It isn't verified that the AS claimant is in the WFF family. What changes?",
+     {("as_claimant_is_wff_claimant_or_partner",): "unknown"}),
+)
+
+
+def _with(request: dict[str, Any], changes: dict[tuple[str, ...], Any]) -> dict[str, Any]:
+    changed = copy.deepcopy(request)
+    for path, value in changes.items():
+        target = changed
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = value
+    return changed
+
+
+@router.get("/pilot-cases")
+def pilot_cases() -> list[dict[str, Any]]:
+    """The pilot case pack (v0.1.5 S2.2): 15 households spanning every
+    outcome, each with a question for the pilot user."""
+    golden = {e["id"]: e["request"] for e in examples()}
+    return [
+        {"id": case_id, "description": question, "request": _with(golden[base], changes)}
+        for case_id, base, question, changes in _PILOT_CASES
+        if base in golden
+    ]
 
 
 @router.get("/evidence")
@@ -121,6 +191,7 @@ determination. Every number shown comes from the API; this page computes nothing
 
 <p><label>Start from an example household:
   <select id="examples"><option value="">(loading)</option></select></label></p>
+<p id="question" class="note"></p>
 <div id="form"></div>
 <details><summary>Edit as JSON</summary>
 <p><label for="request">Household request, as sent to <code>/household/calculate</code></label></p>
@@ -149,7 +220,9 @@ function el(tag, attrs = {}, ...children) {
 async function loadExamples() {
   schemas = (await (await fetch("/openapi.json")).json()).components.schemas;
   const select = document.getElementById("examples");
-  examples = await (await fetch("/analyst/examples")).json();
+  const pilot = await (await fetch("/analyst/pilot-cases")).json();
+  const golden = await (await fetch("/analyst/examples")).json();
+  examples = [...pilot.map(e => ({...e, id: "Pilot: " + e.id})), ...golden.map(e => ({...e, id: "Golden: " + e.id}))];
   select.replaceChildren(el("option", {value: ""}, "(choose)"),
     ...examples.map((e, i) => el("option", {value: i}, e.id)));
   if (examples.length) { select.value = "0"; fill(0); }
@@ -158,6 +231,7 @@ async function loadExamples() {
 let schemas = {}, request = null;
 
 function fill(i) {
+  document.getElementById("question").textContent = examples[i].description;
   request = structuredClone(examples[i].request);
   syncJson(); renderForm();
 }

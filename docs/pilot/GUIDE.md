@@ -31,8 +31,9 @@ repository's `policy_specs/`, mounted read-only.
 
 ## Ask a question
 
-1. On the analyst page, pick an example household. Each example is one of
-   the reviewed golden households.
+1. On the analyst page, pick a case. The `Pilot:` cases each come with a
+   question to answer; the `Golden:` cases are the reviewed golden
+   households.
 2. Edit the request if you want, for example incomes, rent, the number of
    children or the area.
 3. Select **Calculate**.
