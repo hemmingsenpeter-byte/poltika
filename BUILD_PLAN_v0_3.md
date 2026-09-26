@@ -267,6 +267,20 @@ least one where the benefit's result changes another policy's input.
   per policy (W5.4), and throughput actuals (W2.5).
 - **7.3** Pete tags `v0.3.0`.
 
+## Progress
+
+Pete said to proceed with this phase on 26 September 2026, after GPT/Codex
+reviewed the 18 queued PRs (#108). Phase 1b builds on WFF and AS alone, so
+it doesn't wait for v0.2's release (which waits on the real population)
+or for Phase 0.
+
+| Task | State |
+| --- | --- |
+| 1b.1 | Done. Catalogues for WFF (17 facts), the Accommodation Supplement (11) and the combined run (1). Tests show every id an engine emits has an entry, every entry is emitted, domains match the engine fields exactly, and rule ids exist. Writing them found three emitted facts with no entry: `mc6a_veterans_payment`, `mc6b_disqualifying_payment` and `net_family_scheme_income_me3_attested`, the last a new non-branchable `attestation` kind. **Wording is `drafted`: GPT/Codex reviews it.** |
+| 1b.2 | Part done: `scenarios/conditional.py` covers joint branches over finite facts, impact-ranked expansion, the 32-branch cap, per-component and WFF-total bounds, and `next_question`. Numeric ranges (monotone declarations) and branches over unresolved rate values come next. |
+| 1b.3 | Part done: every branch equals a direct engine run, every branch result's explanation verifies, the base result is never changed, and the cap holds. Hypothesis range checks come with the numeric ranges. |
+| 1b.4-1b.6 | Not started. |
+
 ## Sequence
 
 | Sprint | Work |

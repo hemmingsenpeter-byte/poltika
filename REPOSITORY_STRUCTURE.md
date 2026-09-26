@@ -62,6 +62,8 @@ poltika/
 ├── src/poltika/
 │   ├── common/            — errors.py (exception hierarchy)
 │   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml);
+│   │                        fact_catalog.py (v0.3 Task 1b.1, ADR-0016: the
+│   │                        facts.yaml model);
 │   │                        source_catalog.py (v0.1.5: sources.yaml model,
 │   │                        source type and authority rank derived from kind)
 │   ├── semantics/variables.py — v0.2: canonical variable dictionary model,
@@ -76,7 +78,8 @@ poltika/
 │   │                        transforms/ holds one module per dataset),
 │   │                        context.py (DataContext, the CanonicalContext
 │   │                        implementation)
-│   ├── policy/            — loader.py (Task 11 parameter loader)
+│   ├── policy/            — loader.py (Task 11 parameter loader); facts.py
+│   │                        (v0.3 Task 1b.1: fact catalogue loader)
 │   ├── engines/simulator/ — outcome.py (the ComponentResult/FactStatus
 │   │                        outcome types every module returns, shared by
 │   │                        WFF and AS); wff.py (Task 12 calculate_wff(); Task 20
@@ -100,6 +103,10 @@ poltika/
 │   │                        record.py (Task 30: scenario records, artifact
 │   │                        manifests, canonical identity, code identity,
 │   │                        record_from_plain);
+│   │                        conditional.py (v0.3 Task 1b.2, ADR-0016:
+│   │                        conditional answers, i.e. branches, bounds and
+│   │                        next question for missing facts, all by engine
+│   │                        reruns);
 │   │                        population.py (v0.2 Task 2.2: population
 │   │                        household → ScenarioRecord, household types);
 │   │                        microsim/ (v0.2 static microsimulation:

@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased (v0.3: tax, benefits and the household graph)
+
+See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
+result identity changes.
+
+- **Fact catalogues** (Task 1b.1, ADR-0016): every fact the WFF, AS and
+  combined engines can report missing has a plain-language question and
+  its admissible answers, in `policy_specs/<policy>/facts.yaml`. The
+  wording awaits GPT/Codex review.
+- **Conditional answers** (Task 1b.2, first part): a household with
+  missing yes/no or category facts gets engine-computed branches ("if X,
+  then …"), ranges per component, and the most useful next question,
+  instead of a bare `needs_review`. The blocked result itself is
+  unchanged.
+
 ## Unreleased (v0.2: static population microsimulation)
 
 See `BUILD_PLAN_v0_2.md`. No calculated amount, protected expected value or
