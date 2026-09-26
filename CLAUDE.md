@@ -13,7 +13,7 @@
    Make changes in your own worktree off `origin/main`, never in the shared
    checkout another session may be using:
    `git worktree add -b <branch> /private/tmp/poltika-<name> origin/main`.
-2. Read [docs/ORIENTATION.md](docs/ORIENTATION.md): what v0.1 does now, on
+2. Read [docs/ORIENTATION.md](docs/ORIENTATION.md): what Poltika does now, on
    one page, with runnable examples.
 
 ## v0.1 at a glance
@@ -30,6 +30,8 @@
 - MFTC needs an attested after-tax income. There is no income tax module.
 - AS is per assessment week: one area, cost and income, rounded up once at the end.
 - WFF and AS results are never added together.
+- Results also carry a reason code, missing facts and calculation steps, and the
+  API adds explanations (v0.1.5). No amount changed.
 - WFF runs on policy `0.1.0`; AS on `0.1.1` with an explicit 7-day week.
 
 ## What to read, by task
