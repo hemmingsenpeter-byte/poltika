@@ -56,7 +56,9 @@ TENURE = {
 
 RENT_VARIABLES = {code: f"household.renting.weekly_rent_band.{slug}" for code, slug in RENT.items()}
 TENURE_VARIABLES = {code: f"household.tenure_2018.{slug}" for code, slug in TENURE.items()}
-VARIABLES: dict[str, str] = {v: HOUSEHOLDS for v in (*RENT_VARIABLES.values(), *TENURE_VARIABLES.values())}
+VARIABLES: dict[str, str] = {
+    v: HOUSEHOLDS for v in (*RENT_VARIABLES.values(), *TENURE_VARIABLES.values())
+}
 
 _FILES = (
     ("weekly-rent-paid-by-household-2018-census-csv.csv", RENT_VARIABLES),

@@ -42,11 +42,23 @@ def births_release(raw: bytes, manifest: DatasetManifest) -> list[Row]:
         raise BirthsPageError(f"{manifest.manifest_name}: no key-facts year comparison found")
     births = _BIRTHS.search(text, years.end())
     if births is None:
-        raise BirthsPageError(f"{manifest.manifest_name}: no live-births key fact after the year comparison")
+        raise BirthsPageError(
+            f"{manifest.manifest_name}: no live-births key fact after the year comparison"
+        )
     current, previous = int(years.group(1)), int(years.group(2))
     return [
-        Row("population.live_births_registered", *_year_ended_march(previous), _count(births.group(2)), UNIT),
-        Row("population.live_births_registered", *_year_ended_march(current), _count(births.group(1)), UNIT),
+        Row(
+            "population.live_births_registered",
+            *_year_ended_march(previous),
+            _count(births.group(2)),
+            UNIT,
+        ),
+        Row(
+            "population.live_births_registered",
+            *_year_ended_march(current),
+            _count(births.group(1)),
+            UNIT,
+        ),
     ]
 
 

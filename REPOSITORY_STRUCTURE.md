@@ -51,7 +51,7 @@ poltika/
 │                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
-├── docs/releases/     — per-release limitations, measured baselines and the v0.1.5 gate map
+├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map and the v0.2 population methodology
 ├── docs/pilot/        — v0.1.5 pilot guide (and, after the pilot, its findings)
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question
@@ -120,7 +120,11 @@ poltika/
 │   │                        paths and sweeps, explain.py verified
 │   │                        population explanations, synthetic.py the
 │   │                        seeded synthetic population generator and its
-│   │                        CLI -- never a second engine);
+│   │                        CLI, calibration.py the population spec derived
+│   │                        from canonical variables, calibrate_cli.py its
+│   │                        composition root (the one module outside
+│   │                        poltika.data that builds a DataContext) --
+│   │                        never a second engine);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
 │   │                        addressed artifact bytes, replay, drift re-run;
