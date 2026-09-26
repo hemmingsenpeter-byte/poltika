@@ -44,6 +44,10 @@ result identity changes.
   an operator-set population file. The page shows Overview, Distribution,
   Households, Areas, Fiscal, Evidence and Methodology tabs, with the
   synthetic label on every one.
+- **v0.2 release-gate test** (Task 9.2): one test per exit-gate row,
+  including the invariants. Equal synthetic weights are now exact to six
+  decimal places and sum to the total represented, so weighted totals are
+  exact.
 
 ## Unreleased (v0.1.6: keep v0.1 current)
 

@@ -184,3 +184,11 @@ def test_cli_writes_a_loadable_population(tmp_path: Any, capsys: Any) -> None:
         SYNTHETIC_LABEL in printed and "calibration" not in printed.lower() or "target" in printed
     )
     assert main([]) == 2
+
+
+@pytest.mark.parametrize(("represents", "households"), [("1000", 300), ("1", 3), ("1234567.89", 7)])
+def test_weights_sum_exactly_and_are_nearly_equal(represents: str, households: int) -> None:
+    population, _ = generate(_spec(households=households, represents=represents))
+    weights = [h.weight for h in population.households]
+    assert sum(weights) == D(represents)
+    assert max(weights) - min(weights) <= D("0.000001")

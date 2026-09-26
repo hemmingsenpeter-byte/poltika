@@ -3,6 +3,7 @@ population written to a temporary file."""
 
 from __future__ import annotations
 
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -79,7 +80,7 @@ def test_run_returns_tables_explanation_and_identity(configured: Path) -> None:
         "unsupported",
     }
     assert body["overridden"][0]["reform_value"] == "50000"
-    assert body["fiscal"]["accommodation_supplement"]["delta_total"] == "0"
+    assert Decimal(body["fiscal"]["accommodation_supplement"]["delta_total"]) == 0
     again = client.post("/microsim/runs", json={"reform": THRESHOLD}).json()
     assert (again["run_id"], again["results_sha256"]) == (body["run_id"], body["results_sha256"])
     assert client.get(f"/microsim/runs/{body['run_id']}").json() == body

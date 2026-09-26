@@ -52,7 +52,8 @@ poltika/
 │                         provenance report for the v0.1 demo question
 ├── data/              — v0.2 Phase 1 data layer (data/README.md): raw/ (immutable
 │                         snapshots), metadata/datasets/ (one manifest per snapshot),
-│                         metadata/variables/dictionary.yaml; snapshots and manifests
+│                         metadata/variables/dictionary.yaml, metadata/populations/
+│                         (calibrated population specs); snapshots and manifests
 │                         guarded by .github/workflows/data-snapshot-guard.yml
 │
 ├── src/poltika/
