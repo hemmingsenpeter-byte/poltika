@@ -11,6 +11,7 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 - [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — where every component belongs and the dependency rules between layers
 - [ROADMAP.md](ROADMAP.md) — what comes after v0.1
 - [BUILD_PLAN_v0_1_5.md](BUILD_PLAN_v0_1_5.md) — the v0.1.5 plan
+- [BUILD_PLAN_v0_1_6.md](BUILD_PLAN_v0_1_6.md) and [BUILD_PLAN_v0_2.md](BUILD_PLAN_v0_2.md) — draft plans for the next two releases
 - `doctrine/` — decisions that are fixed and not to be re-litigated
 - [docs/demo/v0_1/](docs/demo/v0_1/README.md) — one household run end to end through both policies, with its provenance report and limitations
 - [CHANGELOG.md](CHANGELOG.md) — what v0.1 contains
