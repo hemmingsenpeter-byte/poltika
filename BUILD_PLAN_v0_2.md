@@ -252,6 +252,8 @@ All Claude Code. Every figure carries its coverage (R4).
 | 6.1-6.3 | Done. `scenarios/microsim/reform.py`, plus an optional preloaded `parameters` argument on `run_wff_module`, `run_as_module` and `run_combined_household`. It is refused for another date or version, and every v0.1 result is byte-identical on the default path. Reform values are `scenario_assumption` with no source, in every trace. A reform isn't yet stored through the Task 32 store: it is recorded in the Phase 7 run record. |
 | 7.1-7.3 | Done. `scenarios/microsim/runner.py`. Parameters are loaded once per policy, date and version. Per household and component it keeps the outcome, value and code. `run_id` hashes the population, reform, code and policy files, and `results_sha256` the results. Both reproduce on rerun. WFF (per tax year) and AS (per week) keep separate units (D8). Tests are invariants on the golden households: an identity reform gives zero deltas; a threshold rise never lowers family tax credit and is bounded by the policy values; a WFF-only reform leaves AS unchanged (R2). |
 | 7.4 | Done. The profile showed re-parsing `policy.yaml` was about 90% of run time (`load_bound_policy_spec` runs twice per household). The parse is now cached by the file's SHA-256, which is still read and checked on every call, and each caller gets a deep copy. Measured: about 4.8 ms per household for both runs, roughly 8 minutes for 100,000 households. No new dependency is needed (D6). |
+| 8.1-8.5, 4.2 | Done. `scenarios/microsim/analysis.py`: winners and losers, deciles, household types, dependent children, regions, AS areas, and per-component fiscal totals with coverage. A household's change is the sum of a named, single-unit component set, calculated only when every member is. So a family tax credit reform is measurable while the in-work tax credit is `needs_review`, and a partial set is never called total WFF. Every table reports what it left out. |
+| 8.6-8.7 | Done. `scenarios/microsim/withdrawal.py`: per-policy withdrawal paths (WFF on the claimant's family scheme income, AS on weekly income) and deterministic sweeps. A combined WFF and AS withdrawal rate needs a stated mapping between the two income definitions (D9). The WFF path clears `net_family_scheme_income`, which can't follow the path, so minimum family tax credit reads `needs_review` along it. |
 
 ## Sequence
 
@@ -321,6 +323,11 @@ Real New Zealand estimates wait for D2.
   amount times 52, or the number of weeks in the year). That is a
   methodology choice to record, not something to assume. Until it is
   decided, fiscal tables report AS per week, in its own column.
+- **D9: A combined withdrawal rate.** WFF uses family scheme income, and
+  the Accommodation Supplement chargeable weekly income. A single income
+  path through both needs a stated mapping between those definitions,
+  which is an interpretation question for the specifications. Until it is
+  decided, withdrawal rates are reported per policy.
 - **D7: Scope Doctrine wording.** `BUILD_PLAN.md` says sensitivity
   analysis is "deferred to v0.2". This plan does deterministic sweeps only.
   Ranges and distributions stay in v0.5. Record that here rather than

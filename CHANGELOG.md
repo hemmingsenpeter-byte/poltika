@@ -27,6 +27,10 @@ result identity changes.
   reproducible `run_id` and `results_sha256`. Caching the parsed
   `policy.yaml` by its hash (still checked on every call) makes a
   household about 80 times faster.
+- **Analysis** (Phase 8): weighted winners and losers, deciles, household
+  types, children, regions and AS areas, per-component fiscal totals with
+  coverage, per-policy withdrawal paths, and parameter sweeps. Every table
+  names its component set and unit, and reports what it left out.
 
 ## Unreleased (v0.1.6: keep v0.1 current)
 
