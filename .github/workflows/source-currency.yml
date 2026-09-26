@@ -31,9 +31,10 @@ jobs:
       - name: Build the report
         run: |
           set -euo pipefail
-          uv run python -m poltika.engines.assurance.currency \
-            policy_specs/working_for_families policy_specs/accommodation_supplement \
-            > currency.md
+          # Every policy with a policy.yaml, so a new policy is covered on
+          # arrival (ROADMAP_REALIGNMENT.md W5.2).
+          mapfile -t POLICIES < <(dirname policy_specs/*/policy.yaml | sort)
+          uv run python -m poltika.engines.assurance.currency "${POLICIES[@]}" > currency.md
           cat currency.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open or update the issue when anything is due

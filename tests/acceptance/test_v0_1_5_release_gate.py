@@ -143,3 +143,11 @@ def test_gate_external_pilot_user() -> None:
     match = re.search(r"^- Pilot user:[ \t]*(\S.*)$", FINDINGS.read_text(), re.MULTILINE)
     if not match:
         pytest.skip("release gate not yet met: no external pilot user recorded in V0_1_5_PILOT_FINDINGS.md")
+
+
+def test_gate_independent_review_complete() -> None:
+    from tests.acceptance.review_queue import open_reviews
+
+    pending = open_reviews("v0.1.5")
+    if pending:
+        pytest.skip(f"release gate not yet met: awaiting independent review {', '.join(pending)}")
