@@ -1,5 +1,512 @@
 # The canonical variable dictionary (poltika.semantics.variables.DataDictionary).
 # Entries record a publication's own definitions (unit, frequency, price
 # base), so each is added with the dataset that feeds it (v0.2 Task 3.1),
-# never from memory.
-variables: []
+# never from memory. These were added with the v0.2 Task 3.2 snapshots
+# (27 September 2026); see docs/research/v0_2_task_3_1_calibration_tables.md.
+variables:
+- id: household.people.all_households
+  meaning: 'People in households, HES Table 5 household demographic ''Total'' (HdCode H001A), all income
+    quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2024-07-01
+- id: household.people.couple_only
+  meaning: 'People in households, HES Table 5 household demographic ''Couple only'' (HdCode H003A), all
+    income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2024-07-01
+- id: household.people.couple_one_dependent_child
+  meaning: 'People in households, HES Table 5 household demographic ''Couple with one dependent child''
+    (HdCode H003B), all income quintiles (Q006), year ended June. Table 5 counts people, not households:
+    its total equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2024-07-01
+- id: household.people.couple_two_dependent_children
+  meaning: 'People in households, HES Table 5 household demographic ''Couple with two dependent children''
+    (HdCode H003C), all income quintiles (Q006), year ended June. Table 5 counts people, not households:
+    its total equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2024-07-01
+- id: household.people.couple_three_plus_dependent_children
+  meaning: 'People in households, HES Table 5 household demographic ''Couple with three or more dependent
+    children'' (HdCode H003D), all income quintiles (Q006), year ended June. Table 5 counts people, not
+    households: its total equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2024-07-01
+- id: household.people.one_parent_dependent_children
+  meaning: 'People in households, HES Table 5 household demographic ''One parent with dependent child(ren)
+    only'' (HdCode H003F), all income quintiles (Q006), year ended June. Table 5 counts people, not households:
+    its total equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2024-07-01
+- id: household.people.one_person_household
+  meaning: 'People in households, HES Table 5 household demographic ''One-person household'' (HdCode H003I),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2024-07-01
+- id: household.people.region.northland
+  meaning: 'People in households, HES Table 5 household demographic ''Northland Region'' (HdCode H007A),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Northland Region
+  valid_from: 2024-07-01
+- id: household.people.region.auckland
+  meaning: 'People in households, HES Table 5 household demographic ''Auckland Region'' (HdCode H007B),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Auckland Region
+  valid_from: 2024-07-01
+- id: household.people.region.waikato
+  meaning: 'People in households, HES Table 5 household demographic ''Waikato Region'' (HdCode H007C),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Waikato Region
+  valid_from: 2024-07-01
+- id: household.people.region.bay_of_plenty
+  meaning: 'People in households, HES Table 5 household demographic ''Bay of Plenty Region'' (HdCode H007D),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Bay of Plenty Region
+  valid_from: 2024-07-01
+- id: household.people.region.gisborne_hawkes_bay
+  meaning: 'People in households, HES Table 5 household demographic ''Gisborne/Hawke''s Bay Region'' (HdCode
+    H007E), all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total
+    equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Gisborne/Hawke's Bay Region
+  valid_from: 2024-07-01
+- id: household.people.region.taranaki
+  meaning: 'People in households, HES Table 5 household demographic ''Taranaki Region'' (HdCode H007F),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Taranaki Region
+  valid_from: 2024-07-01
+- id: household.people.region.manawatu_whanganui
+  meaning: 'People in households, HES Table 5 household demographic ''Manawatū–Whanganui Region'' (HdCode
+    H007G), all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total
+    equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Manawatū–Whanganui Region
+  valid_from: 2024-07-01
+- id: household.people.region.wellington
+  meaning: 'People in households, HES Table 5 household demographic ''Wellington Region'' (HdCode H007H),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Wellington Region
+  valid_from: 2024-07-01
+- id: household.people.region.tasman_nelson_marlborough_west_coast
+  meaning: 'People in households, HES Table 5 household demographic ''Tasman/Nelson/Marlborough/West Coast
+    Region'' (HdCode H007I), all income quintiles (Q006), year ended June. Table 5 counts people, not
+    households: its total equals the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Tasman/Nelson/Marlborough/West Coast Region
+  valid_from: 2024-07-01
+- id: household.people.region.canterbury
+  meaning: 'People in households, HES Table 5 household demographic ''Canterbury Region'' (HdCode H007J),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Canterbury Region
+  valid_from: 2024-07-01
+- id: household.people.region.otago
+  meaning: 'People in households, HES Table 5 household demographic ''Otago Region'' (HdCode H007K), all
+    income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Otago Region
+  valid_from: 2024-07-01
+- id: household.people.region.southland
+  meaning: 'People in households, HES Table 5 household demographic ''Southland Region'' (HdCode H007L),
+    all income quintiles (Q006), year ended June. Table 5 counts people, not households: its total equals
+    the population.'
+  unit: thousands of people
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, Southland Region
+  valid_from: 2024-07-01
+- id: household.count.total
+  meaning: 'Total number of households: HES Table 10 ''Total number of households in thousands (000)''
+    (DwCode D003A), summed over its two complementary bands, housing costs less than 25 percent (P001)
+    and 25 percent or more (P002) of disposable income, year ended June.'
+  unit: thousands of households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand
+  valid_from: 2018-07-01
+- id: household.gross_income.mean
+  meaning: Average annual household gross income (HES Table 3, MsCode M0001, IncCode 1001A in the CSV),
+    year ended June.
+  unit: NZD per household per year
+  frequency: annual
+  price_basis: nominal
+  measure: flow
+  geography_population: New Zealand
+  valid_from: 2006-07-01
+- id: household.gross_income.median
+  meaning: Median annual household gross income (HES Table 3, MsCode M0002, IncCode 1001A in the CSV),
+    year ended June.
+  unit: NZD per household per year
+  frequency: annual
+  price_basis: nominal
+  measure: flow
+  geography_population: New Zealand
+  valid_from: 2006-07-01
+- id: household.rent.weekly_mean_paying_households
+  meaning: Average weekly household expenditure on total rent payments, for households with that expenditure
+    (HES Table 9, MsCode M001, ExpCode E003), year ended June.
+  unit: NZD per household per week
+  frequency: annual
+  price_basis: nominal
+  measure: flow
+  geography_population: New Zealand, households paying rent
+  valid_from: 2006-07-01
+- id: household.renting.weekly_rent_band.under_50
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band 'Under
+    $50' (code 01), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_50_to_74
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$50-$74'
+    (code 02), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_75_to_99
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$75-$99'
+    (code 03), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_100_to_124
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$100-$124'
+    (code 04), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_125_to_149
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$125-$149'
+    (code 05), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_150_to_174
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$150-$174'
+    (code 06), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_175_to_199
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$175-$199'
+    (code 07), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_200_to_249
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$200-$249'
+    (code 08), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_250_to_299
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$250-$299'
+    (code 09), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_300_to_349
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$300-$349'
+    (code 10), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_350_to_399
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$350-$399'
+    (code 11), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_400_to_449
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$400-$449'
+    (code 12), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_450_to_499
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$450-$499'
+    (code 13), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_500_to_549
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$500-$549'
+    (code 14), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_550_to_599
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$550-$599'
+    (code 15), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.from_600
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band '$600
+    and over' (code 16), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.renting.weekly_rent_band.total_stated
+  meaning: Households in rented occupied private dwellings by weekly rent paid by household, band 'Total
+    stated' (code TotalStated), 2018 Census (census night 6 March 2018). Rent in 2018 dollars.
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in rented occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.owned_mortgage_not_further_defined
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling owned or partly
+    owned, mortgage arrangements not further defined' (code 10), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.owned_mortgage_payments_made
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling owned or partly
+    owned, mortgage payments made' (code 11), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.owned_mortgage_payments_not_made
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling owned or partly
+    owned, mortgage payments not made' (code 12), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.not_owned_rental_not_further_defined
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling not owned and not
+    held in a family trust, rental arrangements not further defined' (code 20), 2018 Census (census night
+    6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.not_owned_rent_payments_made
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling not owned and not
+    held in a family trust, rent payments made' (code 21), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.not_owned_rent_payments_not_made
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling not owned and not
+    held in a family trust, rent payments not made' (code 22), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.family_trust_mortgage_not_further_defined
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling held in a family
+    trust, mortgage arrangements not further defined' (code 30), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.family_trust_mortgage_payments_made
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling held in a family
+    trust, mortgage payments made' (code 31), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.family_trust_mortgage_payments_not_made
+  meaning: Households in occupied private dwellings by tenure of household, 'Dwelling held in a family
+    trust, mortgage payments not made' (code 32), 2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.not_stated
+  meaning: Households in occupied private dwellings by tenure of household, 'Not stated' (code 99), 2018
+    Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.tenure_2018.total_stated
+  meaning: Households in occupied private dwellings by tenure of household, 'Total stated' (code TotalStated),
+    2018 Census (census night 6 March 2018).
+  unit: households
+  frequency: annual
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, households in occupied private dwellings
+  valid_from: 2018-03-06
+- id: household.currency_and_deposits.median
+  meaning: Median value of currency and deposits for households (Household net worth statistics Table
+    1.01, AsCode W21, EstCode E1), year ended June; in thousands of dollars.
+  unit: NZD thousands per household
+  frequency: annual
+  price_basis: nominal
+  measure: stock
+  geography_population: New Zealand households
+  valid_from: 2014-07-01
+- id: household.currency_and_deposits.mean
+  meaning: Mean value of currency and deposits for households (Household net worth statistics Table 1.01,
+    AsCode W21, EstCode E3), year ended June; in thousands of dollars.
+  unit: NZD thousands per household
+  frequency: annual
+  price_basis: nominal
+  measure: stock
+  geography_population: New Zealand households
+  valid_from: 2014-07-01
+- id: population.live_births_registered
+  meaning: Live births registered in the year ended March, as stated in the Births and deaths release's
+    key facts. Registrations, not births by date of birth.
+  unit: live births registered
+  frequency: annual
+  price_basis: not_applicable
+  measure: flow
+  geography_population: New Zealand
+  valid_from: 2023-04-01

@@ -5,6 +5,10 @@ benchmark, regression, API, installed-artifact and code-replay suites. It adds
 five-point statutory money boundaries, generated invariants, metamorphic
 cross-policy isolation, explanation equivalence and repeat-run determinism.
 
+`test_orientation_examples.py` runs the two examples in `docs/ORIENTATION.md`
+as written and compares their results with the committed demo summary, so
+the orientation page fails the build when the contract it shows changes.
+
 The existing suite supplies the remaining local evidence:
 
 - statutory rules and numerical precision: `tests/unit/engines/simulator/`

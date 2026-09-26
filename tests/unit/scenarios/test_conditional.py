@@ -14,13 +14,15 @@ import yaml
 
 from poltika.engines.assurance.explanation import explain, verify
 from poltika.engines.simulator.outcome import FactStatus
-from poltika.engines.simulator.wff import BestStartCohort
+from poltika.engines.simulator.wff import BestStartCohort, PartnerStatus
 from poltika.policy.facts import fact_index, load_fact_catalog
 from poltika.scenarios.combined import run_combined_household
 from poltika.scenarios.conditional import (
     COMPONENTS,
     WFF_TOTAL,
+    IncompatibleAssignmentError,
     Resolution,
+    Slot,
     UncataloguedFactError,
     assign,
     component,
@@ -180,6 +182,54 @@ def test_known_components_and_totals_only_within_one_branch() -> None:
 def test_uncatalogued_fact_is_an_error() -> None:
     with pytest.raises(UncataloguedFactError):
         resolve(_as(G0, claimant_category=None), WFF_POLICY_DIR, AS_POLICY_DIR, {})
+
+
+def test_unknown_partner_status_preserves_supplied_partner_income() -> None:
+    record = _wff(GOLDEN[1], partner_status=PartnerStatus.UNKNOWN)
+    res = _resolve(record)
+    assert result_payload(res.base) == result_payload(_run(record))
+    assert len(res.branches) == 1
+    assert {s.label: v for s, v in res.branches[0].assignment} == {
+        "wff.partner_status": "partnered"
+    }
+    _check_branches_are_real_runs(res, record)
+
+
+def test_explicit_incompatible_answer_is_still_rejected() -> None:
+    record = _wff(GOLDEN[1], partner_status=PartnerStatus.UNKNOWN)
+    with pytest.raises(IncompatibleAssignmentError):
+        assign(record, Slot("wff", "partner_status"), "single")
+
+
+def test_invalid_catalogue_enum_is_not_silently_skipped() -> None:
+    facts = dict(FACTS)
+    key = ("wff", "partner_status")
+    facts[key] = facts[key].model_copy(update={"values": {"invalid": "Invalid"}})
+    with pytest.raises(ValueError, match="not a valid PartnerStatus"):
+        resolve(
+            _wff(GOLDEN[1], partner_status=PartnerStatus.UNKNOWN),
+            WFF_POLICY_DIR,
+            AS_POLICY_DIR,
+            facts,
+        )
+
+
+def test_newly_revealed_facts_are_ranked_by_impact_under_cap() -> None:
+    record = _as(_wff(G0, household_eligibility=FactStatus.UNKNOWN), claimant_category=None)
+    record = replace(
+        record,
+        household=replace(
+            record.household, as_claimant_is_wff_claimant_or_partner=FactStatus.UNKNOWN
+        ),
+    )
+    res = _resolve(record, max_branches=3)
+    assert len(res.branches) == 3
+    assert any(
+        s.label == "wff.household_eligibility" for b in res.branches for s, _ in b.assignment
+    )
+    assert res.bounds["family_tax_credit"].calculated > 0
+    assert res.capped
+    _check_branches_are_real_runs(res, record)
 
 
 @pytest.mark.parametrize("index", range(len(GOLDEN)))

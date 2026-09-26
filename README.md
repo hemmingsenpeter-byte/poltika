@@ -6,6 +6,7 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 
 ## Where to start
 
+- [docs/ORIENTATION.md](docs/ORIENTATION.md) — read first: what v0.1 does now, on one page, with runnable examples
 - [BUILD_PLAN.md](BUILD_PLAN.md) — what's being built now, in what order, and v0.1 acceptance criteria
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how Poltika works, conceptually and technically
 - [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — where every component belongs and the dependency rules between layers

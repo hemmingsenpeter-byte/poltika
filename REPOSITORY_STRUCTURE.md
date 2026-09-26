@@ -47,6 +47,8 @@ poltika/
 │                         run by hand from the repository root; not production code, and not
 │                         linted or type-checked by CI)
 ├── reviews/           — review and discrepancy records
+├── docs/ORIENTATION.md — one-page summary of current v0.1 behaviour for a new session: outcomes,
+│                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
 ├── docs/releases/     — per-release limitations, measured baselines and the v0.1.5 gate map
@@ -196,7 +198,9 @@ poltika/
     ├── acceptance/         — v0.1 release acceptance suite (GPT/Codex): threshold
     │                          boundaries, Hypothesis-generated invariants, cross-policy
     │                          leakage, explanation equivalence, repeat-run determinism;
-    │                          statutory values read from the policy, never restated
+    │                          statutory values read from the policy, never restated;
+    │                          plus test_orientation_examples.py, which runs docs/ORIENTATION.md's
+    │                          examples against the demo summary
     ├── code_replay/        — Task 32.4 replay of a stored run on its retained code
     │                          revision (marked code_replay, opt-in; CI runs it)
     ├── regression/         — known-historical-issue tests (Task 15) and the
@@ -214,7 +218,8 @@ Only `src/poltika/llm` (`api/` is now instantiated, Task 21;
 plus `data/processed/`, `data/fixtures/`, `config/`, and `scripts/`, remain undone
 from the target tree below — created incrementally as the BUILD_PLAN.md
 tasks that need them are reached, not all at once. `docs/` is partially
-instantiated: `docs/research/` and `docs/demo/v0_1/` (above) exist; the
+instantiated: `docs/ORIENTATION.md`, `docs/research/` and `docs/demo/v0_1/`
+(above) exist; the
 target tree's `docs/{data_model.md,policy_model.md,provenance.md,
 assurance.md,glossary.md}` specification files do not exist yet.
 `src/poltika/engines/{discovery,hypothesis}` are correctly still empty
@@ -245,6 +250,7 @@ no gain. New records follow the table.
 poltika/
 │
 ├── docs/
+│   ├── ORIENTATION.md  — already instantiated; see "Instantiated today" above
 │   ├── research/       — already instantiated; see "Instantiated today" above
 │   ├── data_model.md
 │   ├── policy_model.md
