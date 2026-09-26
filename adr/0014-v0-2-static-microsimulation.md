@@ -1,9 +1,9 @@
 # ADR-0014: v0.2 becomes static population microsimulation
 
 **Date:** 26 September 2026
-**Status:** proposed. Drafted by Claude Code from Pete's pasted v0.2
-specification (26 September 2026), for Pete's decision
-(`BUILD_PLAN_v0_2.md` D1).
+**Status:** accepted. Pete accepted it on 26 September 2026
+(`BUILD_PLAN_v0_2.md` D1). Drafted by Claude Code from Pete's pasted v0.2
+specification.
 
 ## Context
 
@@ -51,10 +51,10 @@ If accepted:
 
 ## Consequences
 
-- On acceptance, update `BUILD_PLAN.md`'s Roadmap Doctrine sequence and its
-  "why this order" paragraph to match, as ADR-0008 did. Update
-  `ROADMAP.md`'s v0.2-v0.4 sections at the same time. Until then both stay
-  as they are.
+- `BUILD_PLAN.md`'s Roadmap Doctrine sequence, its "why this order"
+  paragraph and its connector pin are updated to match, as ADR-0008's were.
+  So are `ROADMAP.md`'s v0.2-v0.4 sections.
+- The Stats NZ and Treasury connectors move to v0.3 with the baseline.
 - Scenario results arrive before real data. Every v0.2 output must carry the
   synthetic-population label, and no v0.2 figure may be presented as a New
   Zealand estimate.

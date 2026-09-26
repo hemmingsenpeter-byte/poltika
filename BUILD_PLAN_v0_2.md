@@ -1,9 +1,8 @@
 # Poltika v0.2 Build Plan: static population microsimulation
 
 **Date:** 26 September 2026
-**Status:** DRAFT for Pete's approval. It depends on ADR-0014 (proposed),
-which moves static microsimulation into v0.2 ahead of the roadmap's
-original order.
+**Status:** Approved 26 September 2026, with the recommended decisions
+below. ADR-0014 (accepted) moves static microsimulation into v0.2.
 **Starts:** Phase 1 needs no external data and touches no v0.1 file, so it
 can start now. Everything else follows once v0.1.5 ships. It runs alongside
 v0.1.6 (`BUILD_PLAN_v0_1_6.md`).
@@ -43,7 +42,7 @@ against the repository changes these points.
 
 | # | Finding | Effect on this plan |
 | --- | --- | --- |
-| R1 | **It reorders the roadmap.** ADR-0008 put data in v0.2, the interaction graph in v0.3 and the scenario engine in v0.4, arguing that scenario comparison needs a dependency graph first. For WFF and the Accommodation Supplement that argument doesn't hold: their interaction is fixed by rule (R2), and the existing combined runner already handles it. | ADR-0014 (proposed) moves static microsimulation into v0.2. The historical macro baseline (GDP, debt, operating balance) moves to v0.3, beside the graph. The proposal's reordering of later releases (behaviour at v0.4, graph at v0.6) is **not** adopted. It needs its own decision. |
+| R1 | **It reorders the roadmap.** ADR-0008 put data in v0.2, the interaction graph in v0.3 and the scenario engine in v0.4, arguing that scenario comparison needs a dependency graph first. For WFF and the Accommodation Supplement that argument doesn't hold: their interaction is fixed by rule (R2), and the existing combined runner already handles it. | ADR-0014 (accepted) moves static microsimulation into v0.2. The historical macro baseline (GDP, debt, operating balance) moves to v0.3, beside the graph. The proposal's reordering of later releases (behaviour at v0.4, graph at v0.6) is **not** adopted. It needs its own decision. |
 | R2 | **No WFF-to-AS interaction exists in the modelled law.** AS-10 and DEC-003 exclude WFF tax credits from AS chargeable income, and IRD excludes Accommodation Supplement from WFF family income. The proposal's "AS interaction: -$110m" can't arise. | Module Q becomes an invariant test: a WFF-only reform leaves every household's Accommodation Supplement unchanged. The output states that there is no modelled interaction and cites the rule. |
 | R3 | **Income tax and main benefits aren't modelled**, so there is no disposable income. | **No poverty or income-adequacy measures in v0.2 (Module O is dropped).** They need full disposable income and the official measures' own definitions. Module P is reported only as *WFF and AS withdrawal rates*, never as effective marginal tax rates. |
 | R4 | **The 2026-27 in-work tax credit is `needs_review`** (the Task 10.2 rate-status contract), so a total WFF figure can't be calculated for 2026-27. Abatement falls on family tax credit first, then the in-work tax credit (WFF-03, MD 2). | Every population result reports its weighted coverage: calculated, `needs_review` and `unsupported`. `needs_review` is never counted as zero. The exit test reports the in-work tax credit's coverage honestly, and becomes complete once v0.1.6 adds 2027-28. |
