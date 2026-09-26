@@ -129,7 +129,9 @@ it. That shape is the aim, not an assumed rule. v0.3 delivers:
 
 ### Phase 2: income tax (v0.1 method)
 
-Follow the W2.2 onboarding skill, one vertical slice:
+Follow the `new-policy` skill's five PRs: sources and specification,
+values and expected results, implementation, interactions, release. One
+vertical slice:
 
 - sources (0.1);
 - specification with rule ids;
@@ -144,8 +146,8 @@ Follow the W2.2 onboarding skill, one vertical slice:
 
 ### Phase 3: the three core main benefits (v0.1 method)
 
-The same slice for each benefit in Phase 0.2's order, one bounded PR
-sequence per benefit, pipelined (W2.4). GPT/Codex specifies the next
+The same slice for each benefit in Phase 0.2's order, each as the
+`new-policy` skill's five PRs, pipelined (W2.4). GPT/Codex specifies the next
 benefit while Claude Code implements the current one. Each benefit's
 golden households cover single, couple and sole-parent cases, and at
 least one where the benefit's result changes another policy's input.

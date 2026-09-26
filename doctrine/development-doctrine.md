@@ -16,7 +16,18 @@ Poltika follows a source-first, review-driven workflow.
 - A pull request merges only when CI is green on its latest commit and its
   review is recorded in the PR (an independent review, or Pete's recorded
   delegation and the author's preflight when the other model is unavailable).
-- One bounded task per pull request, one commit per logical change.
+- One bounded task per pull request, one commit per logical change. For a
+  policy domain, "bounded" means the five-PR structure in
+  `.claude/skills/new-policy/SKILL.md`: one PR per kind of review
+  (sources and specification, values and expected results,
+  implementation, interactions, release), not one PR per plan task.
+- Review findings on an open pull request are fixed in that pull request
+  before it merges. A new pull request is only for a finding against
+  merged work.
+- Review depth follows risk. Interpretation, protected statutory values
+  and engine, loader or graph code get a full independent review.
+  Tests-only, documentation-only and generated-file changes get a light
+  independent check that the scope matches its label.
 - Merge with a merge commit, and tag releases on the merge commit on `main`.
 - Review debt is capped (`ROADMAP_REALIGNMENT.md` W1.4, decided 26 September
   2026). When five or more merged implementation PRs await independent

@@ -125,6 +125,17 @@ coverage, not code, sets the pace.
 - **W2.4 — Pete. Pipeline the work.** Agree that GPT/Codex sources and
   specifies policy N+1 while Claude Code implements policy N, so review
   and implementation overlap instead of queueing.
+- **W2.6 — Pete (decided 26 September 2026). Five PRs per policy.**
+  One PR per kind of review:
+  - sources and specification;
+  - values and expected results;
+  - implementation;
+  - interactions;
+  - release.
+
+  Review follow-ups go in the same PR before merge, and review depth
+  follows risk. Written into the `new-policy` skill and the working
+  agreement. Target: 5-8 PRs per policy, against v0.1's measured ~15.
 - **W2.5 — Claude Code. Track throughput.** Each build plan's progress
   table records tasks, PRs and elapsed days per policy, so W2.1's
   baseline is checked against reality every release.
@@ -319,7 +330,8 @@ need every policy to hold several years.
 | --- | --- |
 | W1.1 | Done: `review_packets/review_queue.md`. 18 open implementation rows (including #103), so the cap is reached. |
 | W1.4 | Done: the cap is in `doctrine/development-doctrine.md`. |
-| W2.1 | Done: `docs/research/policy_onboarding_cost.md`. About 25-30 merged PRs and 2-4 decision records per v0.1-shaped policy. |
+| W2.1 | Done: `docs/research/policy_onboarding_cost.md`. Corrected by classifying every v0.1 merge: about 15 PRs per policy (6-10 of its own, plus a share of shared ones); 30 of 58 were one-off infrastructure. |
+| W2.2, W2.6 | Done: `.claude/skills/new-policy/SKILL.md`, the five-PR standard, same-PR follow-ups and risk-based review depth, in the working agreement. |
 | W4.1 | Done: `docs/releases/V0_2_SCALING_MODEL.md`. Deterministic runs stay practical. Population-scale Monte Carlo doesn't (days to years on one core). |
 | W10, W10.4 | Coverage map and tiers added (D9). README carries the coverage table. |
 | W1.5, W5.2 | Done: PR #103, merged under Pete's exemption from the cap. The gates' review rows skip, naming the open PRs, and the currency workflow discovers every `policy_specs/*/policy.yaml`. |
@@ -411,9 +423,10 @@ Every further interaction (for example which government payments enter
 which income test) is established by v0.3 Phase 0.3 from sources, not
 from this plan.
 
-**Cost and upkeep.** At W2.1's planning figure (about 25-30 PRs and 2-4
-decisions per v0.1-shaped policy), the 17 domains are several hundred PRs
-and dozens of decisions, before annual updates. So:
+**Cost and upkeep.** Under the five-PR structure (W2.6), the 17 domains
+are about 85-140 PRs and dozens of decisions, before annual updates, with
+one annual-update PR per domain per year after that. v0.1's slicing
+(about 15 PRs per policy, W2.1) would have been about 250. So:
 
 - **W10.1 — Claude Code.** Every build plan that adds a domain states its
   estimate from W2.1 and records the actual (W2.5).
