@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased (v0.2: static population microsimulation)
+
+See `BUILD_PLAN_v0_2.md`. No calculated amount, protected expected value or
+result identity changes.
+
+- **Data layer** (Phase 1): immutable raw snapshots with an eleven-field
+  provenance manifest and SHA-256; a registry that refuses a snapshot not
+  matching its manifest; a versioned transformation registry; a canonical
+  variable dictionary; `DataContext`, which returns values with their full
+  lineage. A CI check fails if a committed snapshot or manifest is edited,
+  and a test fails if anything outside `poltika.data` imports it.
+- **Population schema** (Tasks 2.1-2.2): weighted households whose facts
+  are scenario records, so a population household runs through the same
+  path as a single one. Synthetic populations must carry the synthetic
+  label.
+
 ## Unreleased (v0.1.6: keep v0.1 current)
 
 See `BUILD_PLAN_v0_1_6.md`.

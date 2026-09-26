@@ -20,15 +20,16 @@ for what a citation needs to support a decision.
 
 ## 2. External statistical datasets (Stats NZ, Treasury, IRD, MSD, etc.)
 
-Not yet instantiated for v0.1 (see REPOSITORY_STRUCTURE.md — `data/` is
-target-only until a task needs it: BUILD_PLAN.md Tasks 10a/10b, 22a). This is
-governed by the **Data Acquisition Doctrine** (BUILD_PLAN.md) and
+Instantiated by v0.2 Phase 1 (`data/README.md`): the manifest schema is
+`src/poltika/data/manifest.py`, and the registry refuses any snapshot whose
+SHA-256 doesn't match its manifest. This is governed by the **Data Acquisition Doctrine** (BUILD_PLAN.md) and
 `doctrine/deterministic_core.md`: v0.1 depends on authoritative external
 data, not a live API — datasets are manually acquired and frozen as
 immutable, versioned raw snapshots.
 
-Every raw snapshot's manifest (`data/metadata/datasets/<id>.yaml`, or
-equivalent, once that directory is created) must record all eleven fields:
+Every raw snapshot's manifest (`data/metadata/datasets/<dataset_id>.v<N>.yaml`)
+must record all eleven fields, plus `dataset_id`, `raw_file`, `sha256`,
+`vintage` and `transformation_id`:
 
 ```yaml
 source_organisation:      # e.g. Stats NZ

@@ -50,12 +50,28 @@ poltika/
 ├── docs/pilot/        — v0.1.5 pilot guide (and, after the pilot, its findings)
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question
+├── data/              — v0.2 Phase 1 data layer (data/README.md): raw/ (immutable
+│                         snapshots), metadata/datasets/ (one manifest per snapshot),
+│                         metadata/variables/dictionary.yaml; snapshots and manifests
+│                         guarded by .github/workflows/data-snapshot-guard.yml
 │
 ├── src/poltika/
 │   ├── common/            — errors.py (exception hierarchy)
 │   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml);
 │   │                        source_catalog.py (v0.1.5: sources.yaml model,
 │   │                        source type and authority rank derived from kind)
+│   ├── semantics/variables.py — v0.2: canonical variable dictionary model,
+│   │                        Observation and Lineage, and the CanonicalContext
+│   │                        read interface downstream code depends on
+│   ├── semantics/population.py — v0.2 Task 2.1: the canonical population
+│   │                        schema (weighted households, persons, grouping
+│   │                        characteristics, facts in scenario-record form)
+│   ├── data/              — v0.2 Phase 1: manifest.py (raw-snapshot manifest),
+│   │                        registry.py (checksummed dataset registry),
+│   │                        transform.py (versioned transformation registry;
+│   │                        transforms/ holds one module per dataset),
+│   │                        context.py (DataContext, the CanonicalContext
+│   │                        implementation)
 │   ├── policy/            — loader.py (Task 11 parameter loader)
 │   ├── engines/simulator/ — outcome.py (the ComponentResult/FactStatus
 │   │                        outcome types every module returns, shared by
@@ -78,7 +94,10 @@ poltika/
 │   │                        native periods, the Task 28.3 shared-fact
 │   │                        contradiction checks; no income coupling);
 │   │                        record.py (Task 30: scenario records, artifact
-│   │                        manifests, canonical identity, code identity);
+│   │                        manifests, canonical identity, code identity,
+│   │                        record_from_plain);
+│   │                        population.py (v0.2 Task 2.2: population
+│   │                        household → ScenarioRecord, household types);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
 │   │                        addressed artifact bytes, replay, drift re-run;
@@ -127,7 +146,10 @@ poltika/
     │   │                        golden household runner (Task 29), store
     │   │                        tests (Task 32; marked postgres, start a
     │   │                        throwaway server from initdb/pg_ctl on PATH,
-    │   │                        skipped when absent)
+    │   │                        skipped when absent), population schema and
+    │   │                        adapter tests (v0.2 Tasks 2.1-2.2)
+    │   ├── data/              — v0.2 Phase 1: manifest, registry, context and
+    │   │                        dependency-boundary tests on synthetic snapshots
     │   ├── engines/assurance/ — provenance report tests (Task 31)
     │   ├── engines/simulator/ — calculator unit tests (Task 12), spec-case and
     │   │                        benchmark-case loader/runners (Tasks 13-14),
@@ -160,9 +182,10 @@ poltika/
                                watched by the statutory-value guard
 ```
 
-Only `src/poltika/{data,llm}` (`api/` is now instantiated, Task 21;
+Only `src/poltika/llm` (`api/` is now instantiated, Task 21;
+`data/` by v0.2 Phase 1;
 `scenarios/` by Task 28.4) and `tests/integration` (`tests/fixtures` by Task 30.4),
-plus everything under `data/`, `config/`, and `scripts/`, remain undone
+plus `data/processed/`, `data/fixtures/`, `config/`, and `scripts/`, remain undone
 from the target tree below — created incrementally as the BUILD_PLAN.md
 tasks that need them are reached, not all at once. `docs/` is partially
 instantiated: `docs/research/` and `docs/demo/v0_1/` (above) exist; the
@@ -265,7 +288,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 
 | Directory | May depend on | Must not depend on |
 | --- | --- | --- |
-| `src/poltika/data/` | `common/` | `engines/`, `policy/`, `semantics/` internals |
+| `src/poltika/data/` | `common/`; `semantics/variables.py` (the canonical types it produces) | `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`, other `semantics/` internals. Nothing outside `data/` imports it (`tests/unit/data/test_boundary.py`) |
 | `src/poltika/semantics/` | `common/` | source-specific formats/APIs, `engines/` |
 | `src/poltika/policy/` | `semantics/`, `common/` | `data/` (raw or processed), source-specific formats |
 | `src/poltika/engines/simulator/` | `semantics/`, `policy/`, `scenarios/`, `common/` | Stats NZ (or any) API, source CSV structures, LLM output |

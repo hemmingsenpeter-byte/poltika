@@ -1,0 +1,5 @@
+# The canonical variable dictionary (poltika.semantics.variables.DataDictionary).
+# Entries record a publication's own definitions (unit, frequency, price
+# base), so each is added with the dataset that feeds it (v0.2 Task 3.1),
+# never from memory.
+variables: []
