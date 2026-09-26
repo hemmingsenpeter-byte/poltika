@@ -102,8 +102,9 @@ poltika/
 │   │                        validation.py record checks, weighting.py
 │   │                        weighted statistics, reform.py overrides of
 │   │                        loaded parameters, runner.py baseline and
-│   │                        reform runs with run identity -- never a
-│   │                        second engine);
+│   │                        reform runs with run identity, analysis.py
+│   │                        weighted tables, withdrawal.py withdrawal
+│   │                        paths and sweeps -- never a second engine);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
 │   │                        addressed artifact bytes, replay, drift re-run;
