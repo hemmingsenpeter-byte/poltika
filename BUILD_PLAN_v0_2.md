@@ -1,9 +1,11 @@
 # Poltika v0.2 Build Plan: authoritative data foundation
 
 **Date:** 26 September 2026
-**Status:** DRAFT for Pete's approval.
-**Starts:** after `v0.1.5` ships. It can run alongside v0.1.6
-(`BUILD_PLAN_v0_1_6.md`), which touches different files.
+**Status:** Approved 26 September 2026, with the recommended decisions below
+(D1's date is fixed at Task 5.1).
+**Starts:** Sprint 1 needs no external data and touches no v0.1 file, so it
+can start now. The later sprints follow once v0.1.5 ships. It runs alongside
+v0.1.6 (`BUILD_PLAN_v0_1_6.md`), which touches different files.
 
 `BUILD_PLAN.md`'s doctrines apply unchanged. The ones that matter most here:
 

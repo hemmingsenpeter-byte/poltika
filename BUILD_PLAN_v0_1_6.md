@@ -1,9 +1,10 @@
 # Poltika v0.1.6 Build Plan: keep v0.1 current
 
 **Date:** 26 September 2026
-**Status:** DRAFT for Pete's approval.
+**Status:** Approved 26 September 2026, with the recommended decisions below.
 **Starts:** after `v0.1.5` ships. The pilot, the GPT/Codex audit and the
-release gate come first.
+release gate come first. Task 2.1 needs nothing from v0.1.5 and can start
+now.
 **Hard deadline:** 1 April 2027.
 
 `BUILD_PLAN.md`'s doctrines apply unchanged: primary sources only, the three
@@ -48,7 +49,9 @@ Claude Code for implementation, and the other model reviews.
 ### 2. Source currency as a routine
 
 - **2.1 — Claude Code. Scheduled currency report.** A CI job, weekly and on
-  demand, runs the Phase 1 evidence report and lists:
+  demand, reads the parameter intervals and the dated `*_check` fields in
+  each source catalogue (the Phase 1 evidence report doesn't read those
+  yet) and lists:
   - every source whose last structured check is older than a set age;
   - every parameter interval ending within 90 days;
   - every `needs_review` or open-ended value.
@@ -74,9 +77,10 @@ Claude Code for implementation, and the other model reviews.
   - **No Order took effect in the year:** propose `in_work_base` 2026-27 as
     approved. The in-work tax credit and the WFF total become calculable,
     and the README's "no WFF total" limitation is removed.
-  - **An Order took effect partway through:** the year is split, which
-    the specification's rate-status table makes `unsupported` in this
-    branch. Keep it so, and record the Order date.
+  - **An Order took effect partway through:** record the instrument and
+    its date. The rate-status table makes the split-year annual amount
+    `unsupported` until its calculation is separately specified and
+    reviewed. Specifying it is new work for v0.2's backlog, not v0.1.6.
 - **3.3 — Claude Code.** Update the affected spec cases, golden households,
   golden snapshots and explanations through the protected-value process.
   Only the in-work components' expected values change.
@@ -95,7 +99,9 @@ Claude Code for implementation, and the other model reviews.
 - **4.3 — Claude Code. Implement the new year.**
   - Add the 2027-28 values as new intervals in each `policy.yaml`, never
     by editing the 2026-27 ones.
-  - Add a new reference period, or make the reference period per year.
+  - Make `reference_period` per year (D2). Today it is a single interval
+    on the policy schema (`policy_spec.py`, `policy_specs/SCHEMA.md`), and
+    both engines check against it, so this is a reviewed schema change.
   - Implement any rule changes from 4.2.
   - Carry the provenance and explanation layers forward unchanged.
 - **4.4 — GPT/Codex. 2027-28 spec cases,** hand-calculated independently
@@ -138,6 +144,8 @@ files.
   made? Recommended: prepare as soon as they are announced, and approve
   only once the instrument exists.
 - **D2:** One `policy.yaml` with multiple years, or one file per year?
-  Recommended: one file with a reference period per year. The loader
-  already selects by date.
+  Recommended: one file with a list of reference periods, one per year.
+  Parameter values are already selected by date. Only `reference_period`
+  is a single interval. A simple widening won't work: WFF requires each
+  value to span the whole reference period.
 - **D3:** Network access for this environment (Task 2.2).

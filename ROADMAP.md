@@ -4,7 +4,7 @@ This is a release-level direction, not an implementation backlog. Each release
 has a technical purpose and an exit gate. Detailed tasks belong in the active
 release's build plan; `BUILD_PLAN.md` remains the frozen authority for v0.1,
 `BUILD_PLAN_v0_1_5.md` holds v0.1.5's, and `BUILD_PLAN_v0_1_6.md` and
-`BUILD_PLAN_v0_2.md` are drafts for the next two releases.
+`BUILD_PLAN_v0_2.md` hold the next two (approved 26 September 2026).
 
 ## Planning status
 
@@ -46,7 +46,7 @@ explanation tested against the calculation and no open P0 or P1 findings.
 Every v0.1 parameter value and reference period ends on 1 April 2027. Source
 and implement the 2027-28 year, settle the 2026-27 in-work tax credit once
 the year is complete, and make source currency a scheduled check. No new
-policy or capability. `BUILD_PLAN_v0_1_6.md` holds the draft tasks.
+policy or capability. `BUILD_PLAN_v0_1_6.md` holds the tasks.
 
 **Exit gate:** Every golden household calculates for both 2026-27 and
 2027-28 from approved, sourced values, with the 2026-27 results unchanged.
@@ -72,7 +72,7 @@ Every material input retains its chain:
 
 `value -> transformation -> dataset -> source -> publication -> vintage -> retrieval date`
 
-`BUILD_PLAN_v0_2.md` holds the draft tasks: a thin manually acquired slice
+`BUILD_PLAN_v0_2.md` holds the tasks: a thin manually acquired slice
 first, then connectors.
 
 **Exit gate:** For a historical date, Poltika reconstructs the major fiscal
