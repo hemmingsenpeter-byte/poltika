@@ -63,11 +63,15 @@ Every component returns one of three outcomes:
   `household_eligibility` (both policies), `extra_instalment_status` and the
   child list (WFF) have no default. There is no date of birth, age, child
   ID, hours worked, address or rent breakdown: the caller classifies those.
+  An unverified fact makes only the components that need it `needs_review`:
+  `cash_assets=None`, for example, makes AS `needs_review` and leaves WFF
+  unchanged.
   The API rejects any unknown field with a 422.
 - **WFF covers whole years only.** Every child must be under 18 and in the
   claimant's care for the whole tax year (the MC 9 extension for some
   18-year-olds is unsupported). A part-year child, a relationship change or
-  shared care makes every WFF component `unsupported`. `excluded` can't tell
+  shared care makes every WFF component `unsupported`; mark a part-year child
+  `qualifies_whole_year=excluded`. `excluded` can't tell
   part of the year from none of it: a child who qualifies for no part of the
   year isn't a qualifying child, so don't list them.
 - **Best Start calculates one group only:** a single child born 1 April 2024
