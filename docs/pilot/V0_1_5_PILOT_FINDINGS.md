@@ -69,7 +69,9 @@ v0.1.5 does not ship with an open P0 or P1.
 | # | Case | What happened | Class | Owner | Disposition |
 | --- | --- | --- | --- | --- | --- |
 | F0 | p15 (found while building the pack, 26 Sep) | An unverified claimant link was coded as a disagreement between the policies | P1 | Claude Code | Fixed in Sprint 2 S2.2: now `COMBINED_CLAIMANT_LINK_UNVERIFIED`, naming the missing fact |
-| F1 | | | | | |
+| F1 | all AS rounding (author check, 26 Sep) | The rounding step cited AS-04; r 19 is cited by AS-07 | P2 | Claude Code | Fixed in Sprint 2 S2.5 |
+| F2 | household exclusion (author check, 26 Sep) | `AS_HOUSEHOLD_EXCLUSION` was an evidenced exclusion, though it also covers s 69 discretionary reduction | P1 | Claude Code | Fixed in Sprint 2 S2.5: now `not_modelled` |
+| F3 | | | | | |
 
 ## Pilot user
 
