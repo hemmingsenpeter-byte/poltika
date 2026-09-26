@@ -140,7 +140,11 @@ poltika/
 │                            the Task 32 store; 503 when
 │                            POLTIKA_DATABASE_URL is unset), analyst.py
 │                            (v0.1.5 Phase 6: the thin analyst page and its
-│                            example requests) — no llm/
+│                            example requests), microsim.py (v0.2 Task
+│                            10.1: population, parameters and run routes;
+│                            503 when POLTIKA_POPULATION_PATH is unset) and
+│                            microsim_page.py (v0.2 Task 10.2: the
+│                            /analyst/microsim page) — no llm/
 │                            layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
@@ -306,7 +310,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | `src/poltika/engines/assurance/` | `semantics/`, `policy/`, `scenarios/`, `engines/simulator/`, `common/` | source-specific formats/APIs |
 | `src/poltika/scenarios/` | `engines/simulator/`, `engines/assurance/`, `policy/`, `semantics/`, `common/` (Task 28.4: the combined WFF+AS runner calls both module entry points -- downstream of `engines/`, per the layer arrow above) | `data/` (raw or processed), `api/`, `llm/`, source-specific formats. **One-way rule:** `engines/` must never import `scenarios/`'s combined runner; the simulator row's permission to use `scenarios/` covers scenario *definitions* only, so no import cycle can form. |
 | `src/poltika/llm/` | `scenarios/` (to build/read a `ScenarioRequest`) | `engines/simulator/` internals, raw/processed data |
-| `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly); `scenarios/` and `engines/assurance/` for the Task 33 combined household route (`api/household.py`) and the Task 33.2 stored scenario routes (`api/scenarios.py`, via `scenarios/store.py`); `POLTIKA_POLICY_SPECS_DIR` at deploy time (ADR-0011 -- an operator-set deployment variable, not a per-request caller input) | `data/` (raw or processed), source-specific formats, a *request*-supplied policy directory path (still prohibited -- no HTTP caller may choose the policy directory) |
+| `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly); `scenarios/` and `engines/assurance/` for the Task 33 combined household route (`api/household.py`) and the Task 33.2 stored scenario routes (`api/scenarios.py`, via `scenarios/store.py`); `scenarios/microsim/` and `semantics/population.py` for the v0.2 routes (`api/microsim.py`), reading only the population file an operator sets in `POLTIKA_POPULATION_PATH`; `POLTIKA_POLICY_SPECS_DIR` at deploy time (ADR-0011 -- an operator-set deployment variable, not a per-request caller input) | `data/` (raw or processed), source-specific formats, a *request*-supplied policy directory path (still prohibited -- no HTTP caller may choose the policy directory) |
 
 Concretely: the simulator must never do
 

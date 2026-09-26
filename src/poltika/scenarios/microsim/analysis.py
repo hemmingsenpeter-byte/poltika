@@ -27,7 +27,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 
 from poltika.scenarios.microsim.runner import COMPONENTS, UNITS, HouseholdResult, PopulationRun
 from poltika.scenarios.microsim.weighting import (
@@ -39,7 +39,7 @@ from poltika.scenarios.population import dependent_children, household_type
 from poltika.semantics.population import PopulationDataset, PopulationHousehold
 
 
-class ChangeClass(str, Enum):
+class ChangeClass(StrEnum):
     GAIN = "gain"
     LOSS = "loss"
     NO_CHANGE = "no_change"

@@ -39,6 +39,11 @@ result identity changes.
   deterministic generator from a spec in which every New Zealand quantity
   and every asserted fact is an explicit input, with a calibration report
   and the synthetic label. No real spec yet: it needs Task 3.1's tables.
+- **Population API and page** (Tasks 10.1-10.2): `/microsim/population`,
+  `/microsim/parameters`, `/microsim/runs` and `/analyst/microsim`, over
+  an operator-set population file. The page shows Overview, Distribution,
+  Households, Areas, Fiscal, Evidence and Methodology tabs, with the
+  synthetic label on every one.
 
 ## Unreleased (v0.1.6: keep v0.1 current)
 
