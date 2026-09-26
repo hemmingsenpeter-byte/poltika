@@ -148,18 +148,23 @@ v0.1 through v1.0 are now a fully versioned sequence, defined in full in
 sequence and the dependency reasoning behind its order, not the detail.
 
 v0.1 (deterministic foundation) → v0.1.5 (evidence intelligence /
-pilotability) → v0.2 (authoritative data foundation) → v0.3 (policy
-interaction graph) → v0.4 (scenario engine) → v0.5 (uncertainty and
+pilotability) → v0.1.6 (keep v0.1 current) → v0.2 (static population
+microsimulation, per ADR-0014) → v0.3 (authoritative fiscal baseline and
+policy interaction graph) → v0.4 (scenario engine) → v0.5 (uncertainty and
 assurance) → v0.6 (Discovery engine) → v0.7 (Hypothesis engine) → v0.8
 (long-term NZ system model) → v0.9 (decision-intelligence product) → v1.0
 (production hardening) → beyond v1.0, an unnumbered capability-track
 sequence (Economic Digital Twin, Physical NZ, Adaptive Digital Twin,
 National Decision Intelligence).
 
-**Why this order, not another:** v0.2→v0.3→v0.4 is strictly
-dependency-ordered — no historical reconstruction or scenario comparison is
-possible without real data (v0.2) and a dependency graph to propagate a
-parameter change through (v0.3) before scenarios can be compared (v0.4).
+**Why this order, not another:** v0.2→v0.3→v0.4 is dependency-ordered.
+v0.2's static microsimulation needs only a data layer and the existing
+combined runner, because WFF and the Accommodation Supplement don't feed
+each other's income tests (AS-10, WFF DEC-003; ADR-0014). Historical
+reconstruction needs authoritative connectors and series (v0.3), and any
+policy that does feed another (income tax, benefits, wages) needs the
+dependency graph (v0.3) before it joins a scenario. Multi-year,
+multi-policy scenarios (v0.4) need both.
 v0.5 (Assurance) sits before Discovery/Hypothesis, not after: it hardens the
 deterministic core — backtesting, sensitivity, stress-testing the v0.1–v0.4
 Simulator/Scenario engine — before anything exploratory or uncertain is
@@ -172,11 +177,11 @@ candidate relationship to test it against — the Simulator promotion gate is
 specification → tests → Simulator`, and nothing re-enters the hardened
 Simulator without passing all of it.
 
-The Stats NZ API connector and equivalents are pinned to v0.2 (the
-data-foundation release) rather than left unpinned — this resolves the
-original doctrine's deliberate vagueness about "whichever later phase needs
-it" now that v0.2 concretely is that phase, not a reversal of the
-underlying principle that automation follows real need.
+The Stats NZ API connector and equivalents are pinned to v0.3 (moved from
+v0.2 by ADR-0014, since v0.2's manually acquired calibration tables don't
+need them) rather than left unpinned — this resolves the original
+doctrine's deliberate vagueness about "whichever later phase needs it", not
+a reversal of the underlying principle that automation follows real need.
 
 **v1.0 definition (testable, not aspirational):**
 Poltika v1.0 can ingest a structured package of material fiscal and policy changes

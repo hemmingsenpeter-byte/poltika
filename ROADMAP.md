@@ -3,7 +3,8 @@
 This is a release-level direction, not an implementation backlog. Each release
 has a technical purpose and an exit gate. Detailed tasks belong in the active
 release's build plan; `BUILD_PLAN.md` remains the frozen authority for v0.1,
-and `BUILD_PLAN_v0_1_5.md` holds v0.1.5's.
+`BUILD_PLAN_v0_1_5.md` holds v0.1.5's, and `BUILD_PLAN_v0_1_6.md` holds v0.1.6's
+and `BUILD_PLAN_v0_2.md` holds v0.2's (both approved 26 September 2026).
 
 ## Planning status
 
@@ -40,32 +41,46 @@ Accommodation Supplement result and find where the number came from, which
 rule and source govern it, what was assumed and what is missing, with every
 explanation tested against the calculation and no open P0 or P1 findings.
 
-## v0.2 - Authoritative data foundation
+## v0.1.6 - Keep v0.1 current
 
-Replace proof-of-concept inputs with reproducible, versioned NZ data. Add Stats
-NZ and Treasury connectors, historical fiscal and tax/transfer series, CPI,
-GDP, population, labour, wages/incomes, household demographics, and government
-revenue/expenditure. Keep a governed manual path for authoritative sources
-without APIs.
+Every v0.1 parameter value and reference period ends on 1 April 2027. Source
+and implement the 2027-28 year, settle the 2026-27 in-work tax credit once
+the year is complete, and make source currency a scheduled check. No new
+policy or capability. `BUILD_PLAN_v0_1_6.md` holds the tasks.
 
-Define canonical variables, units, frequency, nominal/real and stock/flow
-semantics, geographic/population dimensions, source vintages, mappings, schema
-versions, a data dictionary, and a transformation registry. Validate schemas,
-types, units, missing/duplicate records, ranges, continuity, revisions, and
-checksums. Separate raw, processed, and curated data; add a dataset registry,
-caching, migrations, scheduled refreshes, logging, ingestion tests, and CI.
+**Exit gate:** Every golden household calculates for both 2026-27 and
+2027-28 from approved, sourced values, with the 2026-27 results unchanged.
 
-Reconstruct historical revenue, expenditure, operating balance, debt,
-interest, nominal GDP, and debt/GDP with inflation and population scaling.
-Every material input retains its chain:
+## v0.2 - Static population microsimulation
+
+Run the unchanged v0.1 engines across a weighted population, under current
+law and a reform, and aggregate the differences. Results cover
+winners and losers, income deciles, household types, Accommodation
+Supplement areas, static entitlement cost by component, WFF and AS
+withdrawal rates, and deterministic parameter sweeps. Every figure carries
+its coverage, explanation, evidence and reproducibility record.
+
+It is built on a data layer (manifested immutable snapshots, a dataset
+registry, canonical variables, validation) and a synthetic development
+population calibrated to published tables. No output is a New Zealand
+estimate until real microdata is available. `BUILD_PLAN_v0_2.md` holds the
+tasks (ADR-0014, accepted 26 September 2026).
+
+**Exit gate:** In one reproducible run, with no code edited, a WFF reform
+produces household, distributional, area and fiscal results with weighted
+coverage, a driver explanation, evidence and a rerunnable record.
+
+## v0.3 - Authoritative fiscal baseline and policy interaction graph
+
+Add Stats NZ and Treasury connectors beneath the v0.2 data layer, with
+scheduled refreshes that propose new vintages for review. Reconstruct
+historical revenue, expenditure, operating balance, debt, interest, nominal
+GDP and debt/GDP, with inflation and population scaling. Every material
+input keeps its chain:
 
 `value -> transformation -> dataset -> source -> publication -> vintage -> retrieval date`
 
-**Exit gate:** For a historical date, Poltika reconstructs the major fiscal
-and economic baseline from authoritative NZ data and traces every material
-input.
-
-## v0.3 - Policy interaction graph
+(Moved from v0.2 by ADR-0014.)
 
 Define variables, parameters, rules, nodes, dependencies, feedback, and
 calculation order. Execute acyclic dependencies as a DAG; resolve dependencies,
@@ -78,8 +93,10 @@ population, and fiscal balance/debt. Test multi-step changes, such as a
 minimum-wage increase, and add dependency-chain explanations and frozen
 regression scenarios.
 
-**Exit gate:** One parameter change recalculates all declared downstream
-variables in the correct order, with an explainable dependency chain.
+**Exit gate:** For a historical date, Poltika reconstructs the major fiscal
+and economic baseline from authoritative NZ data and traces every material
+input. One parameter change recalculates all declared downstream variables
+in the correct order, with an explainable dependency chain.
 
 ## v0.4 - Scenario engine
 
@@ -93,6 +110,9 @@ Add deterministic run IDs, standard fiscal, household, distributional, and
 macro result schemas, and persistence for saving, cloning, rerunning,
 archiving, and comparing versions. Preserve the model commit, data and
 parameter versions, assumptions, and configuration.
+
+v0.2 already delivers single-year static reforms of WFF and the
+Accommodation Supplement (ADR-0014). v0.4 extends them to the above.
 
 **Exit gate:** An analyst can create, save, reproduce, and compare multi-policy
 NZ scenarios over time.
