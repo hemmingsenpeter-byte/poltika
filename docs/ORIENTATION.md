@@ -20,6 +20,21 @@ explanations on top without changing any amount: calculation steps with
 intermediate values, reason codes, deterministic explanations, and an
 analyst web page.
 
+On top of that core, later versions add, still without changing any
+household amount:
+
+- **v0.2 (`BUILD_PLAN_v0_2.md`):** a `data/` layer of manifest-tracked raw
+  snapshots and canonical variables (`src/poltika/data/`), population
+  microsimulation over many households (`scenarios/population.py`,
+  `scenarios/microsim/`: synthetic populations, validation, weighting,
+  reforms, runs, analysis), and `/microsim` routes and page. Every output
+  from a synthetic population is labelled as not an estimate for New
+  Zealand.
+- **v0.3 (`BUILD_PLAN_v0_3.md`):** conditional answers
+  (`scenarios/conditional.py`, ADR-0016): when a finite-domain fact is
+  unknown, the household is rerun once per possible answer. The base result
+  stays `needs_review`; branches are labelled as conditional.
+
 Not modelled: income tax, instalments or square-up, other benefits, any
 policy not listed above. Results are conditional simulations built from
 facts the caller asserts. They are not entitlement determinations.
@@ -164,7 +179,7 @@ uv run --extra dev uvicorn poltika.api.main:app    # routes at /docs; analyst pa
 
 Routes: `POST /wff/calculate`, `POST /accommodation-supplement/calculate`,
 `POST /household/calculate`, `/analyst` (page, examples, pilot cases,
-evidence), and `/scenarios` (stored runs; these need `POLTIKA_DATABASE_URL`
+evidence), `/microsim` (population, parameters, runs, and a page), and `/scenarios` (stored runs; these need `POLTIKA_DATABASE_URL`
 and return 503 without it). `docs/pilot/GUIDE.md` runs it in Docker.
 
 The demo household through the API, with no server needed:
@@ -243,7 +258,7 @@ lookup_date, scenario, requested_policy_version=..., assessment_week=...)`.
 | Running scenarios or answering questions | This page and `docs/demo/v0_1/` |
 | Checking or explaining a result | Also the calculation sequence in the policy's `specification.md`, and its `decisions/` |
 | Changing policy logic or statutory values | CLAUDE.md's full list: `BUILD_PLAN.md`, `ARCHITECTURE.md`, `REPOSITORY_STRUCTURE.md`, `doctrine/` and the policy's specification. Protected expected values follow `doctrine/test-doctrine.md` |
-| Current work | `BUILD_PLAN_v0_1_5.md` |
+| Current work | The latest `BUILD_PLAN_v*.md` (v0.1.5, v0.1.6, v0.2, v0.3) and its status table |
 | Opening or reviewing a PR | `.claude/skills/pr-review-preflight/SKILL.md` and `doctrine/review-doctrine.md` |
 
 ## Keeping this page current
