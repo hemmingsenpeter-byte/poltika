@@ -31,6 +31,10 @@ result identity changes.
   types, children, regions and AS areas, per-component fiscal totals with
   coverage, per-policy withdrawal paths, and parameter sweeps. Every table
   names its component set and unit, and reports what it left out.
+- **Population explanations** (Task 9.1): a deterministic account of a
+  run, rendered from recorded figures only, with `verify()` checking every
+  figure against the run. The run records each assumed value with the
+  baseline value and source it replaced.
 
 ## Unreleased (v0.1.6: keep v0.1 current)
 

@@ -86,6 +86,21 @@ class HouseholdResult:
 
 
 @dataclass(frozen=True)
+class OverriddenParameter:
+    """What a reform changed, with the baseline's evidence (R7, Module T)."""
+
+    policy_id: str
+    parameter_id: str
+    modelled_date: str
+    unit: str | None
+    baseline_outcome: str
+    baseline_value: Decimal | None
+    baseline_source_id: str | None
+    baseline_locator: str | None
+    reform_value: Decimal
+
+
+@dataclass(frozen=True)
 class PopulationRun:
     run_id: str
     results_sha256: str
@@ -97,6 +112,7 @@ class PopulationRun:
     reform: Reform
     code: CodeIdentity
     policy_artifacts: tuple[tuple[str, str], ...]
+    overridden: tuple[OverriddenParameter, ...]
     validation: PopulationValidation
     households: tuple[HouseholdResult, ...]  # invalid households are not run
 
@@ -154,6 +170,25 @@ def run_population(
             for path, sha in baseline.artifact_sha256.items()
         }
     )
+    overridden = sorted(
+        {
+            OverriddenParameter(
+                policy_id=baseline.policy_id,
+                parameter_id=pid,
+                modelled_date=baseline.modelled_date.isoformat(),
+                unit=before.unit,
+                baseline_outcome=before.outcome,
+                baseline_value=before.value,
+                baseline_source_id=before.source_id,
+                baseline_locator=before.locator,
+                reform_value=after.value,
+            )
+            for baseline, reformed in loaded.values()
+            for pid, after in reformed.resolutions.items()
+            if (before := baseline.resolutions[pid]) != after and after.value is not None
+        },
+        key=lambda o: (o.policy_id, o.parameter_id, o.modelled_date),
+    )
     population_sha = population.content_sha256()
     run_id = _sha256(
         {
@@ -175,6 +210,7 @@ def run_population(
         reform=reform,
         code=code,
         policy_artifacts=tuple(artifacts),
+        overridden=tuple(overridden),
         validation=validation,
         households=households,
     )
