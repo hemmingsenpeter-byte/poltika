@@ -110,5 +110,7 @@ class PopulationDataset(BaseModel):
 
     def content_sha256(self) -> str:
         """The population's identity, recorded in every run that uses it."""
-        canonical = json.dumps(self.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+        content = self.model_dump(mode="json")
+        content["households"].sort(key=lambda h: h["household_id"])
+        canonical = json.dumps(content, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

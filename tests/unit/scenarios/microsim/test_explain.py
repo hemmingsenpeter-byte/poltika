@@ -26,6 +26,20 @@ from tests.unit.scenarios.test_scenario_record import record_from_yaml
 FTC = ("family_tax_credit",)
 
 
+def test_all_invalid_population_still_has_a_verified_explanation() -> None:
+    population = _population()
+    population = population.model_copy(update={
+        "households": tuple(h.model_copy(update={"facts": {}}) for h in population.households)
+    })
+    run = run_population(population, THRESHOLD, WFF_POLICY_DIR, AS_POLICY_DIR,
+                         code=CodeIdentity("t", None, None, None))
+    assert not run.households
+    explanation = explain_population(population, run, FTC)
+    assert verify(explanation, population, run) == []
+    assert "0 households ran" in render_text(explanation)
+    assert "left out as invalid" in render_text(explanation)
+
+
 @pytest.fixture(scope="module")
 def population_and_run() -> tuple[PopulationDataset, PopulationRun]:
     population = _population()

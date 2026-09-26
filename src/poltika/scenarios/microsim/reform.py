@@ -134,6 +134,12 @@ def _overridden(
         value = baseline.value * override.value
     if value < 0:
         raise InvalidReformError(f"{where}: the result {value} is negative")
+    if (
+        override.policy_id == "accommodation_supplement"
+        and override.parameter_id == "asset_imputation_step_size"
+        and value == 0
+    ):
+        raise InvalidReformError(f"{where}: the divisor must be positive")
     if baseline.unit in _RATE_UNITS and value > 1:
         raise InvalidReformError(f"{where}: the result {value} is a rate above 1")
     if baseline.effective_from is None:

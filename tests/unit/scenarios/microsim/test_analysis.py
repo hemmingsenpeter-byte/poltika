@@ -153,6 +153,11 @@ def test_component_set_must_share_a_unit() -> None:
         component_set_unit(("nope",))
 
 
+def test_duplicate_components_cannot_double_the_gain() -> None:
+    with pytest.raises(ValueError, match="duplicate"):
+        overall(_population(), _run(), FTC * 2)
+
+
 def test_a_set_is_calculated_only_if_every_member_is() -> None:
     mixed = _result(
         "m", "1", _delta("0", "10"), in_work_tax_credit=_delta(None, None, "needs_review")

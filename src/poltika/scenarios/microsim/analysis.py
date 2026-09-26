@@ -25,7 +25,7 @@ left out of the decile table and counted.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from decimal import Decimal
 from enum import StrEnum
 
@@ -95,6 +95,8 @@ class ComponentFiscal:
 
 
 def component_set_unit(components: Sequence[str]) -> str:
+    if len(set(components)) != len(components):
+        raise ValueError("duplicate components are not allowed")
     unknown = [c for c in components if c not in COMPONENTS]
     if unknown or not components:
         raise ValueError(f"unknown or empty component set: {unknown or components}")
@@ -184,7 +186,8 @@ def _grouped(
 def overall(
     population: PopulationDataset, run: PopulationRun, components: Sequence[str]
 ) -> GroupedTable:
-    return _grouped(population, run, components, "all", lambda _h, _r: "all", "")
+    table = _grouped(population, run, components, "all", lambda _h, _r: "all", "")
+    return replace(table, groups=table.groups or {"all": summarise([])})
 
 
 def by_decile(
