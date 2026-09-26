@@ -8,6 +8,19 @@ and `BUILD_PLAN_v0_2.md` holds v0.2's (both approved 26 September 2026).
 
 ## Planning status
 
+**Proposed change (ADR-0015, not yet accepted):** `ROADMAP_REALIGNMENT.md`
+proposes the following order:
+
+- v0.3: income tax, main benefits and the household graph;
+- v0.4: scenarios;
+- v0.5: assurance plus the historical baseline;
+- v0.6: long-term fiscal model;
+- v0.7: product;
+- v1.0.
+
+Discovery and Hypothesis would move after v1.0. The sections below stay
+as they are until Pete decides.
+
 Operative. The sequence below superseded the Roadmap Doctrine's original
 capability-sequence framing per ADR-0008 (2026-09-21), which records the
 dependency reasoning for this specific order — see BUILD_PLAN.md's Roadmap
