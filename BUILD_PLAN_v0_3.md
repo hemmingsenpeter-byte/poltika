@@ -127,6 +127,62 @@ it. That shape is the aim, not an assumed rule. v0.3 delivers:
   check that still means something (for example two agencies' different
   definitions of the same concept) is kept and named.
 
+### Phase 1b: intake questions and conditional answers (ADR-0016)
+
+Built on WFF and the Accommodation Supplement first, so every Tier 1
+domain is born with it.
+
+- **1b.1 — GPT/Codex writes the wording, Claude Code the schema. Fact
+  catalogues.** `policy_specs/<policy>/facts.yaml` for WFF and the
+  Accommodation Supplement. Each entry has:
+  - an id matching the engine's `missing_facts`;
+  - a plain-language question;
+  - admissible values;
+  - the governing rule id;
+  - optional per-component monotonicity with its rule id.
+
+  Tests: every `missing_facts` id an engine can emit has an entry, and
+  every domain matches the engine's input type.
+- **1b.2 — Claude Code. Conditional answers**
+  (`scenarios/conditional.py`):
+  - joint branches over finite missing facts, each an ordinary engine run
+    with its own verified explanation;
+  - a branch cap, with high-impact facts first;
+  - bounds when every branch is calculated, and an explicit partial range
+    otherwise;
+  - numeric ranges evaluated only where a component is declared monotone;
+  - unresolved parameters branched only over candidate values the
+    specification records, labelled as scenario assumptions;
+  - `next_question`.
+- **1b.3 — Claude Code. Differential and property tests:**
+  - every branch equals a direct engine run with that fact supplied;
+  - any value inside a monotone range falls within the reported bounds
+    (Hypothesis);
+  - no conditional result is ever `calculated`;
+  - totals are summed only within one joint assignment.
+- **1b.4 — Claude Code. Intake planner** (`scenarios/intake.py`). Given
+  partial facts and the question asked, it:
+  - returns the next question ranked by impact;
+  - records "don't know" as `unknown` (asked and declined), distinct
+    from never asked;
+  - stops when nothing blocking remains.
+
+  Tests: the planner's question order is deterministic, and supplying its
+  questions' answers reaches a fully calculated result on every golden
+  household.
+- **1b.5 — Claude Code. API and page.**
+  - `resolution` on calculation responses.
+  - `POST /household/intake`, returning the next question or "ready".
+  - The analyst page asks the questions first, then shows branches,
+    ranges and the next question. The page and any LLM front end only
+    phrase catalogue questions and map replies to admissible values, with
+    confirmation. They never choose values or calculate
+    (`doctrine/llm_boundaries.md`).
+- **1b.6 — Claude Code. Population ranges.** The microsimulation reports
+  the calculated total, the low-to-high range from `needs_review`
+  households' bounds, and the unboundable weight. They are always
+  separate, never added.
+
 ### Phase 2: income tax (v0.1 method)
 
 Follow the `new-policy` skill's five PRs: sources and specification,
@@ -216,7 +272,7 @@ least one where the benefit's result changes another policy's input.
 | Sprint | Work |
 | --- | --- |
 | 0 | Phase 0 (sourcing and decisions); W4.2 prototype in parallel |
-| 1 | Phase 1; Phase 2 sources and specification |
+| 1 | Phase 1; Phase 1b; Phase 2 sources and specification |
 | 2 | Phase 2 implementation; Phase 3 sources and specification (pipelined, W2.4) |
 | 3 | Phase 3 implementation; Phase 4 |
 | 4 | Phase 5; Phase 6 |
@@ -224,6 +280,11 @@ least one where the benefit's result changes another policy's input.
 
 ## Exit gate
 
+- **Every modelled component** can say what it is missing: each
+  `missing_facts` id has a catalogue question. An unresolved household
+  gets branches or bounds instead of a bare `needs_review`, and the
+  intake planner's questions reach a full calculation for every golden
+  household.
 - **Income tax and all three core main benefits** are specified,
   implemented, independently reviewed and benchmarked to v0.1's
   standard.
@@ -262,6 +323,9 @@ least one where the benefit's result changes another policy's input.
 - **D1:** Each Tier 1 domain's supported slice, from Phase 0's sourcing.
 - **D2:** The disposable-income definition (0.4).
 - **D3:** The income-adequacy measures to report (5.3).
+- **D5:** Accept ADR-0016 (intake questions and conditional answers),
+  including the branch cap (32 proposed) and the population-range
+  reporting. Recommended.
 - **D4 (decided 26 September 2026):** v0.3 ships with all three core
   main benefits (W10 Tier 1). Tier 2 domains follow as v0.3.x coverage
   releases.

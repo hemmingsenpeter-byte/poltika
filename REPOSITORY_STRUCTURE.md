@@ -39,6 +39,7 @@ poltika/
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
 ├── adr/               — architecture decisions with rationale and context
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
+│                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also

@@ -88,7 +88,10 @@ household model that holds each fact once. Order policy calculations per
 household in a dependency graph whose every edge comes from a
 specification, refuse unresolved cycles, and explain dependency chains.
 Produce disposable income, effective marginal tax rates and sourced
-income-adequacy measures for supported households. Make Poltika runnable
+income-adequacy measures for supported households. Ask for missing facts
+before running, most important first. Where some stay missing, return
+engine-computed branches and bounds instead of a bare "needs review"
+(ADR-0016). Make Poltika runnable
 inside a secure data environment that exports only checked aggregates.
 `BUILD_PLAN_v0_3.md` holds the tasks (ADR-0015).
 
