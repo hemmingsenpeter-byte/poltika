@@ -15,6 +15,12 @@ result identity changes.
   are scenario records, so a population household runs through the same
   path as a single one. Synthetic populations must carry the synthetic
   label.
+- **Validation, weighting and reforms** (Phases 4-6): record checks with
+  weighted status summaries; weighted totals, means and quantiles defined
+  once; reforms as `set`/`add`/`multiply` overrides of the loaded
+  parameters, labelled `scenario_assumption` in every trace. The engines
+  accept preloaded parameters, so a population run loads each policy
+  once. Results on the default path are unchanged.
 
 ## Unreleased (v0.1.6: keep v0.1 current)
 

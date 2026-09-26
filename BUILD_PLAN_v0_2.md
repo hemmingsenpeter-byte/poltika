@@ -247,6 +247,9 @@ All Claude Code. Every figure carries its coverage (R4).
 | Phase 1 (1.1-1.7) | Done. `src/poltika/data/`, `data/`, `semantics/variables.py`, the `data-snapshot-guard` workflow and `tests/unit/data/`. Raw snapshots are committed rather than gitignored, so the registry can verify them. No real dataset yet: the dictionary is empty until 3.1 names the publications. |
 | 2.1-2.2 | Done. `semantics/population.py` and `scenarios/population.py`. One family per household (the family is the household's facts). Facts use the stored scenario-record form, so the adapter is `record_from_plain`, moved from `store.py` to `record.py`. |
 | 2.3 | Open (GPT/Codex review of the adapter's mapping). |
+| 4.1 | Done. `scenarios/microsim/validation.py`: invalid, needs_review, warning and valid, with weighted summaries. A dependent-child count mismatch is a warning, not an error, because WFF and AS define a dependent child differently. 4.2 (component coverage) is built from run results in Phase 7. |
+| 5.1 | Done. `scenarios/microsim/weighting.py`: the weighted quantile is the lower inverse of the weighted distribution, with no interpolation. |
+| 6.1-6.3 | Done. `scenarios/microsim/reform.py`, plus an optional preloaded `parameters` argument on `run_wff_module`, `run_as_module` and `run_combined_household`. It is refused for another date or version, and every v0.1 result is byte-identical on the default path. Reform values are `scenario_assumption` with no source, in every trace. A reform isn't yet stored through the Task 32 store: it is recorded in the Phase 7 run record. |
 
 ## Sequence
 

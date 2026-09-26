@@ -41,6 +41,7 @@ from poltika.engines.simulator.wff import (
     WffScenario,
     run_wff_module,
 )
+from poltika.policy.loader import PolicyParameterSet
 
 # AS partner types that describe a couple for the partner-status comparison.
 # community_spouse_or_partner is deliberately not compared (Pete's Task 28.3
@@ -177,12 +178,19 @@ def run_combined_household(
     assessment_week: AssessmentWeek,
     requested_wff_policy_version: str,
     requested_as_policy_version: str,
+    wff_parameters: PolicyParameterSet | None = None,
+    as_parameters: PolicyParameterSet | None = None,
 ) -> CombinedResult:
     """Run WFF for its tax year and AS for `assessment_week`, then apply the
     Task 28.3 shared-fact checks. Every date and version is explicit; there
-    is no default household period."""
+    is no default household period. v0.2: either module's parameters may be
+    passed already loaded (see `run_wff_module()`)."""
     wff_result = run_wff_module(
-        wff_policy_dir, wff_lookup_date, scenario.wff, requested_policy_version=requested_wff_policy_version
+        wff_policy_dir,
+        wff_lookup_date,
+        scenario.wff,
+        requested_policy_version=requested_wff_policy_version,
+        parameters=wff_parameters,
     )
     as_result = run_as_module(
         as_policy_dir,
@@ -190,6 +198,7 @@ def run_combined_household(
         scenario.accommodation_supplement,
         requested_policy_version=requested_as_policy_version,
         assessment_week=assessment_week,
+        parameters=as_parameters,
     )
     # The WFF module records the tax year it assessed on every component's
     # trace, from the same policy file its parameters came from.

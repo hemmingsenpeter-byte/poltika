@@ -50,7 +50,12 @@ from poltika.engines.simulator.trace import (
     recording_parameters,
     trace_header,
 )
-from poltika.policy.loader import PolicyParameterSet, load_bound_policy_spec, load_policy_parameters
+from poltika.policy.loader import (
+    PolicyParameterSet,
+    check_preloaded_parameters,
+    load_bound_policy_spec,
+    load_policy_parameters,
+)
 from poltika.semantics.schemas.policy_spec import PolicySpec, ReferencePeriod, covers
 
 
@@ -1065,6 +1070,7 @@ def run_wff_module(
     scenario: WffScenario,
     *,
     requested_policy_version: str,
+    parameters: PolicyParameterSet | None = None,
 ) -> WffResult:
     """Task 20: the WFF module's integration entry point.
 
@@ -1091,13 +1097,23 @@ def run_wff_module(
     raising, consistent with this module's existing "never a silent zero,
     always a reason" discipline.
 
+    v0.2 (`BUILD_PLAN_v0_2.md` Phase 6): a caller running many households
+    may pass `parameters` already loaded from this `policy_dir` for this
+    date and version (or a reform copy of them), instead of reloading per
+    call. They must still be bound to this directory's `policy.yaml`, which
+    `load_bound_policy_spec()` checks, and every module invariant below
+    still applies.
+
     No cross-module `dependencies` -- WFF v0.1 is single-module
     integration (ARCHITECTURE.md's Simulation module contract explicitly
     notes cross-module dependencies are v0.3's job, not this task's).
     """
-    parameters = load_policy_parameters(
-        policy_dir, modelled_date, requested_policy_version=requested_policy_version
-    )
+    if parameters is None:
+        parameters = load_policy_parameters(
+            policy_dir, modelled_date, requested_policy_version=requested_policy_version
+        )
+    else:
+        check_preloaded_parameters(parameters, modelled_date, requested_policy_version)
 
     spec = load_bound_policy_spec(policy_dir, parameters)
 

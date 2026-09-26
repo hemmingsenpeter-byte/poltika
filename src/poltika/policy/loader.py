@@ -244,6 +244,24 @@ def load_policy_parameters(
     )
 
 
+def check_preloaded_parameters(
+    parameters: PolicyParameterSet, modelled_date: date, requested_policy_version: str
+) -> None:
+    """v0.2: a module given parameters loaded earlier (a population run
+    loads them once) refuses a set resolved for another date or version, so
+    passing them in can't change what a module calculates. Binding to the
+    policy directory's files is still checked by `load_bound_policy_spec()`."""
+    if parameters.modelled_date != modelled_date:
+        raise ValueError(
+            f"parameters were resolved for {parameters.modelled_date}, not {modelled_date}"
+        )
+    if parameters.policy_version != requested_policy_version:
+        raise PolicyVersionMismatchError(
+            f"parameters are policy_version '{parameters.policy_version}', "
+            f"not the requested '{requested_policy_version}'"
+        )
+
+
 def _specification_and_decision_hashes(policy_dir: Path) -> dict[str, str]:
     """Hashes of the rule and decision texts a provenance report resolves
     against (Task 31.3), bound when the parameters are loaded rather than
