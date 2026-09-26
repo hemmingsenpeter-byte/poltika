@@ -1,8 +1,9 @@
 # ADR-0016: Intake questions and conditional answers for missing facts
 
 **Date:** 26 September 2026
-**Status:** proposed. Drafted by Claude Code from Pete's request of
-26 September 2026, for Pete's decision (`BUILD_PLAN_v0_3.md` D5).
+**Status:** accepted. Pete accepted it on 26 September 2026 ("accept 107"),
+with the 32-branch cap and population ranges (`BUILD_PLAN_v0_3.md` D5).
+Drafted by Claude Code.
 
 ## Context
 

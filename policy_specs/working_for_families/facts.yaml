@@ -1,0 +1,140 @@
+# Fact catalogue (ADR-0016, v0.3 Task 1b.1). One entry per fact the WFF engine
+# can report in `missing_facts`. Not a statutory file: no rate, threshold or
+# rule is stated here. Question wording is drafted from the engine's field
+# definitions and specification.md, and awaits GPT/Codex wording review.
+schema_version: "0.1"
+policy_id: working_for_families
+wording_status: drafted
+facts:
+  - id: household_eligibility
+    scope: wff
+    rule: WFF-01
+    question: >-
+      Has it been verified that the claimant meets the family-scheme criteria
+      for the whole tax year (residence, principal care of the children, no
+      competing caregiver or relationship change)?
+    kind: fact_status
+    answers: {verified: "Yes, verified", excluded: "No, not met"}
+  - id: extra_instalment_status
+    scope: wff
+    rule: WFF-09
+    question: >-
+      Is this tax year an extra-instalment year (27 fortnights or 53 weeks)
+      for the household's payments?
+    kind: fact_status
+    answers: {verified: "No, not an extra-instalment year", excluded: "Yes, it is"}
+  - id: partner_status
+    scope: wff
+    rule: WFF-02
+    question: Does the claimant have a partner for the tax year?
+    kind: enum
+    values: {single: "No partner", partnered: "Has a partner"}
+  - id: family_scheme_income
+    scope: wff
+    rule: WFF-02
+    question: >-
+      What is the claimant's (and any partner's) verified family scheme income
+      for the tax year?
+    kind: money
+    unit: NZD per tax year
+  - id: family_scheme_income.partner_amount
+    scope: wff
+    rule: WFF-02
+    question: What is the partner's verified family scheme income for the tax year?
+    kind: money
+    unit: NZD per tax year
+  - id: net_family_scheme_income
+    scope: wff
+    rule: WFF-05
+    question: >-
+      What is the family's after-tax (net) family scheme income for the tax
+      year, derived as the minimum family tax credit requires?
+    kind: money
+    unit: NZD per tax year after tax
+  - id: net_family_scheme_income_me3_attested
+    scope: wff
+    rule: WFF-05
+    question: >-
+      Has the net family scheme income been derived as section ME 3 requires
+      (adjusted income less adjusted tax liability), not just labelled after
+      tax?
+    kind: attestation
+  - id: mc6a_veterans_payment
+    scope: wff
+    rule: WFF-06
+    question: >-
+      Was a specified veterans' payment received during the relationship
+      period?
+    kind: fact_status
+    answers: {verified: "No such payment", excluded: "Yes, such a payment"}
+  - id: mc6b_disqualifying_payment
+    scope: wff
+    rule: WFF-08
+    question: >-
+      Was a main benefit, parent's allowance or children's pension received
+      during the relationship period?
+    kind: fact_status
+    answers: {verified: "No", excluded: "Yes"}
+  - id: in_work_eligibility
+    scope: wff
+    rule: WFF-04
+    question: >-
+      Has it been verified that the family meets the in-work tax credit
+      conditions for the whole year (a qualifying earner, with no main benefit
+      or Student Allowance period and no unpaid work break)?
+    kind: fact_status
+    answers: {verified: "Yes, verified", excluded: "No, not met"}
+  - id: ftc_iwtc_protected_or_direct_abatement
+    scope: wff
+    rule: WFF-03
+    question: >-
+      Does a protected family tax credit or direct in-work abatement case apply
+      to this family?
+    kind: fact_status
+    answers: {verified: "No, it does not apply", excluded: "Yes, it applies"}
+  - id: minimum_family_full_time_earner_weeks
+    scope: wff
+    rule: WFF-05
+    question: >-
+      Has it been verified that the family had 52 full-time-earner weeks in
+      the tax year, with no Commissioner-determined employment period or
+      part-week case?
+    kind: fact_status
+    answers: {verified: "Yes, verified", excluded: "No"}
+  - id: best_start_no_shared_care
+    scope: wff
+    rule: WFF-07
+    question: Is any child in shared care for Best Start purposes?
+    kind: fact_status
+    answers: {verified: "No shared care", excluded: "Yes, shared care"}
+  - id: best_start_protected_credit
+    scope: wff
+    rule: WFF-06
+    question: Does a protected Best Start credit month apply?
+    kind: fact_status
+    answers: {verified: "No, it does not apply", excluded: "Yes, it applies"}
+  - id: children.qualifies_whole_year
+    scope: wff
+    rule: WFF-01
+    question: >-
+      Is this child under 18 and in the claimant's full care throughout the tax
+      year?
+    kind: fact_status
+    answers: {verified: "Yes", excluded: "No"}
+  - id: children.best_start_cohort
+    scope: wff
+    rule: WFF-06
+    question: Which Best Start group is this child in?
+    kind: enum
+    values:
+      in_supported_cohort: "In the supported Best Start cohort"
+      outside_best_start_entitlement: "Outside Best Start entitlement"
+      other_cohort_unsupported: "Another cohort (not modelled)"
+  - id: children.best_start_no_disqualifying_payment
+    scope: wff
+    rule: WFF-06
+    question: >-
+      Has a same-child parental leave or preterm baby payment, parental tax
+      credit or specified veterans' payment been received for this child?
+    kind: fact_status
+    answers: {verified: "No such payment", excluded: "Yes, such a payment"}
