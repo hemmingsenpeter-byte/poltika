@@ -215,9 +215,9 @@ def run_combined_household(
         if contradictions:
             reason = "combined household run: shared facts disagree -- " + "; ".join(contradictions)
             wff_result = WffResult(
-                **{f.name: _flag(getattr(wff_result, f.name), reason) for f in fields(WffResult)}
+                **{f.name: _flag(getattr(wff_result, f.name), reason, scenario, contradictions) for f in fields(WffResult)}
             )
-            as_result = _flag(as_result, reason)
+            as_result = _flag(as_result, reason, scenario, contradictions)
 
     return CombinedResult(
         wff=wff_result,
@@ -230,12 +230,24 @@ def run_combined_household(
     )
 
 
-def _flag(result: ComponentResult, reason: str) -> ComponentResult:
+def _flag(
+    result: ComponentResult, reason: str, scenario: CombinedHouseholdScenario, contradictions: tuple[str, ...]
+) -> ComponentResult:
     """A disagreement makes a component `needs_review`, except one already
-    `unsupported`, which is kept (Task 28.3 contract precedence)."""
+    `unsupported`, which is kept (Task 28.3 contract precedence).
+
+    v0.1.5 S2.2 finding: an unverified claimant link is a missing fact, not
+    a disagreement, so when it is the only check that failed the code says
+    so and names the fact; any real disagreement keeps the disagreement code."""
     if result.outcome == "unsupported":
         return result
-    return _replace(result, "needs_review", reason, "COMBINED_SHARED_FACTS_DISAGREE")
+    link_unverified = scenario.as_claimant_is_wff_claimant_or_partner == FactStatus.UNKNOWN
+    only_link = link_unverified and len(contradictions) == 1
+    code = "COMBINED_CLAIMANT_LINK_UNVERIFIED" if only_link else "COMBINED_SHARED_FACTS_DISAGREE"
+    flagged = _replace(result, "needs_review", reason, code)
+    if link_unverified:
+        flagged = replace(flagged, missing_facts=("as_claimant_is_wff_claimant_or_partner",))
+    return flagged
 
 
 def _replace(result: ComponentResult, outcome: ComponentOutcome, reason: str, code: str) -> ComponentResult:
