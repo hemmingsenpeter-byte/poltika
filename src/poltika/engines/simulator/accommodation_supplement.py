@@ -48,7 +48,12 @@ from poltika.engines.simulator.trace import (
     recording_parameters,
     trace_header,
 )
-from poltika.policy.loader import PolicyParameterSet, load_bound_policy_spec, load_policy_parameters
+from poltika.policy.loader import (
+    PolicyParameterSet,
+    check_preloaded_parameters,
+    load_bound_policy_spec,
+    load_policy_parameters,
+)
 from poltika.semantics.schemas.policy_spec import PolicySpec, covers
 
 
@@ -923,6 +928,7 @@ def run_as_module(
     *,
     requested_policy_version: str,
     assessment_week: AssessmentWeek,
+    parameters: PolicyParameterSet | None = None,
 ) -> ComponentResult:
     """Task 24.7: the Accommodation Supplement module's integration entry
     point, mirroring `wff.py`'s `run_wff_module()` (Task 20) for AS's
@@ -957,10 +963,16 @@ def run_as_module(
     No cross-module `dependencies` -- like WFF, AS v0.1 is single-module
     integration (ARCHITECTURE.md's Simulation module contract notes
     cross-module dependencies are v0.3's job, not this task's).
+
+    v0.2: `parameters` may be passed already loaded, as for
+    `run_wff_module()`.
     """
-    parameters = load_policy_parameters(
-        policy_dir, modelled_date, requested_policy_version=requested_policy_version
-    )
+    if parameters is None:
+        parameters = load_policy_parameters(
+            policy_dir, modelled_date, requested_policy_version=requested_policy_version
+        )
+    else:
+        check_preloaded_parameters(parameters, modelled_date, requested_policy_version)
 
     assessment_period = (assessment_week.start, assessment_week.end)
     spec = load_bound_policy_spec(policy_dir, parameters)

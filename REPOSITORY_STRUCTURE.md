@@ -98,6 +98,10 @@ poltika/
 │   │                        record_from_plain);
 │   │                        population.py (v0.2 Task 2.2: population
 │   │                        household → ScenarioRecord, household types);
+│   │                        microsim/ (v0.2 static microsimulation:
+│   │                        validation.py record checks, weighting.py
+│   │                        weighted statistics, reform.py overrides of
+│   │                        loaded parameters -- never a second engine);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
 │   │                        addressed artifact bytes, replay, drift re-run;
@@ -147,7 +151,8 @@ poltika/
     │   │                        tests (Task 32; marked postgres, start a
     │   │                        throwaway server from initdb/pg_ctl on PATH,
     │   │                        skipped when absent), population schema and
-    │   │                        adapter tests (v0.2 Tasks 2.1-2.2)
+    │   │                        adapter tests (v0.2 Tasks 2.1-2.2); microsim/
+    │   │                        validation, weighting and reform tests
     │   ├── data/              — v0.2 Phase 1: manifest, registry, context and
     │   │                        dependency-boundary tests on synthetic snapshots
     │   ├── engines/assurance/ — provenance report tests (Task 31)
