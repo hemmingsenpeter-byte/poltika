@@ -245,6 +245,12 @@ def verify(explanation: Explanation, result: ComponentResult) -> list[str]:
     in order, and that every number in a step's sentence is one of that
     step's own recorded values."""
     problems: list[str] = []
+    if result.trace is None:
+        return ["result has no trace to verify"]
+    expected = explain(result.trace.component_id, result)
+    for name in ("component_id", "summary", "assumptions", "evidence", "code", "category", "missing_facts"):
+        if getattr(explanation, name) != getattr(expected, name):
+            problems.append(f"{name} does not match the recorded result")
     if explanation.outcome != result.outcome:
         problems.append(f"outcome {explanation.outcome} != {result.outcome}")
     if explanation.value != plain(result.value):
@@ -257,6 +263,10 @@ def verify(explanation: Explanation, result: ComponentResult) -> list[str]:
         problems.append("explained steps are not the recorded steps")
         return problems
     for explained, step in zip(explanation.steps, recorded):
+        if explained.rule_id != step.rule_id:
+            problems.append(f"{step.step_id}: rule does not match the recorded rule")
+        if explained.text != render_step(step):
+            problems.append(f"{step.step_id}: text does not match the recorded step")
         allowed = {str(plain(v)) for _, v in step.inputs} | {str(plain(step.result))}
         for number in _NUMBER.findall(explained.text.replace("$", " ")):
             if number not in allowed:

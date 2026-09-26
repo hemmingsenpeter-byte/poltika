@@ -78,6 +78,18 @@ def evidence_coverage(policy_dir: Path) -> dict[str, Any]:
             problems.append(f"rule {rule_id} cites no primary legislation")
         rules.append({"rule_id": rule_id, "sources": cited, "cites_primary_legislation": primary})
 
+    required_rules = {
+        rule_id
+        for section in (spec.assessment, *spec.inputs, *spec.components)
+        for rule_ids in [section.get("source_rule_ids", [])]
+        if isinstance(rule_ids, list)
+        for rule_id in rule_ids
+        if isinstance(rule_id, str)
+    }
+    recorded_rules = {r["rule_id"] for r in rules}
+    for rule_id in sorted(required_rules - recorded_rules):
+        problems.append(f"rule {rule_id} referenced by policy.yaml is missing from the specification table")
+
     approved = [p for p in parameters if p["review_status"] == "approved"]
     return {
         "policy_id": spec.policy_id,
