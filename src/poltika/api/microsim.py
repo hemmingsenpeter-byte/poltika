@@ -12,6 +12,8 @@ the other routes still work.
   validation summary, fiscal and grouped tables for a component set, and
   the verified explanation.
 - `GET /microsim/runs/{run_id}`: a run returned earlier by this process.
+  `component_set` query parameters select the measure (family tax credit
+  by default), independently of other callers' requests for the same run.
   Runs are kept in memory only, so they are gone after a restart.
   Rerunning the same inputs gives the same `run_id` and `results_sha256`.
 
@@ -27,7 +29,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi import Path as PathParam
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -46,7 +48,7 @@ from poltika.semantics.population import PopulationDataset
 router = APIRouter(prefix="/microsim", tags=["microsim"])
 
 RunId = Annotated[str, PathParam(pattern=r"^[0-9a-f]{64}$")]
-_RUNS: dict[str, dict[str, Any]] = {}
+_RUNS: dict[str, tuple[PopulationDataset, PopulationRun]] = {}
 _RUN_LIMIT = 32
 
 
@@ -130,19 +132,28 @@ def create_run(request: RunRequest) -> dict[str, Any]:
     except (UnsupportedReformError, InvalidReformError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     body = _summary(p, run, request.component_set)
-    if len(_RUNS) >= _RUN_LIMIT:
+    if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
         _RUNS.pop(next(iter(_RUNS)))
-    _RUNS[run.run_id] = body
+    _RUNS[run.run_id] = (p, run)
     return body
 
 
 @router.get("/runs/{run_id}")
-def fetch_run(run_id: RunId) -> dict[str, Any]:
+def fetch_run(
+    run_id: RunId,
+    component_set: Annotated[list[str] | None, Query()] = None,
+) -> dict[str, Any]:
     if run_id not in _RUNS:
         raise HTTPException(
             status_code=404, detail=f"no run {run_id} in this process; rerun it to reproduce it"
         )
-    return _RUNS[run_id]
+    p, run = _RUNS[run_id]
+    components = ["family_tax_credit"] if component_set is None else component_set
+    try:
+        analysis.component_set_unit(components)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return _summary(p, run, components)
 
 
 def _summary(p: PopulationDataset, run: PopulationRun, components: list[str]) -> dict[str, Any]:
