@@ -90,6 +90,32 @@ Questions the author could not settle alone:
    caller, not verified by Poltika". Is that wording right against
    ARCHITECTURE.md's conditional-simulation statement?
 
+### Author check (Claude Code, 26 September 2026; not the independent review)
+
+The questions checked against the specifications:
+
+1. **`AS_ROUNDING` cited AS-04: corrected to AS-07** (proposed class:
+   CODE_ERROR, a wrong citation). AS-07 is the only rule row that cites
+   r 19 ("the final positive amount is rounded up to a whole dollar",
+   Regulations rr 17-19). The golden traces were regenerated: 8 rule ids
+   changed, nothing else.
+2. **`WFF_IWTC_NET` citing WFF-03: kept.** WFF-03 states MD 2's order: family
+   tax credit first, then in-work tax credit.
+3. **`AS_HOUSEHOLD_EXCLUSION` was `evidenced_exclusion`: corrected to
+   `not_modelled`** (proposed class: CODE_ERROR). The bundled fact also
+   covers s 69 discretionary reduction, which the AS specification says is
+   "not an ordinary zero-rate branch". Under DEC-001's rule, a fact that can
+   describe a partly entitled household is `not_modelled`. WFF in-work
+   ineligibility as `not_modelled` follows the same rule, and is kept.
+4. **The "asserted by the caller, not verified by Poltika" wording: kept.**
+   It matches the API's own description: "the caller's own assertion that
+   the underlying fact has been verified elsewhere -- this API does not
+   itself confirm any fact".
+
+The rest of the step-to-rule table was checked against the rule rows (WFF-03,
+-04, -05, -06; AS-03, -04, -06, -07), with no other change. The independent
+review of all of the above remains open.
+
 ## Resolution
 
 (what happened to each discrepancy)

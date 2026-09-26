@@ -361,7 +361,11 @@ def _household_gate_failure(
     # --- unsupported / EXCLUDED conditions first ---
     if scenario.household_eligibility == FactStatus.EXCLUDED:
         return ComponentResult(
-            outcome="unsupported", code="AS_HOUSEHOLD_EXCLUSION", category="evidenced_exclusion",
+            outcome="unsupported", code="AS_HOUSEHOLD_EXCLUSION",
+            # Not "evidenced_exclusion": the bundled fact also covers s 69
+            # discretionary reduction, which the specification says is not an
+            # ordinary zero-rate branch (DEC-001's rule; v0.1.5 S2.5).
+            category="not_modelled",
             reason=(
                 "household_eligibility_facts verified outside the v0.1 domain "
                 "(social housing exclusion s 66, an other-funding exclusion "
@@ -772,7 +776,7 @@ def _accommodation_supplement(
         final_amount = zero
     else:
         final_amount = record_step(
-            steps, "AS_ROUNDING", "AS-04", "a positive weekly amount rounded up to the complete dollar (r 19)",
+            steps, "AS_ROUNDING", "AS-07", "a positive weekly amount rounded up to the complete dollar (r 19)",
             pre_rounding_amount.to_integral_value(rounding=ROUND_CEILING), amount_before_rounding=pre_rounding_amount,
         )
 
