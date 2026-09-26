@@ -1,0 +1,55 @@
+name: Source Currency
+
+# v0.1.6 Task 2.1. Weekly, and on demand, list parameter values that are
+# ending, not approved or open-ended, and cited sources whose structured
+# check is missing or stale. It reads only the repository: rechecking a
+# source stays a reviewed human or GPT/Codex step. When anything is due it
+# opens an issue, or updates the open one.
+
+on:
+  schedule:
+    - cron: "47 19 * * 0"  # Sunday 19:47 UTC, Monday morning in NZ
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: uv sync --locked
+
+      - name: Build the report
+        run: |
+          set -euo pipefail
+          uv run python -m poltika.engines.assurance.currency \
+            policy_specs/working_for_families policy_specs/accommodation_supplement \
+            > currency.md
+          cat currency.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the issue when anything is due
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: Source currency report
+        run: |
+          set -euo pipefail
+          if ! grep -q '^### Due ([1-9]' currency.md; then
+            echo "Nothing due."
+            exit 0
+          fi
+          NUMBER=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number,title \
+            --jq "map(select(.title == env.TITLE)) | .[0].number // empty")
+          if [ -n "$NUMBER" ]; then
+            gh issue edit "$NUMBER" --body-file currency.md
+          else
+            gh issue create --title "$TITLE" --body-file currency.md
+          fi

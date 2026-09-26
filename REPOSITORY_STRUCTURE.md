@@ -91,7 +91,10 @@ poltika/
 │   │                        explanations rendered only from the recorded
 │   │                        trace, and verify() against the calculation;
 │   │                        evidence.py (v0.1.5 Phase 1: evidence coverage
-│   │                        report, run in CI))
+│   │                        report, run in CI);
+│   │                        currency.py (v0.1.6 Task 2.1: source-currency
+│   │                        report; .github/workflows/source-currency.yml
+│   │                        runs it weekly and opens an issue when due))
 │   └── api/               — Task 21/24.8: FastAPI app (ADR-0010). main.py
 │                            (app instance, exception handling for
 │                            common.errors.PoltikaError subclasses,
