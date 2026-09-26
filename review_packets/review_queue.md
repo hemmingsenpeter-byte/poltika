@@ -18,10 +18,11 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 0 open implementation rows in this queue.**
+**As of 27 September 2026: 1 open implementation row (#109).**
 The independent reviews and 11 findings are recorded in
-`reviews/2026-09-27-queued-pr-audit.md`. Fixes are proposed in a new review-fix
-PR and require independent review and merge. This is not release approval.
+`reviews/2026-09-27-queued-pr-audit.md`. Their fixes (#108, Codex-authored)
+were independently reviewed by Claude Code with no blocking findings
+(#108 comment) and merged. This is not release approval.
 #103 originally merged under Pete's explicit exemption ("Exempt 103").
 
 | PR | Release | Scope | Touches | Risk | Status |
@@ -44,6 +45,8 @@ PR and require independent review and merge. This is not release approval.
 | #88 | v0.1.5 | Per-policy routes return explanations; audit packet | API | Low | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
 | #89 | v0.1.5 | Pilot pack, findings template, executable release gate | Tests, docs | Low | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
 | #103 | v0.2 | Release-gate review rows (`tests/acceptance/review_queue.py`); currency workflow discovers every policy. Merged under Pete's exemption | Tests, CI | Low | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
+| #108 | v0.2 | Codex-authored fixes F1-F11 from the queued-PR audit | Data, scenarios, assurance, API | High | reviewed (Claude Code, PR #108 comment) |
+| #109 | v0.3 | Fact catalogues (`facts.yaml`, drafted wording) and conditional answers (`scenarios/conditional.py`), ADR-0016 | Scenarios, policy loader, policy_specs | Medium | open (wording and resolver review) |
 
 ## Plan and decision PRs (not counted against the cap)
 
