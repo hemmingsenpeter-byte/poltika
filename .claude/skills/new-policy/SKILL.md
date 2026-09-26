@@ -25,7 +25,7 @@ is fine for a large domain (split PR 3 by component).
 | PR | Author | Contents | The reviewer checks | Exit check |
 | --- | --- | --- | --- | --- |
 | **1. Sources and specification** | GPT/Codex | `policy_specs/<policy>/sources.yaml`; `specification.md` with rule ids (`XX-NN`); `decisions/DEC-*.md` for every ambiguity; the supported slice and what is out of scope | Interpretation against the law | Every rule row cites primary legislation or a rank 1-2 source (`evidence.py`). Every ambiguity has a decision Pete has made. |
-| **2. Values and expected results** | GPT/Codex | `policy.yaml` (dated intervals, `source_id`, `locator`, `review_status`); `spec_cases.yaml` hand-calculated independently of any code; `benchmarks.yaml` from official worked examples | Every number against its source (the protected-value process) | The evidence report has no problems. The currency report shows nothing due. Cases cover each boundary. |
+| **2. Values and expected results** | GPT/Codex | `policy.yaml` (dated intervals, `source_id`, `locator`, `review_status`); `facts.yaml` (a question, admissible values, rule id and any monotonicity for every input fact, ADR-0016); `spec_cases.yaml` hand-calculated independently of any code; `benchmarks.yaml` from official worked examples | Every number against its source (the protected-value process) | The evidence report has no problems. The currency report shows nothing due. Cases cover each boundary. |
 | **3. Implementation** | Claude Code | The engine module in `engines/simulator/`; the household-model mapping; `record_step` calls and `STEP_TEMPLATES` entries; reason codes and categories; unit, spec-case and benchmark tests; golden households | Code against the approved specification and cases | Every spec case and benchmark passes. `verify()` holds for every result. Golden snapshots are regenerated through the protected-value process. |
 | **4. Interactions** | GPT/Codex specifies, Claude Code implements | Graph edges to existing policies, each citing a rule or decision; interaction spec cases and golden households | Each edge against its cited rule | Every edge cites a source. Outcomes propagate (`needs_review` is never zero). Existing results are unchanged unless an edge says otherwise. |
 | **5. Release** | Claude Code | Release-gate rows, CHANGELOG, `docs/releases/` limitations, the README coverage table, the maintenance line (W5.4) and throughput actuals (W2.5) | Checklist | The gate passes, or skips only for named reasons. |
@@ -66,7 +66,9 @@ The working agreement (`doctrine/development-doctrine.md`) sets it:
 ## What v0.1 learned (make these explicit steps)
 
 - **A missing fact is never zero.** Unknown gives `needs_review` with
-  `missing_facts`. Out of scope gives `unsupported`, with category
+  `missing_facts`, and every such id needs a `facts.yaml` entry, so the
+  intake planner can ask for it and conditional answers can branch on it
+  (ADR-0016). Out of scope gives `unsupported`, with category
   `evidenced_exclusion` or `not_modelled`.
 - **Rate-status contracts.** A rate that can change mid-year (an Order in
   Council, a pending amendment) stays `needs_review` until the whole
