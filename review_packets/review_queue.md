@@ -18,8 +18,9 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 26 September 2026: 17 open implementation rows. The cap is
-reached.**
+**As of 26 September 2026: 18 open implementation rows. The cap is
+reached.** #103 merged under Pete's explicit exemption ("Exempt 103"),
+and still needs its independent review.
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -40,6 +41,7 @@ reached.**
 | #87 | v0.1.5 | Phase 7 hardening, household form, case metadata, working agreement | Tests, API, doctrine | Low | open; in `v0_1_5_codex_audit.md` |
 | #88 | v0.1.5 | Per-policy routes return explanations; audit packet | API | Low | open; in `v0_1_5_codex_audit.md` |
 | #89 | v0.1.5 | Pilot pack, findings template, executable release gate | Tests, docs | Low | open |
+| #103 | v0.2 | Release-gate review rows (`tests/acceptance/review_queue.py`); currency workflow discovers every policy. Merged under Pete's exemption | Tests, CI | Low | open |
 
 ## Plan and decision PRs (not counted against the cap)
 
