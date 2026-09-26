@@ -1,0 +1,19 @@
+dataset_id: stats_nz_births_and_deaths_release
+raw_file: stats_nz/stats_nz_births_and_deaths_release/v1/births-and-deaths-year-ended-march-2025.html
+sha256: d0de4eb4ab4fd1d9439c7fc373008486748fe5a5c4c5b4bb66e36678680cd610
+vintage: Year ended March 2025 (release page dated 15 May 2025)
+transformation_id: stats_nz_births_release
+source_organisation: Stats NZ
+dataset_series: 'Births and deaths: key facts (live births registered), information release page'
+source_url_or_identifier: https://www.stats.govt.nz/information-releases/births-and-deaths-year-ended-march-2025/
+retrieval_date: 2026-09-27
+observation_reference_period:
+  from: 2023-04-01
+  to: 2025-04-01
+units: Counts of live births and deaths registered
+geography_population: New Zealand, registrations
+retrieval_method: manual_download
+raw_snapshot_version: 1
+transformation_version: 1
+canonical_variable_mapping:
+- population.live_births_registered
