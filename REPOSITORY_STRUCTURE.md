@@ -101,7 +101,9 @@ poltika/
 │   │                        microsim/ (v0.2 static microsimulation:
 │   │                        validation.py record checks, weighting.py
 │   │                        weighted statistics, reform.py overrides of
-│   │                        loaded parameters -- never a second engine);
+│   │                        loaded parameters, runner.py baseline and
+│   │                        reform runs with run identity -- never a
+│   │                        second engine);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
 │   │                        addressed artifact bytes, replay, drift re-run;

@@ -21,6 +21,12 @@ result identity changes.
   parameters, labelled `scenario_assumption` in every trace. The engines
   accept preloaded parameters, so a population run loads each policy
   once. Results on the default path are unchanged.
+- **Population runner** (Phase 7): every valid household runs under the
+  baseline and the reform through `run_combined_household`, with per-
+  component deltas that exist only when both runs calculated. Each run has a
+  reproducible `run_id` and `results_sha256`. Caching the parsed
+  `policy.yaml` by its hash (still checked on every call) makes a
+  household about 80 times faster.
 
 ## Unreleased (v0.1.6: keep v0.1 current)
 
