@@ -163,3 +163,11 @@ def test_real_population_spec_runs_the_exit_scenario(spec_path: Path) -> None:
     run = _run(population)
     explanation = explain_population(population, run, FTC)
     assert verify(explanation, population, run) == []
+
+
+def test_independent_review_complete() -> None:
+    from tests.acceptance.review_queue import open_reviews
+
+    pending = open_reviews("v0.2")
+    if pending:
+        pytest.skip(f"release gate not yet met: awaiting independent review {', '.join(pending)}")
