@@ -1,5 +1,10 @@
 # Review Packet: v0.1.5 build (PRs #82-#88) — 25 September 2026
 
+Independent implementation review recorded on 27 September 2026 in
+`reviews/2026-09-27-queued-pr-audit.md`, including the #89 corrections.
+That record supersedes the pending code-review placeholders below; separate
+source-currency and statutory-source review tasks are not closed by it.
+
 Author: Claude Code, under Pete's delegation ("approve each step yourself and
 keep going"). Each PR merged with CI green after an author preflight only.
 This packet hands GPT/Codex the deferred independent audit, and its open
