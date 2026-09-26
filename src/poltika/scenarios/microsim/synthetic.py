@@ -23,7 +23,10 @@ population:
   family tax credit reads `needs_review`.
 - AS weekly income is gross income / `weekly_income_divisor`, to the cent.
   That is a synthetic mapping between two income definitions (D9), not law.
-- Every household has equal weight, `represents / households`.
+- Every household has equal weight, `represents / households`, rounded to
+  six decimal places. The remainder is spread one millionth at a time over
+  the first households, so the weights sum to exactly `represents` and every
+  weighted total is exact decimal arithmetic.
 
 The same spec (including `seed`) gives a byte-identical population
 (`content_sha256`).
@@ -36,7 +39,7 @@ import random
 import sys
 from dataclasses import dataclass
 from datetime import date
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import ROUND_DOWN, ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 import yaml
@@ -223,7 +226,7 @@ class CalibrationRow:
 
 def generate(spec: SyntheticSpec) -> tuple[PopulationDataset, list[CalibrationRow]]:
     rng = random.Random(spec.seed)
-    weight = spec.represents / spec.households
+    weights = _equal_weights(spec.represents, spec.households)
     households = []
     drawn: dict[str, dict[str, int]] = {}
 
@@ -269,7 +272,7 @@ def generate(spec: SyntheticSpec) -> tuple[PopulationDataset, list[CalibrationRo
         households.append(
             PopulationHousehold(
                 household_id=f"s{n:07d}",
-                weight=weight,
+                weight=weights[n],
                 persons=tuple(
                     PersonRecord(person_id=f"s{n:07d}p{i}", role=r) for i, r in enumerate(roles)
                 ),
@@ -288,6 +291,17 @@ def generate(spec: SyntheticSpec) -> tuple[PopulationDataset, list[CalibrationRo
         households=tuple(households),
     )
     return population, _calibration(spec, drawn)
+
+
+_WEIGHT_STEP = Decimal("0.000001")
+
+
+def _equal_weights(total: Decimal, count: int) -> list[Decimal]:
+    base = (total / count).quantize(_WEIGHT_STEP, rounding=ROUND_DOWN)
+    remainder = int((total - base * count) / _WEIGHT_STEP)
+    if base <= 0:
+        raise ValueError(f"represents {total} is too small for {count} households")
+    return [base + _WEIGHT_STEP if i < remainder else base for i in range(count)]
 
 
 def _record(
