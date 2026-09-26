@@ -13,6 +13,7 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 - [BUILD_PLAN_v0_1_5.md](BUILD_PLAN_v0_1_5.md) — the v0.1.5 plan
 - [BUILD_PLAN_v0_1_6.md](BUILD_PLAN_v0_1_6.md) — the v0.1.6 plan: keep v0.1 current past 1 April 2027
 - [BUILD_PLAN_v0_2.md](BUILD_PLAN_v0_2.md) — the v0.2 plan: static population microsimulation (ADR-0014)
+- [ROADMAP_REALIGNMENT.md](ROADMAP_REALIGNMENT.md) and [BUILD_PLAN_v0_3.md](BUILD_PLAN_v0_3.md) — the roadmap realignment (ADR-0015) and the v0.3 plan
 - `doctrine/` — decisions that are fixed and not to be re-litigated
 - [docs/demo/v0_1/](docs/demo/v0_1/README.md) — one household run end to end through both policies, with its provenance report and limitations
 - [CHANGELOG.md](CHANGELOG.md) — what v0.1 contains

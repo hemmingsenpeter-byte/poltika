@@ -42,7 +42,7 @@ against the repository changes these points.
 
 | # | Finding | Effect on this plan |
 | --- | --- | --- |
-| R1 | **It reorders the roadmap.** ADR-0008 put data in v0.2, the interaction graph in v0.3 and the scenario engine in v0.4, arguing that scenario comparison needs a dependency graph first. For WFF and the Accommodation Supplement that argument doesn't hold: their interaction is fixed by rule (R2), and the existing combined runner already handles it. | ADR-0014 (accepted) moves static microsimulation into v0.2. The historical macro baseline (GDP, debt, operating balance) moves to v0.3, beside the graph. The proposal's reordering of later releases (behaviour at v0.4, graph at v0.6) is **not** adopted. It needs its own decision. |
+| R1 | **It reorders the roadmap.** ADR-0008 put data in v0.2, the interaction graph in v0.3 and the scenario engine in v0.4, arguing that scenario comparison needs a dependency graph first. For WFF and the Accommodation Supplement that argument doesn't hold: their interaction is fixed by rule (R2), and the existing combined runner already handles it. | ADR-0014 (accepted) moves static microsimulation into v0.2. The historical macro baseline (GDP, debt, operating balance) moves to v0.3, beside the graph (since moved to v0.5 by ADR-0015). The proposal's reordering of later releases (behaviour at v0.4, graph at v0.6) is **not** adopted. It needs its own decision. |
 | R2 | **No WFF-to-AS interaction exists in the modelled law.** AS-10 and DEC-003 exclude WFF tax credits from AS chargeable income, and IRD excludes Accommodation Supplement from WFF family income. The proposal's "AS interaction: -$110m" can't arise. | Module Q becomes an invariant test: a WFF-only reform leaves every household's Accommodation Supplement unchanged. The output states that there is no modelled interaction and cites the rule. |
 | R3 | **Income tax and main benefits aren't modelled**, so there is no disposable income. | **No poverty or income-adequacy measures in v0.2 (Module O is dropped).** They need full disposable income and the official measures' own definitions. Module P is reported only as *WFF and AS withdrawal rates*, never as effective marginal tax rates. |
 | R4 | **The 2026-27 in-work tax credit is `needs_review`** (the Task 10.2 rate-status contract), so a total WFF figure can't be calculated for 2026-27. Abatement falls on family tax credit first, then the in-work tax credit (WFF-03, MD 2). | Every population result reports its weighted coverage: calculated, `needs_review` and `unsupported`. `needs_review` is never counted as zero. The exit test reports the in-work tax credit's coverage honestly, and becomes complete once v0.1.6 adds 2027-28. |
@@ -63,7 +63,8 @@ against the repository changes these points.
 - Behavioural responses, labour supply, or take-up modelling beyond a
   registered assumption.
 - Macroeconomic, GDP, inflation or debt modelling, including the
-  historical fiscal baseline (moved to v0.3).
+  historical fiscal baseline (moved to v0.3 by ADR-0014, then to v0.5 by
+  ADR-0015).
 - Monte Carlo, distributions or uncertainty ranges (v0.5). Deterministic
   sweeps are in scope.
 - Calibration or raking of weights.
