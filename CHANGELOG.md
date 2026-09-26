@@ -8,7 +8,7 @@ result identity changes.
 - **Fact catalogues** (Task 1b.1, ADR-0016): every fact the WFF, AS and
   combined engines can report missing has a plain-language question and
   its admissible answers, in `policy_specs/<policy>/facts.yaml`. The
-  wording awaits GPT/Codex review.
+  wording was reviewed by GPT/Codex in PR #109.
 - **Conditional answers** (Task 1b.2, first part): a household with
   missing yes/no or category facts gets engine-computed branches ("if X,
   then …"), ranges per component, and the most useful next question,
