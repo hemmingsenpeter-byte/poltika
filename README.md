@@ -42,6 +42,7 @@ uv run --extra dev uvicorn poltika.api.main:app    # API; see /docs, and /analys
 ```
 
 - **Policy files:** the API reads `policy_specs/` from the checkout. Set `POLTIKA_POLICY_SPECS_DIR` to use a mounted copy (ADR-0011).
+- **Population runs (v0.2):** the `/microsim` routes and the `/analyst/microsim` page run reforms across the population file named by `POLTIKA_POPULATION_PATH`, for example one written by `python -m poltika.scenarios.microsim.synthetic <spec.yaml> <population.json>`. Without it they return 503. A synthetic population's results are labelled as not an estimate for New Zealand.
 - **Stored scenarios:** the `/scenarios` routes need PostgreSQL. Set `POLTIKA_DATABASE_URL`, for example `postgresql+psycopg://user@host/db` (ADR-0013). Without it they return 503; the other routes still work.
 - **Database schema:** the API doesn't migrate the database itself. Before first use, and after upgrading, run:
 
