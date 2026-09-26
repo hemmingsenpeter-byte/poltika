@@ -79,9 +79,11 @@ coverage, a driver explanation, evidence and a rerunnable record.
 
 ## v0.3 - Income tax, main benefits and the household graph
 
-Specify and implement income tax and the main benefits needed for
-disposable income to v0.1's standard, each scoped from primary sources
-before anything is built. Replace per-policy inputs with one shared
+Start the deterministic policy kernel: `household state → policy
+dependency graph → household fiscal position`. Specify and implement
+personal income tax and the three core main benefits (Jobseeker Support,
+Sole Parent Support, Supported Living Payment) to v0.1's standard, each
+scoped from primary sources before anything is built. Replace per-policy inputs with one shared
 household model that holds each fact once. Order policy calculations per
 household in a dependency graph whose every edge comes from a
 specification, refuse unresolved cycles, and explain dependency chains.
@@ -94,6 +96,29 @@ inside a secure data environment that exports only checked aggregates.
 household, calculated in source-derived order and explained, with income
 tax and at least the first main benefit independently reviewed and
 benchmarked, and WFF and AS results unchanged from v0.2.
+
+### Policy kernel coverage track (v0.3.x onwards)
+
+After Tier 1, the coverage map in `ROADMAP_REALIGNMENT.md` W10 adds the
+rest of the household tax-and-transfer system, one reviewed domain at a
+time.
+
+- **Tier 2**, as v0.3.x releases alongside v0.4:
+  - Temporary Additional Support;
+  - Disability Allowance;
+  - Childcare and OSCAR Subsidies;
+  - NZ Superannuation;
+  - Paid Parental Leave.
+- **Tier 3**, each before the release that first needs it:
+  - Student Allowance and student loan repayment;
+  - ACC earnings compensation;
+  - KiwiSaver;
+  - other MSD assistance;
+  - Child Support;
+  - other tax regimes.
+
+Each domain adds a yearly update, so coverage grows only as fast as it
+can be kept current.
 
 ## v0.4 - Scenario engine
 

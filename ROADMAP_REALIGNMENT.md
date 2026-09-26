@@ -3,8 +3,9 @@
 **Date:** 26 September 2026
 **Status:** Approved 26 September 2026 with the recommended decisions
 (D1 yes; D3 apply now; D4 a cap of five; D7 pipelining; D8 release v0.2
-on the labelled synthetic population). D2 waits on the Phase 0 scoping,
-and D5-D6 are due before v0.4.
+on the labelled synthetic population). D2's direction and D9's coverage
+map were set later the same day (W10). Each domain's slice waits on the
+Phase 0 scoping, and D5-D6 are due before v0.4.
 **Decision record:** ADR-0015 (accepted).
 **Detailed v0.3 tasks:** `BUILD_PLAN_v0_3.md`.
 
@@ -39,6 +40,7 @@ Pete for decisions and anything needing a person.
 | W7 Household dependency graph | 7 | v0.3 Phase 4 | Multi-policy scenarios |
 | W8 Multi-year parameters | 7 | v0.1.6 Task 4.3 | v0.4 |
 | W9 Roadmap reorder | 2 | On accepting ADR-0015 | Nothing: documentation |
+| W10 Policy kernel coverage map | 1 | Tier 1 in v0.3; Tier 2 alongside v0.4; Tier 3 as consumers need | Every release that needs disposable income |
 
 ## W1. Review debt and cadence
 
@@ -319,7 +321,111 @@ need every policy to hold several years.
 | W1.4 | Done: the cap is in `doctrine/development-doctrine.md`. |
 | W2.1 | Done: `docs/research/policy_onboarding_cost.md`. About 25-30 merged PRs and 2-4 decision records per v0.1-shaped policy. |
 | W4.1 | Done: `docs/releases/V0_2_SCALING_MODEL.md`. Deterministic runs stay practical. Population-scale Monte Carlo doesn't (days to years on one core). |
+| W10, W10.4 | Coverage map and tiers added (D9). README carries the coverage table. |
 | W1.5, W5.2 | Done: PR #103, merged under Pete's exemption from the cap. The gates' review rows skip, naming the open PRs, and the currency workflow discovers every `policy_specs/*/policy.yaml`. |
+
+## W10. Policy kernel coverage map
+
+**Problem.** WFF and the Accommodation Supplement are two policies. A
+useful household fiscal simulator needs most of New Zealand's household
+tax-and-transfer system, built as one **deterministic policy kernel**, not
+a set of separate calculators:
+
+`household state → policy dependency graph → household fiscal position`
+
+For a household, the kernel resolves income tax, main benefits, WFF, the
+Accommodation Supplement, childcare and supplementary assistance and the
+other transfers and deductions into disposable income. Then:
+
+- a scenario changes parameters, which gives the change in household
+  disposable income;
+- population weights turn that into the change in Crown cost, and
+  distributional results by decile, family type, area and age.
+
+The shared household model (W6) and the source-derived graph (W7) are
+this kernel's architecture. W10 sets what it covers and in what order.
+
+**Coverage map.** Pete's direction, 26 September 2026. The order is a
+planning order: each domain's scope, rules and interactions come from
+its own source-scoping (the `new-policy` skill, W2.2), and the order moves
+only if sourcing shows a dependency it ignores. "Calculates" below names
+the areas each domain must cover, for scoping, and asserts no rule.
+
+| # | Domain | Calculates (to be scoped from sources) | Tier and release | First consumer |
+| --- | --- | --- | --- | --- |
+| 0 | WFF, Accommodation Supplement | Done in v0.1 | v0.1 | |
+| 1 | Personal income tax | Taxable income, brackets, period and annual liability, tax credits | **Tier 1, v0.3** | Disposable income; every later domain |
+| 2 | Jobseeker Support | Eligibility, base rates, couple and family status, income abatement | **Tier 1, v0.3** | WFF benefit-status rules; AS claimant category |
+| 3 | Sole Parent Support | Eligibility, rates, abatement, family composition | **Tier 1, v0.3** | Family-policy scenarios; AS claimant category |
+| 4 | Supported Living Payment | Eligibility and rate categories, partner treatment, abatement | **Tier 1, v0.3** | Completes the core main benefits; AS claimant category |
+| 5 | Temporary Additional Support | Allowable costs, income and resources, deficiency, caps | Tier 2, v0.3.x | Housing and hardship support beyond AS |
+| 6 | Disability Allowance | Allowable costs, income test, maximum | Tier 2, v0.3.x | Supplementary assistance |
+| 7 | Childcare Subsidy | Income bands × children × hours × rate | Tier 2, v0.3.x | Childcare and labour-supply scenarios |
+| 8 | OSCAR Subsidy | Income bands × hours × child circumstances | Tier 2, v0.3.x | As 7 |
+| 9 | NZ Superannuation | Qualification, relationship and living status, rates, tax treatment | Tier 2, v0.3.x | Super-age scenarios; the v0.6 long-term model |
+| 10 | Student Allowance | Eligibility, parental and partner income tests, rates | Tier 3 | Tertiary scenarios; WFF earner rules (WFF spec, "Earner and benefits") |
+| 11 | Student loan repayment | Repayment income, thresholds, deductions | Tier 3 | Full disposable income |
+| 12 | Paid Parental Leave | Eligibility, earnings-based entitlement, limits, duration | Tier 2, v0.3.x (moved up) | Best Start already reads it (WFF-06, MC 6(c)) |
+| 13 | ACC earnings compensation | Relevant earnings, compensation rules, caps | Tier 3 | Income-replacement scenarios |
+| 14 | KiwiSaver | Contributions, government contribution, tax interactions | Tier 3 | The v0.6 long-term model |
+| 15 | Other MSD assistance | Youth Payment, Young Parent Payment, Emergency Benefit, Unsupported Child's and Orphan's Benefit, and others | Tier 3 | Population coverage |
+| 16 | Child Support | Liable-parent formulas, care proportions, allowances | Tier 3 | Household cash flow |
+| 17 | Other tax regimes | PIE, RWT, and company and trust tax where relevant | Tier 3 | The v0.6 revenue model |
+
+**Tiers:**
+
+- **Tier 1** is v0.3's scope. It resolves `ROADMAP_REALIGNMENT.md` D2's
+  direction and `BUILD_PLAN_v0_3.md` D4: all three core main benefits.
+- **Tier 2** ships as v0.3.x coverage releases, pipelined (W2.4) while
+  v0.4 builds the scenario engine, which needs only Tier 1.
+- **Tier 3** is ordered by its first consumer. Each domain is added before
+  the release that needs it: NZ Super and KiwiSaver before v0.6,
+  student support before any tertiary scenario, other tax regimes before
+  v0.6's revenue model.
+
+Paid Parental Leave moves from 12 to Tier 2 because Best Start already
+depends on it (WFF-06, MC 6(c)). Today that fact is asserted; a PPL
+domain would calculate it.
+
+**Interactions already in the specifications** (they become graph edges
+in v0.3 Phase 4):
+
+- A main benefit may coexist with family tax credit and Best Start, but
+  normally prevents the in-work and minimum family tax credits (WFF-08;
+  Income Tax Act ss MD 8, MD 14, MG 4).
+- Main-benefit and Student Allowance periods can change in-work and
+  minimum-credit eligibility (WFF spec, "Earner and benefits").
+- Family scheme income allocates employment, main-benefit and other income
+  across periods (WFF spec, MB 1-2).
+- The Accommodation Supplement's entry thresholds differ for Jobseeker
+  Support, Sole Parent Support, Supported Living Payment,
+  non-beneficiaries, pensioners and mixed-benefit couples (AS spec,
+  "Claimant rate class"; `as-msd-rates-2026` and related). Today the
+  claimant category is asserted; Tier 1 calculates it.
+- Parental leave payments can exclude Best Start for that child (WFF-06,
+  MC 6(c)).
+- WFF tax credits are not AS chargeable income, and AS is not WFF family
+  income (AS-10, WFF DEC-003).
+
+Every further interaction (for example which government payments enter
+which income test) is established by v0.3 Phase 0.3 from sources, not
+from this plan.
+
+**Cost and upkeep.** At W2.1's planning figure (about 25-30 PRs and 2-4
+decisions per v0.1-shaped policy), the 17 domains are several hundred PRs
+and dozens of decisions, before annual updates. So:
+
+- **W10.1 — Claude Code.** Every build plan that adds a domain states its
+  estimate from W2.1 and records the actual (W2.5).
+- **W10.2 — All.** Each domain adds a yearly update (W5). The
+  source-currency report covers it on arrival (W5.2), and its plan
+  carries the maintenance line (W5.4).
+- **W10.3 — Pete.** Keep or reorder Tier 2 and Tier 3 as consumers
+  change. A reorder that moves a domain across releases is recorded in
+  this table with its reason.
+- **W10.4 — Claude Code.** Add a coverage section to `README.md` listing
+  each domain's state (not started, scoped, specified, implemented,
+  reviewed), so what Poltika models is never overstated.
 
 ## Sequence
 
@@ -334,8 +440,10 @@ need every policy to hold several years.
 ## Open decisions for Pete
 
 - **D1:** Accept ADR-0015's reorder? Recommended.
-- **D2:** The v0.3 domains, from W2.3's sourced scoping: which income tax
-  and which main benefits form the first slice.
+- **D2 (direction set 26 September 2026, W10 Tier 1):** the v0.3 domains
+  are income tax, Jobseeker Support, Sole Parent Support and Supported
+  Living Payment. Each one's supported slice comes from W2.3 and v0.3
+  Phase 0.
 - **D3:** Seek survey microdata access now (W3.2)? Recommended, because of
   the lead time.
 - **D4:** The review-debt cap (W1.4): five merged implementation PRs
@@ -344,6 +452,9 @@ need every policy to hold several years.
 - **D6:** The backtest horizon (W5.3), before v0.4.
 - **D7:** Pipelining (W2.4): GPT/Codex specifies the next policy while
   Claude Code implements the current one.
+- **D9 (decided 26 September 2026):** the W10 coverage map and tiers.
+  Tier 1 (income tax, Jobseeker Support, Sole Parent Support, Supported
+  Living Payment) is v0.3's scope.
 - **D8:** Whether v0.2 releases on the synthetic population alone,
   clearly labelled, or waits for real data. Recommended: release on the
   synthetic population, so the machinery is gated and reviewed, and

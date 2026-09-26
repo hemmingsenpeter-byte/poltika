@@ -32,6 +32,25 @@ in-work tax credit is therefore never `calculated`, and the WFF total is only
 given when all four components are, so v0.1 gives no WFF total for any
 household. The other three components are unaffected.
 
+## Policy coverage
+
+Poltika is building a deterministic policy kernel for New Zealand's
+household tax-and-transfer system, one reviewed domain at a time
+(`ROADMAP_REALIGNMENT.md` W10). What it models today:
+
+| Domain | State |
+| --- | --- |
+| Working for Families (2026-27) | Implemented and reviewed (v0.1); in-work tax credit `needs_review` |
+| Accommodation Supplement | Implemented and reviewed (v0.1) |
+| Personal income tax | Planned: v0.3, Tier 1 |
+| Jobseeker Support, Sole Parent Support, Supported Living Payment | Planned: v0.3, Tier 1 |
+| Temporary Additional Support, Disability Allowance, Childcare and OSCAR Subsidies, NZ Super, Paid Parental Leave | Planned: v0.3.x, Tier 2 |
+| Student support, ACC, KiwiSaver, other MSD assistance, Child Support, other tax regimes | Planned: Tier 3 |
+
+Anything not listed as implemented isn't modelled. A household that
+depends on it gets `unsupported` or `needs_review` for that part, never a
+zero.
+
 ## Running it
 
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.12.
