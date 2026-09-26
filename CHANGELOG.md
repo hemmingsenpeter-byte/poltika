@@ -35,6 +35,10 @@ result identity changes.
   run, rendered from recorded figures only, with `verify()` checking every
   figure against the run. The run records each assumed value with the
   baseline value and source it replaced.
+- **Synthetic population generator** (Tasks 3.3-3.4): a seeded,
+  deterministic generator from a spec in which every New Zealand quantity
+  and every asserted fact is an explicit input, with a calibration report
+  and the synthetic label. No real spec yet: it needs Task 3.1's tables.
 
 ## Unreleased (v0.1.6: keep v0.1 current)
 

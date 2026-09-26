@@ -105,8 +105,9 @@ poltika/
 │   │                        reform runs with run identity, analysis.py
 │   │                        weighted tables, withdrawal.py withdrawal
 │   │                        paths and sweeps, explain.py verified
-│   │                        population explanations -- never a second
-│   │                        engine);
+│   │                        population explanations, synthetic.py the
+│   │                        seeded synthetic population generator and its
+│   │                        CLI -- never a second engine);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
 │   │                        addressed artifact bytes, replay, drift re-run;
