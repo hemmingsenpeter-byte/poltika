@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import types
 import typing
+from collections.abc import Collection
 from dataclasses import dataclass, replace
 from decimal import Decimal
 from enum import Enum
@@ -132,6 +133,8 @@ class Resolution:
     bounds: dict[str, Bounds]
     capped: bool
     next_question: MissingFact | None
+    ranked: tuple[MissingFact, ...]  # finite missing facts, highest impact first
+    unblocks: dict[Slot, tuple[str, ...]]  # components each finite fact can unblock
 
 
 def resolve(
@@ -141,11 +144,17 @@ def resolve(
     facts: FactIndex,
     *,
     max_branches: int = 32,
+    impact_components: Collection[str] = COMPONENTS,
     wff_parameters: PolicyParameterSet | None = None,
     as_parameters: PolicyParameterSet | None = None,
 ) -> Resolution:
+    """Resolve all components; `impact_components` limits only question ranking."""
     if max_branches < 1:
         raise ValueError("max_branches must be at least 1")
+    unknown = set(impact_components) - set(COMPONENTS)
+    if unknown or not impact_components:
+        raise ValueError(f"unknown or empty impact components: {sorted(unknown)}")
+    ranked_components = tuple(c for c in COMPONENTS if c in impact_components)
 
     def run(r: ScenarioRecord) -> CombinedResult:
         return run_combined_household(
@@ -163,7 +172,9 @@ def resolve(
 
     base = run(record)
     missing = _missing(record, base, facts)
-    order = _impact_order(record, base, [m for m in missing if m.branchable], run)
+    order, unblocks = _impact_order(
+        record, base, [m for m in missing if m.branchable], run, ranked_components
+    )
 
     leaves: list[tuple[tuple[tuple[Slot, str], ...], ScenarioRecord, CombinedResult]] = [
         ((), record, base)
@@ -173,8 +184,9 @@ def resolve(
         expanded = False
         next_leaves: list[tuple[tuple[tuple[Slot, str], ...], ScenarioRecord, CombinedResult]] = []
         for i, (assignment, rec, result) in enumerate(leaves):
-            candidates = _impact_order(
-                rec, result, [m for m in _missing(rec, result, facts) if m.branchable], run
+            candidates, _ = _impact_order(
+                rec, result, [m for m in _missing(rec, result, facts) if m.branchable],
+                run, ranked_components,
             )
             if not candidates:
                 next_leaves.append((assignment, rec, result))
@@ -216,6 +228,8 @@ def resolve(
         bounds=_bounds(branches),
         capped=capped,
         next_question=order[0] if order else (next((m for m in missing), None)),
+        ranked=tuple(order),
+        unblocks=unblocks,
     )
 
 
@@ -344,29 +358,35 @@ def _impact_order(
     base: CombinedResult,
     candidates: list[MissingFact],
     run: typing.Callable[[ScenarioRecord], CombinedResult],
-) -> list[MissingFact]:
+    components: tuple[str, ...],
+) -> tuple[list[MissingFact], dict[Slot, tuple[str, ...]]]:
+    unblocks: dict[Slot, tuple[str, ...]] = {}
+
     def impact(m: MissingFact) -> tuple[int, int, Decimal]:
         results = [run(assigned) for _, assigned in _assignments(record, m)]
-        unblocked = changed = 0
+        unblocked_names: list[str] = []
+        changed = 0
         spread = Decimal(0)
-        for name in COMPONENTS:
+        for name in components:
             outs = [component(r, name) for r in results]
             if component(base, name).outcome == "needs_review" and any(
                 o.outcome != "needs_review" for o in outs
             ):
-                unblocked += 1
+                unblocked_names.append(name)
             if len({(o.outcome, o.value) for o in outs}) > 1:
                 changed += 1
             values = [o.value for o in outs if o.outcome == "calculated" and o.value is not None]
             if values:
                 spread += max(values) - min(values)
-        return unblocked, changed, spread
+        unblocks[m.slot] = tuple(unblocked_names)
+        return len(unblocked_names), changed, spread
 
     scored = [(impact(m), m) for m in candidates]
-    return [
+    ordered = [
         m
         for score, m in sorted(scored, key=lambda sm: (-sm[0][0], -sm[0][1], -sm[0][2]))
     ]
+    return ordered, unblocks
 
 
 def _bounds(branches: tuple[Branch, ...]) -> dict[str, Bounds]:

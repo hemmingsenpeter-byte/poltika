@@ -14,6 +14,13 @@ result identity changes.
   then …"), ranges per component, and the most useful next question,
   instead of a bare `needs_review`. The blocked result itself is
   unchanged.
+- **Intake planner** (Task 1b.4, `scenarios/intake.py`): before a run, it
+  returns the next question for the components asked about (`ask`),
+  `ready`, or `incomplete` when only declined facts block. Answers are
+  checked against the catalogue and typed as the engine field requires.
+  "Don't know" is a declined fact, never a default. Removing any fact from
+  a golden household and answering the planner's questions restores that
+  household's exact result.
 
 ## Unreleased (v0.2: static population microsimulation)
 
