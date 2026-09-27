@@ -18,7 +18,7 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 5 open implementation review rows (#124, #125, #126, #127, #128).** The review-debt cap is reached once #128 merges: no further implementation PR merges until GPT/Codex clears rows. GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
+**As of 27 September 2026: 5 open implementation review rows (#124, #125, #126, #127, #128).** The review-debt cap is reached once #128 merges: no further implementation PR merges until GPT/Codex clears rows. Review packet: `review_packets/v0_3_phase_1b_codex_audit.md`. GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
 Pete confirmed on 27 September 2026 that GPT/Codex cleared every PR up to
 #120 ("Yes all cleared by codex"), and approved all prior work. #111, #113,
 #114, #118 and #120 are marked reviewed on that confirmation; their review
