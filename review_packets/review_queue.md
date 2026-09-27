@@ -18,7 +18,7 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 3 open implementation review rows (#124, #125, #126).** GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
+**As of 27 September 2026: 4 open implementation review rows (#124, #125, #126, #127).** GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
 Pete confirmed on 27 September 2026 that GPT/Codex cleared every PR up to
 #120 ("Yes all cleared by codex"), and approved all prior work. #111, #113,
 #114, #118 and #120 are marked reviewed on that confirmation; their review
@@ -35,6 +35,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #127 | v0.3 | Task 1b.6: `scenarios/microsim/ranges.py` population ranges; `fiscal_ranges` on `/microsim/runs`; Fiscal tab | Microsim, API | Medium | open |
 | #126 | v0.3 | Tasks 1b.2b, 1b.3b-1b.3d: `FactEntry.monotone`, `resolve(ranges=...)`, `Bounds.kind`; property tests | Scenarios, fact schema, API | Medium | open |
 | #125 | v0.3 | Task 1b.5: `resolution` on `/household/calculate`, stateless `POST /household/intake`, the analyst page's "Ask me first" | API, analyst page | Medium | open |
 | #124 | pilot | Hosted pilot: `api/access.py` HTTP Basic password (fail-closed in the image), `/healthz`, `$PORT`, built-in population, CI smoke test | API middleware, deploy | Medium | open |
