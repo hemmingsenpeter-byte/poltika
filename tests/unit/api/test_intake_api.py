@@ -61,7 +61,7 @@ def test_missing_category_gives_branches_but_no_calculated_amount() -> None:
         "value": full["accommodation_supplement"]["value"],
     }
     bounds = res["bounds"]["accommodation_supplement"]
-    assert bounds["branches"] == 6 and not bounds["complete"]
+    assert bounds["branches"] == 6 and not bounds["complete"] and bounds["kind"] == "bounds"
     assert res["next_question"]["fact"] == "accommodation_supplement.claimant_category"
 
 

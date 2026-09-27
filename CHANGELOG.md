@@ -34,6 +34,13 @@ result identity changes.
   question, `ready`, or `incomplete`, with the calculation so far. The
   analyst page's "Ask me first" asks one question at a time, with a
   "Don't know" that leads to the conditional answer.
+- **Numeric ranges** (Task 1b.2b): a missing amount or count can be given
+  a range. The household is rerun at both ends, and a component's range
+  is labelled true bounds only where the fact catalogue declares it
+  monotone in that fact, with a rule id; otherwise it is values at those
+  points. No catalogue declares monotonicity yet: that is specification
+  content for GPT/Codex. Property tests check declarations against the
+  engine.
 
 ## Unreleased (v0.2: static population microsimulation)
 

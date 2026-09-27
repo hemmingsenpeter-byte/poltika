@@ -18,6 +18,14 @@ Kinds of fact:
 - `attestation`: a yes/no declaration about how another input was derived
   (for example that net family scheme income follows ME 3). It is never
   branched on, because assuming it was done would be assuming a fact.
+
+`monotone` (v0.3 Task 1b.2b) is optional, and only for `money` and `count`
+facts: per component, the direction the component's calculated amount
+moves as the fact rises (`increasing` means never falls, `decreasing` never
+rises), with the rule id that implies it. Only then does a range for the
+fact give true bounds (`scenarios/conditional.py`). A property test checks
+every declaration against the engine. A declaration is specification
+content: GPT/Codex writes it from a cited rule.
 """
 
 from __future__ import annotations
@@ -33,6 +41,19 @@ Kind = Literal["fact_status", "enum", "money", "count", "attestation"]
 _RULE = re.compile(r"^[A-Z]+-\d+$|^Task \d+(\.\d+)?|^DEC-\d+")
 
 
+class Monotone(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    direction: Literal["increasing", "decreasing"]
+    rule: str
+
+    @model_validator(mode="after")
+    def _rule(self) -> Monotone:
+        if not _RULE.match(self.rule):
+            raise ValueError(f"monotone rule '{self.rule}' is not a rule id, task or decision")
+        return self
+
+
 class FactEntry(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -44,6 +65,7 @@ class FactEntry(BaseModel):
     answers: dict[str, str] | None = None  # fact_status only
     values: dict[str, str] | None = None  # enum only
     unit: str | None = None  # money only
+    monotone: dict[str, Monotone] | None = None  # money and count only; keyed by component
 
     @model_validator(mode="after")
     def _shape(self) -> FactEntry:
@@ -63,6 +85,8 @@ class FactEntry(BaseModel):
             raise ValueError(f"'{self.id}': values are only for enum facts")
         if (self.kind == "money") != (self.unit is not None):
             raise ValueError(f"'{self.id}': a unit is required for money facts, and only then")
+        if self.monotone is not None and self.kind not in ("money", "count"):
+            raise ValueError(f"'{self.id}': monotone is only for money and count facts")
         return self
 
     @property

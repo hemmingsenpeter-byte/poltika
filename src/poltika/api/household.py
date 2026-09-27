@@ -150,6 +150,8 @@ class BoundsResponse(BaseModel):
     calculated: int  # branches in which this component is calculated
     branches: int
     complete: bool  # every branch calculated: low and high are the whole range
+    # "points": values at a numeric range's endpoints, not bounds (ADR-0016)
+    kind: Literal["bounds", "points"]
 
 
 class ResolutionResponse(BaseModel):
@@ -195,6 +197,7 @@ class ResolutionResponse(BaseModel):
                     calculated=b.calculated,
                     branches=b.branches,
                     complete=b.complete,
+                    kind=b.kind,
                 )
                 for name, b in res.bounds.items()
             },
