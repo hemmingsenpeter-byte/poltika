@@ -31,6 +31,8 @@ sources:
 - 'A10 assumption: homeowners draw a housing cost from the renters'' distribution (unused: AS homeowner
   is unsupported)'
 - 'A11 assumption: all-household income median and mean apply to every modelled household type'
+- 'A12 assumption: every household''s eldest dependent child is under 16 throughout the week (children''s
+  ages are not generated beyond the Best Start cohort)'
 household_type:
   single_without_children: '0.345664'
   couple_without_children: '0.351137'
