@@ -54,19 +54,19 @@ result identity changes.
   deterministic generator from a spec in which every New Zealand quantity
   and every asserted fact is an explicit input, with a calibration report
   and the synthetic label.
-- **First real data** (Tasks 3.1-3.2): Stats NZ's Household income and
-  housing-cost statistics (year ended June 2025), 2018 Census national
-  highlights, Household net worth statistics (2024) and births release
-  pages, committed exactly as published with manifests, four registered
-  transformations and 54 canonical variables. HES Table 5 counts people,
-  not households.
-- **The synthetic development population** (Task 3.3):
-  `data/metadata/populations/nz_synthetic_development.v1.yaml`, derived from
-  those variables by `scenarios/microsim/calibration.py` (rules D1-D7,
-  assumptions A1-A9, `docs/releases/V0_2_POPULATION_METHODOLOGY.md`) and
-  checked against a fresh derivation in CI. It represents 1,452,567
-  households; the release gate's real-population row now runs.
-- **Cross-validation** (Task 9.4): the baseline against Inland Revenue's
+- **Stats NZ calibration data** (Tasks 3.1-3.2, #111): five Stats NZ
+  snapshots with manifests, four registered transformations and 54
+  canonical variables.
+- **The synthetic development population** (Task 3.3, #113):
+  `data/metadata/populations/nz_synthetic_development.v1.yaml`, derived by
+  `scenarios/microsim/calibration.py` from those variables, never
+  hand-written. Every rule (D1-D7) and assumption (A1-A11) is in its
+  `sources` and `docs/releases/V0_2_POPULATION_METHODOLOGY.md`. On it, the
+  exit scenario (family tax credit abatement threshold raised to $50,000)
+  gives a static full take-up family tax credit change of $130.1m a year
+  over 444,485 weighted households, with AS unchanged and the in-work tax
+  credit `needs_review`.
+- **Cross-validation** (Task 9.4, #114): the baseline against Inland Revenue's
   WFF statistics and MSD's Benefit Fact Sheets, read with a standard-library
   xlsx reader. `docs/releases/V0_2_CROSS_VALIDATION.md` reports each ratio
   with its reasons; nothing is tuned.
@@ -75,6 +75,8 @@ result identity changes.
   an operator-set population file. The page shows Overview, Distribution,
   Households, Areas, Fiscal, Evidence and Methodology tabs, with the
   synthetic label on every one.
+- **Release documents** (Task 10.3): `docs/releases/V0_2_LIMITATIONS.md`
+  and the methodology page.
 - **v0.2 release-gate test** (Task 9.2): one test per exit-gate row,
   including the invariants. Equal synthetic weights are now exact to six
   decimal places and sum to the total represented, so weighted totals are

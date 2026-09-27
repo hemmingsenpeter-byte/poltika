@@ -28,6 +28,9 @@ sources:
 - 'A7 assumption: partner income share 0.5 (no v0.1 result depends on it)'
 - 'A8 assumption: weekly income is annual gross income / 52'
 - 'A9 assumption: the open $600-and-over 2018 rent band is closed at $1,200 (no AS result depends on it)'
+- 'A10 assumption: homeowners draw a housing cost from the renters'' distribution (unused: AS homeowner
+  is unsupported)'
+- 'A11 assumption: all-household income median and mean apply to every modelled household type'
 household_type:
   single_without_children: '0.345664'
   couple_without_children: '0.351137'

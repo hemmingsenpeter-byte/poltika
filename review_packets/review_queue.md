@@ -30,8 +30,6 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
-| #111 | v0.2 | First real snapshots (Stats NZ HES 2025, 2018 Census, net worth 2024, births), four transformations, 54 canonical variables | Data boundary, transformations | High | open |
-| #113 | v0.2 | Real synthetic population spec derived from data (`calibration.py`, `calibrate_cli.py` as a second DataContext root); assumptions A1-A9 | Generator inputs, data boundary | Medium | open |
 | #114 | v0.2 | Cross-validation (Task 9.4): IRD WFF and MSD fact-sheet snapshots, `data/xlsx.py` reader, `crossval.py` report | Data boundary, assurance | Medium | open |
 | #94 | v0.2 | Validation, weighting, reforms; optional preloaded `parameters` on `run_wff_module`, `run_as_module`, `run_combined_household`; `check_preloaded_parameters` | Engines, loader | High | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
 | #95 | v0.2 | Population runner; `load_bound_policy_spec` parse cache keyed by SHA-256 | Loader | High | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
@@ -53,6 +51,8 @@ were independently reviewed by Claude Code with no blocking findings
 | #103 | v0.2 | Release-gate review rows (`tests/acceptance/review_queue.py`); currency workflow discovers every policy. Merged under Pete's exemption | Tests, CI | Low | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
 | #108 | v0.2 | Codex-authored fixes F1-F11 from the queued-PR audit | Data, scenarios, assurance, API | High | reviewed (Claude Code, PR #108 comment) |
 | #109 | v0.3 | Fact catalogues and conditional answers (`scenarios/conditional.py`), ADR-0016 | Scenarios, policy loader, policy_specs | Medium | reviewed (reviews/2026-09-27-pr109.md) |
+| #111 | v0.2 | Stats NZ snapshots, manifests, four transformations and 54 canonical variables (Tasks 3.1-3.2) | Data | Medium | open |
+| #113 | v0.2 | Synthetic development population derived from #111 (`calibration.py`, `calibrate_cli.py`, spec); fresh same-model check in the PR comment, A10-A11 named in the release-docs PR | Scenarios, data boundary | Medium | open |
 | #112 | v0.3 | Codex-authored fixes F1-F3 for #109 and the catalogue wording review | Scenarios, policy_specs | Medium | reviewed (Claude Code, PR #112 comment) |
 
 ## Plan and decision PRs (not counted against the cap)
