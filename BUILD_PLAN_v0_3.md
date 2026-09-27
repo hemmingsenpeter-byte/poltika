@@ -466,7 +466,7 @@ or for Phase 0.
 | 1b.1 | 1b.1a done (#109): catalogues for WFF (17 facts), the Accommodation Supplement (11) and the combined run (1), with completeness tests. Writing them found three emitted facts with no entry: `mc6a_veterans_payment`, `mc6b_disqualifying_payment` and `net_family_scheme_income_me3_attested`, the last a new non-branchable `attestation` kind. 1b.1b done (#112): GPT/Codex reviewed all 29 questions (`reviews/2026-09-27-pr109.md`), and all three catalogues are `reviewed`. 1b.1c (gate row) not started. |
 | 1b.2 | 1b.2a done (#109; #112 fixed contradictory hypothetical answers and re-ranks newly revealed facts under the cap). 1b.2b (numeric ranges) and 1b.2c (candidate values; needs a structured `candidates` list from GPT/Codex first) not started. 1b.2d not started. |
 | 1b.3 | 1b.3a done (#109). 1b.3b-1b.3e not started. |
-| 1b.4 | In progress: `next_step()` and `apply_answer()` written, to be rebased onto #112's ranking. Tests (1b.4d) next. |
+| 1b.4 | Done (PR held under the review cap): `scenarios/intake.py` with `next_step()` and `apply_answer()`; `Resolution.ranked` and `unblocks` in `conditional.py`. Tests: each catalogued fact a golden household supplies is removed and restored through the planner to the exact golden result and step; determinism; asked components; declined gives `incomplete`; inadmissible answers refused per kind. An attestation takes only "yes" (one that can't be given is declined, or the planner would ask again). 1b.3c not yet added. |
 | 1b.5-1b.6 | Not started. |
 
 ## Sequence

@@ -111,6 +111,9 @@ poltika/
 │   │                        conditional answers, i.e. branches, bounds and
 │   │                        next question for missing facts, all by engine
 │   │                        reruns);
+│   │                        intake.py (v0.3 Task 1b.4, ADR-0016: the
+│   │                        intake planner, i.e. the next question, typed
+│   │                        answers and declined facts);
 │   │                        population.py (v0.2 Task 2.2: population
 │   │                        household → ScenarioRecord, household types);
 │   │                        microsim/ (v0.2 static microsimulation:

@@ -1,0 +1,152 @@
+"""v0.3 Task 1b.4 (ADR-0016): ask for missing facts before running.
+
+`next_step()` runs the household as it stands and decides the next
+question for the components the caller asked about:
+
+- `ready`: nothing blocks them. The run is complete as asked.
+- `ask`: the next question, from the fact catalogue, with its admissible
+  answers.
+- `incomplete`: only facts the caller declined ("don't know") still block
+  them. The caller gets a conditional answer (`scenarios/conditional.py`)
+  instead of more questions.
+
+Question order is deterministic:
+
+1. finite facts (yes/no or category) that would unblock an asked
+   component, by the impact `conditional.resolve` measures;
+2. numeric facts (income, costs, assets, counts) blocking an asked
+   component, in catalogue order;
+3. any other finite fact blocking an asked component, by impact.
+
+`apply_answer()` records an answer on the household, typed as the engine
+field requires. An answer is the caller's assertion, as every `verified`
+input already is. "Don't know" is not an answer: the caller adds the fact's
+label to `declined`, so it is never asked again and never defaulted. An
+attestation takes only "yes": one that can't be given is declined.
+
+The planner decides what to ask. An LLM front end may only phrase the
+catalogue question and map a reply to an admissible answer, with
+confirmation (`doctrine/llm_boundaries.md`).
+"""
+
+from __future__ import annotations
+
+from collections.abc import Collection
+from dataclasses import dataclass, replace
+from decimal import Decimal, InvalidOperation
+from pathlib import Path
+from typing import Any, Literal
+
+from poltika.engines.simulator.wff import VerifiedIncome
+from poltika.policy.loader import PolicyParameterSet
+from poltika.scenarios.conditional import (
+    COMPONENTS,
+    FactIndex,
+    MissingFact,
+    Slot,
+    assign,
+    resolve,
+)
+from poltika.scenarios.record import ScenarioRecord
+
+Status = Literal["ready", "ask", "incomplete"]
+
+
+@dataclass(frozen=True)
+class IntakeStep:
+    status: Status
+    question: MissingFact | None
+    remaining: tuple[MissingFact, ...]  # everything still blocking the asked components
+
+
+def next_step(
+    record: ScenarioRecord,
+    wff_policy_dir: Path,
+    as_policy_dir: Path,
+    facts: FactIndex,
+    *,
+    asked: Collection[str] = COMPONENTS,
+    declined: Collection[str] = (),
+    wff_parameters: PolicyParameterSet | None = None,
+    as_parameters: PolicyParameterSet | None = None,
+) -> IntakeStep:
+    unknown = [c for c in asked if c not in COMPONENTS]
+    if unknown or not asked:
+        raise ValueError(f"unknown or empty components asked: {unknown or list(asked)}")
+    res = resolve(
+        record,
+        wff_policy_dir,
+        as_policy_dir,
+        facts,
+        max_branches=1,  # the planner needs the ranking, not the branches
+        wff_parameters=wff_parameters,
+        as_parameters=as_parameters,
+    )
+    blocking = tuple(m for m in res.missing if set(m.blocks) & set(asked))
+    open_facts = [m for m in blocking if m.slot.label not in declined]
+    if not blocking:
+        return IntakeStep("ready", None, ())
+    if not open_facts:
+        return IntakeStep("incomplete", None, blocking)
+
+    ranked = [m for m in res.ranked if m in open_facts]
+    unblocking = [m for m in ranked if set(res.unblocks.get(m.slot, ())) & set(asked)]
+    numeric = [m for m in open_facts if not m.branchable]
+    rest = [m for m in ranked if m not in unblocking]
+    order = [*unblocking, *numeric, *rest]
+    return IntakeStep("ask", order[0], blocking)
+
+
+def apply_answer(record: ScenarioRecord, fact: MissingFact, answer: str) -> ScenarioRecord:
+    """The household with `answer` recorded for `fact`."""
+    entry, slot = fact.entry, fact.slot
+    if entry.finite:
+        if answer not in entry.domain():
+            raise ValueError(
+                f"'{answer}' is not an admissible answer to {slot.label}: {list(entry.domain())}"
+            )
+        return assign(record, slot, answer)
+    if entry.kind == "attestation":
+        # "No" leaves the fact unmet, so the planner would ask again: the
+        # caller declines it instead.
+        if answer != "yes":
+            raise ValueError(f"{slot.label} takes 'yes'; if it can't be attested, decline it")
+        return _set_field(record, slot, True)
+    if entry.kind == "count":
+        if not (answer.isascii() and answer.isdigit()):
+            raise ValueError(f"{slot.label} takes a whole number")
+        return _set_field(record, slot, int(answer))
+    try:
+        amount = Decimal(answer)
+    except InvalidOperation as exc:
+        raise ValueError(f"{slot.label} takes an amount in {entry.unit}") from exc
+    if not amount.is_finite() or amount < 0:
+        raise ValueError(f"{slot.label} takes a non-negative amount in {entry.unit}")
+    if slot.field == "family_scheme_income":
+        current = record.household.wff.family_scheme_income
+        return _set_field(
+            record,
+            slot,
+            VerifiedIncome(amount, None if current is None else current.partner_amount),
+        )
+    if slot.field == "family_scheme_income.partner_amount":
+        current = record.household.wff.family_scheme_income
+        if current is None:
+            raise ValueError("record the claimant's family scheme income before the partner's")
+        return _set_field(
+            record,
+            Slot("wff", "family_scheme_income"),
+            VerifiedIncome(current.claimant_amount, amount),
+        )
+    return _set_field(record, slot, amount)
+
+
+def _set_field(record: ScenarioRecord, slot: Slot, value: Any) -> ScenarioRecord:
+    household = record.household
+    changes: dict[str, Any] = {slot.field: value}
+    if slot.scope == "accommodation_supplement":
+        as_ = replace(household.accommodation_supplement, **changes)
+        return replace(record, household=replace(household, accommodation_supplement=as_))
+    if slot.scope == "wff" and slot.child is None:
+        return replace(record, household=replace(household, wff=replace(household.wff, **changes)))
+    raise ValueError(f"{slot.label} can't take a direct value")
