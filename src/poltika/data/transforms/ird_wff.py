@@ -9,9 +9,8 @@ floating-point noise (for example 2.2999999999999998 for 2.3), so counts
 are rounded to one decimal place and dollar totals to whole millions, the
 precision of most rows. A few rows are published more precisely (2017-18 has
 three-decimal counts and six-decimal dollars), and this rounding shortens
-them. No v0.2 comparison uses those rows; a version that keeps published
-precision needs a new transformation version and snapshot manifest (fresh
-check F6, 27 September 2026).
+them. Version 2 below keeps published precision; version 1 stays registered
+so the v1 manifest reads as committed (fresh check F6, 27 September 2026).
 """
 
 from __future__ import annotations
@@ -104,4 +103,28 @@ def wff_statistics(raw: bytes, manifest: DatasetManifest) -> list[Row]:
             value = Decimal(text).quantize(Decimal(precision), rounding=ROUND_HALF_UP)
             year = labelled.year  # tax year ending 31 March of this year
             rows.append(Row(variable, date(year - 1, 4, 1), date(year, 4, 1), value, unit))
+    return rows
+
+
+def _published(text: str) -> Decimal:
+    """The cell's shortest decimal form. Excel stores numbers as binary
+    doubles, so `2.2999999999999998` is the double nearest 2.3; its shortest
+    round-tripping form is `2.3`. A value published with more places, such as
+    `279.093`, keeps them."""
+    return Decimal(repr(float(text)))
+
+
+@transformation("ird_wff_statistics", version=2)
+def wff_statistics_v2(raw: bytes, manifest: DatasetManifest) -> list[Row]:
+    """Version 2 (fresh check F6): removes binary floating-point noise without
+    rounding, so rows published at higher precision (2017-18) keep it.
+    Version 1 stays registered for the v1 manifest."""
+    sheet = read_sheet(raw, "Working for families data")
+    rows: list[Row] = []
+    for heading, column, variable, unit, _ in _BLOCKS:
+        for labelled, text in _block(sheet, heading, column):
+            year = labelled.year  # tax year ending 31 March of this year
+            rows.append(
+                Row(variable, date(year - 1, 4, 1), date(year, 4, 1), _published(text), unit)
+            )
     return rows

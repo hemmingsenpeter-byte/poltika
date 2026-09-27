@@ -3,7 +3,7 @@
 Author: Claude Code, under Pete's goal "accept and proceed on all — keep
 working without interruption on v0.2". Each PR merged, or will merge, with
 CI green after an author preflight only. This packet hands GPT/Codex the
-independent review of the three open v0.2 queue rows
+independent review of the five v0.2 queue rows listed below
 (`review_packets/review_queue.md`) and the checks v0.2 assigns to it:
 Tasks 3.1-3.2 (tables and acquisition), 9.3 (hand-calculated population
 cases) and the GPT/Codex half of 9.4 (cross-validation).
@@ -22,8 +22,10 @@ cases) and the GPT/Codex half of 9.4 (cross-validation).
   seven findings, F6 and part of F5 still open) and the Task 2.3 author
   check. Neither is an independent review.
 - **Review debt:** these are the five open v0.2 implementation rows in
-  `review_packets/review_queue.md`, which is at its cap. No implementation
-  PR merges until rows are cleared.
+  `review_packets/review_queue.md` at handoff. GPT/Codex has since cleared
+  #117 in `reviews/2026-09-27-pr117.md` (Tasks 2.3 and 9.3), leaving four
+  open rows. Once that queue update lands, review debt no longer blocks
+  #120; the remaining reviews still block the v0.2.0 release gate.
 - **Sources:** every snapshot under `data/raw/` with its manifest under
   `data/metadata/datasets/`; the publications' URLs are in the manifests.
   Re-fetch each and compare its SHA-256.

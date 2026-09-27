@@ -26,7 +26,7 @@ import yaml
 import poltika.data.transforms  # noqa: F401  (registers the transformations)
 from poltika.common.errors import PoltikaError
 from poltika.data.registry import DatasetRegistry, Snapshot
-from poltika.data.transform import TRANSFORMATIONS, Transformation
+from poltika.data.transform import TRANSFORMATION_VERSIONS, Transformation
 from poltika.semantics.variables import DataDictionary, Lineage, Observation
 
 
@@ -50,7 +50,14 @@ class DataContext:
             yaml.safe_load((data_root / "metadata" / "variables" / "dictionary.yaml").read_text())
             or {}
         )
-        self._transformations = TRANSFORMATIONS if transformations is None else transformations
+        # The registry by (id, version), or an injected set (tests) holding one
+        # version per id.
+        self._versions: dict[tuple[str, int], Transformation] = (
+            dict(TRANSFORMATION_VERSIONS)
+            if transformations is None
+            else {(t.id, t.version): t for t in transformations.values()}
+        )
+        self._ids = {tid for tid, _ in self._versions}
         self._source_of = self._variable_sources()
         self._cache: dict[tuple[str, int], list[Observation]] = {}
 
@@ -91,13 +98,15 @@ class DataContext:
 
     def _transform(self, snapshot: Snapshot) -> list[Observation]:
         m = snapshot.manifest
-        t = self._transformations.get(m.transformation_id)
-        if t is None:
+        if m.transformation_id not in self._ids:
             raise DataContextError(f"{m.manifest_name}: no transformation '{m.transformation_id}'")
-        if t.version != m.transformation_version:
+        t = self._versions.get((m.transformation_id, m.transformation_version))
+        if t is None:
+            registered = sorted(v for tid, v in self._versions if tid == m.transformation_id)
             raise DataContextError(
-                f"{m.manifest_name}: names {t.id} version {m.transformation_version}; "
-                f"the registered version is {t.version}"
+                f"{m.manifest_name}: names {m.transformation_id} version "
+                f"{m.transformation_version}; the registered version is "
+                f"{', '.join(map(str, registered))}"
             )
         lineage = Lineage(
             transformation_id=t.id,
@@ -115,7 +124,9 @@ class DataContext:
         observations: list[Observation] = []
         raw = snapshot.path.read_bytes()
         if hashlib.sha256(raw).hexdigest() != m.sha256:
-            raise DataContextError(f"{m.manifest_name}: raw snapshot sha256 changed before transformation")
+            raise DataContextError(
+                f"{m.manifest_name}: raw snapshot sha256 changed before transformation"
+            )
         for row in t.fn(raw, m):
             where = f"{m.manifest_name}: {row.variable_id} [{row.period_start}, {row.period_end})"
             if row.variable_id not in m.canonical_variable_mapping:
