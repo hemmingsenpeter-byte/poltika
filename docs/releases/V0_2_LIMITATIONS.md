@@ -56,12 +56,22 @@ The population is `data/metadata/populations/nz_synthetic_development.v1.yaml`.
 - **Runs are kept in memory** by the API process. There is no durable run
   storage.
 
+## Cross-validation shows the scope gaps
+
+`V0_2_CROSS_VALIDATION.md` compares the baseline with Inland Revenue's WFF
+statistics and MSD's Benefit Fact Sheets. The model reaches about
+three-quarters of published family tax credit families and entitlement, a
+fifth of Accommodation Supplement recipients and an eighth of Best Start
+families. Each gap is explained by scope (A6, one Best Start cohort, a
+synthetic population, a different year) and none is tuned away.
+
 ## Not yet independently checked
 
-- The Stats NZ snapshots and canonical variables (#111), and the
-  population derivation (#113), await GPT/Codex review. They are open rows
-  in `review_packets/review_queue.md`, so the v0.2 release gate's review
-  row skips.
+- The Stats NZ snapshots and canonical variables (#111), the population
+  derivation (#113) and the cross-validation with its IRD and MSD snapshots
+  (#114) await GPT/Codex review (`review_packets/v0_2_codex_audit.md`). They
+  are open rows in `review_packets/review_queue.md`, so the v0.2 release
+  gate's review row skips.
 - Task 2.3 (the population adapter's mapping), Task 9.3 (hand-calculated
-  population cases) and Task 9.4 (cross-validation against published
-  programme figures) are GPT/Codex's and still open.
+  population cases) and the GPT/Codex half of Task 9.4 are GPT/Codex's and
+  still open.

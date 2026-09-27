@@ -1,0 +1,19 @@
+dataset_id: msd_benefit_fact_sheets_national
+raw_file: msd/msd_benefit_fact_sheets_national/v1/quarterly-benefit-fact-sheets-national-benefit-tables-june-2026.xlsx
+sha256: 90cd8e7c8ff210ca9334eb035dfef3a39abdefe10365e5f7a6ccbd4291248f74
+vintage: June 2026 quarter
+transformation_id: msd_benefit_fact_sheets_national
+source_organisation: Ministry of Social Development
+dataset_series: 'Benefit Fact Sheets: national benefit tables, June 2026'
+source_url_or_identifier: https://www.msd.govt.nz/documents/about-msd-and-our-work/publications-resources/statistics/benefit/2026/quarterly-benefit-fact-sheets-national-benefit-tables-june-2026.xlsx
+retrieval_date: 2026-09-27
+observation_reference_period:
+  from: 2021-04-01
+  to: 2026-07-01
+units: Counts of recipients and grants, and NZD amounts, as each table states
+geography_population: New Zealand; supplementary assistance counts cover all ages, including non-beneficiaries
+retrieval_method: manual_download
+raw_snapshot_version: 1
+transformation_version: 1
+canonical_variable_mapping:
+- accommodation_supplement.recipients

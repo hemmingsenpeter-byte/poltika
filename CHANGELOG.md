@@ -66,6 +66,10 @@ result identity changes.
   gives a static full take-up family tax credit change of $130.1m a year
   over 444,485 weighted households, with AS unchanged and the in-work tax
   credit `needs_review`.
+- **Cross-validation** (Task 9.4, #114): the baseline against Inland Revenue's
+  WFF statistics and MSD's Benefit Fact Sheets, read with a standard-library
+  xlsx reader. `docs/releases/V0_2_CROSS_VALIDATION.md` reports each ratio
+  with its reasons; nothing is tuned.
 - **Population API and page** (Tasks 10.1-10.2): `/microsim/population`,
   `/microsim/parameters`, `/microsim/runs` and `/analyst/microsim`, over
   an operator-set population file. The page shows Overview, Distribution,

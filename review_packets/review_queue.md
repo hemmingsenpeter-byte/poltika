@@ -18,7 +18,7 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 2 open implementation review rows (#111, #113).**
+**As of 27 September 2026: 3 open implementation review rows (#111, #113, #114).**
 PR #109's review is recorded in `reviews/2026-09-27-pr109.md`. Its
 Codex-authored fixes (#112) were independently checked by Claude Code
 with no blocking findings (#112 comment), accepted by Pete, and merged.
@@ -30,6 +30,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #114 | v0.2 | Cross-validation (Task 9.4): IRD WFF and MSD fact-sheet snapshots, `data/xlsx.py` reader, `crossval.py` report | Data boundary, assurance | Medium | open |
 | #94 | v0.2 | Validation, weighting, reforms; optional preloaded `parameters` on `run_wff_module`, `run_as_module`, `run_combined_household`; `check_preloaded_parameters` | Engines, loader | High | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
 | #95 | v0.2 | Population runner; `load_bound_policy_spec` parse cache keyed by SHA-256 | Loader | High | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
 | #93 | v0.2 | Data layer, manifest, registry, snapshot guard; population schema; `record_from_plain` moved to `record.py`; `data/raw/` no longer gitignored | Data boundary, scenario records | High | reviewed (reviews/2026-09-27-queued-pr-audit.md) |

@@ -78,6 +78,8 @@ poltika/
 │   │                        registry.py (checksummed dataset registry),
 │   │                        transform.py (versioned transformation registry;
 │   │                        transforms/ holds one module per dataset),
+│   │                        xlsx.py (standard-library reader for published
+│   │                        Excel workbooks, v0.2 Task 9.4),
 │   │                        context.py (DataContext, the CanonicalContext
 │   │                        implementation)
 │   ├── policy/            — loader.py (Task 11 parameter loader); facts.py
@@ -122,8 +124,11 @@ poltika/
 │   │                        seeded synthetic population generator and its
 │   │                        CLI, calibration.py the population spec derived
 │   │                        from canonical variables, calibrate_cli.py its
-│   │                        composition root (the one module outside
-│   │                        poltika.data that builds a DataContext) --
+│   │                        composition root, crossval.py the Task 9.4
+│   │                        comparison with published programme figures,
+│   │                        crossval_cli.py its report writer (these two
+│   │                        CLIs are the only modules outside poltika.data
+│   │                        that build a DataContext) --
 │   │                        never a second engine);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
