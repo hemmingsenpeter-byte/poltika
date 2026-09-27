@@ -131,6 +131,28 @@ def test_eligibility_unknown_gives_eligible_and_excluded_branches() -> None:
     assert outcomes["excluded"] != "needs_review"
 
 
+def test_scoped_impact_preserves_the_full_household_result() -> None:
+    record = _as(
+        _wff(G0, household_eligibility=FactStatus.UNKNOWN), statistical_area_unit=None
+    )
+    res = _resolve(
+        record, max_branches=1,
+        impact_components=("family_tax_credit", "accommodation_supplement"),
+    )
+    assert res.next_question is not None
+    assert res.next_question.slot.label == "accommodation_supplement.statistical_area_unit"
+    assert res.unblocks[Slot("wff", "household_eligibility")] == ("family_tax_credit",)
+    assert result_payload(res.base) == result_payload(_run(record))
+    assert set(res.bounds) == {*COMPONENTS, WFF_TOTAL}
+    _check_branches_are_real_runs(res, record)
+
+
+@pytest.mark.parametrize("components", [(), ("unknown",)])
+def test_invalid_impact_components_are_refused(components: tuple[str, ...]) -> None:
+    with pytest.raises(ValueError, match="unknown or empty impact components"):
+        _resolve(G0, impact_components=components)
+
+
 def test_two_unknowns_branch_jointly_and_the_cap_holds() -> None:
     record = _as(G0, claimant_category=None, tenure_type=None)
     full = _resolve(record)

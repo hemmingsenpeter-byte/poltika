@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import types
 import typing
+from collections.abc import Collection
 from dataclasses import dataclass, replace
 from decimal import Decimal
 from enum import Enum
@@ -143,11 +144,17 @@ def resolve(
     facts: FactIndex,
     *,
     max_branches: int = 32,
+    impact_components: Collection[str] = COMPONENTS,
     wff_parameters: PolicyParameterSet | None = None,
     as_parameters: PolicyParameterSet | None = None,
 ) -> Resolution:
+    """Resolve all components; `impact_components` limits only question ranking."""
     if max_branches < 1:
         raise ValueError("max_branches must be at least 1")
+    unknown = set(impact_components) - set(COMPONENTS)
+    if unknown or not impact_components:
+        raise ValueError(f"unknown or empty impact components: {sorted(unknown)}")
+    ranked_components = tuple(c for c in COMPONENTS if c in impact_components)
 
     def run(r: ScenarioRecord) -> CombinedResult:
         return run_combined_household(
@@ -165,7 +172,9 @@ def resolve(
 
     base = run(record)
     missing = _missing(record, base, facts)
-    order, unblocks = _impact_order(record, base, [m for m in missing if m.branchable], run)
+    order, unblocks = _impact_order(
+        record, base, [m for m in missing if m.branchable], run, ranked_components
+    )
 
     leaves: list[tuple[tuple[tuple[Slot, str], ...], ScenarioRecord, CombinedResult]] = [
         ((), record, base)
@@ -176,7 +185,8 @@ def resolve(
         next_leaves: list[tuple[tuple[tuple[Slot, str], ...], ScenarioRecord, CombinedResult]] = []
         for i, (assignment, rec, result) in enumerate(leaves):
             candidates, _ = _impact_order(
-                rec, result, [m for m in _missing(rec, result, facts) if m.branchable], run
+                rec, result, [m for m in _missing(rec, result, facts) if m.branchable],
+                run, ranked_components,
             )
             if not candidates:
                 next_leaves.append((assignment, rec, result))
@@ -348,6 +358,7 @@ def _impact_order(
     base: CombinedResult,
     candidates: list[MissingFact],
     run: typing.Callable[[ScenarioRecord], CombinedResult],
+    components: tuple[str, ...],
 ) -> tuple[list[MissingFact], dict[Slot, tuple[str, ...]]]:
     unblocks: dict[Slot, tuple[str, ...]] = {}
 
@@ -356,7 +367,7 @@ def _impact_order(
         unblocked_names: list[str] = []
         changed = 0
         spread = Decimal(0)
-        for name in COMPONENTS:
+        for name in components:
             outs = [component(r, name) for r in results]
             if component(base, name).outcome == "needs_review" and any(
                 o.outcome != "needs_review" for o in outs

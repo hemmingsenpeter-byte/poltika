@@ -13,9 +13,9 @@ question for the components the caller asked about:
 Question order is deterministic:
 
 1. finite facts (yes/no or category) that would unblock an asked
-   component, by the impact `conditional.resolve` measures;
-2. numeric facts (income, costs, assets, counts) blocking an asked
-   component, in catalogue order;
+   component, by the impact on the asked components;
+2. non-branchable facts (amounts, counts, attestations) blocking an
+   asked component, in catalogue order;
 3. any other finite fact blocking an asked component, by impact.
 
 `apply_answer()` records an answer on the household, typed as the engine
@@ -79,6 +79,7 @@ def next_step(
         as_policy_dir,
         facts,
         max_branches=1,  # the planner needs the ranking, not the branches
+        impact_components=asked,
         wff_parameters=wff_parameters,
         as_parameters=as_parameters,
     )
@@ -91,7 +92,11 @@ def next_step(
 
     ranked = [m for m in res.ranked if m in open_facts]
     unblocking = [m for m in ranked if set(res.unblocks.get(m.slot, ())) & set(asked)]
-    numeric = [m for m in open_facts if not m.branchable]
+    catalog_order = {key: i for i, key in enumerate(facts)}
+    numeric = sorted(
+        (m for m in open_facts if not m.branchable),
+        key=lambda m: catalog_order[(m.slot.scope, m.slot.fact_id)],
+    )
     rest = [m for m in ranked if m not in unblocking]
     order = [*unblocking, *numeric, *rest]
     return IntakeStep("ask", order[0], blocking)

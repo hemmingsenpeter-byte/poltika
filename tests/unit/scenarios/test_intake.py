@@ -180,6 +180,35 @@ def test_asked_components_limit_the_questions() -> None:
     assert all("accommodation_supplement" in m.blocks for m in step.remaining)
 
 
+def test_impact_counts_only_asked_components() -> None:
+    record = _as(
+        _wff(G0, household_eligibility=FactStatus.UNKNOWN), statistical_area_unit=None
+    )
+    # Both facts unblock one asked component. Only area changes a calculated
+    # amount across answers; the unasked WFF components must not break the tie.
+    step = _step(record, asked=("family_tax_credit", "accommodation_supplement"))
+    assert step.question is not None
+    assert step.question.slot.label == "accommodation_supplement.statistical_area_unit"
+    # Asking for all components gives WFF eligibility its full impact again.
+    all_components = _step(record)
+    assert all_components.question is not None
+    assert all_components.question.slot.label == "wff.household_eligibility"
+
+
+def test_numeric_questions_follow_catalogue_order() -> None:
+    record = _as(_wff(G0, family_scheme_income=None), weekly_accommodation_costs=None)
+    step = _step(record, asked=("family_tax_credit", "accommodation_supplement"))
+    assert step.question is not None
+    assert step.question.slot.label == "wff.family_scheme_income"
+    # The index supplied by the caller defines catalogue order, not AS/WFF rule prefixes.
+    reversed_step = next_step(
+        record, WFF_POLICY_DIR, AS_POLICY_DIR, dict(reversed(tuple(FACTS.items()))),
+        asked=("family_tax_credit", "accommodation_supplement"),
+    )
+    assert reversed_step.question is not None
+    assert reversed_step.question.slot.label == "accommodation_supplement.weekly_accommodation_costs"
+
+
 def test_declined_fact_is_not_asked_again_and_gives_incomplete() -> None:
     record = _wff(G0, household_eligibility=FactStatus.UNKNOWN)
     step = _step(record, declined=("wff.household_eligibility",))
