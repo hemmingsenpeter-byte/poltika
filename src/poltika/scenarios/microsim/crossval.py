@@ -57,7 +57,19 @@ _AS_SCOPE = (
         "while the model has only in-work non-beneficiaries (A6)"
     ),
     "homeowners are unsupported in the model (rent or board only)",
+    (
+        "cash assets are drawn from the median and mean of households holding currency and "
+        "deposits, for every household whatever its tenure or income (A13), so many modelled "
+        "renters exceed the r 15 asset ceiling and are unsupported (AS_ASSETS_OVER_CEILING)"
+    ),
     "AS area shares are assumed equal (A5), so caps and entry points are not New Zealand's mix",
+)
+_CHILDREN = (
+    (
+        "the published count is children in every family receiving any WFF tax credit; the "
+        "model can count only families with a calculated family tax credit, Best Start or "
+        "minimum family tax credit, because the in-work tax credit is needs_review for 2026-27"
+    ),
 )
 
 
@@ -71,18 +83,29 @@ class Comparison:
     covered_weight: Decimal  # weight whose outcome was calculated
     uncovered_weight: Decimal  # weight needs_review or unsupported
     reasons: tuple[str, ...]
+    # The uncovered weight by the baseline's reason code, largest first, so a
+    # gap's cause is shown, not only asserted.
+    uncovered_by_code: tuple[tuple[str, Decimal], ...] = ()
 
     @property
     def ratio(self) -> Decimal:
         return (self.modelled / self.published).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
-def _component(
-    run: PopulationRun, component: str
-) -> tuple[Decimal, Decimal, Decimal, Decimal, set[str]]:
-    """(recipient weight, weighted amount, covered weight, uncovered weight, recipient ids)."""
+@dataclass(frozen=True)
+class _Component:
+    recipients: Decimal
+    amount: Decimal
+    covered: Decimal
+    uncovered: Decimal
+    ids: frozenset[str]
+    by_code: tuple[tuple[str, Decimal], ...]
+
+
+def _component(run: PopulationRun, component: str) -> _Component:
     recipients = amount = covered = uncovered = Decimal(0)
     ids: set[str] = set()
+    codes: dict[str, Decimal] = {}
     for h in run.households:
         base = h.components[component].baseline
         if base.outcome == "calculated" and base.value is not None:
@@ -93,7 +116,10 @@ def _component(
                 ids.add(h.household_id)
         else:
             uncovered += h.weight
-    return recipients, amount, covered, uncovered, ids
+            code = base.code or base.outcome
+            codes[code] = codes.get(code, Decimal(0)) + h.weight
+    by_code = tuple(sorted(codes.items(), key=lambda kv: (-kv[1], kv[0])))
+    return _Component(recipients, amount, covered, uncovered, frozenset(ids), by_code)
 
 
 def compare(
@@ -107,96 +133,105 @@ def compare(
     rows: list[Comparison] = []
     thousand, million = Decimal(1000), Decimal(1_000_000)
 
-    ftc_n, ftc_amount, ftc_cov, ftc_unc, ftc_ids = _component(run, "family_tax_credit")
-    value, source = published("wff.families_entitled.family_tax_credit", _WFF_YEAR)
-    rows.append(
-        Comparison(
-            "families with family tax credit",
-            "families",
-            ftc_n,
-            value * thousand,
-            source,
-            ftc_cov,
-            ftc_unc,
-            _COMMON + _WFF_SCOPE,
+    def add(
+        measure: str,
+        unit: str,
+        modelled: Decimal,
+        variable: str,
+        on: date,
+        scale: Decimal,
+        c: _Component,
+        reasons: tuple[str, ...],
+    ) -> None:
+        value, source = published(variable, on)
+        rows.append(
+            Comparison(
+                measure,
+                unit,
+                modelled,
+                value * scale,
+                source,
+                c.covered,
+                c.uncovered,
+                reasons,
+                c.by_code,
+            )
         )
+
+    ftc = _component(run, "family_tax_credit")
+    add(
+        "families with family tax credit",
+        "families",
+        ftc.recipients,
+        "wff.families_entitled.family_tax_credit",
+        _WFF_YEAR,
+        thousand,
+        ftc,
+        _COMMON + _WFF_SCOPE,
     )
-    value, source = published("wff.entitlement.family_tax_credit", _WFF_YEAR)
-    rows.append(
-        Comparison(
-            "family tax credit entitlement",
-            "NZD million per year",
-            ftc_amount / million,
-            value,
-            source,
-            ftc_cov,
-            ftc_unc,
-            _COMMON + _WFF_SCOPE,
-        )
+    add(
+        "family tax credit entitlement",
+        "NZD million per year",
+        ftc.amount / million,
+        "wff.entitlement.family_tax_credit",
+        _WFF_YEAR,
+        Decimal(1),
+        ftc,
+        _COMMON + _WFF_SCOPE,
     )
 
+    bs = _component(run, "best_start")
+    mftc = _component(run, "minimum_family_tax_credit")
+    receiving = ftc.ids | bs.ids | mftc.ids
     children = Decimal(0)
     by_id = {h.household_id: h for h in population.households}
     for h in run.households:
-        if h.household_id in ftc_ids:
+        if h.household_id in receiving:
             children += h.weight * len(
                 scenario_record(by_id[h.household_id]).household.wff.children
             )
-    value, source = published("wff.children_supported", _WFF_YEAR)
-    rows.append(
-        Comparison(
-            "children in families with family tax credit",
-            "children",
-            children,
-            value * thousand,
-            source,
-            ftc_cov,
-            ftc_unc,
-            _COMMON + _WFF_SCOPE,
-        )
+    add(
+        "children in families receiving Working for Families",
+        "children",
+        children,
+        "wff.children_supported",
+        _WFF_YEAR,
+        thousand,
+        ftc,
+        _COMMON + _WFF_SCOPE + _CHILDREN,
     )
 
-    bs_n, bs_amount, bs_cov, bs_unc, _ = _component(run, "best_start")
-    value, source = published("wff.families_entitled.best_start", _WFF_YEAR)
-    rows.append(
-        Comparison(
-            "families with Best Start",
-            "families",
-            bs_n,
-            value * thousand,
-            source,
-            bs_cov,
-            bs_unc,
-            _COMMON + _WFF_SCOPE + _BEST_START,
-        )
+    add(
+        "families with Best Start",
+        "families",
+        bs.recipients,
+        "wff.families_entitled.best_start",
+        _WFF_YEAR,
+        thousand,
+        bs,
+        _COMMON + _WFF_SCOPE + _BEST_START,
     )
-    value, source = published("wff.entitlement.best_start", _WFF_YEAR)
-    rows.append(
-        Comparison(
-            "Best Start entitlement",
-            "NZD million per year",
-            bs_amount / million,
-            value,
-            source,
-            bs_cov,
-            bs_unc,
-            _COMMON + _WFF_SCOPE + _BEST_START,
-        )
+    add(
+        "Best Start entitlement",
+        "NZD million per year",
+        bs.amount / million,
+        "wff.entitlement.best_start",
+        _WFF_YEAR,
+        Decimal(1),
+        bs,
+        _COMMON + _WFF_SCOPE + _BEST_START,
     )
 
-    as_n, _, as_cov, as_unc, _ = _component(run, AS_COMPONENT)
-    value, source = published("accommodation_supplement.recipients", _AS_QUARTER)
-    rows.append(
-        Comparison(
-            "Accommodation Supplement recipients",
-            "recipients (households modelled)",
-            as_n,
-            value,
-            source,
-            as_cov,
-            as_unc,
-            _COMMON + _AS_SCOPE,
-        )
+    as_ = _component(run, AS_COMPONENT)
+    add(
+        "Accommodation Supplement recipients",
+        "recipients (households modelled)",
+        as_.recipients,
+        "accommodation_supplement.recipients",
+        _AS_QUARTER,
+        Decimal(1),
+        as_,
+        _COMMON + _AS_SCOPE,
     )
     return rows
 
@@ -230,5 +265,8 @@ def render_markdown(rows: Sequence[Comparison], run: PopulationRun) -> str:
     for r in rows:
         lines += [f"**{r.measure}.** Published: {r.published_source}.", ""]
         lines += [f"- {reason}" for reason in r.reasons]
+        if r.uncovered_by_code:
+            codes = ", ".join(f"`{code}` {_fmt(weight)}" for code, weight in r.uncovered_by_code)
+            lines += [f"- not calculated, by reason code (weight): {codes}"]
         lines.append("")
     return "\n".join(lines)

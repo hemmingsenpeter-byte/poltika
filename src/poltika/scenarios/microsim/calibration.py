@@ -152,7 +152,10 @@ SOURCES = (
     "D7 region: HES Table 5 people by regional council area",
     "A1 assumption: 'three or more' dependent children counted as three",
     "A2 assumption: one-parent households have the couples' mean number of children",
-    "A3 assumption: births registered stand for births, all in modelled households",
+    (
+        "A3 assumption: births registered stand for births, all in modelled households; births "
+        "after 31 March 2026 (before the 2026-06-01 assessment week) are not counted"
+    ),
     "A4 assumption: people shares by region stand for household shares",
     "A5 assumption: equal shares across AS Areas 1-4 (no published household counts by area)",
     "A6 assumption: every household is a non-beneficiary",
@@ -164,6 +167,10 @@ SOURCES = (
     (
         "A12 assumption: every household's eldest dependent child is under 16 throughout the week "
         "(children's ages are not generated beyond the Best Start cohort)"
+    ),
+    (
+        "A13 assumption: every household's cash assets follow the median and mean of households "
+        "holding currency and deposits, whatever its tenure or income"
     ),
 )
 

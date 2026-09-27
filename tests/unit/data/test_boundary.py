@@ -17,6 +17,8 @@ SRC = Path(__file__).resolve().parents[3] / "src" / "poltika"
 DATA_PACKAGE = SRC / "data"
 ALLOWED: set[str] = {"scenarios/microsim/calibrate_cli.py", "scenarios/microsim/crossval_cli.py"}
 _DATA_PATH = re.compile(r"""["'](?:\.\./)*data/(?:raw|processed|metadata)\b""")
+# A path built with `/`: Path("data") / "raw", and the like.
+_DATA_JOIN = re.compile(r"""["']data["']\s*\)?\s*/\s*["'](?:raw|processed|metadata)["']""")
 
 
 def _outside_modules() -> list[Path]:
@@ -28,8 +30,12 @@ def _imports(path: Path) -> set[str]:
     for node in ast.walk(ast.parse(path.read_text())):
         if isinstance(node, ast.Import):
             names.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom) and node.module and node.level == 0:
+        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
             names.add(node.module)
+        elif isinstance(node, ast.ImportFrom) and node.level > 0:
+            # A relative import, resolved against the module's own package.
+            package = path.relative_to(SRC.parent).with_suffix("").parts[: -node.level]
+            names.add(".".join((*package, node.module) if node.module else package))
     return names
 
 
@@ -45,7 +51,9 @@ def test_nothing_outside_the_data_layer_imports_it() -> None:
 
 def test_nothing_outside_the_data_layer_names_a_data_path() -> None:
     offenders = sorted(
-        str(p.relative_to(SRC)) for p in _outside_modules() if _DATA_PATH.search(p.read_text())
+        str(p.relative_to(SRC))
+        for p in _outside_modules()
+        if _DATA_PATH.search(p.read_text()) or _DATA_JOIN.search(p.read_text())
     )
     assert offenders == []
 
