@@ -27,9 +27,20 @@ What it returns (`Resolution`):
   catalogue order. Impact is measured by rerunning the household once per
   admissible value of each fact.
 
-Numeric facts (income, costs, assets) have no finite domain. They are
-listed as missing, without branches. Ranges for them, and branches over
-unresolved rate values, are later ADR-0016 tasks.
+Numeric facts (income, costs, assets, counts) have no finite domain. With
+no range they are listed as missing, without branches. With a range
+(`ranges`, v0.3 Task 1b.2b), the household is also branched at each
+range's two endpoints, jointly with the finite facts. Each component's
+`Bounds.kind` then says what its range means:
+
+- `bounds`: every ranged fact's catalogue entry declares this component
+  monotone in it, with a rule id, so the endpoints give true bounds: any
+  value inside the ranges gives a result inside them. A property test
+  checks each declaration against the engine.
+- `points`: some ranged fact has no such declaration, so the figures are
+  values at the endpoints only, not bounds.
+
+Branches over unresolved rate values are a later ADR-0016 task (1b.2c).
 """
 
 from __future__ import annotations
@@ -44,7 +55,7 @@ from pathlib import Path
 from typing import Any
 
 from poltika.engines.simulator.outcome import ComponentResult, FactStatus
-from poltika.engines.simulator.wff import BestStartCohort, PartnerStatus
+from poltika.engines.simulator.wff import BestStartCohort, PartnerStatus, VerifiedIncome
 from poltika.policy.loader import PolicyParameterSet
 from poltika.scenarios.combined import CombinedResult, run_combined_household
 from poltika.scenarios.record import ScenarioRecord
@@ -112,12 +123,18 @@ class Branch:
     unresolved: tuple[str, ...]  # slot labels still unknown in this branch
 
 
+BoundsKind = typing.Literal["bounds", "points"]
+
+
 @dataclass(frozen=True)
 class Bounds:
     low: Decimal | None
     high: Decimal | None
     calculated: int
     branches: int
+    # "points" when a ranged numeric fact isn't declared monotone for this
+    # component: the figures are values at the range endpoints, not bounds.
+    kind: BoundsKind = "bounds"
 
     @property
     def complete(self) -> bool:
@@ -145,10 +162,12 @@ def resolve(
     *,
     max_branches: int = 32,
     impact_components: Collection[str] = COMPONENTS,
+    ranges: typing.Mapping[Slot, tuple[Decimal, Decimal]] | None = None,
     wff_parameters: PolicyParameterSet | None = None,
     as_parameters: PolicyParameterSet | None = None,
 ) -> Resolution:
-    """Resolve all components; `impact_components` limits only question ranking."""
+    """Resolve all components; `impact_components` limits only question
+    ranking. `ranges` gives (low, high) for missing numeric facts."""
     if max_branches < 1:
         raise ValueError("max_branches must be at least 1")
     unknown = set(impact_components) - set(COMPONENTS)
@@ -176,9 +195,18 @@ def resolve(
         record, base, [m for m in missing if m.branchable], run, ranked_components
     )
 
+    ranged = _check_ranges(ranges or {}, missing, max_branches)
     leaves: list[tuple[tuple[tuple[Slot, str], ...], ScenarioRecord, CombinedResult]] = [
         ((), record, base)
     ]
+    for slot, (low, high) in ranged.items():
+        ends = (low,) if low == high else (low, high)
+        leaves = [
+            ((*assignment, (slot, str(end))), rec2, run(rec2))
+            for assignment, rec, _ in leaves
+            for end in ends
+            for rec2 in (assign_number(rec, slot, end),)
+        ]
     capped = False
     while True:
         expanded = False
@@ -225,7 +253,7 @@ def resolve(
         known=known,
         missing=tuple(missing),
         branches=branches,
-        bounds=_bounds(branches),
+        bounds=_bounds(branches, _kinds(ranged, facts)),
         capped=capped,
         next_question=order[0] if order else (next((m for m in missing), None)),
         ranked=tuple(order),
@@ -259,6 +287,38 @@ def assign(record: ScenarioRecord, slot: Slot, value: str) -> ScenarioRecord:
     children = list(wff.children)
     children[slot.child] = _set(children[slot.child], slot.field, value)
     return replace(record, household=replace(household, wff=replace(wff, children=children)))
+
+
+def assign_number(record: ScenarioRecord, slot: Slot, value: Decimal | int) -> ScenarioRecord:
+    """The record with a numeric fact set (a money amount or a count). The
+    claimant's family scheme income keeps any partner amount, and the
+    partner's needs the claimant's first."""
+    if slot.field == "family_scheme_income":
+        current = record.household.wff.family_scheme_income
+        partner = None if current is None else current.partner_amount
+        return set_value(record, slot, VerifiedIncome(Decimal(value), partner))
+    if slot.field == "family_scheme_income.partner_amount":
+        current = record.household.wff.family_scheme_income
+        if current is None:
+            raise ValueError("record the claimant's family scheme income before the partner's")
+        return set_value(
+            record,
+            Slot("wff", "family_scheme_income"),
+            VerifiedIncome(current.claimant_amount, Decimal(value)),
+        )
+    return set_value(record, slot, value)
+
+
+def set_value(record: ScenarioRecord, slot: Slot, value: Any) -> ScenarioRecord:
+    """The record with one household-, WFF- or AS-level field set directly."""
+    household = record.household
+    changes: dict[str, Any] = {slot.field: value}
+    if slot.scope == "accommodation_supplement":
+        as_ = replace(household.accommodation_supplement, **changes)
+        return replace(record, household=replace(household, accommodation_supplement=as_))
+    if slot.scope == "wff" and slot.child is None:
+        return replace(record, household=replace(household, wff=replace(household.wff, **changes)))
+    raise ValueError(f"{slot.label} can't take a direct value")
 
 
 def _set(obj: Any, name: str, value: str) -> Any:
@@ -389,7 +449,54 @@ def _impact_order(
     return ordered, unblocks
 
 
-def _bounds(branches: tuple[Branch, ...]) -> dict[str, Bounds]:
+def _check_ranges(
+    ranges: typing.Mapping[Slot, tuple[Decimal, Decimal]],
+    missing: list[MissingFact],
+    max_branches: int,
+) -> dict[Slot, tuple[Decimal | int, Decimal | int]]:
+    """Ranges only for missing numeric facts, well formed, within the cap."""
+    numeric = {m.slot: m.entry for m in missing if not m.branchable}
+    checked: dict[Slot, tuple[Decimal | int, Decimal | int]] = {}
+    for slot, (low, high) in sorted(ranges.items()):
+        entry = numeric.get(slot)
+        if entry is None or entry.kind not in ("money", "count"):
+            raise ValueError(f"{slot.label} is not a missing amount or count, so it can't take a range")
+        lo, hi = Decimal(low), Decimal(high)
+        if not (lo.is_finite() and hi.is_finite()) or lo < 0 or lo > hi:
+            raise ValueError(f"{slot.label}: a range needs 0 <= low <= high, got {low} to {high}")
+        if entry.kind == "count":
+            if lo != lo.to_integral_value() or hi != hi.to_integral_value():
+                raise ValueError(f"{slot.label} is a count: its range must be whole numbers")
+            checked[slot] = (int(lo), int(hi))
+        else:
+            checked[slot] = (lo, hi)
+    corners = 1
+    for ends in checked.values():
+        corners *= 1 if ends[0] == ends[1] else 2
+    if corners > max_branches:
+        raise ValueError(f"{len(checked)} ranges need {corners} runs, over the cap of {max_branches}")
+    return checked
+
+
+def _kinds(
+    ranged: typing.Mapping[Slot, object], facts: FactIndex
+) -> dict[str, BoundsKind]:
+    """`bounds` where every ranged fact is declared monotone for the
+    component; the WFF total also needs its components to agree in direction."""
+    declared = [facts[(s.scope, s.fact_id)].monotone or {} for s in ranged]
+    kinds: dict[str, BoundsKind] = {
+        c: "bounds" if all(c in d for d in declared) else "points" for c in COMPONENTS
+    }
+    total_ok = all(
+        all(c in d for c in WFF_COMPONENTS)
+        and len({d[c].direction for c in WFF_COMPONENTS}) == 1
+        for d in declared
+    )
+    kinds[WFF_TOTAL] = "bounds" if total_ok else "points"
+    return kinds
+
+
+def _bounds(branches: tuple[Branch, ...], kinds: dict[str, BoundsKind]) -> dict[str, Bounds]:
     out: dict[str, Bounds] = {}
     for name in (*COMPONENTS, WFF_TOTAL):
         values: list[Decimal] = []
@@ -403,6 +510,10 @@ def _bounds(branches: tuple[Branch, ...]) -> dict[str, Bounds]:
                 if r.outcome == "calculated" and r.value is not None:
                     values.append(r.value)
         out[name] = Bounds(
-            min(values, default=None), max(values, default=None), len(values), len(branches)
+            min(values, default=None),
+            max(values, default=None),
+            len(values),
+            len(branches),
+            kinds[name],
         )
     return out

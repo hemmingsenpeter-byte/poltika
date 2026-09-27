@@ -456,7 +456,8 @@ function conditional(res) {
       if (b.calculated === 0) text = "not calculable under any answer";
       else if (b.low === b.high) text = money(b.low, id) + (b.complete ? " under every answer" : " where calculable");
       else text = "between " + money(b.low, id) + " and " + money(b.high, id) + (b.complete ? "" : " where calculable");
-      list.append(el("li", {}, name + ": " + text + " (calculated in " + b.calculated + " of " + b.branches + " cases)"));
+      const points = b.kind === "points" ? "; values at these points, not bounds" : "";
+      list.append(el("li", {}, name + ": " + text + " (calculated in " + b.calculated + " of " + b.branches + " cases" + points + ")"));
     }
     card.append(el("p", {}, "Ranges across the possible answers:"), list);
   }

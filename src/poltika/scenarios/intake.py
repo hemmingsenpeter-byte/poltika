@@ -32,12 +32,11 @@ confirmation (`doctrine/llm_boundaries.md`).
 from __future__ import annotations
 
 from collections.abc import Collection
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
-from typing import Any, Literal
+from typing import Literal
 
-from poltika.engines.simulator.wff import VerifiedIncome
 from poltika.policy.loader import PolicyParameterSet
 from poltika.scenarios.conditional import (
     COMPONENTS,
@@ -45,7 +44,9 @@ from poltika.scenarios.conditional import (
     MissingFact,
     Slot,
     assign,
+    assign_number,
     resolve,
+    set_value,
 )
 from poltika.scenarios.record import ScenarioRecord
 
@@ -142,42 +143,15 @@ def apply_answer(record: ScenarioRecord, fact: MissingFact, answer: str) -> Scen
         # caller declines it instead.
         if answer != "yes":
             raise ValueError(f"{slot.label} takes 'yes'; if it can't be attested, decline it")
-        return _set_field(record, slot, True)
+        return set_value(record, slot, True)
     if entry.kind == "count":
         if not (answer.isascii() and answer.isdigit()):
             raise ValueError(f"{slot.label} takes a whole number")
-        return _set_field(record, slot, int(answer))
+        return assign_number(record, slot, int(answer))
     try:
         amount = Decimal(answer)
     except InvalidOperation as exc:
         raise ValueError(f"{slot.label} takes an amount in {entry.unit}") from exc
     if not amount.is_finite() or amount < 0:
         raise ValueError(f"{slot.label} takes a non-negative amount in {entry.unit}")
-    if slot.field == "family_scheme_income":
-        current = record.household.wff.family_scheme_income
-        return _set_field(
-            record,
-            slot,
-            VerifiedIncome(amount, None if current is None else current.partner_amount),
-        )
-    if slot.field == "family_scheme_income.partner_amount":
-        current = record.household.wff.family_scheme_income
-        if current is None:
-            raise ValueError("record the claimant's family scheme income before the partner's")
-        return _set_field(
-            record,
-            Slot("wff", "family_scheme_income"),
-            VerifiedIncome(current.claimant_amount, amount),
-        )
-    return _set_field(record, slot, amount)
-
-
-def _set_field(record: ScenarioRecord, slot: Slot, value: Any) -> ScenarioRecord:
-    household = record.household
-    changes: dict[str, Any] = {slot.field: value}
-    if slot.scope == "accommodation_supplement":
-        as_ = replace(household.accommodation_supplement, **changes)
-        return replace(record, household=replace(household, accommodation_supplement=as_))
-    if slot.scope == "wff" and slot.child is None:
-        return replace(record, household=replace(household, wff=replace(household.wff, **changes)))
-    raise ValueError(f"{slot.label} can't take a direct value")
+    return assign_number(record, slot, amount)
