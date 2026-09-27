@@ -17,10 +17,11 @@ import pytest
 
 from poltika.data.context import DataContext
 from poltika.data.registry import DatasetRegistry
-from poltika.data.transform import TRANSFORMATIONS
+from poltika.data.transform import TRANSFORMATION_VERSIONS
 
 REPO_DATA = Path(__file__).resolve().parents[3] / "data"
 BIRTHS_2025 = "Year ended March 2025 (release page dated 15 May 2025)"
+IRD_V1 = "Tax years 2001-2025 (workbook modified 4 September 2026; 2025 marked New)"
 
 
 @pytest.mark.parametrize(
@@ -28,8 +29,7 @@ BIRTHS_2025 = "Year ended March 2025 (release page dated 15 May 2025)"
 )
 def test_each_snapshot_produces_every_mapped_variable(snapshot) -> None:  # type: ignore[no-untyped-def]
     m = snapshot.manifest
-    t = TRANSFORMATIONS[m.transformation_id]
-    assert t.version == m.transformation_version
+    t = TRANSFORMATION_VERSIONS[(m.transformation_id, m.transformation_version)]
     produced = {row.variable_id for row in t.fn(snapshot.path.read_bytes(), m)}
     assert produced == set(m.canonical_variable_mapping)
 
@@ -55,6 +55,11 @@ def test_each_snapshot_produces_every_mapped_variable(snapshot) -> None:  # type
         ("wff.families_entitled.best_start", date(2025, 1, 1), None, "137.6"),
         ("wff.children_supported", date(2025, 1, 1), None, "661.4"),
         ("accommodation_supplement.recipients", date(2026, 5, 1), None, "363309"),
+        # IRD v2 keeps rows published at higher precision (2017-18) and removes
+        # float noise (2025 MFTC-style cells); v1 rounds them.
+        ("wff.families_entitled.family_tax_credit", date(2018, 1, 1), None, "279.093"),
+        ("wff.entitlement.family_tax_credit", date(2018, 1, 1), None, "1620.681351"),
+        ("wff.families_entitled.family_tax_credit", date(2018, 1, 1), IRD_V1, "279.1"),
     ],
 )
 def test_published_figures_read_through_the_context(
