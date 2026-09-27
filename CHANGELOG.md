@@ -53,7 +53,23 @@ result identity changes.
 - **Synthetic population generator** (Tasks 3.3-3.4): a seeded,
   deterministic generator from a spec in which every New Zealand quantity
   and every asserted fact is an explicit input, with a calibration report
-  and the synthetic label. No real spec yet: it needs Task 3.1's tables.
+  and the synthetic label.
+- **First real data** (Tasks 3.1-3.2): Stats NZ's Household income and
+  housing-cost statistics (year ended June 2025), 2018 Census national
+  highlights, Household net worth statistics (2024) and births release
+  pages, committed exactly as published with manifests, four registered
+  transformations and 54 canonical variables. HES Table 5 counts people,
+  not households.
+- **The synthetic development population** (Task 3.3):
+  `data/metadata/populations/nz_synthetic_development.v1.yaml`, derived from
+  those variables by `scenarios/microsim/calibration.py` (rules D1-D7,
+  assumptions A1-A9, `docs/releases/V0_2_POPULATION_METHODOLOGY.md`) and
+  checked against a fresh derivation in CI. It represents 1,452,567
+  households; the release gate's real-population row now runs.
+- **Cross-validation** (Task 9.4): the baseline against Inland Revenue's
+  WFF statistics and MSD's Benefit Fact Sheets, read with a standard-library
+  xlsx reader. `docs/releases/V0_2_CROSS_VALIDATION.md` reports each ratio
+  with its reasons; nothing is tuned.
 - **Population API and page** (Tasks 10.1-10.2): `/microsim/population`,
   `/microsim/parameters`, `/microsim/runs` and `/analyst/microsim`, over
   an operator-set population file. The page shows Overview, Distribution,

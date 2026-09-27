@@ -510,3 +510,58 @@ variables:
   measure: flow
   geography_population: New Zealand
   valid_from: 2023-04-01
+- id: wff.families_entitled.family_tax_credit
+  meaning: Number of families with non-zero family tax credit entitlement in the tax year (Inland Revenue
+    WFF statistics, 'number of WFF claims with non-zero entitlement (000s)', FTC column), tax year ending
+    31 March.
+  unit: thousands of families
+  frequency: annual
+  price_basis: not_applicable
+  measure: flow
+  geography_population: New Zealand, families entitled to Working for Families
+  valid_from: 2000-04-01
+- id: wff.families_entitled.best_start
+  meaning: Number of families with non-zero Best Start tax credit entitlement in the tax year (same table,
+    BSTC column).
+  unit: thousands of families
+  frequency: annual
+  price_basis: not_applicable
+  measure: flow
+  geography_population: New Zealand, families entitled to Working for Families
+  valid_from: 2000-04-01
+- id: wff.entitlement.family_tax_credit
+  meaning: Aggregate family tax credit entitlement for the tax year (Inland Revenue WFF statistics, 'aggregate
+    entitlements ($million)', FTC column).
+  unit: NZD million per tax year
+  frequency: annual
+  price_basis: nominal
+  measure: flow
+  geography_population: New Zealand, families entitled to Working for Families
+  valid_from: 2000-04-01
+- id: wff.entitlement.best_start
+  meaning: Aggregate Best Start tax credit entitlement for the tax year (same table, BSTC column).
+  unit: NZD million per tax year
+  frequency: annual
+  price_basis: nominal
+  measure: flow
+  geography_population: New Zealand, families entitled to Working for Families
+  valid_from: 2000-04-01
+- id: wff.children_supported
+  meaning: Total number of children supported by Working for Families in the tax year (Inland Revenue
+    WFF statistics, 'number of children supported', total column).
+  unit: thousands of children
+  frequency: annual
+  price_basis: not_applicable
+  measure: flow
+  geography_population: New Zealand, families entitled to Working for Families
+  valid_from: 2000-04-01
+- id: accommodation_supplement.recipients
+  meaning: Recipients of Accommodation Supplement, all ages, in the quarter (MSD Benefit Fact Sheets,
+    'Selected supplementary assistance - last five years', Accommodation Supplement (AS) row), labelled
+    by the quarter's last month. People may receive more than one supplementary assistance.
+  unit: recipients
+  frequency: quarterly
+  price_basis: not_applicable
+  measure: stock
+  geography_population: New Zealand, all ages including non-beneficiaries
+  valid_from: 2021-04-01

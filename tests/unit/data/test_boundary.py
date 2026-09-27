@@ -15,7 +15,7 @@ from pathlib import Path
 
 SRC = Path(__file__).resolve().parents[3] / "src" / "poltika"
 DATA_PACKAGE = SRC / "data"
-ALLOWED: set[str] = {"scenarios/microsim/calibrate_cli.py"}
+ALLOWED: set[str] = {"scenarios/microsim/calibrate_cli.py", "scenarios/microsim/crossval_cli.py"}
 _DATA_PATH = re.compile(r"""["'](?:\.\./)*data/(?:raw|processed|metadata)\b""")
 
 
