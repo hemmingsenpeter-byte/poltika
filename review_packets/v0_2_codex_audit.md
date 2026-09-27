@@ -1,4 +1,4 @@
-# Review Packet: v0.2 real data, population and cross-validation (PRs #111, #113, #114) — 27 September 2026
+# Review Packet: v0.2 real data, population and cross-validation (PRs #111, #113, #114, #117, #118) — 27 September 2026
 
 Author: Claude Code, under Pete's goal "accept and proceed on all — keep
 working without interruption on v0.2". Each PR merged, or will merge, with
@@ -13,7 +13,17 @@ cases) and the GPT/Codex half of 9.4 (cross-validation).
 - **PRs:** #111 (Stats NZ snapshots, four transformations, 54 canonical
   variables), #113 (the derived population spec, `calibration.py`,
   `calibrate_cli.py`), #114 (IRD and MSD snapshots, `data/xlsx.py`,
-  `crossval.py`, `crossval_cli.py`, v0.2 release documents).
+  `crossval.py`, `crossval_cli.py`, v0.2 release documents), #117 (Task 9.3
+  author cases in `tests/acceptance/test_v0_2_hand_calculated.py`; Task 2.3
+  author check in `reviews/2026-09-27-v0-2-task-2-3-author-check.md`;
+  assumption A12), #118 (fixes from the fresh same-model check).
+- **Prior checks, to read only after your independent section:** the fresh
+  same-model check (`reviews/2026-09-27-v0-2-fresh-same-model-check.md`,
+  seven findings, F6 and part of F5 still open) and the Task 2.3 author
+  check. Neither is an independent review.
+- **Review debt:** these are the five open v0.2 implementation rows in
+  `review_packets/review_queue.md`, which is at its cap. No implementation
+  PR merges until rows are cleared.
 - **Sources:** every snapshot under `data/raw/` with its manifest under
   `data/metadata/datasets/`; the publications' URLs are in the manifests.
   Re-fetch each and compare its SHA-256.
