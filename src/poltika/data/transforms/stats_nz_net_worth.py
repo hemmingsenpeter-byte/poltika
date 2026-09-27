@@ -32,6 +32,12 @@ def net_worth(raw: bytes, manifest: DatasetManifest) -> list[Row]:
         if r["Table"] == "T1.01" and r["AsCode"] == "W21" and r["EstCode"] in _ESTIMATES:
             year = int(r["Year"])  # year ended June
             rows.append(
-                Row(_ESTIMATES[r["EstCode"]], date(year - 1, 7, 1), date(year, 7, 1), Decimal(r["Estimate"]), UNIT)
+                Row(
+                    _ESTIMATES[r["EstCode"]],
+                    date(year - 1, 7, 1),
+                    date(year, 7, 1),
+                    Decimal(r["Estimate"]),
+                    UNIT,
+                )
             )
     return rows

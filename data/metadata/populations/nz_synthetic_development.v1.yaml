@@ -1,0 +1,154 @@
+population_id: nz_synthetic_development
+version: 1
+seed: 20260927
+households: 2000
+represents: '1452566.919234'
+sources:
+- 'Stats NZ, Household income and housing-cost statistics, year ended June 2025, corrected (stats_nz_household_income_housing_costs
+  v1): Tables 3, 5, 9 and 10'
+- 'Stats NZ, 2018 Census totals by topic, national highlights (stats_nz_census_2018_totals_by_topic_national
+  v1): weekly rent paid, tenure of household'
+- 'Stats NZ, Household net worth statistics, year ended June 2024 (stats_nz_household_net_worth v1): currency
+  and deposits'
+- 'Stats NZ, Births and deaths, years ended March 2025 and 2026 (stats_nz_births_and_deaths_release v1,
+  v2): live births registered'
+- 'D1 households by type: HES Table 5 people divided by household size'
+- 'D2 children count: couples'' distribution, used for one-parent households too'
+- 'D3 Best Start cohort: births registered per year as shares of derived dependent children'
+- 'D4 gross income and cash assets: two equal uniform bands reproducing the published median and mean'
+- 'D5 tenure: 2018 households paying rent against households owning'
+- 'D6 weekly housing cost: 2018 rent bands scaled by HES 2025/2018 mean weekly rent'
+- 'D7 region: HES Table 5 people by regional council area'
+- 'A1 assumption: ''three or more'' dependent children counted as three'
+- 'A2 assumption: one-parent households have the couples'' mean number of children'
+- 'A3 assumption: births registered stand for births, all in modelled households'
+- 'A4 assumption: people shares by region stand for household shares'
+- 'A5 assumption: equal shares across AS Areas 1-4 (no published household counts by area)'
+- 'A6 assumption: every household is a non-beneficiary'
+- 'A7 assumption: partner income share 0.5 (no v0.1 result depends on it)'
+- 'A8 assumption: weekly income is annual gross income / 52'
+- 'A9 assumption: the open $600-and-over 2018 rent band is closed at $1,200 (no AS result depends on it)'
+household_type:
+  single_without_children: '0.345664'
+  couple_without_children: '0.351137'
+  couple_with_children: '0.242113'
+  sole_parent: '0.061086'
+children_count:
+  '1': '0.368796'
+  '2': '0.460711'
+  '3': '0.170493'
+best_start_cohort:
+  in_supported_cohort: '0.073773'
+  other_cohort_unsupported: '0.142791'
+  outside_best_start_entitlement: '0.783436'
+gross_income:
+- from: 0
+  to: 109556
+  share: '0.5'
+- from: 109556
+  to: 337332
+  share: '0.5'
+partner_income_share: '0.5'
+weekly_income_divisor: '52'
+tenure:
+  rent_contributions_or_board: '0.330988'
+  homeowner: '0.669012'
+weekly_housing_cost:
+- from: 0
+  to: 74
+  share: '0.005634'
+- from: 74
+  to: 111
+  share: '0.030947'
+- from: 111
+  to: 148
+  share: '0.028503'
+- from: 148
+  to: 186
+  share: '0.059686'
+- from: 186
+  to: 223
+  share: '0.029688'
+- from: 223
+  to: 260
+  share: '0.039507'
+- from: 260
+  to: 297
+  share: '0.027624'
+- from: 297
+  to: 371
+  share: '0.080617'
+- from: 371
+  to: 445
+  share: '0.096071'
+- from: 445
+  to: 520
+  share: '0.106367'
+- from: 520
+  to: 594
+  share: '0.113195'
+- from: 594
+  to: 668
+  share: '0.092018'
+- from: 668
+  to: 742
+  share: '0.084458'
+- from: 742
+  to: 817
+  share: '0.059438'
+- from: 817
+  to: 891
+  share: '0.044393'
+- from: 891
+  to: 1781
+  share: '0.101854'
+as_area:
+  area1: '0.25'
+  area2: '0.25'
+  area3: '0.25'
+  area4: '0.25'
+region:
+  Northland Region: '0.037923'
+  Auckland Region: '0.341496'
+  Waikato Region: '0.100033'
+  Bay of Plenty Region: '0.066279'
+  Gisborne/Hawke's Bay Region: '0.043802'
+  Taranaki Region: '0.024629'
+  Manawatū–Whanganui Region: '0.048969'
+  Wellington Region: '0.102492'
+  Tasman/Nelson/Marlborough/West Coast Region: '0.037116'
+  Canterbury Region: '0.130598'
+  Otago Region: '0.047010'
+  Southland Region: '0.019653'
+claimant_category:
+  non_beneficiary: '1'
+cash_assets:
+- from: 0
+  to: 16000
+  share: '0.5'
+- from: 16000
+  to: 268000
+  share: '0.5'
+assumed:
+  wff_household_eligibility: verified
+  extra_instalment_status: verified
+  in_work_eligibility: verified
+  ftc_iwtc_protected_or_direct_abatement: verified
+  mc6a_veterans_payment: verified
+  mc6b_disqualifying_payment: verified
+  minimum_family_full_time_earner_weeks: verified
+  best_start_no_shared_care: verified
+  best_start_protected_credit: verified
+  child_qualifies_whole_year: verified
+  child_best_start_no_disqualifying_payment: verified
+  as_household_eligibility: verified
+  exempt_cash_asset_status: verified
+  ordinary_rate_status: verified
+  eldest_dependent_child_under_16: verified
+  as_claimant_is_wff_claimant_or_partner: verified
+wff_lookup_date: '2026-06-01'
+as_lookup_date: '2026-06-01'
+assessment_week_start: '2026-06-01'
+assessment_week_end: '2026-06-08'
+requested_wff_policy_version: 0.1.0
+requested_as_policy_version: 0.1.1

@@ -23,7 +23,9 @@ REPO_DATA = Path(__file__).resolve().parents[3] / "data"
 BIRTHS_2025 = "Year ended March 2025 (release page dated 15 May 2025)"
 
 
-@pytest.mark.parametrize("snapshot", DatasetRegistry(REPO_DATA).snapshots(), ids=lambda s: s.manifest.manifest_name)
+@pytest.mark.parametrize(
+    "snapshot", DatasetRegistry(REPO_DATA).snapshots(), ids=lambda s: s.manifest.manifest_name
+)
 def test_each_snapshot_produces_every_mapped_variable(snapshot) -> None:  # type: ignore[no-untyped-def]
     m = snapshot.manifest
     t = TRANSFORMATIONS[m.transformation_id]

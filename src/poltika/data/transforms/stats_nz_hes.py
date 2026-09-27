@@ -87,9 +87,17 @@ def hes_tables(raw: bytes, manifest: DatasetManifest) -> list[Row]:
 
         for r in _table(archive, "Table 3.csv"):
             if r["IncCode"] == "1001A" and r["Estimate"].strip():
-                variable = {"M0001": "household.gross_income.mean", "M0002": "household.gross_income.median"}
+                variable = {
+                    "M0001": "household.gross_income.mean",
+                    "M0002": "household.gross_income.median",
+                }
                 rows.append(
-                    Row(variable[r["MsCode"]], *_year_ended_june(int(r["Year"])), Decimal(r["Estimate"]), INCOME)
+                    Row(
+                        variable[r["MsCode"]],
+                        *_year_ended_june(int(r["Year"])),
+                        Decimal(r["Estimate"]),
+                        INCOME,
+                    )
                 )
 
         for r in _table(archive, "Table 9.csv"):
