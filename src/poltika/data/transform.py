@@ -40,14 +40,25 @@ class Transformation:
     fn: TransformFn
 
 
+# Every registered version, so a manifest naming an older version still reads
+# the way it was committed after a newer version is added.
+TRANSFORMATION_VERSIONS: dict[tuple[str, int], Transformation] = {}
+# The latest version of each transformation.
 TRANSFORMATIONS: dict[str, Transformation] = {}
 
 
 def transformation(transformation_id: str, version: int) -> Callable[[TransformFn], TransformFn]:
     def register(fn: TransformFn) -> TransformFn:
-        if transformation_id in TRANSFORMATIONS:
-            raise ValueError(f"transformation '{transformation_id}' is already registered")
-        TRANSFORMATIONS[transformation_id] = Transformation(transformation_id, version, fn)
+        key = (transformation_id, version)
+        if key in TRANSFORMATION_VERSIONS:
+            raise ValueError(
+                f"transformation '{transformation_id}' version {version} is already registered"
+            )
+        t = Transformation(transformation_id, version, fn)
+        TRANSFORMATION_VERSIONS[key] = t
+        latest = TRANSFORMATIONS.get(transformation_id)
+        if latest is None or version > latest.version:
+            TRANSFORMATIONS[transformation_id] = t
         return fn
 
     return register
