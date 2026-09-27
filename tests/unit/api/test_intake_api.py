@@ -63,6 +63,7 @@ def test_missing_category_gives_branches_but_no_calculated_amount() -> None:
     bounds = res["bounds"]["accommodation_supplement"]
     assert bounds["branches"] == 6 and not bounds["complete"] and bounds["kind"] == "bounds"
     assert res["next_question"]["fact"] == "accommodation_supplement.claimant_category"
+    assert res["summary"][0].startswith("Poltika can't give one figure without")
 
 
 def test_intake_asks_then_is_ready_with_the_full_result() -> None:
