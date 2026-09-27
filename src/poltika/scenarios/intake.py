@@ -102,6 +102,32 @@ def next_step(
     return IntakeStep("ask", order[0], blocking)
 
 
+def slot_from_label(label: str) -> Slot:
+    """The slot a `Slot.label` names: `wff.partner_status`,
+    `children[0].best_start_cohort`, `household.as_claimant_is_wff_claimant_or_partner`."""
+    if label.startswith("children["):
+        index, sep, name = label.removeprefix("children[").partition("].")
+        if not sep or not index.isascii() or not index.isdigit() or not name:
+            raise ValueError(f"'{label}' is not a fact label")
+        return Slot("wff", name, int(index))
+    scope, sep, name = label.partition(".")
+    if not sep or not name or scope not in ("wff", "accommodation_supplement", "household"):
+        raise ValueError(f"'{label}' is not a fact label")
+    return Slot(scope, name)
+
+
+def fact_for(record: ScenarioRecord, label: str, facts: FactIndex) -> MissingFact:
+    """The catalogued fact a label names, for `apply_answer()`. A child
+    label must name a child the household has."""
+    slot = slot_from_label(label)
+    entry = facts.get((slot.scope, slot.fact_id))
+    if entry is None:
+        raise ValueError(f"'{label}' is not a catalogued fact")
+    if slot.child is not None and slot.child >= len(record.household.wff.children):
+        raise ValueError(f"'{label}' names a child the household doesn't have")
+    return MissingFact(slot, entry, ())
+
+
 def apply_answer(record: ScenarioRecord, fact: MissingFact, answer: str) -> ScenarioRecord:
     """The household with `answer` recorded for `fact`."""
     entry, slot = fact.entry, fact.slot

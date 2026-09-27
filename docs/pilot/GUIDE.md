@@ -37,7 +37,10 @@ repository's `policy_specs/`, mounted read-only.
    households.
 2. Edit the request if you want, for example incomes, rent, the number of
    children or the area.
-3. Select **Calculate**.
+3. Select **Calculate**, or **Ask me first**: Poltika then asks, one at a
+   time, for any fact the calculation is missing. Answer **Don't know** to
+   skip one, and it shows what it can say without it: the result for each
+   possible answer, and the range.
 
 Every fact is one you assert. `verified` means you are asserting you have
 checked it; `unknown` means you haven't. An unknown fact is never treated as
