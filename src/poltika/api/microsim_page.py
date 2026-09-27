@@ -157,7 +157,24 @@ function fiscal() {
   return `<p class="note">Static entitlement at full take-up, not expenditure. Totals cover only households calculated in both runs.
     WFF (per tax year) and the Accommodation Supplement (per week) are never added together.</p>
     <table><tr><th>Component</th><th>Unit</th><th>Baseline</th><th>Reform</th><th>Change</th>
-    <th>Calculated weight</th><th>Needs review</th><th>Unsupported</th></tr>${rows}</table>`;
+    <th>Calculated weight</th><th>Needs review</th><th>Unsupported</th></tr>${rows}</table>${ranges()}`;
+}
+
+// v0.3 Task 1b.6: what can be said about needs-review households, kept apart
+// from the calculated totals above and never added to them.
+function ranges() {
+  if (!last.fiscal_ranges) return "";
+  const rows = Object.values(last.fiscal_ranges).map((r) => `<tr><td>${esc(r.component)}</td><td>${esc(r.unit)}</td>
+    <td class="n">${money(r.calculated_delta)}</td>
+    <td class="n">${r.bounded_households ? money(r.delta_low) + " to " + money(r.delta_high) : "none"}</td>
+    <td class="n">${money(r.bounded_weight)} (${r.bounded_households})</td>
+    <td class="n">${money(r.unboundable_weight)}</td></tr>`).join("");
+  return `<h3>Needs-review households</h3><p class="note">For households waiting on a fact, Poltika reruns each possible
+    answer. Where every answer is calculated, the household's lowest and highest change give a range. The rest are
+    unboundable (a missing amount, a rate still under review, or an answer that isn't modelled). These three figures are
+    separate: the range is never added to the calculated change.</p>
+    <table><tr><th>Component</th><th>Unit</th><th>Calculated change</th><th>Range of change (bounded households)</th>
+    <th>Bounded weight (households)</th><th>Unboundable weight</th></tr>${rows}</table>`;
 }
 
 function evidence() {

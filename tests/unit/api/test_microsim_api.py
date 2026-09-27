@@ -81,6 +81,13 @@ def test_run_returns_tables_explanation_and_identity(configured: Path) -> None:
     }
     assert body["overridden"][0]["reform_value"] == "50000"
     assert Decimal(body["fiscal"]["accommodation_supplement"]["delta_total"]) == 0
+    # v0.3 Task 1b.6: needs-review ranges sit beside the calculated totals.
+    for c, r in body["fiscal_ranges"].items():
+        f = body["fiscal"][c]
+        assert Decimal(r["calculated_delta"]) == Decimal(f["delta_total"])
+        assert Decimal(r["bounded_weight"]) + Decimal(r["unboundable_weight"]) == Decimal(
+            f["coverage"]["needs_review"]
+        )
     again = client.post("/microsim/runs", json={"reform": THRESHOLD}).json()
     assert (again["run_id"], again["results_sha256"]) == (body["run_id"], body["results_sha256"])
     assert client.get(f"/microsim/runs/{body['run_id']}").json() == body
