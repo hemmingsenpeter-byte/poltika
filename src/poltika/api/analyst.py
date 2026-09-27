@@ -4,6 +4,13 @@
 styles or fonts) that posts a household to `/household/calculate` and shows
 each component's status, amount and "why": the deterministic explanation,
 calculation steps, caller-asserted facts, and the rates and sources used.
+
+v0.3 Task 1b.5 (ADR-0016): "Ask me first" drives `/household/intake`. It
+asks the catalogue's questions one at a time, accepts "don't know", and
+then shows the result. When facts are still missing, the page shows the
+API's conditional answer: each branch, the ranges, and the next question.
+The page writes no question or answer of its own: every question and
+answer label is the catalogue's, and every figure is the API's.
 `GET /analyst/examples` lists example requests built from the golden
 households in the deployed `policy_specs/`, so a pilot user starts from a
 real supported case.
@@ -182,6 +189,14 @@ _PAGE = """<!doctype html>
   .field input[type=text], .field select { font: inherit; padding: 2px 4px; background: var(--bg); color: var(--fg);
     border: 1px solid var(--line); border-radius: 4px; max-width: 100%; }
   @media (max-width: 600px) { .field { grid-template-columns: 1fr; } }
+  .ask { border: 2px solid var(--review); }
+  .ask h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .ask label.option { display: block; margin: 4px 0; }
+  .ask input[type=text] { font: inherit; padding: 2px 6px; background: var(--bg); color: var(--fg);
+    border: 1px solid var(--line); border-radius: 4px; }
+  .pill { display: inline-block; border: 1px solid var(--line); border-radius: 10px; padding: 0 8px;
+          margin: 2px 4px 2px 0; font-size: .82rem; }
+  .scroll { overflow-x: auto; }
 </style>
 </head>
 <body>
@@ -198,7 +213,11 @@ determination. Every number shown comes from the API; this page computes nothing
 <textarea id="request" spellcheck="false"></textarea>
 <p><button id="apply-json">Apply JSON to the form</button></p>
 </details>
-<p><button id="run">Calculate</button> <button id="download" disabled>Download case report (JSON)</button></p>
+<p><button id="ask-first">Ask me first</button> <button id="run">Calculate</button>
+  <button id="download" disabled>Download case report (JSON)</button></p>
+<p class="note">"Ask me first" asks for any fact the calculation is missing, one question at a
+time. Answer "Don't know" to skip one: Poltika then shows what it can say without it.</p>
+<div id="ask"></div>
 <p id="evidence" class="note"></p>
 <div id="error" class="error" role="alert"></div>
 <div id="results"></div>
@@ -209,6 +228,7 @@ const LABELS = {family_tax_credit: "Family tax credit", in_work_tax_credit: "In-
   accommodation_supplement: "Accommodation Supplement"};
 const STATUS_TEXT = {calculated: "CALCULATED", needs_review: "NEEDS REVIEW", unsupported: "UNSUPPORTED"};
 let examples = [], lastReport = null;
+let intake = null;  // {answers: [], declined: []} while asking
 
 function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
@@ -365,16 +385,37 @@ function component(id, result, explanation) {
   return card;
 }
 
-async function run() {
-  const error = document.getElementById("error"), results = document.getElementById("results");
-  error.textContent = ""; results.replaceChildren();
-  let body;
-  try { body = request ?? JSON.parse(document.getElementById("request").value); }
-  catch (e) { error.textContent = "The request is not valid JSON: " + e.message; return; }
-  const response = await fetch("/household/calculate", {method: "POST",
+function currentRequest() {
+  return request ?? JSON.parse(document.getElementById("request").value);
+}
+
+async function post(url, body) {
+  const response = await fetch(url, {method: "POST",
     headers: {"content-type": "application/json"}, body: JSON.stringify(body)});
   const data = await response.json();
-  if (!response.ok) { error.textContent = "HTTP " + response.status + ": " + JSON.stringify(data.detail, null, 2); return; }
+  if (!response.ok) throw new Error("HTTP " + response.status + ": " + JSON.stringify(data.detail, null, 2));
+  return data;
+}
+
+async function run() {
+  const error = document.getElementById("error");
+  error.textContent = ""; document.getElementById("results").replaceChildren();
+  intake = null; document.getElementById("ask").replaceChildren();
+  let body;
+  try { body = currentRequest(); }
+  catch (e) { error.textContent = "The request is not valid JSON: " + e.message; return; }
+  try { show(await post("/household/calculate", body)); }
+  catch (e) { error.textContent = e.message; }
+}
+
+function money(value, id) {
+  if (value === null || value === undefined) return "";
+  return "$" + value + (id === "accommodation_supplement" ? " a week" : " a year");
+}
+
+function show(data) {
+  const results = document.getElementById("results");
+  results.replaceChildren();
   lastReport = data;
   document.getElementById("download").disabled = false;
   results.append(el("p", {class: "note"}, "WFF period " + data.wff_period.join(" to ") +
@@ -385,14 +426,124 @@ async function run() {
     data.contradictions.forEach(c => list.append(el("li", {}, c)));
     results.append(el("div", {class: "card"}, el("strong", {}, "The two policies' facts disagree"), list));
   }
+  if (data.resolution) results.append(conditional(data.resolution));
   for (const id of ["family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start"])
     results.append(component(id, data.wff[id], data.explanations[id]));
   results.append(component("accommodation_supplement", data.accommodation_supplement,
     data.explanations.accommodation_supplement));
 }
 
+// ADR-0016: what the API can say without the missing facts. Every figure is
+// the API's; the page only lays it out.
+function conditional(res) {
+  const card = el("div", {class: "card"});
+  card.append(el("strong", {}, "What Poltika can say without the missing facts"));
+  const missing = el("ul");
+  res.missing.forEach(m => missing.append(el("li", {}, m.question + " ",
+    el("span", {class: "note"}, "(" + m.fact + "; rule " + m.rule + (m.blocks.length ? "; needed for " +
+      m.blocks.map(b => LABELS[b] || b).join(", ") : "") + ")"))));
+  card.append(el("p", {}, "Poltika can't give one figure without these facts:"), missing);
+  // Only the components a missing fact blocks; the others are as shown below.
+  const blocked = new Set(res.missing.flatMap(m => m.blocks));
+  const wff = ["family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start"];
+  if (wff.some(id => blocked.has(id))) blocked.add("wff_total");
+  const ranged = Object.entries(res.bounds).filter(([id]) => blocked.has(id));
+  if (ranged.length) {
+    const list = el("ul");
+    for (const [id, b] of ranged) {
+      const name = LABELS[id] || (id === "wff_total" ? "WFF total" : id);
+      let text;
+      if (b.calculated === 0) text = "not calculable under any answer";
+      else if (b.low === b.high) text = money(b.low, id) + (b.complete ? " under every answer" : " where calculable");
+      else text = "between " + money(b.low, id) + " and " + money(b.high, id) + (b.complete ? "" : " where calculable");
+      list.append(el("li", {}, name + ": " + text + " (calculated in " + b.calculated + " of " + b.branches + " cases)"));
+    }
+    card.append(el("p", {}, "Ranges across the possible answers:"), list);
+  }
+  if (res.branches.length > 1 || (res.branches[0] && res.branches[0].assignment.length)) {
+    const ids = ["family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start", "accommodation_supplement"];
+    const table = el("table", {}, el("tr", {}, el("th", {}, "If"), ...ids.map(id => el("th", {}, LABELS[id]))));
+    for (const b of res.branches) {
+      const cond = b.assignment.map(a => a.fact + ": " + a.label).join("; ") || "(as entered)";
+      table.append(el("tr", {}, el("td", {}, cond), ...ids.map(id => {
+        const c = b.components[id];
+        return el("td", {class: c.outcome}, c.outcome === "calculated" ? money(c.value, id) : STATUS_TEXT[c.outcome]);
+      })));
+    }
+    const why = el("details", {}, el("summary", {}, "Each possible answer (" + res.branches.length + ")"),
+      el("div", {class: "scroll"}, table));
+    card.append(why);
+  }
+  if (res.capped) card.append(el("p", {class: "note"}, "Too many combinations to show them all: " +
+    "the facts that matter most are branched, and the rest are listed as still missing."));
+  if (res.next_question) card.append(el("p", {}, el("strong", {}, "The answer that would narrow this most: "),
+    res.next_question.question));
+  return card;
+}
+
+async function askFirst() {
+  const error = document.getElementById("error");
+  error.textContent = "";
+  try { currentRequest(); } catch (e) { error.textContent = "The request is not valid JSON: " + e.message; return; }
+  intake = {answers: [], declined: []};
+  await step();
+}
+
+async function step() {
+  const error = document.getElementById("error"), ask = document.getElementById("ask");
+  let data;
+  error.textContent = "";
+  try { data = await post("/household/intake", {household: currentRequest(), ...intake}); }
+  catch (e) { error.textContent = e.message; return false; }
+  show(data.calculation);
+  ask.replaceChildren();
+  const history = el("p", {class: "note"});
+  intake.answers.forEach(a => history.append(el("span", {class: "pill"}, a.fact + " = " + a.answer)));
+  intake.declined.forEach(f => history.append(el("span", {class: "pill"}, f + ": don't know")));
+  if (data.status !== "ask") {
+    const done = data.status === "ready" ? "Nothing the calculation needs is missing. The result is below."
+      : "You didn't know some facts, so the result below says what Poltika can say without them.";
+    const again = el("button", {type: "button"}, "Start over");
+    again.addEventListener("click", askFirst);
+    ask.append(el("div", {class: "card"}, el("strong", {}, done), history, again));
+    return true;
+  }
+  const q = data.question;
+  const card = el("div", {class: "card ask"});
+  card.append(el("h3", {}, q.question), el("p", {class: "note"}, "Needed for " +
+    q.blocks.map(b => LABELS[b] || b).join(", ") + " (rule " + q.rule + "). " +
+    data.remaining.length + " question(s) may remain."));
+  let read;
+  if (q.answers.length) {
+    const name = "answer-" + Math.random().toString(36).slice(2);
+    q.answers.forEach((a, i) => {
+      const input = el("input", {type: "radio", name: name, value: a.value});
+      if (i === 0) input.checked = true;
+      card.append(el("label", {class: "option"}, input, " " + a.label));
+    });
+    read = () => card.querySelector("input[name=" + name + "]:checked").value;
+  } else {
+    const input = el("input", {type: "text", inputmode: "decimal",
+      placeholder: q.kind === "count" ? "a whole number" : (q.unit || "amount")});
+    card.append(el("p", {}, input, q.unit ? " " + q.unit : ""));
+    read = () => input.value.trim();
+  }
+  const answer = el("button", {type: "button"}, "Answer"), skip = el("button", {type: "button"}, "Don't know");
+  answer.addEventListener("click", async () => {
+    intake.answers.push({fact: q.fact, answer: read()});
+    // A refused answer (422) is taken back, so the same question stays open.
+    if (!(await step())) intake.answers.pop();
+  });
+  skip.addEventListener("click", () => { intake.declined.push(q.fact); step(); });
+  card.append(el("p", {}, answer, " ", skip), history);
+  ask.append(card);
+  card.scrollIntoView({block: "nearest"});
+  return true;
+}
+
 document.getElementById("examples").addEventListener("change", e => { if (e.target.value !== "") fill(+e.target.value); });
 document.getElementById("run").addEventListener("click", run);
+document.getElementById("ask-first").addEventListener("click", askFirst);
 document.getElementById("apply-json").addEventListener("click", () => {
   const error = document.getElementById("error");
   try { request = JSON.parse(document.getElementById("request").value); error.textContent = ""; renderForm(); }

@@ -18,11 +18,13 @@ from __future__ import annotations
 
 from dataclasses import replace
 from datetime import date
+from decimal import Decimal
+from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from poltika.api.accommodation_supplement import (
     AS_POLICY_DIR,
@@ -37,7 +39,17 @@ from poltika.engines.assurance.explanation import explain, explanation_to_dict
 from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.engines.simulator.accommodation_supplement import AssessmentWeek
 from poltika.engines.simulator.outcome import FactStatus
+from poltika.policy.facts import fact_index, load_fact_catalog
 from poltika.scenarios.combined import CombinedHouseholdScenario
+from poltika.scenarios.conditional import (
+    COMPONENTS,
+    FactIndex,
+    MissingFact,
+    Resolution,
+    component,
+    resolve,
+)
+from poltika.scenarios.intake import apply_answer, fact_for, next_step
 from poltika.scenarios.record import (
     CodeIdentity,
     ScenarioRecord,
@@ -77,6 +89,120 @@ class HouseholdCalculationRequest(BaseModel):
     as_claimant_is_wff_claimant_or_partner: FactStatus = FactStatus.UNKNOWN
 
 
+class AnswerOption(BaseModel):
+    value: str
+    label: str
+
+
+class FactQuestion(BaseModel):
+    """One missing fact, as its catalogue asks for it (ADR-0016)."""
+
+    fact: str  # the slot label an answer names, e.g. children[0].best_start_cohort
+    id: str  # the engine's missing_facts id
+    question: str
+    kind: str
+    answers: list[AnswerOption]  # empty for amounts and counts
+    unit: str | None
+    rule: str
+    blocks: list[str]
+
+    @classmethod
+    def of(cls, fact: MissingFact) -> FactQuestion:
+        entry = fact.entry
+        labels = entry.answers or entry.values or {}
+        answers = [AnswerOption(value=v, label=labels[v]) for v in entry.domain()]
+        if entry.kind == "attestation":
+            answers = [AnswerOption(value="yes", label="Yes")]
+        return cls(
+            fact=fact.slot.label,
+            id=entry.id,
+            question=entry.question,
+            kind=entry.kind,
+            answers=answers,
+            unit=entry.unit if entry.kind == "money" else None,
+            rule=entry.rule,
+            blocks=list(fact.blocks),
+        )
+
+
+class AssignedFact(BaseModel):
+    fact: str
+    value: str
+    label: str
+
+
+class BranchOutcome(BaseModel):
+    outcome: Literal["calculated", "needs_review", "unsupported"]
+    value: Decimal | None
+
+
+class BranchResponse(BaseModel):
+    """One ordinary engine run with the assignment filled in."""
+
+    assignment: list[AssignedFact]
+    components: dict[str, BranchOutcome]
+    unresolved: list[str]
+
+
+class BoundsResponse(BaseModel):
+    low: Decimal | None
+    high: Decimal | None
+    calculated: int  # branches in which this component is calculated
+    branches: int
+    complete: bool  # every branch calculated: low and high are the whole range
+
+
+class ResolutionResponse(BaseModel):
+    """ADR-0016 conditional answer. Nothing here is `calculated`: the
+    components' own outcomes above are unchanged."""
+
+    known: dict[str, Decimal]
+    missing: list[FactQuestion]
+    branches: list[BranchResponse]
+    bounds: dict[str, BoundsResponse]
+    capped: bool
+    next_question: FactQuestion | None
+
+    @classmethod
+    def of(cls, res: Resolution) -> ResolutionResponse:
+        entries = {m.slot: m.entry for m in res.missing}
+
+        def label(slot_value: tuple[Any, str]) -> AssignedFact:
+            slot, value = slot_value
+            entry = entries.get(slot)
+            labels = (entry.answers or entry.values or {}) if entry else {}
+            return AssignedFact(fact=slot.label, value=value, label=labels.get(value, value))
+
+        return cls(
+            known=dict(res.known),
+            missing=[FactQuestion.of(m) for m in res.missing],
+            branches=[
+                BranchResponse(
+                    assignment=[label(a) for a in b.assignment],
+                    components={
+                        c: BranchOutcome(outcome=r.outcome, value=r.value)
+                        for c in COMPONENTS
+                        if (r := component(b.result, c))
+                    },
+                    unresolved=list(b.unresolved),
+                )
+                for b in res.branches
+            ],
+            bounds={
+                name: BoundsResponse(
+                    low=b.low,
+                    high=b.high,
+                    calculated=b.calculated,
+                    branches=b.branches,
+                    complete=b.complete,
+                )
+                for name, b in res.bounds.items()
+            },
+            capped=res.capped,
+            next_question=FactQuestion.of(res.next_question) if res.next_question else None,
+        )
+
+
 class HouseholdCalculationResponse(BaseModel):
     wff: WffCalculationResponse
     accommodation_supplement: AsComponentResultResponse
@@ -90,6 +216,10 @@ class HouseholdCalculationResponse(BaseModel):
     # v0.1.5 Phase 3: a deterministic explanation per component, rendered
     # only from the recorded calculation (engines/assurance/explanation.py).
     explanations: dict[str, Any]
+    # v0.3 Task 1b.5 (ADR-0016): what can be said without the missing facts.
+    # Present only on /household/calculate and /household/intake, and only
+    # when a component is waiting for a fact.
+    resolution: ResolutionResponse | None = None
 
 
 def record_from_request(request: HouseholdCalculationRequest) -> ScenarioRecord:
@@ -159,6 +289,32 @@ def explanations_for(run: ScenarioRun) -> dict[str, Any]:
     return {cid: explanation_to_dict(explain(cid, result)) for cid, result in components.items()}
 
 
+@lru_cache(maxsize=1)
+def facts() -> FactIndex:
+    """The deployed fact catalogues (ADR-0016), beside each policy."""
+    return fact_index(
+        load_fact_catalog(WFF_POLICY_DIR),
+        load_fact_catalog(AS_POLICY_DIR),
+        load_fact_catalog(WFF_POLICY_DIR.parent / "wff_as_interaction"),
+    )
+
+
+def resolution_for(record: ScenarioRecord, run: ScenarioRun) -> ResolutionResponse | None:
+    """The conditional answer, when a component is waiting for a fact."""
+    result = run.result
+    waiting = any(component(result, c).missing_facts for c in COMPONENTS)
+    if not waiting:
+        return None
+    return ResolutionResponse.of(resolve(record, WFF_POLICY_DIR, AS_POLICY_DIR, facts()))
+
+
+def calculated_with_resolution(record: ScenarioRecord) -> HouseholdCalculationResponse:
+    run = execute(record)
+    response = response_from_run(run)
+    response.resolution = resolution_for(record, run)
+    return response
+
+
 @router.post("/calculate", response_model=HouseholdCalculationResponse)
 def calculate(request: HouseholdCalculationRequest) -> HouseholdCalculationResponse:
     """Calculate WFF and Accommodation Supplement for one household.
@@ -167,5 +323,76 @@ def calculate(request: HouseholdCalculationRequest) -> HouseholdCalculationRespo
     determination.** Each policy is reported in its own period, and there is
     no combined total. A structural error (such as a policy-version
     mismatch) maps to 409 or 500 through the app-level handlers.
+
+    When a component is waiting for a fact, `resolution` adds what can be
+    said without it (ADR-0016): the household rerun for each admissible
+    answer, with ranges and the most useful next question. Each branch is
+    an ordinary engine run; nothing conditional is labelled `calculated`.
     """
-    return response_from_run(execute(record_from_request(request)))
+    return calculated_with_resolution(record_from_request(request))
+
+
+class Answer(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    fact: str = Field(description="The fact's label, as a question's `fact` gives it")
+    answer: str = Field(description="One of the question's answer values, or an amount or count")
+
+
+class IntakeRequest(BaseModel):
+    """Stateless: the caller sends the household as first entered, every
+    answer so far in order, and every fact declined ("don't know")."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    household: HouseholdCalculationRequest
+    answers: list[Answer] = []
+    declined: list[str] = []
+    asked: list[str] = Field(default_factory=lambda: list(COMPONENTS), min_length=1)
+
+
+class IntakeResponse(BaseModel):
+    status: Literal["ready", "ask", "incomplete"]
+    question: FactQuestion | None
+    remaining: list[FactQuestion]
+    calculation: HouseholdCalculationResponse
+
+
+@router.post("/intake", response_model=IntakeResponse)
+def intake(request: IntakeRequest) -> IntakeResponse:
+    """v0.3 Task 1b.4-1b.5 (ADR-0016): the next question before a run.
+
+    - `ask`: the next question for the components asked about, from the
+      fact catalogue, with its admissible answers.
+    - `ready`: nothing blocks them.
+    - `incomplete`: only declined facts block them; `calculation.resolution`
+      gives what can be said without them.
+
+    `calculation` is always the household with the answers so far applied.
+    An answer is the caller's assertion, like every `verified` input. An
+    inadmissible answer is a 422 naming what is admissible; it is never
+    coerced. "Don't know" is a declined fact, never a default.
+    """
+    unknown = sorted(set(request.asked) - set(COMPONENTS))
+    if unknown:
+        raise HTTPException(status_code=422, detail=f"unknown components asked: {unknown}")
+    record = record_from_request(request.household)
+    for i, given in enumerate(request.answers):
+        try:
+            record = apply_answer(record, fact_for(record, given.fact, facts()), given.answer)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=f"answers[{i}]: {exc}") from exc
+    step = next_step(
+        record,
+        WFF_POLICY_DIR,
+        AS_POLICY_DIR,
+        facts(),
+        asked=request.asked,
+        declined=request.declined,
+    )
+    return IntakeResponse(
+        status=step.status,
+        question=FactQuestion.of(step.question) if step.question else None,
+        remaining=[FactQuestion.of(m) for m in step.remaining],
+        calculation=calculated_with_resolution(record),
+    )

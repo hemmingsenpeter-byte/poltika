@@ -160,7 +160,8 @@ poltika/
 │                            directly, mirroring wff.py's pattern exactly
 │                            for AS's single-component response shape),
 │                            household.py (Task 33.1: combined WFF+AS
-│                            route over scenarios/), and scenarios.py
+│                            route over scenarios/; v0.3 Task 1b.5:
+│                            resolution and POST /household/intake), and scenarios.py
 │                            (Task 33.2: create/fetch/replay/re-run over
 │                            the Task 32 store; 503 when
 │                            POLTIKA_DATABASE_URL is unset), analyst.py

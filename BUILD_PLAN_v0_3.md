@@ -468,7 +468,8 @@ or for Phase 0.
 | 1b.2 | 1b.2a done (#109; #112 fixed contradictory hypothetical answers and re-ranks newly revealed facts under the cap). 1b.2b (numeric ranges) and 1b.2c (candidate values; needs a structured `candidates` list from GPT/Codex first) not started. 1b.2d not started. |
 | 1b.3 | 1b.3a done (#109). 1b.3b-1b.3e not started. |
 | 1b.4 | Done (PR held under the review cap): `scenarios/intake.py` with `next_step()` and `apply_answer()`; `Resolution.ranked` and `unblocks` in `conditional.py`. Tests: each catalogued fact a golden household supplies is removed and restored through the planner to the exact golden result and step; determinism; asked components; declined gives `incomplete`; inadmissible answers refused per kind. An attestation takes only "yes" (one that can't be given is declined, or the planner would ask again). 1b.3c not yet added. |
-| 1b.5-1b.6 | Not started. |
+| 1b.5 | 1b.5a, 1b.5b, 1b.5d and 1b.5e done: `/household/calculate` adds `resolution` when a component waits for a fact (branches with labelled assignments, bounds, next question; stored-run responses unchanged). `POST /household/intake` is stateless: the household as entered, the answers so far in order, the declined facts and the asked components; it returns `ask`, `ready` or `incomplete` with the calculation so far. An inadmissible answer, unknown fact label or missing child is a 422 naming the problem (1b.5c, as an `answers` field rather than a separate route). The analyst page's "Ask me first" asks the catalogue's questions one at a time with a "Don't know", then shows the result and the conditional answer; checked in Chromium on pilot case p11 (area unknown), both paths. |
+| 1b.6 | Not started. |
 
 ## Sequence
 

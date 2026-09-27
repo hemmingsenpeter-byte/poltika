@@ -18,7 +18,7 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 0 open implementation review rows.** GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
+**As of 27 September 2026: 1 open implementation review row (#124).** GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
 Pete confirmed on 27 September 2026 that GPT/Codex cleared every PR up to
 #120 ("Yes all cleared by codex"), and approved all prior work. #111, #113,
 #114, #118 and #120 are marked reviewed on that confirmation; their review
@@ -35,6 +35,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #124 | pilot | Hosted pilot: `api/access.py` HTTP Basic password (fail-closed in the image), `/healthz`, `$PORT`, built-in population, CI smoke test | API middleware, deploy | Medium | open |
 | #121 | v0.3 | Intake planner (`scenarios/intake.py`), `Resolution.ranked`/`unblocks` (Task 1b.4); Codex fixes F1-F2 checked by Claude Code | Scenarios | Medium | reviewed (reviews/2026-09-27-pr121.md) |
 | #120 | v0.2 | Fresh-check F6 fix: every transformation version kept (`TRANSFORMATION_VERSIONS`), `DataContext` reads the manifest's version; IRD WFF reader v2 at published precision with a v2 manifest | Data layer | Medium | reviewed (GPT/Codex; Pete confirmed 27 Sep 2026) |
 | #118 | v0.2 | Fixes from the fresh same-model check: cross-validation reason codes and children measure, A3/A13, dictionary meanings, boundary test | Assurance, spec sources, data-boundary test | Low | reviewed (GPT/Codex; Pete confirmed 27 Sep 2026) |

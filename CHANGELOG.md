@@ -27,6 +27,13 @@ result identity changes.
   "Don't know" is a declined fact, never a default. Removing any fact from
   a golden household and answering the planner's questions restores that
   household's exact result.
+- **Questions first, in the API and the analyst page** (Task 1b.5):
+  `/household/calculate` adds a `resolution` when a component is waiting
+  for a fact: each possible answer's result, the ranges, and the most
+  useful next question. `POST /household/intake` returns the next
+  question, `ready`, or `incomplete`, with the calculation so far. The
+  analyst page's "Ask me first" asks one question at a time, with a
+  "Don't know" that leads to the conditional answer.
 
 ## Unreleased (v0.2: static population microsimulation)
 
