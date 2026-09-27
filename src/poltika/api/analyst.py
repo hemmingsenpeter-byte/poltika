@@ -443,6 +443,11 @@ function conditional(res) {
     el("span", {class: "note"}, "(" + m.fact + "; rule " + m.rule + (m.blocks.length ? "; needed for " +
       m.blocks.map(b => LABELS[b] || b).join(", ") : "") + ")"))));
   card.append(el("p", {}, "Poltika can't give one figure without these facts:"), missing);
+  if (res.summary && res.summary.length > 1) {
+    const said = el("details", {}, el("summary", {}, "In words"));
+    res.summary.slice(1).forEach(t => said.append(el("p", {}, t)));
+    card.append(said);
+  }
   // Only the components a missing fact blocks; the others are as shown below.
   const blocked = new Set(res.missing.flatMap(m => m.blocks));
   const wff = ["family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start"];

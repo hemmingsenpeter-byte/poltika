@@ -110,7 +110,8 @@ poltika/
 │   │                        conditional.py (v0.3 Task 1b.2, ADR-0016:
 │   │                        conditional answers, i.e. branches, bounds and
 │   │                        next question for missing facts, all by engine
-│   │                        reruns);
+│   │                        reruns); conditional_text.py (Task 1b.2d: the
+│   │                        verified plain-language summary);
 │   │                        intake.py (v0.3 Task 1b.4, ADR-0016: the
 │   │                        intake planner, i.e. the next question, typed
 │   │                        answers and declined facts);

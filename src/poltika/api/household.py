@@ -49,6 +49,8 @@ from poltika.scenarios.conditional import (
     component,
     resolve,
 )
+from poltika.scenarios.conditional_text import explain_resolution
+from poltika.scenarios.conditional_text import verify as verify_summary
 from poltika.scenarios.intake import apply_answer, fact_for, next_step
 from poltika.scenarios.record import (
     CodeIdentity,
@@ -164,6 +166,9 @@ class ResolutionResponse(BaseModel):
     bounds: dict[str, BoundsResponse]
     capped: bool
     next_question: FactQuestion | None
+    # Task 1b.2d: the same in plain language, every figure verified against
+    # the branches and bounds above (scenarios/conditional_text.py).
+    summary: list[str]
 
     @classmethod
     def of(cls, res: Resolution) -> ResolutionResponse:
@@ -203,7 +208,18 @@ class ResolutionResponse(BaseModel):
             },
             capped=res.capped,
             next_question=FactQuestion.of(res.next_question) if res.next_question else None,
+            summary=_summary(res),
         )
+
+
+def _summary(res: Resolution) -> list[str]:
+    """The verified summary; a sentence that fails verification is a bug,
+    so it is refused rather than shown."""
+    sentences = explain_resolution(res)
+    problems = verify_summary(sentences, res)
+    if problems:
+        raise RuntimeError(f"conditional summary failed verification: {problems}")
+    return [s.text for s in sentences]
 
 
 class HouseholdCalculationResponse(BaseModel):

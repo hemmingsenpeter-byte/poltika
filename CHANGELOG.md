@@ -41,6 +41,11 @@ result identity changes.
   points. No catalogue declares monotonicity yet: that is specification
   content for GPT/Codex. Property tests check declarations against the
   engine.
+- **The conditional answer in words** (Task 1b.2d): "Poltika can't give
+  one figure without …", then each possible answer's amounts, the ranges
+  and the next question. Every figure is checked against the calculation
+  before it is shown. A v0.3 release-gate test starts with the check that
+  every shipped question catalogue has reviewed wording (Task 1b.1c).
 - **Population ranges** (Task 1b.6): a population run now reports, beside
   the calculated totals, the range of change from households waiting on a
   fact (each possible answer rerun under the baseline and the reform) and
