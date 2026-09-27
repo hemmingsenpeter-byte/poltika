@@ -52,7 +52,7 @@ poltika/
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
 ├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map and the v0.2 population methodology
-├── docs/pilot/        — v0.1.5 pilot guide (and, after the pilot, its findings)
+├── docs/pilot/        — v0.1.5 pilot guide, hosting guide (HOSTING.md), and the pilot findings
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question
 ├── data/              — v0.2 Phase 1 data layer (data/README.md): raw/ (immutable
@@ -169,7 +169,9 @@ poltika/
 │                            10.1: population, parameters and run routes;
 │                            503 when POLTIKA_POPULATION_PATH is unset) and
 │                            microsim_page.py (v0.2 Task 10.2: the
-│                            /analyst/microsim page) — no llm/
+│                            /analyst/microsim page); access.py (hosted
+│                            pilot password, HTTP Basic, operator-set
+│                            POLTIKA_ACCESS_PASSWORD) — no llm/
 │                            layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy

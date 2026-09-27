@@ -5,6 +5,12 @@
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Hosted pilot, password protected**: the pilot image refuses to start
+  without `POLTIKA_ACCESS_PASSWORD`, then asks for it on every page and
+  route (HTTP Basic; `/healthz` stays open for health checks). It listens
+  on `$PORT` and includes the synthetic development population. Hosting
+  steps are in `docs/pilot/HOSTING.md`. Local runs from a checkout are
+  unchanged.
 - **Fact catalogues** (Task 1b.1, ADR-0016): every fact the WFF, AS and
   combined engines can report missing has a plain-language question and
   its admissible answers, in `policy_specs/<policy>/facts.yaml`. The

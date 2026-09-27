@@ -35,6 +35,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from poltika.api.access import BasicAuthMiddleware, configured_credentials
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.accommodation_supplement import router as as_router
 from poltika.api.analyst import router as analyst_router
@@ -75,6 +76,7 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         raise _missing_policy_dir_error(
             "AS_POLICY_DIR", AS_POLICY_DIR, "accommodation_supplement"
         )
+    configured_credentials()  # a hosted image refuses to start without a password
     yield
 
 
@@ -101,6 +103,14 @@ app.include_router(scenarios_router)
 app.include_router(analyst_router)
 app.include_router(microsim_router)
 app.include_router(microsim_page_router)
+app.add_middleware(BasicAuthMiddleware)
+
+
+@app.get("/healthz", include_in_schema=False)
+def healthz() -> dict[str, str]:
+    """For a hosting platform's health check. Open without a password
+    (`api/access.py`), so it says nothing but that the process is up."""
+    return {"status": "ok"}
 
 
 @app.exception_handler(StoredRunNotFoundError)
