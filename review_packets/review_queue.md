@@ -18,7 +18,11 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 4 open implementation review rows (#111, #113, #114, #118).**
+**As of 27 September 2026: 5 open implementation review rows (#111, #113, #114, #118, #120).**
+#120 (fresh-check F6 fix) merged after #122 cleared #117, under Pete's
+"up to PR120 is cleared - proceed". It is a review-fix PR, so the cap
+didn't block it, but its data-layer change still awaits independent review.
+The queue is back at five, so #121 (v0.3 intake planner) waits.
 A fresh same-model check of #111, #113 and #114 is recorded in
 `reviews/2026-09-27-v0-2-fresh-same-model-check.md`; its fixes are #118. That
 check is not the independent review, so those rows stay open.
@@ -37,6 +41,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #120 | v0.2 | Fresh-check F6 fix: every transformation version kept (`TRANSFORMATION_VERSIONS`), `DataContext` reads the manifest's version; IRD WFF reader v2 at published precision with a v2 manifest | Data layer | Medium | open |
 | #118 | v0.2 | Fixes from the fresh same-model check: cross-validation reason codes and children measure, A3/A13, dictionary meanings, boundary test | Assurance, spec sources, data-boundary test | Low | open |
 | #117 | v0.2 | Task 9.3 hand-calculated population cases; Task 2.3 author check; assumption A12 named in the population spec's sources | Tests, spec sources | Low | reviewed (reviews/2026-09-27-pr117.md) |
 | #114 | v0.2 | Cross-validation (Task 9.4): IRD WFF and MSD fact-sheet snapshots, `data/xlsx.py` reader, `crossval.py` report | Data boundary, assurance | Medium | open |
