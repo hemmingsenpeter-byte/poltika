@@ -43,6 +43,8 @@ under `data/raw/` with manifests (`docs/research/v0_2_task_3_1_calibration_table
 | Claimant category | A6: non-beneficiary, as the asserted facts require | 100% |
 | Partner income share | A7: 0.5; WFF and AS use combined income, so no result depends on it | 0.5 |
 | Weekly income | A8: annual gross / 52 | 52 |
+| Homeowner housing cost | A10: drawn from the renters' distribution, as the generator draws one cost for every household. Unused: AS homeowner tenure is `unsupported` | as renters |
+| Income by household type | A11: the all-household median and mean (D4) apply to every modelled type | same bands |
 
 The generator's own rules (independent marginals, equal weights, the
 couple income split) are in `scenarios/microsim/synthetic.py`, and every
@@ -60,3 +62,7 @@ generated population reports its calibration against each target.
   generated), and the in-work tax credit is `needs_review` for 2026-27.
 - The 2018 rent distribution is moved to 2025 by one ratio, so its shape is
   2018's.
+- Income is two uniform bands from an all-household median and mean (D4,
+  A11). Family tax credit cost is sensitive to how many families fall
+  between the abatement threshold and the band edge, so the Task 9.4
+  cross-validation should test it.

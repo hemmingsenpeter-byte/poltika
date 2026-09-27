@@ -53,12 +53,26 @@ result identity changes.
 - **Synthetic population generator** (Tasks 3.3-3.4): a seeded,
   deterministic generator from a spec in which every New Zealand quantity
   and every asserted fact is an explicit input, with a calibration report
-  and the synthetic label. No real spec yet: it needs Task 3.1's tables.
+  and the synthetic label.
+- **Stats NZ calibration data** (Tasks 3.1-3.2, #111): five Stats NZ
+  snapshots with manifests, four registered transformations and 54
+  canonical variables.
+- **The synthetic development population** (Task 3.3, #113):
+  `data/metadata/populations/nz_synthetic_development.v1.yaml`, derived by
+  `scenarios/microsim/calibration.py` from those variables, never
+  hand-written. Every rule (D1-D7) and assumption (A1-A11) is in its
+  `sources` and `docs/releases/V0_2_POPULATION_METHODOLOGY.md`. On it, the
+  exit scenario (family tax credit abatement threshold raised to $50,000)
+  gives a static full take-up family tax credit change of $130.1m a year
+  over 444,485 weighted households, with AS unchanged and the in-work tax
+  credit `needs_review`.
 - **Population API and page** (Tasks 10.1-10.2): `/microsim/population`,
   `/microsim/parameters`, `/microsim/runs` and `/analyst/microsim`, over
   an operator-set population file. The page shows Overview, Distribution,
   Households, Areas, Fiscal, Evidence and Methodology tabs, with the
   synthetic label on every one.
+- **Release documents** (Task 10.3): `docs/releases/V0_2_LIMITATIONS.md`
+  and the methodology page.
 - **v0.2 release-gate test** (Task 9.2): one test per exit-gate row,
   including the invariants. Equal synthetic weights are now exact to six
   decimal places and sum to the total represented, so weighted totals are

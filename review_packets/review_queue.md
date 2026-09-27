@@ -18,7 +18,7 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 0 open implementation review rows.**
+**As of 27 September 2026: 2 open implementation review rows (#111, #113).**
 PR #109's review is recorded in `reviews/2026-09-27-pr109.md`. Its
 Codex-authored fixes (#112) were independently checked by Claude Code
 with no blocking findings (#112 comment), accepted by Pete, and merged.
@@ -50,6 +50,8 @@ were independently reviewed by Claude Code with no blocking findings
 | #103 | v0.2 | Release-gate review rows (`tests/acceptance/review_queue.py`); currency workflow discovers every policy. Merged under Pete's exemption | Tests, CI | Low | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
 | #108 | v0.2 | Codex-authored fixes F1-F11 from the queued-PR audit | Data, scenarios, assurance, API | High | reviewed (Claude Code, PR #108 comment) |
 | #109 | v0.3 | Fact catalogues and conditional answers (`scenarios/conditional.py`), ADR-0016 | Scenarios, policy loader, policy_specs | Medium | reviewed (reviews/2026-09-27-pr109.md) |
+| #111 | v0.2 | Stats NZ snapshots, manifests, four transformations and 54 canonical variables (Tasks 3.1-3.2) | Data | Medium | open |
+| #113 | v0.2 | Synthetic development population derived from #111 (`calibration.py`, `calibrate_cli.py`, spec); fresh same-model check in the PR comment, A10-A11 named in the release-docs PR | Scenarios, data boundary | Medium | open |
 | #112 | v0.3 | Codex-authored fixes F1-F3 for #109 and the catalogue wording review | Scenarios, policy_specs | Medium | reviewed (Claude Code, PR #112 comment) |
 
 ## Plan and decision PRs (not counted against the cap)

@@ -51,6 +51,14 @@ Derivation rules (D) and assumptions (A):
   and AS both use the couple's combined income.
 - **A8 weekly income divisor** is 52 (annual gross income over 52 weeks, a
   synthetic mapping between the two income definitions, D9).
+- **A10 homeowner housing cost.** The generator draws one weekly housing
+  cost for every household, so homeowners get a value from the renters'
+  distribution (D6). No calculated result uses it: homeowner tenure is
+  `unsupported` in the Accommodation Supplement engine (`AS_HOMEOWNER`).
+- **A11 income across household types.** HES's median and mean cover all
+  households, including kinds outside the four modelled types, and the
+  same two bands (D4) apply to every modelled type. Family tax credit cost
+  is sensitive to this.
 
 Shares are rounded to six decimal places, with the rounding remainder on
 the largest share, so each set sums to exactly 1.
@@ -151,6 +159,8 @@ SOURCES = (
     "A7 assumption: partner income share 0.5 (no v0.1 result depends on it)",
     "A8 assumption: weekly income is annual gross income / 52",
     "A9 assumption: the open $600-and-over 2018 rent band is closed at $1,200 (no AS result depends on it)",
+    "A10 assumption: homeowners draw a housing cost from the renters' distribution (unused: AS homeowner is unsupported)",
+    "A11 assumption: all-household income median and mean apply to every modelled household type",
 )
 
 _V = "verified"
