@@ -41,6 +41,11 @@ result identity changes.
   points. No catalogue declares monotonicity yet: that is specification
   content for GPT/Codex. Property tests check declarations against the
   engine.
+- **Population ranges** (Task 1b.6): a population run now reports, beside
+  the calculated totals, the range of change from households waiting on a
+  fact (each possible answer rerun under the baseline and the reform) and
+  the weight that can't be bounded. The three are never added. The run's
+  identity and calculated totals are unchanged.
 
 ## Unreleased (v0.2: static population microsimulation)
 

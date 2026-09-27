@@ -122,7 +122,8 @@ poltika/
 │   │                        loaded parameters, runner.py baseline and
 │   │                        reform runs with run identity, analysis.py
 │   │                        weighted tables, withdrawal.py withdrawal
-│   │                        paths and sweeps, explain.py verified
+│   │                        paths and sweeps, ranges.py (v0.3 Task 1b.6)
+│   │                        needs-review population ranges, explain.py verified
 │   │                        population explanations, synthetic.py the
 │   │                        seeded synthetic population generator and its
 │   │                        CLI, calibration.py the population spec derived

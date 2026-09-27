@@ -34,12 +34,13 @@ from fastapi import Path as PathParam
 from pydantic import BaseModel, ConfigDict, Field
 
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
-from poltika.api.household import running_code_identity
+from poltika.api.household import facts, running_code_identity
 from poltika.api.wff import WFF_POLICY_DIR
 from poltika.engines.simulator.trace import plain
 from poltika.policy.loader import load_policy_parameters
 from poltika.scenarios.microsim import analysis
 from poltika.scenarios.microsim.explain import explain_population, render_text, verify
+from poltika.scenarios.microsim.ranges import population_ranges
 from poltika.scenarios.microsim.reform import InvalidReformError, Reform, UnsupportedReformError
 from poltika.scenarios.microsim.runner import COMPONENTS, UNITS, PopulationRun, run_population
 from poltika.scenarios.population import InvalidHouseholdFacts, scenario_record
@@ -190,6 +191,9 @@ def _summary(p: PopulationDataset, run: PopulationRun, components: list[str]) ->
         "component_set": components,
         "units": {c: UNITS[c] for c in COMPONENTS},
         "fiscal": plain(analysis.fiscal(run)),
+        # v0.3 Task 1b.6 (ADR-0016): needs_review households' range and the
+        # weight still unboundable, kept apart from the calculated totals.
+        "fiscal_ranges": plain(population_ranges(run, WFF_POLICY_DIR, AS_POLICY_DIR, facts())),
         "tables": tables,
         "explanation": render_text(explanation),
         "explanation_problems": verify(explanation, p, run),
