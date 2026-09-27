@@ -33,12 +33,12 @@ under `data/raw/` with manifests (`docs/research/v0_2_task_3_1_calibration_table
 | Households represented | D1: HES Table 5 people in the four modelled household kinds, divided by household size | 1,452,567 (of HES's 2,025,400 households; other kinds are not represented) |
 | Household type | D1, with A1 (three or more children counted as three) and A2 (one-parent households have the couples' mean children) | single 34.6%, couple 35.1%, couple with children 24.2%, sole parent 6.1% |
 | Children per family | D2: couples' distribution, also used for one-parent households (A2) | 1: 36.9%, 2: 46.1%, 3: 17.0% |
-| Best Start cohort | D3: births registered in the year ended March 2025 (calculable cohort) and in 2024 plus 2026 (other cohorts), as shares of derived dependent children (A3) | 7.4% / 14.3% / 78.3% outside |
+| Best Start cohort | D3: births registered in the year ended March 2025 (calculable cohort) and in 2024 plus 2026 (other cohorts), as shares of derived dependent children (A3; births after 31 March 2026 are not counted, and every registered birth is placed in a modelled household type) | 7.4% / 14.3% / 78.3% outside |
 | Gross household income | D4: two equal uniform bands reproducing HES 2025's median ($109,556) and mean ($139,111) | [0, 109,556), [109,556, 337,332) |
 | Tenure | D5: 2018 households paying rent vs owning | renting 33.1% |
 | Weekly housing cost | D6: 2018 rent bands scaled by HES mean rent 2025/2018 ($505.50/$340.50); A9 closes the open top band | 16 bands, $0 to $1,781 |
 | Region | D7: HES Table 5 people by regional council (A4: people shares as household shares) | 12 regions |
-| Cash assets | D4 on currency and deposits, 2024 (median $16,000, mean $75,000) | [0, 16,000), [16,000, 268,000) |
+| Cash assets | D4 on currency and deposits, 2024 (median $16,000, mean $75,000 among households holding them). A13: applied to every household whatever its tenure or income. Because the median sits just under the $16,200 r 15 ceiling, many modelled renters exceed it and AS is `unsupported` for them (see the cross-validation's reason codes) | [0, 16,000), [16,000, 268,000) |
 | AS area | A5: equal quarters. No published household count by area was acquired | 25% each |
 | Claimant category | A6: non-beneficiary, as the asserted facts require | 100% |
 | Partner income share | A7: 0.5; WFF and AS use combined income, so no result depends on it | 0.5 |

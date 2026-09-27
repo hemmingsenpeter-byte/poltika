@@ -484,8 +484,9 @@ variables:
   geography_population: New Zealand, households in occupied private dwellings
   valid_from: 2018-03-06
 - id: household.currency_and_deposits.median
-  meaning: Median value of currency and deposits for households (Household net worth statistics Table
-    1.01, AsCode W21, EstCode E1), year ended June; in thousands of dollars.
+  meaning: Median value of currency and deposits among households holding them (Household net worth statistics
+    Table 1.01, AsCode W21, EstCode E1), year ended June; in thousands of dollars. The holders are counted
+    by EstCode E7, so this is not a median over all households.
   unit: NZD thousands per household
   frequency: annual
   price_basis: nominal
@@ -493,8 +494,8 @@ variables:
   geography_population: New Zealand households
   valid_from: 2014-07-01
 - id: household.currency_and_deposits.mean
-  meaning: Mean value of currency and deposits for households (Household net worth statistics Table 1.01,
-    AsCode W21, EstCode E3), year ended June; in thousands of dollars.
+  meaning: Mean value of currency and deposits among households holding them (Table 1.01, AsCode W21,
+    EstCode E3; E3 equals the total E5 over the holder count E7), year ended June; in thousands of dollars.
   unit: NZD thousands per household
   frequency: annual
   price_basis: nominal
@@ -556,9 +557,11 @@ variables:
   geography_population: New Zealand, families entitled to Working for Families
   valid_from: 2000-04-01
 - id: accommodation_supplement.recipients
-  meaning: Recipients of Accommodation Supplement, all ages, in the quarter (MSD Benefit Fact Sheets,
-    'Selected supplementary assistance - last five years', Accommodation Supplement (AS) row), labelled
-    by the quarter's last month. People may receive more than one supplementary assistance.
+  meaning: Recipients of Accommodation Supplement, all ages (MSD Benefit Fact Sheets, 'Selected supplementary
+    assistance - last five years', Accommodation Supplement (AS) row), in the column labelled by the quarter's
+    last month. The table states no count date, so the figure is recorded for the whole labelled quarter;
+    whether it is a quarter-end count is not stated. The fact sheets' notes say counts are randomly rounded
+    to base 3 and that people may receive more than one supplementary assistance.
   unit: recipients
   frequency: quarterly
   price_basis: not_applicable

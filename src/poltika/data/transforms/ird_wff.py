@@ -6,8 +6,12 @@ aggregate entitlements ($ million) and children supported (thousands), by
 tax year. The workbook labels each tax year with a date in its March; the
 tax year runs from 1 April of the year before. Some cells store binary
 floating-point noise (for example 2.2999999999999998 for 2.3), so counts
-are rounded to the published one decimal place and dollar totals to whole
-millions.
+are rounded to one decimal place and dollar totals to whole millions, the
+precision of most rows. A few rows are published more precisely (2017-18 has
+three-decimal counts and six-decimal dollars), and this rounding shortens
+them. No v0.2 comparison uses those rows; a version that keeps published
+precision needs a new transformation version and snapshot manifest (fresh
+check F6, 27 September 2026).
 """
 
 from __future__ import annotations

@@ -18,7 +18,12 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 27 September 2026: 4 open implementation review rows (#111, #113, #114, #117).**
+**As of 27 September 2026: 5 open implementation review rows (#111, #113, #114, #117, #118).**
+A fresh same-model check of #111, #113 and #114 is recorded in
+`reviews/2026-09-27-v0-2-fresh-same-model-check.md`; its fixes are #118. That
+check is not the independent review, so the rows stay open. At five open
+rows the review-debt cap is reached: no further implementation PR merges
+until GPT/Codex clears rows.
 PR #109's review is recorded in `reviews/2026-09-27-pr109.md`. Its
 Codex-authored fixes (#112) were independently checked by Claude Code
 with no blocking findings (#112 comment), accepted by Pete, and merged.
@@ -30,6 +35,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #118 | v0.2 | Fixes from the fresh same-model check: cross-validation reason codes and children measure, A3/A13, dictionary meanings, boundary test | Assurance, spec sources, data-boundary test | Low | open |
 | #117 | v0.2 | Task 9.3 hand-calculated population cases; Task 2.3 author check; assumption A12 named in the population spec's sources | Tests, spec sources | Low | open |
 | #114 | v0.2 | Cross-validation (Task 9.4): IRD WFF and MSD fact-sheet snapshots, `data/xlsx.py` reader, `crossval.py` report | Data boundary, assurance | Medium | open |
 | #94 | v0.2 | Validation, weighting, reforms; optional preloaded `parameters` on `run_wff_module`, `run_as_module`, `run_combined_household`; `check_preloaded_parameters` | Engines, loader | High | reviewed (reviews/2026-09-27-queued-pr-audit.md) |
