@@ -6,6 +6,8 @@ all.
 """
 
 from poltika.data.transforms import (  # noqa: F401  (registration on import)
+    ird_wff,
+    msd_benefit_fact_sheets,
     stats_nz_births,
     stats_nz_census_2018,
     stats_nz_hes,

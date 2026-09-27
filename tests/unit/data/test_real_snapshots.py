@@ -49,6 +49,12 @@ def test_each_snapshot_produces_every_mapped_variable(snapshot) -> None:  # type
         ("population.live_births_registered", date(2026, 1, 1), None, "57027"),
         ("population.live_births_registered", date(2025, 1, 1), None, "58539"),
         ("population.live_births_registered", date(2024, 1, 1), BIRTHS_2025, "56277"),
+        # Inland Revenue WFF statistics, 2025 tax year; MSD fact sheets, June 2026 quarter.
+        ("wff.families_entitled.family_tax_credit", date(2025, 1, 1), None, "255.4"),
+        ("wff.entitlement.family_tax_credit", date(2025, 1, 1), None, "2431"),
+        ("wff.families_entitled.best_start", date(2025, 1, 1), None, "137.6"),
+        ("wff.children_supported", date(2025, 1, 1), None, "661.4"),
+        ("accommodation_supplement.recipients", date(2026, 5, 1), None, "363309"),
     ],
 )
 def test_published_figures_read_through_the_context(
