@@ -228,7 +228,8 @@ the same PR.
     `Resolution.unblocks` added to `conditional.py`.)
   - **1b.4b** `apply_answer()`: record an answer typed as the engine field
     requires. Finite facts are checked against the domain, attestations
-    take yes or no, counts take a whole number, money takes a
+    take yes (otherwise the fact is declined), counts take a whole number,
+    and money takes a
     non-negative amount, and a partner's family scheme income needs the
     claimant's first. An inadmissible answer is refused, never coerced.
   - **1b.4c** "Don't know" is `declined`: never asked again, never
