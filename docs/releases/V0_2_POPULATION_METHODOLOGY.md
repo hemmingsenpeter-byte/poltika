@@ -45,6 +45,7 @@ under `data/raw/` with manifests (`docs/research/v0_2_task_3_1_calibration_table
 | Weekly income | A8: annual gross / 52 | 52 |
 | Homeowner housing cost | A10: drawn from the renters' distribution, as the generator draws one cost for every household. Unused: AS homeowner tenure is `unsupported` | as renters |
 | Income by household type | A11: the all-household median and mean (D4) apply to every modelled type | same bands |
+| Eldest child under 16 | A12: asserted for every household with children, because children's ages are not generated beyond the Best Start cohort. It selects AS's parent rate rows; a household whose eldest is 16 or 17 would be `unsupported` in v0.1's AS branch, a scope restriction (DEC-002), not a finding of no entitlement | verified |
 
 The generator's own rules (independent marginals, equal weights, the
 couple income split) are in `scenarios/microsim/synthetic.py`, and every

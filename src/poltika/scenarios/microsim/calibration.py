@@ -161,6 +161,10 @@ SOURCES = (
     "A9 assumption: the open $600-and-over 2018 rent band is closed at $1,200 (no AS result depends on it)",
     "A10 assumption: homeowners draw a housing cost from the renters' distribution (unused: AS homeowner is unsupported)",
     "A11 assumption: all-household income median and mean apply to every modelled household type",
+    (
+        "A12 assumption: every household's eldest dependent child is under 16 throughout the week "
+        "(children's ages are not generated beyond the Best Start cohort)"
+    ),
 )
 
 _V = "verified"
