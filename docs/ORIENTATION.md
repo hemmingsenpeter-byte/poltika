@@ -27,9 +27,13 @@ household amount:
   snapshots and canonical variables (`src/poltika/data/`), population
   microsimulation over many households (`scenarios/population.py`,
   `scenarios/microsim/`: synthetic populations, validation, weighting,
-  reforms, runs, analysis), and `/microsim` routes and page. Every output
-  from a synthetic population is labelled as not an estimate for New
-  Zealand.
+  reforms, runs, analysis), and `/microsim` routes and page. The real
+  population spec, `data/metadata/populations/nz_synthetic_development.v1.yaml`,
+  is derived from Stats NZ snapshots by `scenarios/microsim/calibration.py`
+  and never hand-edited; `docs/releases/V0_2_POPULATION_METHODOLOGY.md` states
+  its rules and assumptions, and `V0_2_CROSS_VALIDATION.md` compares it with
+  published figures. Every output from a synthetic population is labelled as
+  not an estimate for New Zealand.
 - **v0.3 (`BUILD_PLAN_v0_3.md`):** conditional answers
   (`scenarios/conditional.py`, ADR-0016): when a finite-domain fact is
   unknown, the household is rerun once per possible answer. The base result

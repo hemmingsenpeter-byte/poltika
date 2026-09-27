@@ -24,6 +24,8 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 
 v0.1.0 is released (tag `v0.1.0`, 25 September 2026). It models Working for Families (2026-27) and the Accommodation Supplement (weekly) inside a scoped domain, plus their interaction for one household. See [CHANGELOG.md](CHANGELOG.md).
 
+v0.2 (static population microsimulation) is built and awaiting independent review before `v0.2.0` is tagged. It runs the same two engines over a synthetic development population derived from Stats NZ tables (`docs/releases/V0_2_POPULATION_METHODOLOGY.md`), compares its baseline with Inland Revenue and MSD figures (`docs/releases/V0_2_CROSS_VALIDATION.md`), and labels every population result as not an estimate for New Zealand (`docs/releases/V0_2_LIMITATIONS.md`).
+
 Results are conditional simulations built from caller-asserted facts. They are not entitlement determinations.
 
 **No WFF total yet.** The 2026-27 in-work tax credit base rate is still
