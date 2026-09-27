@@ -1,6 +1,6 @@
 # v0.1.5 Task 8.1: a pilot deployment -- the API and PostgreSQL.
-#   docker compose up --build
-# then open http://localhost:8000/analyst (API docs at /docs).
+#   POLTIKA_ACCESS_PASSWORD=choose-one docker compose up --build
+# then open http://localhost:8000/analyst (user `pilot`; API docs at /docs).
 services:
   db:
     image: postgres:16
@@ -19,6 +19,7 @@ services:
     build: .
     environment:
       POLTIKA_DATABASE_URL: postgresql+psycopg://poltika:poltika@db/poltika
+      POLTIKA_ACCESS_PASSWORD: ${POLTIKA_ACCESS_PASSWORD:?set POLTIKA_ACCESS_PASSWORD}
     volumes:
       # The reviewed policy files this deployment serves (read-only).
       - ./policy_specs:/policy_specs:ro

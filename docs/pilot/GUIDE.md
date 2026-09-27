@@ -22,10 +22,11 @@ result is not an entitlement decision.
 With Docker installed, from the repository:
 
 ```sh
-docker compose up --build
+POLTIKA_ACCESS_PASSWORD=choose-one docker compose up --build
 ```
 
-Then open <http://localhost:8000/analyst>. The API's own documentation is at
+Then open <http://localhost:8000/analyst> and sign in as `pilot` with that
+password. For a hosted copy, see `HOSTING.md`. The API's own documentation is at
 <http://localhost:8000/docs>. The policy files served are the ones in this
 repository's `policy_specs/`, mounted read-only.
 
