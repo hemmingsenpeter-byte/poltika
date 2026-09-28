@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
+from poltika.api import microsim
 from poltika.api.main import app
 from poltika.scenarios.microsim.synthetic import generate
 from poltika.semantics.population import SYNTHETIC_LABEL
@@ -148,3 +149,15 @@ def test_page_is_self_contained_and_shows_every_tab() -> None:
         assert f'"{tab}"' in html
     assert "src=" not in html and "<link rel=\"stylesheet\"" not in html
     assert "full take-up" in html and "never counted as zero" in html
+
+
+def test_one_population_computation_at_a_time(configured: Path) -> None:
+    """A run or run summary arriving while another is computed is turned
+    away with 429, not queued; the lock is released afterwards."""
+    run_id = client.post("/microsim/runs", json={"reform": THRESHOLD}).json()["run_id"]
+    with microsim._one_at_a_time():
+        busy = client.post("/microsim/runs", json={"reform": THRESHOLD})
+        assert busy.status_code == 429 and busy.headers["retry-after"] == "30"
+        assert client.get(f"/microsim/runs/{run_id}").status_code == 429
+        assert client.get("/microsim/population").status_code == 200  # cheap routes unaffected
+    assert client.get(f"/microsim/runs/{run_id}").status_code == 200

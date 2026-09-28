@@ -39,6 +39,7 @@ from poltika.api.access import BasicAuthMiddleware, configured_credentials
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.accommodation_supplement import router as as_router
 from poltika.api.analyst import router as analyst_router
+from poltika.api.hardening import BodyLimitMiddleware, SecurityHeadersMiddleware
 from poltika.api.household import router as household_router
 from poltika.api.microsim import router as microsim_router
 from poltika.api.microsim_page import router as microsim_page_router
@@ -103,7 +104,10 @@ app.include_router(scenarios_router)
 app.include_router(analyst_router)
 app.include_router(microsim_router)
 app.include_router(microsim_page_router)
+# The last added runs first: headers go on every response, 401 and 413 too.
 app.add_middleware(BasicAuthMiddleware)
+app.add_middleware(BodyLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 @app.get("/healthz", include_in_schema=False)
