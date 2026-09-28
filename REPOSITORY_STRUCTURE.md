@@ -174,7 +174,7 @@ poltika/
 │                            microsim_page.py (v0.2 Task 10.2: the
 │                            /analyst/microsim page); access.py (hosted
 │                            pilot password, HTTP Basic, operator-set
-│                            POLTIKA_ACCESS_PASSWORD; required on Render)
+│                            POLTIKA_ACCESS_PASSWORD)
 │                            and hardening.py (security headers, request-
 │                            size limit) — no llm/
 │                            layer yet;

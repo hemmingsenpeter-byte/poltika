@@ -16,7 +16,6 @@ from poltika.api.main import app
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.delenv("POLTIKA_ACCESS_PASSWORD", raising=False)
     monkeypatch.delenv("POLTIKA_REQUIRE_ACCESS_PASSWORD", raising=False)
-    monkeypatch.delenv("RENDER", raising=False)
     return TestClient(app)
 
 

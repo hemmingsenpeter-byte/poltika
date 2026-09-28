@@ -6,8 +6,8 @@ cross-model review.
 ## Review inputs
 
 - PR/diff: branch `fix/hosted-hardening`, base `origin/main` 70e77cc.
-  Changed: `src/poltika/api/{access,hardening,main,microsim}.py`,
-  `tests/unit/api/{test_access,test_hardening,test_microsim_api}.py`,
+  Changed: `src/poltika/api/{hardening,main,microsim}.py`,
+  `tests/unit/api/{test_hardening,test_microsim_api}.py`,
   `docs/pilot/HOSTING.md`, `REPOSITORY_STRUCTURE.md`, `CHANGELOG.md`.
 - Primary sources: none. No policy value, rule, fixture or protected
   expected value is touched; this is hosting security only.
@@ -20,9 +20,6 @@ cross-model review.
 
 ## Expected behaviour (written by the author, who knew the rationale)
 
-- On Render (`RENDER` set, non-empty), the app refuses to start without
-  `POLTIKA_ACCESS_PASSWORD`, whatever the runtime. Local checkout and CI
-  behaviour unchanged.
 - Every HTTP response, including 401 and 413, carries CSP (no framing, no
   other origins beyond the jsDelivr/Google Fonts assets `/docs` and
   `/redoc` load), `nosniff`, `X-Frame-Options: DENY`, `no-referrer`, HSTS,
@@ -55,7 +52,6 @@ cross-model review.
 | Chunked 70 KB body through real uvicorn (no length) | 413 with JSON detail |
 | Oversized body with wrong credentials | 413 (size checked before credentials; no credential oracle) |
 | 401 response | one CSP header, security headers present |
-| `RENDER=""` | treated as not Render (open locally) |
 | Lock held, second run / run fetch | 429 + `Retry-After: 30`; `/microsim/population` 200 |
 | Measured cost | `POST /microsim/runs` ~25 s, `GET /microsim/runs/{id}` ~2.3 s, others < 0.3 s |
 
@@ -67,9 +63,6 @@ cross-model review.
 
 ## Not verified
 
-- That Render sets `RENDER` on this particular service (Render documents it
-  as set on every service; not observed directly, the MCP was not loaded in
-  this session). If it isn't, behaviour falls back to today's.
 - The Render runtime (Docker vs native Python) and the password's value are
   operator settings outside the repository.
 - CSP in browsers other than Chrome.
@@ -86,8 +79,17 @@ cross-model review.
 
 ## Deferred Codex audit
 
-- Final commit on `fix/hosted-hardening`; questions: is `RENDER` detection
-  acceptable in `api/access.py`, or should fail-closed be a
-  `render.yaml`/image-only concern? Is 64 KiB right for future intake
+- Final commit on `fix/hosted-hardening`; questions: Is 64 KiB right for future intake
   payloads? Is a process-wide lock acceptable, or should runs move to a
   queue when the store is in use?
+
+## Revision, 2026-09-28: Render fail-closed dropped
+
+Pete decided to run the hosted service without a password for now. The
+first commit also made the app refuse to start on Render without
+`POLTIKA_ACCESS_PASSWORD` (via Render's `RENDER` variable); with no password
+set, that would have made every later Render deploy fail. That part
+(`api/access.py` and its test) is reverted to `main`. Consequence, recorded
+here deliberately: **the live service remains open to anyone with the
+address.** The headers, body limit and run lock still apply. Requiring a
+password on Render again is an open decision for Pete.

@@ -13,17 +13,14 @@ account and sets the password; the repository holds no credentials.
   browser shows its own sign-in box). The username is `pilot`, or
   `POLTIKA_ACCESS_USER`. Only `/healthz` is open, for the platform's health
   check, and it returns nothing but `{"status": "ok"}`.
-- **On Render, refuses to start without a password even outside the
-  image.** Render sets `RENDER` on every service, and the app treats it like
-  the image's `POLTIKA_REQUIRE_ACCESS_PASSWORD=1` (`api/access.py`), so a
-  service using Render's native Python runtime can't come up open either.
 - Sends security headers on every response (a content security policy that
   forbids framing and other origins, `nosniff`, `no-referrer`, HSTS) and
   refuses request bodies over 64 KiB with 413 (`api/hardening.py`).
 - Computes one population run at a time: a run takes tens of seconds of
   CPU, so a second run request while one is in progress gets 429 with
   `Retry-After` instead of queueing (`api/microsim.py`). There is no
-  per-address rate limit; the password is what keeps strangers out.
+  per-address rate limit; the password is what keeps strangers out, so
+  a service run without one is open to anyone with the address.
 - Listens on `$PORT` when the platform sets one, otherwise 8000.
 - Includes the synthetic development population, generated from its
   committed spec at build time, so the population page works with no extra

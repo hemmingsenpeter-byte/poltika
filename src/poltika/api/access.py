@@ -9,9 +9,6 @@ Operator configuration, like the policy directory and the population
   password. The pilot image sets it, so a hosted container can't come up
   open by mistake. A source checkout doesn't, so local development is
   unchanged.
-- `RENDER` (set by Render on every service): treated like
-  `POLTIKA_REQUIRE_ACCESS_PASSWORD=1`, so a Render service refuses to start
-  without a password even when it isn't built from the pilot image.
 
 Credentials are compared in constant time and never logged. Basic
 authentication sends them with every request, so a hosted pilot must be
@@ -37,14 +34,13 @@ class AccessConfigError(RuntimeError):
 
 def configured_credentials() -> tuple[str, str] | None:
     """The (user, password) the operator set, or None when access is open.
-    Refuses an open app when `POLTIKA_REQUIRE_ACCESS_PASSWORD` is set or
-    the app is running on Render."""
+    Refuses an open app when `POLTIKA_REQUIRE_ACCESS_PASSWORD` is set."""
     password = os.environ.get("POLTIKA_ACCESS_PASSWORD", "")
     if not password:
-        if os.environ.get("POLTIKA_REQUIRE_ACCESS_PASSWORD") == "1" or os.environ.get("RENDER"):
+        if os.environ.get("POLTIKA_REQUIRE_ACCESS_PASSWORD") == "1":
             raise AccessConfigError(
-                "a password is required here (POLTIKA_REQUIRE_ACCESS_PASSWORD or RENDER is set) "
-                "but POLTIKA_ACCESS_PASSWORD is empty: set a password (docs/pilot/HOSTING.md)"
+                "POLTIKA_REQUIRE_ACCESS_PASSWORD is set but POLTIKA_ACCESS_PASSWORD is empty: "
+                "set a password (docs/pilot/HOSTING.md)"
             )
         return None
     return os.environ.get("POLTIKA_ACCESS_USER") or "pilot", password

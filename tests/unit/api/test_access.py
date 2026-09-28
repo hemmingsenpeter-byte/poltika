@@ -30,7 +30,6 @@ def protected(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_open_without_a_password(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("POLTIKA_ACCESS_PASSWORD", raising=False)
     monkeypatch.delenv("POLTIKA_REQUIRE_ACCESS_PASSWORD", raising=False)
-    monkeypatch.delenv("RENDER", raising=False)
     assert client.get("/analyst").status_code == 200
 
 
@@ -87,17 +86,3 @@ def test_required_password_refuses_to_start(monkeypatch: pytest.MonkeyPatch) -> 
         configured_credentials()
     with pytest.raises(AccessConfigError), TestClient(app):
         pass
-
-
-def test_render_refuses_to_start_without_a_password(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A Render service not built from the pilot image (so without
-    POLTIKA_REQUIRE_ACCESS_PASSWORD) still can't come up open."""
-    monkeypatch.delenv("POLTIKA_ACCESS_PASSWORD", raising=False)
-    monkeypatch.delenv("POLTIKA_REQUIRE_ACCESS_PASSWORD", raising=False)
-    monkeypatch.setenv("RENDER", "true")
-    with pytest.raises(AccessConfigError):
-        configured_credentials()
-    with pytest.raises(AccessConfigError), TestClient(app):
-        pass
-    monkeypatch.setenv("POLTIKA_ACCESS_PASSWORD", "p")
-    assert configured_credentials() == ("pilot", "p")
