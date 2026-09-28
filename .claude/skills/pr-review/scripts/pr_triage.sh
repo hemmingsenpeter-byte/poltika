@@ -163,7 +163,7 @@ if [ -z "$queue" ]; then
   echo "No review queue on $base."
 else
   open_rows=$(printf '%s\n' "$queue" |
-    awk -F'|' '/^\|[[:space:]]*#[0-9]+[[:space:]]*\|[[:space:]]*v[0-9.]+[[:space:]]*\|/ {
+    awk -F'|' 'NF == 8 && /^\|[[:space:]]*#[0-9]+[[:space:]]*\|/ {
       status = $(NF - 1); gsub(/^[[:space:]]+|[[:space:]]+$/, "", status)
       pr = $2; gsub(/[[:space:]]/, "", pr)
       if (status !~ /^reviewed/) printf "%s ", pr }')
