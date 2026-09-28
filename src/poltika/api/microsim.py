@@ -122,21 +122,37 @@ def parameters() -> list[dict[str, Any]]:
     return rows
 
 
-@router.post("/runs")
-def create_run(request: RunRequest) -> dict[str, Any]:
+def execute_reform(
+    reform: Reform, component_set: list[str]
+) -> tuple[PopulationDataset, PopulationRun]:
+    """Run `reform` on the configured population and keep the run for
+    `fetch_run`. Shared by `POST /microsim/runs` and the workbench routes."""
     p = population()
     try:
-        analysis.component_set_unit(request.component_set)
+        analysis.component_set_unit(component_set)
         run = run_population(
-            p, request.reform, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
+            p, reform, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
         )
     except (UnsupportedReformError, InvalidReformError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    body = _summary(p, run, request.component_set)
     if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
         _RUNS.pop(next(iter(_RUNS)))
     _RUNS[run.run_id] = (p, run)
-    return body
+    return p, run
+
+
+def stored_run(run_id: str) -> tuple[PopulationDataset, PopulationRun]:
+    if run_id not in _RUNS:
+        raise HTTPException(
+            status_code=404, detail=f"no run {run_id} in this process; rerun it to reproduce it"
+        )
+    return _RUNS[run_id]
+
+
+@router.post("/runs")
+def create_run(request: RunRequest) -> dict[str, Any]:
+    p, run = execute_reform(request.reform, request.component_set)
+    return _summary(p, run, request.component_set)
 
 
 @router.get("/runs/{run_id}")
@@ -144,11 +160,7 @@ def fetch_run(
     run_id: RunId,
     component_set: Annotated[list[str] | None, Query()] = None,
 ) -> dict[str, Any]:
-    if run_id not in _RUNS:
-        raise HTTPException(
-            status_code=404, detail=f"no run {run_id} in this process; rerun it to reproduce it"
-        )
-    p, run = _RUNS[run_id]
+    p, run = stored_run(run_id)
     components = ["family_tax_credit"] if component_set is None else component_set
     try:
         analysis.component_set_unit(components)
