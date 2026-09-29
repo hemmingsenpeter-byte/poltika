@@ -102,12 +102,12 @@ have a "finished" version:
 | Model governance | Doctrines, independent review, the review queue | Model registry, change control, graduation gates (Steps 1.5-1.6) | Diagnosed updates under continuous estimation (Step 17) |
 | Reproducibility | Run ids, result hashes, code replay, immutable snapshots | Model versions on every quantity (Step 2) | As-of runs (Steps 9, 13); transition runs (Step 14) |
 
-For example, validation starts with "does WFF case #147 produce the
-legally correct answer?", then "can the household microsimulation
-reproduce published aggregates?", then "starting in 2015, can the fiscal
-model reproduce 2016-2025, given the shocks that actually happened?", and
+Pete's example is validation, which scales through the same doctrine.
+It starts with "does this WFF spec case produce the legally correct
+answer?". Then it asks "can the household microsimulation reproduce
+published aggregates?", then "starting in 2015, can the fiscal model
+reproduce 2016-2025, given the shocks that actually happened?", and
 finally "did the forecast registered in 2029 land inside its interval?".
-It is the same doctrine, scaling upward.
 
 ## What changes now, and what doesn't
 
