@@ -9,7 +9,7 @@ Phase 0 scoping, and D5-D6 are due before v0.4.
 **Decision record:** ADR-0015 (accepted).
 **Detailed v0.3 tasks:** `BUILD_PLAN_v0_3.md`.
 **Redirected 29 September 2026 (ADR-0018):** the release sequence this
-plan set (W9) is superseded by Pete's 22-step build sequence in
+plan set (W9) is superseded by Pete's 33-step master build order in
 `BUILD_PLAN_PROGRAMME.md`. W1-W8 and W10 continue as that plan's "Carried
 workstreams" table maps them. W10's coverage map is extended there, as
 lanes 3C-3E (ACC levies, GST, company tax, selected regulatory costs and

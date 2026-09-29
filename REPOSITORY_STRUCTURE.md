@@ -22,8 +22,8 @@ poltika/
 ├── BUILD_PLAN_v0_1_5.md  — v0.1.5 evidence and explainability tasks and release gate (approved 25 September 2026)
 ├── BUILD_PLAN_v0_1_6.md  — v0.1.6 tasks: the 2027-28 year and source currency (approved 26 September 2026)
 ├── BUILD_PLAN_v0_2.md    — v0.2 tasks: static population microsimulation (approved 26 September 2026; ADR-0014)
-├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015); since ADR-0018 also Steps 1 and 2
-├── BUILD_PLAN_PROGRAMME.md — the programme plan: Pete's 22-step build sequence and validity ladder, what exists against each step, tasks, month targets and decisions (29 September 2026; ADR-0018)
+├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015); since ADR-0018 also Phase 0 (Steps 1 and 2)
+├── BUILD_PLAN_PROGRAMME.md — the programme plan: Pete's master build order (33 steps in eight phases), what exists against each step, tasks, validation gates, month targets and decisions (29 September 2026; ADR-0018)
 ├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015); its sequence superseded by ADR-0018, its workstreams carried into the programme plan
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
@@ -325,14 +325,15 @@ poltika/
 
 `engines/discovery/` and `engines/hypothesis/` are placeholders only:
 Discovery and Hypothesis become the intake of the causal evidence library
-(`BUILD_PLAN_PROGRAMME.md` Step 12, ADR-0018), built when there is data
-to run them on. Listing them here names the eventual slot; it doesn't
+(`BUILD_PLAN_PROGRAMME.md` Step 12, ADR-0018), with AI hypothesis discovery
+at Step 30, built when there is data to run them on. Listing them here names the eventual slot; it doesn't
 authorise early work. The programme plan's new components (the model
 registry, the variable registry's extensions, the quantity type, the
 evidence graph, the conformance fixtures and harness, the validation
 framework and prediction ledger, the sector accounts, the state store,
-the baseline and transition engines, and the causal library) get their
-locations here from the task that first creates each one.
+the baseline and transition engines, the scenario library and the causal
+library) get their locations here from the task that first creates each
+one.
 
 ## The dependency boundary
 

@@ -9,10 +9,11 @@ supported slice from sources.
 **Starts:** after v0.2 ships and W1's review queue is below its cap.
 Phase 0 can start as soon as ADR-0015 is accepted.
 **Redirect (ADR-0018, 29 September 2026):** this plan is now lane 3A of
-`BUILD_PLAN_PROGRAMME.md` (the statutory kernel's first tier). v0.3 also
-ships Step 1 (the epistemic constitution and model governance), Step 2
-(the National Variable Registry and common schemas; this plan's Phase 1
-is Step 2.7) and Step 5.1's conformance matrix for its domains. Its tasks
+`BUILD_PLAN_PROGRAMME.md` (the statutory kernel's first lane). v0.3 also
+ships Phase 0: Step 1 (the epistemic constitution and model governance)
+and Step 2 (the National Variable Registry and common schemas; this
+plan's Phase 1 is Step 2.7). It also ships Step 5.1's conformance matrix
+for its domains. Its tasks
 are unchanged. The review-debt cap is suspended (programme plan P17).
 
 `BUILD_PLAN.md`'s doctrines apply unchanged: primary sources only, the
@@ -59,7 +60,7 @@ it. That shape is the aim, not an assumed rule. v0.3 delivers:
    granted.
 7. **The epistemic constitution and model governance**
    (`BUILD_PLAN_PROGRAMME.md` Step 1): evidence classes, the never-build
-   list, a model registry with change control, and the validity ladder.
+   list, a model registry with change control, and validation gates.
 8. **The National Variable Registry and common schemas** (Step 2): every
    number an engine reads or writes is a registered variable, and every
    output is a quantity X = (x̂, D_x, E_x), carrying its value, uncertainty
@@ -537,9 +538,9 @@ or for Phase 0.
 - **The secure-environment runner** exports only checked aggregates, and a
   test proves no household-level record can leave.
 - **No release-scope PR** is left without independent review (W1).
-- **Steps 1 and 2's exit gates** (`BUILD_PLAN_PROGRAMME.md`): every
-  engine is registered with a level; every number it reads or writes is
-  a registered variable; every output is a quantity with D_x and E_x; the
+- **Steps 1 and 2's validation gates** (`BUILD_PLAN_PROGRAMME.md`):
+  every engine is registered with its validation status; every number it
+  reads or writes is a registered variable; every output is a quantity with D_x and E_x; the
   precision rule, the interim governance rule and the never-build checks
   are enforced.
 - **Every Tier 1 rule** has golden, boundary, contradiction and

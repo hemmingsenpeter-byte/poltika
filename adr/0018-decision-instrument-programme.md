@@ -1,14 +1,19 @@
-# ADR-0018: Build Poltika as a decision instrument, climbing a validity ladder
+# ADR-0018: The master build order: 33 steps in eight phases, with validation gates
 
 **Date:** 29 September 2026
-**Status:** accepted as direction. Pete set it on 29 September 2026 in two
-steps the same day. First came a 20-step sequence, which Pete approved
-with its plan ("Approve and proceed all"). Then, after reviewing MIT's
-work in Andorra and the dependency order, Pete revised it to the 22 steps
-below ("Modify the build plan again to this"). Drafted by Claude Code. The
-reconciliation, month targets and release mapping are in
-`BUILD_PLAN_PROGRAMME.md`. It supersedes ADR-0015's sequence and, through
-it, ADR-0008's and ADR-0014's.
+**Status:** accepted as direction. Pete set it on 29 September 2026 in
+three steps the same day:
+
+1. A 20-step sequence, which Pete approved with its plan ("Approve and
+   proceed all").
+2. A revised 22-step sequence, after reviewing MIT's work in Andorra and
+   the dependency order.
+3. The master build order below, consolidating the whole thread ("Update
+   roadmap again with this order and detail").
+
+Drafted by Claude Code. The reconciliation, month targets, tasks and
+release mapping are in `BUILD_PLAN_PROGRAMME.md`. It supersedes ADR-0015's
+sequence and, through it, ADR-0008's and ADR-0014's.
 
 ## Context
 
@@ -27,108 +32,122 @@ increasingly difficult versions:
 
 It sets a mandate ("help New Zealand maximise sustainable prosperity and
 quality of life for current and future generations"), a north star, an
-epistemic constitution, and a list of things Poltika never builds. People
-choose objectives and trade-offs; Poltika measures consequences.
+epistemic constitution, a permanent layer of capabilities, and a list of
+things Poltika never builds. People choose objectives and trade-offs;
+Poltika measures consequences.
 
 The motivating baseline is Treasury's. He Tirohanga Mokopuna 2025
 projects net core Crown debt at 200.0% of GDP by 2065 if fiscal policy is
 unchanged, and Treasury calls it a projection, not a prediction
 (treasury.govt.nz, retrieved 29 September 2026).
 
-The revision's reasoning, in Pete's words: the first sequence treated
-several things as late features when they need to be architectural
-properties from the beginning, namely uncertainty, validation, the
-prediction ledger, the national variable registry and state schema, and
-model governance. It made five changes:
+Across the day's three versions, Pete's reasoning was:
 
-1. **A National Variable Registry at Step 2.** Pete's lesson from the
-   Andorra work: define what population, income, Crown revenue,
-   household and year mean before several models invent incompatible
-   definitions. The common schema exists early and grows with Poltika.
-2. **The prediction ledger moves forward, to Step 6.** It holds small,
-   testable predictions as soon as Poltika produces genuinely predictive
-   outputs, which starts the clock on an external track record.
-3. **Uncertainty moves forward, to Step 11, and into the data model from
-   Step 2.** Every quantity is X = (x̂, D_x, E_x): its value, its
-   uncertainty and its evidence. The architecture accommodates
-   distributions before anything propagates them, so later models aren't
-   built on an implicit assumption of point values.
-4. **A National State Transition Engine (S_t → S_t+1) before
-   federation.** Simple, explicit relationships give an integrated
-   working system early. Individual transition functions are later
-   replaced by domain engines.
-5. **Value of information before optimisation.** Before searching large
-   policy spaces, Poltika should be able to say that the answer hinges
-   on a poorly evidenced parameter, and that the right next step is
-   better evidence.
+- **Several things are architectural properties, not late features:**
+  uncertainty, validation, the prediction ledger, the national variable
+  registry and state schema, and model governance.
+- **A common language first.** Pete's lesson from the Andorra work: define
+  what population, income, Crown revenue, household and year mean before
+  several models invent incompatible definitions (Step 2).
+- **Proof before impressive models.** The validation framework and the
+  forward prediction ledger come in Phase 1, so the external track record
+  starts early (Step 6).
+- **Uncertainty in the data model from the start.** Every quantity is
+  X = (x̂, D_x, E_x), its value, uncertainty and evidence. The
+  architecture accommodates distributions before anything propagates
+  them (Steps 2 and 11).
+- **An integrated system before sophisticated parts.** An explicit
+  `NZState` and a state transition engine (S_t → S_t+1) with simple,
+  explicit relationships come before domain models replace its parts
+  (Step 14).
+- **A digital twin is earned, then used.** Poltika is called an
+  operational national digital twin only once the federated,
+  continuously estimated, spatially grounded model has been validated
+  (Phase 5). Decision intelligence follows it.
+- **Value of information before search.** Poltika should be able to say
+  that an answer hinges on a poorly evidenced parameter, and that the
+  right next step is better evidence, before it searches large policy
+  spaces (Steps 22-24).
+- **AI last as a product layer, never as the epistemic foundation**
+  (Phase 8).
+- **Not a waterfall.** A permanent layer runs through every step and is
+  never finished: evidence and provenance, validation and benchmarking,
+  forward prediction scoring, uncertainty and model risk, versioning and
+  reproducibility, Māori data governance, privacy and security, human
+  oversight, and model governance.
+- **Every stage has a validation gate.** Poltika doesn't move from
+  "built" to "trusted" because the code works.
 
-Two principles govern the whole sequence:
-
-- **The steps are not a waterfall.** Evidence and provenance, validation,
-  uncertainty, versioning, prediction scoring, security and privacy,
-  Māori data governance, model governance and reproducibility run across
-  every step, start early and never have a "finished" version.
-- **Poltika graduates on validity, not on completion.** It climbs:
-
-  `executable rules → observable state → explanatory model → predictive model → integrated model → decision instrument → digital twin`
-
-  Each transition has its own burden of proof. Poltika moves up a level
-  only when the current level has shown sufficient validity.
-
-Pete was explicit that what is being done now doesn't materially change:
-the statutory kernel and the evidence and explainability work remain
-where Poltika starts. What changes now is that the early architecture
+Pete was explicit that the current work doesn't change: WFF and the
+Accommodation Supplement, then evidence and explainability, sit at the
+start of Phase 1. What changes now is that the early architecture
 anticipates the variable registry, evidence classes, uncertainty
 metadata, data and model versioning, the dependency graph and the
 validation framework.
 
 Comparing this with what is built (`BUILD_PLAN_PROGRAMME.md`, "Where
-Poltika stands") found most of Steps 1-7 partly built, the canonical
-variables of v0.2 as the seed of the registry, and nothing yet for a
-model registry, a validation framework, a ledger, a state store or a
+Poltika stands") found most of Steps 1-7 partly built, and v0.2's
+canonical variables as the registry's seed. There is not yet a model
+registry, a validation framework, a ledger, a state store or a
 transition engine.
 
 ## Decision
 
-1. **The build order is Pete's 22 steps:**
-   1. epistemic constitution and model governance;
-   2. National Variable Registry and common schemas;
-   3. statutory kernel;
-   4. Evidence Intelligence and the evidence graph;
-   5. conformance and regression suite;
-   6. validation framework and Prediction Ledger v0;
-   7. household microsimulation;
-   8. fiscal and accounting spine;
-   9. Historical NZ State Store;
-   10. National Baseline Engine;
-   11. uncertainty and sensitivity framework;
-   12. Causal Evidence Library;
-   13. Historical Validation Laboratory;
-   14. National State Transition Engine;
-   15. priority domain models;
-   16. Federated Model Graph;
-   17. continuous state estimation;
-   18. cost of delay and scenario discovery;
-   19. value of information;
-   20. policy-space optimisation;
-   21. Public Futures Laboratory;
-   22. AI reasoning and search layer.
-
-   The continuously improving national digital twin is what they produce,
-   not a release.
-2. **The maturity ladder is doctrine** (Step 1.6). Every model has a
-   level. Graduation and demotion are recorded decisions on validation
-   evidence. Outputs carry the level of the least mature model they rely
-   on, and language follows level.
-3. **Horizontal capabilities start in the step named and keep growing**
-   (`BUILD_PLAN_PROGRAMME.md`, "Two directions of growth").
+1. **The build order is Pete's master order: 33 steps in eight phases.**
+   - **Phase 0, foundations:**
+     1. epistemic constitution and model governance;
+     2. National Variable Registry and common schemas.
+   - **Phase 1, executable New Zealand:**
+     3. deterministic statutory kernel;
+     4. Evidence Intelligence and evidence graph;
+     5. legislation conformance suite;
+     6. validation framework and forward prediction ledger v0.
+   - **Phase 2, population and fiscal effects:**
+     7. household microsimulation engine;
+     8. fiscal and shared accounting spine;
+     9. Historical NZ State Store.
+   - **Phase 3, baseline New Zealand:**
+     10. National Baseline Engine;
+     11. uncertainty and sensitivity framework;
+     12. Causal Evidence Library;
+     13. Historical Validation Laboratory.
+   - **Phase 4, first national system model:**
+     14. National State Transition Engine;
+     15. Canonical NZ Scenario Library;
+     16. priority domain models.
+   - **Phase 5, federated New Zealand:**
+     17. Federated Model Graph;
+     18. continuous state estimation;
+     19. Synthetic Population Programme;
+     20. spatial and physical twin.
+   - **Phase 6, decision intelligence:**
+     21. cost-of-delay engine;
+     22. value-of-information engine;
+     23. policy-space search and inverse solver;
+     24. Pareto frontier engine.
+   - **Phase 7, national decision infrastructure:**
+     25. Public NZ Futures Laboratory;
+     26. policy and manifesto analysis interface;
+     27. constraint-based negotiation sandbox;
+     28. research and institutional APIs.
+   - **Phase 8, AI scientific layer:**
+     29. natural-language policy interface;
+     30. AI hypothesis discovery;
+     31. AI model orchestration;
+     32. AI explanation and research agent;
+     33. autonomous research loop, with human gates.
+2. **Each phase ends in a milestone question**, claimed only on validation
+   evidence and recorded by Pete. Every step has a validation gate. A
+   milestone can be lost when the evidence stops supporting it.
+3. **The permanent layer starts in the step named and never finishes**
+   (`BUILD_PLAN_PROGRAMME.md`, "The permanent layer").
 4. **Months, not years.** Targets are months from M0 (October 2026).
-   Gates and graduations decide when something is done. What can't be
+   Gates and milestones decide when something is done. What can't be
    compressed is named: the 1 April rate year, forecast resolution,
    microdata access, human review and Pete's decisions.
-5. **Releases become tags at step gates.** v0.3 keeps its tasks and adds
-   Steps 1 and 2. v1.0 is the whole question answered inside the kernel
-   by models at Level 3, reproducible and challengeable without the
+5. **Releases are tags at gates.** v0.3 keeps its tasks and adds Phase 0.
+   v1.0 is Phase 3's milestone: "What happens if policy X changes, and how
+   confident should we be?", reproducible and challengeable without the
    builders.
 6. **Kept unchanged:** everything built; every doctrine; the v0.3 tasks;
    the `new-policy` skill's five-PR onboarding; the promotion gate
@@ -140,21 +159,24 @@ transition engine.
 
 ## Consequences
 
-- `ROADMAP.md` is rewritten on the 22 steps and the ladder.
-  `BUILD_PLAN.md`'s Roadmap Doctrine, v1.0 definition and north star are
-  updated. `BUILD_PLAN_v0_3.md` and `ROADMAP_REALIGNMENT.md` carry notes
-  saying how they are re-homed.
+- `ROADMAP.md` is rewritten on the eight phases. `BUILD_PLAN.md`'s Roadmap
+  Doctrine, v1.0 definition and north star are updated. `BUILD_PLAN_v0_3.md`
+  and `ROADMAP_REALIGNMENT.md` carry notes saying how they are re-homed.
 - Nothing already built is discarded. v0.2's canonical variables become
   the registry's seed, `Bounds` becomes one kind of D_x, and existing
   tests and comparisons become validation cases.
 - v0.3 grows: it now includes the constitution, model governance, the
   variable registry and the quantity type, alongside income tax and the
   core benefits.
-- Work arrives earlier than ADR-0015 planned: the registry, model
-  governance, validation, the ledger, uncertainty and the causal library.
-  The LLM layer and optimisation arrive later, and optimisation follows
-  value of information.
-- Claims are bounded by level, so some later outputs will be labelled
-  more cautiously than they would otherwise be.
+- The 22-step version's seven-level ladder is replaced by phase
+  milestones with validation gates. The difference that matters: an
+  operational digital twin (Phase 5) now comes before decision
+  intelligence (Phase 6).
+- New scope arrives that no earlier plan had: a scenario library, a
+  synthetic population programme, a spatial and physical twin, manifesto
+  analysis without scoring, a negotiation sandbox, institutional APIs,
+  and a human-gated autonomous research loop.
+- Claims are bounded by validation status, so some outputs will be
+  labelled more cautiously than they would otherwise be.
 - This decision holds only while its reasoning does. A later reorder is
   a new ADR against this one.
