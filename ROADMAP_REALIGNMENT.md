@@ -8,6 +8,13 @@ map were set later the same day (W10). Each domain's slice waits on the
 Phase 0 scoping, and D5-D6 are due before v0.4.
 **Decision record:** ADR-0015 (accepted).
 **Detailed v0.3 tasks:** `BUILD_PLAN_v0_3.md`.
+**Redirected 29 September 2026 (ADR-0018):** the release sequence this
+plan set (W9) is superseded by Pete's twenty-step build sequence in
+`BUILD_PLAN_PROGRAMME.md`. W1-W8 and W10 continue as that plan's "Carried
+workstreams" table maps them. W10's coverage map is extended there (ACC
+levies, GST, company tax, selected regulatory costs and Crown
+classifications), and its tiers follow the new order (P9). The
+review-debt cap (W1.4) no longer sequences the work (P17).
 
 This plan fixes what a whole-roadmap review found on 26 September 2026:
 

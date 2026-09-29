@@ -1,291 +1,255 @@
 # Poltika Roadmap
 
-This is a release-level direction, not an implementation backlog. Each release
-has a technical purpose and an exit gate. Detailed tasks belong in the active
-release's build plan:
+This is the release-level direction, not an implementation backlog. The
+twenty-step build plan, what already exists against each step, the tasks
+and the open decisions are in `BUILD_PLAN_PROGRAMME.md`. Detailed tasks
+for each release are in its own plan:
 
 - `BUILD_PLAN.md` remains the frozen authority for v0.1;
 - `BUILD_PLAN_v0_1_5.md`, `BUILD_PLAN_v0_1_6.md` and `BUILD_PLAN_v0_2.md`
   hold theirs;
-- `BUILD_PLAN_v0_3.md` holds v0.3's, approved with ADR-0015, with its Phase 0
-  scoping the policies;
-- `ROADMAP_REALIGNMENT.md` holds the cross-release workstreams.
+- `BUILD_PLAN_v0_3.md` holds v0.3's, which now also covers Step 1;
+- later releases get a detailed plan when they start.
 
 ## Planning status
 
-Operative. The sequence below superseded the Roadmap Doctrine's original
-capability-sequence framing per ADR-0008 (2026-09-21), amended by ADR-0014
-(static microsimulation in v0.2) and ADR-0015 (the v0.3-v0.7 realignment and
-Discovery and Hypothesis after v1.0). They record the dependency reasoning
-for this order — see BUILD_PLAN.md's Roadmap
-Doctrine section for the summary. Nothing here changes v0.1 scope,
-approvals, or acceptance criteria.
+Operative from 29 September 2026. ADR-0018 records Pete's direction: build
+Poltika as a decision instrument, in twenty steps, with targets in months.
+It supersedes ADR-0015's sequence (and through it ADR-0008's and
+ADR-0014's). Nothing here changes v0.1's scope, approvals or acceptance
+criteria, or anything already built.
 
-## v0.1 - Deterministic foundation
+## The question
 
-Deliver independently reviewed Working for Families and Accommodation
-Supplement specifications and calculation slices, benchmark and regression
-tests, a cross-policy household scenario, and provenance-tagged frozen data
-acquired manually. No live statistical API is required. `BUILD_PLAN.md` owns
-the detailed scope and acceptance criteria.
+Poltika is built to answer increasingly difficult versions of one
+question:
 
-**Exit gate:** A supported household scenario runs end to end with
-deterministic, source-traceable results for both policies and passes the frozen
-v0.1 review and test gates.
+> If New Zealand changes X, what happens, to whom, when, through what
+> mechanism, with what confidence, and compared with what alternatives?
 
-## v0.1.5 - Evidence and explainability bridge
+Each release answers a harder version of it. A digital twin is what many
+defensible answers add up to, so Poltika starts small: represent one
+piece of New Zealand correctly, then two, then ten; connect them; show
+that the connections reproduce reality; make predictions; let reality
+prove them wrong; improve.
 
-Turn the v0.1 calculator into a system that shows its work, without
-broadening its scope. Every result carries ordered calculation steps with
-intermediate values, stable rule ids, ranked and period-checked evidence,
-a deterministic plain-language explanation, an assumption ledger and
-structured review reasons. A thin analyst interface and one external pilot
-test it. No new policies, data or simulation. `BUILD_PLAN_v0_1_5.md` holds
-the tasks (approved 25 September 2026).
+## North star
 
-**Exit gate:** An external pilot user can take any supported WFF and
-Accommodation Supplement result and find where the number came from, which
-rule and source govern it, what was assumed and what is missing, with every
-explanation tested against the calculation and no open P0 or P1 findings.
+New Zealand's open, evidence-linked policy intelligence infrastructure: a
+computational representation of how policy, people, businesses,
+government and physical systems interact, used to test interventions,
+discover trade-offs and learn from what actually happens.
 
-## v0.1.6 - Keep v0.1 current
+It serves long-run prosperity, resilience and living standards within
+fiscal, distributional, environmental, institutional and physical
+constraints. People choose the objectives and trade-offs. Poltika
+measures consequences; it doesn't decide what New Zealand ought to value.
 
-Every v0.1 parameter value and reference period ends on 1 April 2027. Source
-and implement the 2027-28 year, settle the 2026-27 in-work tax credit once
-the year is complete, and make source currency a scheduled check. No new
-policy or capability. `BUILD_PLAN_v0_1_6.md` holds the tasks.
+The motivating baseline: Treasury's He Tirohanga Mokopuna 2025 projects
+net core Crown debt at 200.0% of GDP by 2065 under unchanged fiscal
+policy, a projection rather than a prediction.
 
-**Exit gate:** Every golden household calculates for both 2026-27 and
-2027-28 from approved, sourced values, with the 2026-27 results unchanged.
+## The build sequence
 
-## v0.2 - Static population microsimulation
+Months are targets from M0 = October 2026. Exit gates decide when a step
+is done.
 
-Run the unchanged v0.1 engines across a weighted population, under current
-law and a reform, and aggregate the differences. Results cover
-winners and losers, income deciles, household types, Accommodation
-Supplement areas, static entitlement cost by component, WFF and AS
-withdrawal rates, and deterministic parameter sweeps. Every figure carries
-its coverage, explanation, evidence and reproducibility record.
+| # | Step | Target | Release |
+| --- | --- | --- | --- |
+| 1 | Epistemic constitution | M0-M1 | v0.3 |
+| 2 | Statutory kernel | M0-M8, then yearly | v0.3-v0.6 |
+| 3 | Evidence Intelligence | M1-M4 | v0.4 |
+| 4 | Conformance suite | M1-M4 | v0.3-v0.4 |
+| 5 | Household microsimulation | M1-M6; IDI when granted | v0.5 |
+| 6 | Accounting and fiscal spine | M3-M6 | v0.5 |
+| 7 | National baseline | M4-M8 | v0.6 |
+| 8 | Causal evidence library | M5-M9 | v0.7 |
+| 9 | Historical validation laboratory | M6-M9 | v0.7 |
+| 10 | Forward prediction ledger | Live by M2 | v0.4 |
+| 11 | Domain models | M8-M16 | v1.x |
+| 12 | Federated model and state graph | M10-M14 | v2.0 |
+| 13 | Continuous state estimation | M12-M15 | v2.0 |
+| 14 | Uncertainty and sensitivity | M9-M13 | v2.0 |
+| 15 | Cost of delay | M13-M14 | v2.0 |
+| 16 | Policy-space optimisation | M14-M16 | v3.0 |
+| 17 | Value of information | M15-M17 | v3.0 |
+| 18 | Public Futures Laboratory | M16-M18 | v4.0 |
+| 19 | AI reasoning and search interface | M17-M19 | v4.0 |
+| 20 | Continuously improving national digital twin | M19 on | |
 
-It is built on a data layer (manifested immutable snapshots, a dataset
-registry, canonical variables, validation) and a synthetic development
-population calibrated to published tables. No output is a New Zealand
-estimate until real microdata is available. `BUILD_PLAN_v0_2.md` holds the
-tasks (ADR-0014, accepted 26 September 2026).
+Some things can't be compressed: the 1 April rate year, forecast
+resolution, microdata access, independent human scrutiny, Māori data
+governance engagement and Pete's decisions.
 
-**Exit gate:** In one reproducible run, with no code edited, a WFF reform
-produces household, distributional, area and fiscal results with weighted
-coverage, a driver explanation, evidence and a rerunnable record.
+## Releases
 
-## v0.3 - Income tax, main benefits and the household graph
+### Done: v0.1, v0.1.5 and v0.2
 
-Start the deterministic policy kernel: `household state → policy
-dependency graph → household fiscal position`. Specify and implement
-personal income tax and the three core main benefits (Jobseeker Support,
-Sole Parent Support, Supported Living Payment) to v0.1's standard, each
-scoped from primary sources before anything is built. Replace per-policy inputs with one shared
-household model that holds each fact once. Order policy calculations per
-household in a dependency graph whose every edge comes from a
-specification, refuse unresolved cycles, and explain dependency chains.
-Produce disposable income, effective marginal tax rates and sourced
-income-adequacy measures for supported households. Ask for missing facts
-before running, most important first. Where some stay missing, return
-engine-computed branches and bounds instead of a bare "needs review"
-(ADR-0016). Make Poltika runnable
-inside a secure data environment that exports only checked aggregates.
-`BUILD_PLAN_v0_3.md` holds the tasks (ADR-0015).
+- **v0.1, deterministic foundation.** Working for Families and the
+  Accommodation Supplement, specified from primary sources, implemented,
+  benchmarked and independently reviewed.
+- **v0.1.5, evidence and explainability.** Every result shows its
+  calculation steps, rules, evidence, assumptions and missing facts.
+- **v0.2, static population microsimulation.** The same engines across a
+  synthetic development population. It is ready to tag, and every result
+  is labelled as not an estimate for New Zealand.
 
-**Exit gate:** One policy's output feeds another's input for a real
-household, calculated in source-derived order and explained, with income
-tax and at least the first main benefit independently reviewed and
-benchmarked, and WFF and AS results unchanged from v0.2.
+### v0.1.6 - Keep v0.1 current (Step 2)
 
-### Policy kernel coverage track (v0.3.x onwards)
+Source and implement 2027-28 by 1 April 2027, settle the 2026-27 in-work
+tax credit, and keep source currency a scheduled check.
 
-After Tier 1, the coverage map in `ROADMAP_REALIGNMENT.md` W10 adds the
-rest of the household tax-and-transfer system, one reviewed domain at a
-time.
+**Exit gate:** every golden household calculates for 2026-27 and 2027-28
+from approved, sourced values, with 2026-27 unchanged.
 
-- **Tier 2**, as v0.3.x releases alongside v0.4:
-  - Temporary Additional Support;
-  - Disability Allowance;
-  - Childcare and OSCAR Subsidies;
-  - NZ Superannuation;
-  - Paid Parental Leave.
-- **Tier 3**, each before the release that first needs it:
-  - Student Allowance and student loan repayment;
-  - ACC earnings compensation;
-  - KiwiSaver;
-  - other MSD assistance;
-  - Child Support;
-  - other tax regimes.
+### v0.3 - Constitution and the kernel's first tier (Steps 1, 2 Tier 1, 4 for Tier 1)
+
+The epistemic constitution becomes doctrine and every output conforms to
+it: eight evidence classes, eleven fields on every number, four
+non-negotiables, the never-build list, and data governance as
+architecture. Personal income tax, Jobseeker Support, Sole Parent Support
+and Supported Living Payment join the kernel on a shared household model
+and a source-derived dependency graph, producing disposable income and
+effective marginal tax rates.
+
+**Exit gate:** `BUILD_PLAN_v0_3.md`'s exit gate, plus every output number
+classed, sourced and carrying its uncertainty, and the Tier 1 conformance
+matrix complete.
+
+### v0.4 - Mechanism, conformance and the ledger (Steps 3, 4, 10)
+
+An evidence graph from law to result, queryable both ways: what a figure
+rests on, and what an assumption contaminates. A published conformance
+suite (specifications and fixtures, with a harness) that others can
+certify against. The prediction ledger goes live with externally
+timestamped forecasts. The next household domains join the kernel.
+
+**Exit gate:** any figure traces to its law and evidence, any assumption
+lists its dependents, the published fixtures certify Poltika through the
+harness alone, and the ledger holds timestamped entries with named
+resolution sources.
+
+### v0.5 - To whom, and at what cost to the Crown (Steps 5, 6)
+
+A graded public-data population (MODERATE) runs the kernel, with a secure
+runner ready for IDI data. Stock-flow consistent sector accounts and
+Crown accounts give multi-year static fiscal scoring: nothing
+disappears between payer and payee.
+
+**Exit gate:** a multi-year reform is scored statically with household,
+distributional, Crown line and debt effects, every invariant holds, and
+every population result carries its grade.
+
+### v0.6 - Compared with doing nothing (Step 7)
+
+Population, macro and Crown baselines to 2065. Macro values are sourced
+assumptions with ranges, not Poltika forecasts. Firms and government
+(GST, company tax, Crown classifications) join the kernel.
+
+**Exit gate:** the baseline reproduces He Tirohanga Mokopuna 2025 within
+a stated tolerance, or attributes every difference to named assumptions.
+
+### v0.7 - Behaviour and the past (Steps 8, 9)
+
+A library of graded causal evidence (NZ causal, NZ observational,
+international transferred, assumed), with Discovery and Hypothesis as its
+intake. Backtests using only what was known at each date, never tuned.
+
+**Exit gate:** every behavioural relationship in use is graded and
+reviewed, results show static and behavioural side by side, and
+backtest errors are published with their failures.
+
+### v1.0 - The whole question, inside the kernel
+
+For a package of changes inside the supported kernel domains, Poltika
+answers what happens, to whom, when, through what mechanism, with what
+confidence and compared with what alternatives. An independent analyst
+can reproduce and challenge it without the builders
+(`BUILD_PLAN_PROGRAMME.md`, "Releases").
+
+**Exit gate:** the gates of Steps 1-10, and the hardening an outside
+analyst needs.
+
+### v1.x - Structural problems, one at a time (Step 11)
+
+Domain models chosen by national importance × tractability × available
+evidence, starting with fiscal sustainability and ageing. Each uses the
+method that fits it.
+
+**Exit gate, per domain:** validated against history, forecasts
+registered, relationships graded.
+
+### v2.0 - The federated model (Steps 12-15)
+
+Specialised engines reconciled through a shared state and the accounting
+spine; continuous state estimation that never learns silently; full
+uncertainty propagation and sensitivity; the cost of delay. Poltika may
+be called a digital twin only when Step 12's gate is met.
+
+**Exit gate:** two or more domain engines run coupled with invariants
+holding, one observe-forecast-diagnose-update cycle is on record, and
+every material result has a propagated interval.
+
+### v3.0 - Options and what to learn (Steps 16, 17)
+
+Behind a causal credibility gate: people state objectives and
+constraints, and Poltika returns the Pareto-efficient feasible set with
+trade-offs, never a recommendation. Value of information names the
+unknowns that cost New Zealand the most.
+
+**Exit gate:** every member of a returned set reproduces as an ordinary
+scenario, and Poltika estimates the value of resolving its most
+decision-relevant unknown.
+
+### v4.0 - Anyone can ask (Steps 18, 19)
+
+After a trust gate (hardening, independent scrutiny, a published
+ledger record): a public Futures Laboratory where every chart answers
+why, source, assumptions, uncertainty, who is affected and what would
+change it. Then an AI interface that translates questions into
+constraints and explains verified results, and never supplies a number.
+
+**Exit gate:** a person who didn't build Poltika can answer all six
+questions for any chart, and every figure the AI shows matches the
+engine.
+
+### Continuous (Step 20)
+
+`OBSERVE → DISCOVER → HYPOTHESISE → TEST → SIMULATE → ASSURE → COMPARE → DECIDE → OBSERVE REAL OUTCOME → RECALIBRATE`
+
+## Policy kernel coverage
+
+The kernel covers New Zealand's household tax-and-transfer system, then
+firms and government, one reviewed domain at a time
+(`BUILD_PLAN_PROGRAMME.md` Step 2):
+
+- **Tier 1, v0.3:** personal income tax, Jobseeker Support, Sole Parent
+  Support, Supported Living Payment.
+- **Next households (lane 2C):** student support, ACC levies, KiwiSaver
+  interactions, NZ Superannuation, Childcare and OSCAR Subsidies, Paid
+  Parental Leave.
+- **Other major transfers (lane 2D):** Temporary Additional Support,
+  Disability Allowance, other MSD assistance, Child Support, ACC
+  earnings compensation.
+- **Firms and government (lane 2E):** GST, company tax, selected
+  regulatory costs, other tax regimes, Crown revenue and expenditure
+  classifications.
 
 Each domain adds a yearly update, so coverage grows only as fast as it
 can be kept current.
 
-## v0.4 - Scenario engine
+## What Poltika never builds
 
-Define scenarios with identity, baseline, interventions, timing, assumptions,
-overrides, model version, data vintage, ownership, and timestamps. Support
-parameter changes, new/removed policies, phased or temporary policies,
-indexation, and multi-policy packages. Compare against explicit baselines and
-other scenarios over annual trajectories.
+- No LLM pretending to be five million New Zealanders.
+- No score for a party's policy, and no "this plan wins".
+- No secret normative objective function.
+- No black-box AI forecast of GDP.
+- No silently changing models.
+- No point estimate where the uncertainty is large.
+- No synthetic population presented as reality.
+- No policy optimisation before causal relationships are credible.
+- No "digital twin" branding before the model deserves it.
+- Never optimise the model instead of the country.
 
-Add deterministic run IDs, standard fiscal, household, distributional, and
-macro result schemas, and persistence for saving, cloning, rerunning,
-archiving, and comparing versions. Preserve the model commit, data and
-parameter versions, assumptions, and configuration.
-
-v0.2 already delivers single-year static reforms of WFF and the
-Accommodation Supplement (ADR-0014). v0.4 extends them to the above.
-
-Decide by the start of v0.4 whether population runs need a batch engine,
-with the per-household engine kept as the reference it is tested against
-(`ROADMAP_REALIGNMENT.md` W4).
-
-**Exit gate:** An analyst can create, save, reproduce, and compare multi-policy
-NZ scenarios over time.
-
-## v0.5 - Uncertainty, assurance and the historical baseline
-
-Register material assumptions with rationale, evidence, uncertainty, owner,
-review date, and applicable models. Support ranges/distributions, one-way and
-multi-parameter sensitivity, seeded Monte Carlo, and outcome ranges. Backtest
-using information available at historical dates and calibrate against recorded
-targets without silent tuning.
-
-Check missing provenance, stale data, unsupported assumptions, extreme
-extrapolation, unit mismatches, untested changes, failed validation, and
-incompatible versions. Attach structured reliability metadata rather than
-arbitrary AI confidence scores. Publish model cards covering methods,
-validation, limitations, and known failure modes.
-
-Add Stats NZ and Treasury connectors beneath the v0.2 data layer, with
-scheduled refreshes that propose new vintages for review. Reconstruct
-historical revenue, expenditure, operating balance, debt, interest, nominal
-GDP and debt/GDP, with inflation and population scaling. Every material
-input keeps its chain:
-
-`value -> transformation -> dataset -> source -> publication -> vintage -> retrieval date`
-
-(Moved from v0.2 by ADR-0014, then to v0.5 by ADR-0015, where backtesting
-is its first consumer.)
-
-**Exit gate:** For a historical date, Poltika reconstructs the major fiscal
-and economic baseline from authoritative NZ data and traces every material
-input. Every material result can be traced, stress-tested, challenged,
-and reproduced.
-
-## v0.6 - Long-term NZ fiscal model
-
-Connect demographics, labour-force participation, wages, tax revenue,
-major spending categories (health, education, NZ Super, welfare,
-infrastructure), interest and debt as a transparent accounting model.
-Behavioural relationships and macro aggregates such as nominal GDP enter
-as exogenous, stated, sourced assumptions, registered through v0.5's
-assumption register, not as forecasts Poltika generates. Support long-run
-trajectories with uncertainty that grows with the horizon.
-
-Compare a documented Poltika baseline with Treasury's published long-term
-projections and explain differences. Constrained scenario search over
-specified parameters may follow; optimisation results are not policy
-recommendations. Behavioural and GDP modelling belong to the v2 track
-(ADR-0015).
-
-**Exit gate:** Poltika generates internally coherent long-run NZ fiscal
-scenarios across connected systems, with every assumption stated and
-every difference from Treasury's projections explained.
-
-## v0.7 - Decision-intelligence product
-
-Expose stable APIs for datasets, variables, policies, scenarios, simulations,
-results, provenance, and assurance. Build an analyst workflow to explore,
-build, simulate, compare, investigate, and report. Provide structured scenario
-editing, fiscal and household visualisations, assumptions, sensitivity, and
-click-through result lineage.
-
-An LLM may retrieve evidence, translate questions into candidate scenarios,
-call models, and explain results; it cannot fabricate calculated figures.
-Confirm consequential interpretations when ambiguous. Add reproducible
-reports, users, organisations, permissions, scenario ownership, and audit
-logs. Begin formal security and privacy work for institutional use.
-
-**Exit gate:** An analyst who did not build Poltika can complete a scenario
-analysis and understand how its results were produced.
-
-## v1.0 - Production Poltika
-
-Harden architecture, interfaces, schemas, data/model governance, licensing,
-revision handling, and historical reproducibility. Complete threat modelling,
-penetration testing, access control, encryption, dependency management,
-backups, incident response, performance benchmarks, monitoring, and failure
-handling. Publish architecture, API, methodology, model, data, developer,
-analyst, and governance documentation.
-
-Obtain independent scrutiny from economics, econometrics, statistics, public
-finance, NZ policy, architecture, and security specialists; document
-criticisms and responses. Maintain benchmarks against historical outcomes,
-official tax and transfer calculations, comparable government estimates, and
-pathological cases. Validate reference scenarios for tax reform, NZ Super,
-infrastructure, demographic shocks, and productivity. Prepare accessibility,
-operational, security, AI-governance, and model-risk materials for adoption.
-
-**Exit gate:** An independent analyst can construct a supported NZ policy
-scenario, reproduce its results, trace material outputs to authoritative
-evidence, inspect uncertainty and assumptions, and challenge the methodology
-without the original builders.
-
-## Beyond v1.0 - Capability tracks
-
-- **Discovery and Hypothesis (moved from v0.6-v0.7 by ADR-0015).** They
-  extend a hardened system rather than being part of hardening it, and
-  the v1.0 definition doesn't need them. Their scope is kept below.
-- **v2, Economic Digital Twin:** Deeper households, firms, industries, trade,
-  capital, housing, labour, regional economies, and behavioural microsimulation.
-- **v3, Physical NZ:** Infrastructure networks, transport, electricity, water,
-  land, housing stock, geospatial models, and physical constraints.
-- **v4, Adaptive Digital Twin:** Better causal models, justified agent-based
-  simulation, continuous calibration, near-real-time signals, and feedback
-  between observed and modelled outcomes.
-- **v5, National Decision Intelligence:** Connect economic, fiscal,
-  demographic, social, environmental, and physical systems across decades.
-
-The long-run loop is:
-
-`OBSERVE -> DISCOVER -> HYPOTHESISE -> TEST -> SIMULATE -> ASSURE -> COMPARE -> DECIDE -> OBSERVE REAL OUTCOME -> RECALIBRATE`
-
-After v0.1 ships, freeze its build plan and create a detailed plan for the
-next approved release. Keep later implementation tickets out of this roadmap.
-
-### Discovery engine (post-v1.0)
-
-Offer on-demand research questions specifying outcome, population, geography,
-period, candidate variables, and exclusions. Find compatible datasets using
-semantic metadata. Explore trends, lags, cohorts, regions, anomalies, breaks,
-and associations with sample-size, multiple-testing, robustness, and holdout
-controls where possible. Store questions, data, transformations, tests,
-results, robustness, and limitations; rank by methodological quality, not
-political desirability.
-
-Present evidence, charts, methods, and alternative interpretations.
-Association must never be represented as established causality.
-
-**Exit gate:** Poltika produces reproducible candidate relationships for
-human investigation without asserting causality.
-
-### Hypothesis engine (post-v1.0)
-
-Turn discoveries and human questions into competing causal hypotheses with
-mechanisms, exposures, outcomes, confounders, mediators, moderators,
-predictions, falsifiers, and evidence requirements. Include null and
-measurement explanations. Use proposed causal graphs, evidence retrieval,
-adversarial review, and causal methods only where their assumptions can be
-examined and approved. Grade plausible mechanisms, observed associations,
-and credible causal evidence separately.
-
-The Simulator promotion gate is:
-
-`Discovery -> Hypothesis -> evidence -> validation -> human approval -> model specification -> tests -> Simulator`
-
-**Exit gate:** Competing explanations can be tested without promoting
-speculative relationships into deterministic models.
+AI is used throughout development. It operates the instrument; it is
+never the instrument.

@@ -39,6 +39,7 @@
 | Task | Read |
 | --- | --- |
 | Running scenarios or answering questions about v0.1 | `docs/ORIENTATION.md` and `docs/demo/v0_1/` |
+| Planning, sequencing or starting new work | `BUILD_PLAN_PROGRAMME.md` (ADR-0018: the twenty steps and what exists against each), then the step's own plan |
 | Checking or explaining a result | Also the policy's `specification.md` calculation sequence and `decisions/` |
 | Changing policy logic, statutory values, code or repository structure | Everything under "Before making changes" below |
 | Opening or reviewing a PR | The "Review" section below |

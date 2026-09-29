@@ -142,69 +142,82 @@ what evidence was considered, who/what decided, when.
 
 ## Roadmap Doctrine (frozen)
 
-Superseded its original capability-sequence framing per ADR-0008 (2026-09-21):
-v0.1 through v1.0 are now a fully versioned sequence, defined in full in
-`ROADMAP.md` (scope and exit gate per release) — this section states the
-sequence and the dependency reasoning behind its order, not the detail.
+Superseded its original capability-sequence framing per ADR-0008 (2026-09-21),
+and its later release sequences per ADR-0014 and ADR-0015. Since ADR-0018
+(29 September 2026) the order is Pete's twenty-step build sequence, defined
+in `BUILD_PLAN_PROGRAMME.md` (what exists against each step, tasks, month
+targets, gates and releases) and summarised in `ROADMAP.md`. This section
+states the sequence and the reasoning behind its order, not the detail.
 
-v0.1 (deterministic foundation) → v0.1.5 (evidence intelligence /
-pilotability) → v0.1.6 (keep v0.1 current) → v0.2 (static population
-microsimulation, per ADR-0014) → v0.3 (income tax, main benefits and the
-household graph) → v0.4 (scenario engine) → v0.5 (uncertainty, assurance and
-the historical baseline) → v0.6 (long-term NZ fiscal model) → v0.7
-(decision-intelligence product) → v1.0 (production hardening), per
-ADR-0015 → beyond v1.0, the Discovery and Hypothesis engines and an
-unnumbered capability-track sequence (Economic Digital Twin, Physical NZ,
-Adaptive Digital Twin, National Decision Intelligence).
+v0.1 (deterministic foundation) → v0.1.5 (evidence and explainability) →
+v0.1.6 (keep v0.1 current) → v0.2 (static population microsimulation), all
+unchanged. Then the twenty steps: epistemic constitution → statutory kernel
+→ Evidence Intelligence → conformance suite → household microsimulation →
+accounting and fiscal spine → national baseline → causal evidence library →
+historical validation laboratory → forward prediction ledger → domain models
+→ federated model and state graph → continuous state estimation →
+uncertainty and sensitivity → cost of delay → policy-space optimisation →
+value of information → public Futures Laboratory → AI reasoning and search
+interface → continuously improving national digital twin. Releases are
+tagged at step gates: v0.3 (Steps 1-2 Tier 1), v0.4 (3, 4, 10), v0.5 (5,
+6), v0.6 (7), v0.7 (8, 9), v1.0 (gates 1-10), v1.x (11), v2.0 (12-15),
+v3.0 (16, 17), v4.0 (18, 19).
 
-**Why this order, not another:** each release is on the path to the v1.0
-definition below (ADR-0015).
+**Why this order, not another (ADR-0018):** each step answers a harder
+version of one question: "If New Zealand changes X, what happens, to whom,
+when, through what mechanism, with what confidence, and compared with what
+alternatives?"
 
-- **v0.2.** Static microsimulation needs only a data layer and the
-  existing combined runner, because WFF and the Accommodation Supplement
-  don't feed each other's income tests (AS-10, WFF DEC-003; ADR-0014).
-- **v0.3.** Adds the policies almost every later capability needs
-  (income tax, main benefits), and the household dependency graph the
-  first policies that do feed each other require. The graph's edges come
-  only from specifications.
-- **v0.4.** Multi-year, multi-policy scenarios need those policies and
-  that graph.
-- **v0.5.** Assurance and uncertainty harden the v0.1-v0.4 simulator and
-  scenario engine (backtesting, sensitivity, stress tests). Its
-  backtesting is the first consumer of the historical fiscal baseline,
-  which therefore lives there. This is the same "deterministic
-  correctness before probabilistic sophistication" principle as the
-  frozen Scope Doctrine, applied one level up.
-- **v0.6.** The long-term fiscal model is transparent accounting on
-  stated assumptions, and needs v0.5's assumption register and
-  sensitivity.
-- **v0.7.** The product comes last.
-- **After v1.0.** Discovery and Hypothesis are exploratory capabilities
-  with a human gate. They extend a hardened system after v1.0. Discovery
-  still precedes Hypothesis, and nothing re-enters the simulator without
-  passing the promotion gate `Discovery → Hypothesis → evidence →
-  validation → human approval → model specification → tests →
-  Simulator`.
+- **The constitution first.** Evidence classes, per-number provenance and
+  uncertainty, and the never-build list bind everything after them, so
+  they come before further modelling.
+- **The kernel, evidence and conformance together.** Deterministic law is
+  what government directly controls and what can be proved correct. Its
+  evidence graph and conformance suite are built alongside it, not after.
+- **Accounting before the baseline.** Static fiscal scoring on
+  stock-flow consistent accounts comes before any projection, so no dollar
+  can disappear from a later model.
+- **The baseline before causal claims.** Poltika needs to know what
+  happens if nothing changes, and to reproduce Treasury's projection or
+  explain the difference, before it estimates policy effects.
+- **Causal evidence before optimisation.** No policy search runs until the
+  relationships it relies on are graded and backtested. Discovery and
+  Hypothesis are the causal library's intake, under the unchanged promotion
+  gate `Discovery → Hypothesis → evidence → validation → human approval →
+  model specification → tests → Simulator`.
+- **The ledger early.** Its value accrues with calendar time, so it starts
+  in the first months.
+- **Domain models before federation.** One validated piece at a time, then
+  connected. Poltika is called a digital twin only after the federation
+  gate.
+- **The public interface and AI last.** Only after the machinery deserves
+  trust. AI operates the instrument; it is never the instrument.
 
-The Stats NZ API connector and equivalents are pinned to v0.5 (moved from
-v0.2 by ADR-0014 and to v0.5 by ADR-0015, with the historical baseline that
-needs them) rather than left unpinned — this resolves the original
-doctrine's deliberate vagueness about "whichever later phase needs it", not
-a reversal of the underlying principle that automation follows real need.
+The Stats NZ API connector and equivalents are pinned to Step 7, the
+national baseline, which first needs them (they were pinned to v0.5 by
+ADR-0015). Automation still follows real need.
 
 **v1.0 definition (testable, not aspirational):**
-Poltika v1.0 can ingest a structured package of material fiscal and policy changes
-represented within its supported NZ policy domains, propagate those interventions
-through an effective-dated policy interaction graph, and produce reproducible
-multi-year fiscal, distributional and selected economic/social outcome scenarios
-with explicit assumptions, uncertainty and source-level provenance.
+For a structured package of changes inside its supported kernel domains,
+Poltika v1.0 answers what happens (static, and behavioural where a graded
+causal relationship exists), to whom (by decile, household type, area and
+age on a graded population), when (year by year, through the Crown
+accounts), through what mechanism (the evidence-graph chain to law and
+evidence), with what confidence (evidence classes, ranges, the population
+grade, backtest errors and the prediction ledger's record), and compared
+with what alternatives (the unchanged-policy baseline and other
+scenarios). An independent analyst can reproduce and challenge the result
+without the builders.
 
-("Supported domain" status to be formally defined before v1.0 scoping: presumably
-= has a versioned POLICY_SPECS entry, passes its benchmark tests, has been through
-fresh-context review.)
+A "supported domain" has an approved specification, a complete
+conformance matrix, an independent review and current values
+(`BUILD_PLAN_PROGRAMME.md` P1).
 
-**North star (not a release gate):** a progressively improving executable digital
-twin of the New Zealand policy system.
+**North star (not a release gate):** New Zealand's open, evidence-linked
+policy intelligence infrastructure: a computational representation of how
+policy, people, businesses, government and physical systems interact, used
+to test interventions, discover trade-offs and learn from what actually
+happens. People choose the objectives; Poltika measures consequences.
 
 ---
 
