@@ -37,7 +37,8 @@ poltika/
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
 │
-├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
+├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails;
+│                         epistemic-constitution.md, model-governance.md and data-governance.md (Step 1, ADR-0018) bind every output
 ├── adr/               — architecture decisions with rationale and context
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)

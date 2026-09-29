@@ -68,6 +68,14 @@ Never use model memory as authority for:
 
 If the source is missing or ambiguous, stop and flag it.
 
+Every number Poltika shows or stores follows
+[doctrine/epistemic-constitution.md](doctrine/epistemic-constitution.md):
+its evidence class, eleven fields, the four non-negotiables and the
+never-build list (skill: `.claude/skills/evidence-classes/`). Every model
+is registered and levelled under `doctrine/model-governance.md`, and no
+output claims more than its level. Data governance constraints are in
+`doctrine/data-governance.md`.
+
 ## Implementation
 
 Follow the vertical-slice approach defined in BUILD_PLAN.md.

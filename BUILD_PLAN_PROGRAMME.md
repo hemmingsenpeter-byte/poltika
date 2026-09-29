@@ -1118,4 +1118,9 @@ decisions below carry over, with their step numbers updated.
 | Step | State |
 | --- | --- |
 | Plan | Revised to 22 steps, 29 September 2026 (ADR-0018) |
-| 1-22 | As in "Where Poltika stands". Each row is updated as its tasks land. |
+| 1.1 | Done: `doctrine/epistemic-constitution.md`, in force from 29 September 2026; CLAUDE.md's "Ground truth" points to it. |
+| 1.2 | Doctrine half done: the constitution's section 7 names the gate and its enforcement for each kind of artifact. Every row is enforced by an existing check except the model registry's (1.5), the causal library's (Step 12) and the runtime LLM's (Step 22). |
+| 1.4 | Interim half done: `doctrine/data-governance.md` with the P5 rule and the constraints already built. The enforcing test lands with 2.9. Sourcing (GPT/Codex) and engagement (Pete) are open. |
+| 1.5, 1.6 | Doctrine done: `doctrine/model-governance.md` (registry entry, change control, model cards, the validity ladder, graduation, demotion, labels and language). The registry itself, its entries for the existing engines and the CI check are next. |
+| 1.8 | Done: `.claude/skills/evidence-classes/`. |
+| 1-22 | Otherwise as in "Where Poltika stands". Each row is updated as its tasks land. |
