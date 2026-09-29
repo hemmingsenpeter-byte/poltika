@@ -144,74 +144,91 @@ what evidence was considered, who/what decided, when.
 
 Superseded its original capability-sequence framing per ADR-0008 (2026-09-21),
 and its later release sequences per ADR-0014 and ADR-0015. Since ADR-0018
-(29 September 2026) the order is Pete's twenty-step build sequence, defined
-in `BUILD_PLAN_PROGRAMME.md` (what exists against each step, tasks, month
-targets, gates and releases) and summarised in `ROADMAP.md`. This section
-states the sequence and the reasoning behind its order, not the detail.
+(29 September 2026) the order is Pete's 22-step build sequence, climbing a
+validity ladder, defined in `BUILD_PLAN_PROGRAMME.md` (what exists against
+each step, tasks, month targets, gates, releases and decisions) and
+summarised in `ROADMAP.md`. This section states the sequence and the
+reasoning behind its order, not the detail.
 
 v0.1 (deterministic foundation) → v0.1.5 (evidence and explainability) →
 v0.1.6 (keep v0.1 current) → v0.2 (static population microsimulation), all
-unchanged. Then the twenty steps: epistemic constitution → statutory kernel
-→ Evidence Intelligence → conformance suite → household microsimulation →
-accounting and fiscal spine → national baseline → causal evidence library →
-historical validation laboratory → forward prediction ledger → domain models
-→ federated model and state graph → continuous state estimation →
-uncertainty and sensitivity → cost of delay → policy-space optimisation →
-value of information → public Futures Laboratory → AI reasoning and search
-interface → continuously improving national digital twin. Releases are
-tagged at step gates: v0.3 (Steps 1-2 Tier 1), v0.4 (3, 4, 10), v0.5 (5,
-6), v0.6 (7), v0.7 (8, 9), v1.0 (gates 1-10), v1.x (11), v2.0 (12-15),
-v3.0 (16, 17), v4.0 (18, 19).
+unchanged. Then the 22 steps: epistemic constitution and model governance →
+National Variable Registry and common schemas → statutory kernel → Evidence
+Intelligence and the evidence graph → conformance and regression suite →
+validation framework and Prediction Ledger v0 → household microsimulation →
+fiscal and accounting spine → Historical NZ State Store → National Baseline
+Engine → uncertainty and sensitivity framework → Causal Evidence Library →
+Historical Validation Laboratory → National State Transition Engine →
+priority domain models → Federated Model Graph → continuous state estimation
+→ cost of delay and scenario discovery → value of information →
+policy-space optimisation → Public Futures Laboratory → AI reasoning and
+search layer. The continuously improving national digital twin is what they
+produce, not a release. Releases are tagged at step gates: v0.3 (Steps 1, 2
+and the kernel's first tier), v0.4 (4-6), v0.5 (7, 8), v0.6 (9, 10), v0.7
+(11-13), v1.0 (gates 1-13), v1.x (14), v2 (15-17), v3 (18-20), v4 (21, 22).
+
+**The validity ladder:** executable rules → observable state → explanatory
+model → predictive model → integrated model → decision instrument → digital
+twin. Each transition has its own burden of proof. Poltika graduates to the
+next level when the current level has shown sufficient validity, not when
+its code is finished. A model can be demoted, and every output carries the
+level of the least mature model it relies on.
 
 **Why this order, not another (ADR-0018):** each step answers a harder
 version of one question: "If New Zealand changes X, what happens, to whom,
 when, through what mechanism, with what confidence, and compared with what
 alternatives?"
 
-- **The constitution first.** Evidence classes, per-number provenance and
-  uncertainty, and the never-build list bind everything after them, so
-  they come before further modelling.
+- **Foundations first.** The constitution, model governance and the
+  National Variable Registry come before further modelling, so every later
+  model shares one meaning for each unit, period, population, geography and
+  identifier, and every quantity carries its value, uncertainty and
+  evidence: X = (x̂, D_x, E_x).
 - **The kernel, evidence and conformance together.** Deterministic law is
-  what government directly controls and what can be proved correct. Its
-  evidence graph and conformance suite are built alongside it, not after.
-- **Accounting before the baseline.** Static fiscal scoring on
-  stock-flow consistent accounts comes before any projection, so no dollar
-  can disappear from a later model.
-- **The baseline before causal claims.** Poltika needs to know what
-  happens if nothing changes, and to reproduce Treasury's projection or
-  explain the difference, before it estimates policy effects.
-- **Causal evidence before optimisation.** No policy search runs until the
-  relationships it relies on are graded and backtested. Discovery and
-  Hypothesis are the causal library's intake, under the unchanged promotion
-  gate `Discovery → Hypothesis → evidence → validation → human approval →
-  model specification → tests → Simulator`.
-- **The ledger early.** Its value accrues with calendar time, so it starts
-  in the first months.
-- **Domain models before federation.** One validated piece at a time, then
-  connected. Poltika is called a digital twin only after the federation
-  gate.
-- **The public interface and AI last.** Only after the machinery deserves
+  what government directly controls and what can be proved correct.
+- **Proof before impressive models.** The validation framework and the
+  prediction ledger start at Step 6, so the external track record starts
+  early.
+- **Observed state before projection.** Accounts, a historical state store
+  and a baseline come before causal claims about the future.
+- **Uncertainty before complexity.** Propagation and sensitivity arrive
+  before behavioural and domain models multiply.
+- **An integrated system early.** A simple state transition engine
+  (S_t → S_t+1) runs New Zealand forward before sophisticated domain models
+  replace its parts and are federated.
+- **Value of information before optimisation.** Poltika says when the
+  answer hinges on poorly evidenced parameters before it searches large
+  policy spaces.
+- **The public interface and AI last.** Only after the machinery has earned
   trust. AI operates the instrument; it is never the instrument.
+- **Horizontal capabilities throughout.** Evidence and provenance,
+  validation, uncertainty, versioning, prediction scoring, security and
+  privacy, Māori data governance, model governance and reproducibility
+  start early and are never finished.
 
-The Stats NZ API connector and equivalents are pinned to Step 7, the
-national baseline, which first needs them (they were pinned to v0.5 by
-ADR-0015). Automation still follows real need.
+Discovery and Hypothesis are the causal library's intake (Step 12), under
+the unchanged promotion gate `Discovery → Hypothesis → evidence →
+validation → human approval → model specification → tests → Simulator`.
+The Stats NZ API connector and equivalents are pinned to Step 9, the
+historical state store, which first needs them. Automation still follows
+real need.
 
 **v1.0 definition (testable, not aspirational):**
 For a structured package of changes inside its supported kernel domains,
 Poltika v1.0 answers what happens (static, and behavioural where a graded
 causal relationship exists), to whom (by decile, household type, area and
 age on a graded population), when (year by year, through the Crown
-accounts), through what mechanism (the evidence-graph chain to law and
-evidence), with what confidence (evidence classes, ranges, the population
-grade, backtest errors and the prediction ledger's record), and compared
-with what alternatives (the unchanged-policy baseline and other
-scenarios). An independent analyst can reproduce and challenge the result
-without the builders.
+accounts, against the national baseline), through what mechanism (the
+evidence-graph chain to law and evidence), with what confidence (evidence
+classes, propagated uncertainty, the population grade, the models' levels,
+replay errors and the prediction ledger's record), and compared with what
+alternatives (the baseline and other scenarios). The models it relies on
+have reached Level 3 (explanatory), and an independent analyst can
+reproduce and challenge the result without the builders.
 
 A "supported domain" has an approved specification, a complete
 conformance matrix, an independent review and current values
-(`BUILD_PLAN_PROGRAMME.md` P1).
+(`BUILD_PLAN_PROGRAMME.md`).
 
 **North star (not a release gate):** New Zealand's open, evidence-linked
 policy intelligence infrastructure: a computational representation of how

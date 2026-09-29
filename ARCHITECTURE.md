@@ -52,8 +52,8 @@ this supersedes the previous "v0.1 frontend: Streamlit" line below; the
 decision is to go straight to Next.js rather than build and later replace
 a Streamlit UI. Optimises for four things: **determinism, auditability,
 developer speed, and an architecture that can expand into the
-multi-engine system (`BUILD_PLAN_PROGRAMME.md`'s federated model, Step
-12) without a rewrite.**
+multi-engine system (`BUILD_PLAN_PROGRAMME.md`'s state transition engine
+and federated model graph, Steps 14 and 16) without a rewrite.**
 
 | Layer | Choice | Why |
 | --- | --- | --- |
@@ -117,7 +117,7 @@ It is a modular Python monolith whose internal module boundaries are
 drawn so that Discovery, Hypothesis, Simulator, and Assurance *can* later
 become independent services or agents without a rewrite — paying that
 distributed-systems tax only when a real capability (the federated
-domain engines, `BUILD_PLAN_PROGRAMME.md` Step 12) actually needs it, not
+domain engines, `BUILD_PLAN_PROGRAMME.md` Step 16) actually needs it, not
 up front. Those module boundaries already exist in REPOSITORY_STRUCTURE.md's canonical
 tree (`src/poltika/{data,semantics,policy,engines/{simulator,assurance,
 discovery,hypothesis},scenarios,llm,common}`) — this principle names why
