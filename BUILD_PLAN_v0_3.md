@@ -11,8 +11,8 @@ Phase 0 can start as soon as ADR-0015 is accepted.
 **Redirect (ADR-0018, 29 September 2026):** this plan is now Step 2's
 Tier 1 lane (2A) of `BUILD_PLAN_PROGRAMME.md`, and v0.3 also ships Step 1
 (the epistemic constitution) and Step 4.1's conformance matrix for its
-domains. Its tasks are unchanged. The review-debt cap no longer sequences
-it (programme plan P17).
+domains. Its tasks are unchanged. The review-debt cap is suspended
+(programme plan P17).
 
 `BUILD_PLAN.md`'s doctrines apply unchanged: primary sources only, the
 three test classes, protected values changed only through the test
@@ -545,10 +545,10 @@ or for Phase 0.
 - **D3:** The income-adequacy measures to report (5.3).
 - **D5 (decided 26 September 2026):** ADR-0016 accepted, with the
   32-branch cap and population-range reporting.
-- **D6:** Accept ADR-0017 (shared household model, Phase 1), and its three
-  questions: dated spells for income and benefit receipt, one family per
-  household in v0.3, and today's request formats kept as adapters.
-  Recommended.
+- **D6 (decided 29 September 2026):** ADR-0017 (shared household model,
+  Phase 1) accepted with its three recommended answers: dated spells for
+  income and benefit receipt, one family per household in v0.3, and
+  today's request formats kept as adapters.
 - **D4 (decided 26 September 2026):** v0.3 ships with all three core
   main benefits (W10 Tier 1). Tier 2 domains follow as v0.3.x coverage
   releases.

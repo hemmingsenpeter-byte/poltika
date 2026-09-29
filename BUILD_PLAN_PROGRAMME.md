@@ -1,9 +1,9 @@
 # Poltika programme build plan: the decision instrument
 
 **Date:** 29 September 2026
-**Status:** Direction set by Pete on 29 September 2026 (ADR-0018). The
-reconciliation, month targets and release mapping are Claude Code's, for
-Pete to confirm (P1). The other open decisions are listed at the end.
+**Status:** Approved by Pete on 29 September 2026 ("Approve and proceed
+all"), with the recommended decisions (ADR-0018). Drafted by Claude Code.
+The decisions still open are listed at the end.
 **Supersedes:** ADR-0015's release sequence and `ROADMAP_REALIGNMENT.md`
 W9. `BUILD_PLAN.md` stays the frozen record of v0.1. `BUILD_PLAN_v0_3.md`
 stays the task list for v0.3, which now covers Step 1 and the first tier
@@ -830,7 +830,7 @@ inside its supported kernel domains, Poltika answers:
 An independent analyst can reproduce and challenge the result without
 the builders. A "supported domain" has an approved specification, a
 complete conformance matrix (Step 4), an independent review and current
-values (P1).
+values (P1, decided).
 
 ## What changes in the current plans
 
@@ -884,48 +884,63 @@ Step 1.7 checks it.
   backtest scores are monitored, never targeted. A change made to
   improve a score needs the same diagnosis record as any other change.
 
-## Open decisions for Pete
+## Decisions
 
-- **P1:** confirm this plan's reconciliation, month targets, release
-  mapping, v1.0 definition and "supported domain" definition.
-- **P2:** the evidence class of a caller-asserted household fact.
-  Recommended: Scenario, because Poltika never observes it (today's
-  README: "conditional simulations built from caller-asserted facts").
-  A later verified real-household use could make it a Fact with a
-  verification source.
-- **P3:** the precision rule. Recommended: a single household's Rule
-  output keeps the precision the law sets; population, baseline and
-  Estimate-dependent figures are shown to three significant figures
-  with their range; stored values keep full precision.
-- **P4:** population grade names and criteria (Development, Public-data
-  MODERATE, IDI-calibrated HIGHER).
-- **P5:** Māori data governance: whom Poltika engages, and the interim
-  rule until then. Recommended interim rule: no output disaggregated by
-  ethnicity or iwi until the governance process is agreed.
-- **P6:** conformance publication: what, licence, where, versioning.
-- **P7:** ledger timestamping and publication, and the first forecast
-  targets.
+Pete approved this plan on 29 September 2026 ("Approve and proceed all").
+That decided every item below that had a recommendation or a proposal.
+Items with no recommendation stay open, and each is brought back with one
+when its task starts.
+
+**Decided 29 September 2026:**
+
+- **P1:** the reconciliation, month targets, release mapping, v1.0
+  definition and "supported domain" definition, as written.
+- **P2:** a caller-asserted household fact is a **Scenario** input,
+  because Poltika never observes it. A later verified real-household use
+  could make it a Fact with a verification source.
+- **P3:** the precision rule. A single household's Rule output keeps the
+  precision the law sets. Population, baseline and Estimate-dependent
+  figures are shown to three significant figures with their range.
+  Stored values keep full precision.
+- **P4, names:** Development, Public-data (MODERATE) and IDI-calibrated
+  (HIGHER). The criteria for each come with Task 5.2.
+- **P5, interim rule:** no output is disaggregated by ethnicity or iwi
+  until the governance process is agreed. Engaging people with standing
+  in Māori data governance is Pete's, and still open.
+- **P9:** the kernel follows the direction's order (lanes 2C-2E). Which
+  regulatory costs to model comes with lane 2E's scoping.
+- **P12:** apply for IDI access. W3.1 (GPT/Codex) documents the route
+  first; lodging it is Pete's.
+- **P16:** the cost-of-delay definition in Step 15.
+- **P17:** the review-debt cap is suspended (Pete: "Ignore PR cap"). The
+  review queue is still kept, and release gates still name unreviewed
+  PRs.
+- **Carried:** ADR-0017, the shared household model, accepted with its
+  three recommended answers (dated spells; one family per household in
+  v0.3; today's request formats kept as adapters). This is
+  `BUILD_PLAN_v0_3.md` D6.
+
+**Open (no recommendation yet):**
+
+- **P6:** conformance publication: what, licence, where, versioning (with
+  Task 4.5).
+- **P7:** the timestamping service and the first forecast targets (with
+  Task 10.3-10.4). Public registration with a third-party hash timestamp
+  is part of the approved plan.
 - **P8:** Evidence Intelligence as the first product: scope, users and
   terms.
-- **P9:** the kernel's domain order (the direction's list instead of
-  W10's tiers), and which regulatory costs to model.
-- **P10:** the batch engine (was ROADMAP_REALIGNMENT D5), by M3.
+- **P10:** the batch engine (was `ROADMAP_REALIGNMENT.md` D5), by M3.
 - **P11:** the backtest horizon (was D6), by M1.
-- **P12:** lodge the IDI application now (confirms D3, which hasn't
-  started).
 - **P13:** the domain-model order, from a scored rubric.
 - **P14:** the causal credibility gate for policy search: the minimum
   grade and the backtest requirement.
 - **P15:** the criteria for calling Poltika a digital twin.
-- **P16:** the cost-of-delay definition (Step 15).
-- **P17:** keep, change or drop the review-debt cap in the working
-  agreement.
-- **Carried:** ADR-0017, the shared household model (`BUILD_PLAN_v0_3.md`
-  D6), and v0.3's D1-D3.
+- **v0.3 D1-D3:** each Tier 1 domain's slice, the disposable-income
+  definition and the income-adequacy measures, from Phase 0's sourcing.
 
 ## Progress
 
 | Step | State |
 | --- | --- |
-| Plan | This plan and ADR-0018, 29 September 2026 |
+| Plan | Approved 29 September 2026 with ADR-0018 |
 | 1-20 | As in "Where Poltika stands". Each row is updated as its tasks land. |

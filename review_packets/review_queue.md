@@ -3,9 +3,10 @@
 `ROADMAP_REALIGNMENT.md` W1.1. This lists every merged PR that has not had
 an independent (GPT/Codex) review. They merged on Claude Code's author
 preflight under Pete's recorded delegation, which the working agreement
-allows. The review-debt cap (`doctrine/development-doctrine.md`) counts the
-**open implementation** rows. At five or more, no further implementation
-PR merges. Plan, documentation and review-fix PRs are exempt.
+allows. The review-debt cap was suspended on 29 September 2026
+(`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` P17): open
+rows no longer stop merges, but every one is still listed here, and
+release gates skip, naming them, until they are reviewed.
 
 Work the queue in risk order:
 

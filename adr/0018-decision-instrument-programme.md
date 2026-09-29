@@ -4,9 +4,10 @@
 **Status:** accepted as direction. Pete set it on 29 September 2026
 ("Redirect the build plan to accommodate this new order", then "reconcile
 what we have in the build already, and rewrite build plan for this ...
-assume it can be done in months"). Drafted by Claude Code. The
-reconciliation, month targets and release mapping are in
-`BUILD_PLAN_PROGRAMME.md`, where Pete confirms them (P1).
+assume it can be done in months"), then approved the programme plan
+with its recommended decisions ("Approve and proceed all"). Drafted by
+Claude Code. The reconciliation, month targets and release mapping are in
+`BUILD_PLAN_PROGRAMME.md` (P1, decided).
 It supersedes ADR-0015's sequence and, through it, ADR-0008's and
 ADR-0014's.
 
@@ -113,9 +114,8 @@ differences:
    `Discovery → Hypothesis → evidence → validation → human approval →
    model specification → tests → Simulator`; `ROADMAP_REALIGNMENT.md`
    W2-W8 and W10, carried into the programme plan.
-6. **The review-debt cap does not sequence this plan.** Pete said to
-   ignore it on 29 September 2026. Whether it stays in the working
-   agreement is P17.
+6. **The review-debt cap is suspended** (P17). Pete said to ignore it on
+   29 September 2026. The review queue is still kept.
 
 ## Consequences
 

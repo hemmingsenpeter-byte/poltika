@@ -14,7 +14,7 @@ plan set (W9) is superseded by Pete's twenty-step build sequence in
 workstreams" table maps them. W10's coverage map is extended there (ACC
 levies, GST, company tax, selected regulatory costs and Crown
 classifications), and its tiers follow the new order (P9). The
-review-debt cap (W1.4) no longer sequences the work (P17).
+review-debt cap (W1.4) is suspended (P17).
 
 This plan fixes what a whole-roadmap review found on 26 September 2026:
 

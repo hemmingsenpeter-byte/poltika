@@ -29,10 +29,11 @@ Poltika follows a source-first, review-driven workflow.
   Tests-only, documentation-only and generated-file changes get a light
   independent check that the scope matches its label.
 - Merge with a merge commit, and tag releases on the merge commit on `main`.
-- Review debt is capped (`ROADMAP_REALIGNMENT.md` W1.4, decided 26 September
-  2026). When five or more merged implementation PRs await independent
-  review (`review_packets/review_queue.md`), no further implementation PR
-  merges until the queue is below five. Plan, documentation and
-  review-fix PRs are exempt.
+- Review debt is recorded but not capped. The cap of five
+  (`ROADMAP_REALIGNMENT.md` W1.4, decided 26 September 2026) was suspended
+  by Pete on 29 September 2026 ("Ignore PR cap"; `BUILD_PLAN_PROGRAMME.md`
+  P17). Every merged implementation PR without an independent review is
+  still listed in `review_packets/review_queue.md`, and release gates
+  still skip, naming those PRs, until they are reviewed.
 - Branch protection is not enforced on this plan (ADR-0007), so this is
   kept by agreement (v0.1.5 decision D3).
