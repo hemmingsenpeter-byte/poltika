@@ -19,6 +19,11 @@ between layers (data → semantics → policy → engines → scenarios).
 
 Poltika does not treat model memory or external implementations as authoritative policy sources. Evidence and source packaging come first.
 
+For the long-term shape of the whole system (NZState, the variable registry,
+evidence graph, accounting spine, orchestrator and decision layers), see
+[Long-term target architecture](#long-term-target-architecture-one-layered-system)
+at the end of this file. It is a destination, not a build authorisation.
+
 ---
 
 ## Technology stack
@@ -319,3 +324,522 @@ That profile does not fit the fresh-context adversarial reviewer role (BUILD_PLA
 - **CI gate checks** — rubric-style pass/fail evals on structured test output, distinct from the statutory-value protection mechanism itself
 
 This is not scoped or decided for v0.1 — it's a noted possibility for later capability phases (most plausibly alongside the AI layer / orchestration work, not the source-interpretation or adversarial-review roles), and would need the same explicit-approval treatment as any other architecture change before adoption.
+
+---
+
+## Long-term target architecture: one layered system
+
+Recorded 2026-09-30 (Pete). This is the long-term shape of Poltika. It
+describes where the roadmap leads, not what exists today. It does not
+authorise building any layer, store, registry or model it names. Each piece
+is built only when a BUILD_PLAN.md or ROADMAP.md task needs it, under the
+same "create on demand" discipline and Scope Doctrine that govern the
+long-term stack table above. The hard invariant and the "LLM never
+calculates" rule above apply unchanged at every layer. Figures in the
+examples below (debt ratios, dollar amounts, variance shares, model
+versions) are illustrative. They are not Poltika outputs or sourced values.
+
+The roadmap makes more sense if Poltika is not treated as many separate
+features but as one layered computational system:
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│                     HUMAN DECISION LAYER                     │
+│ Public Futures Lab │ Analysts │ Govt │ Researchers │ APIs    │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                  AI / QUERY / EXPLANATION LAYER              │
+│ Natural language │ Research │ Hypotheses │ Explanation       │
+│                AI proposes; models execute                   │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                    DECISION INTELLIGENCE                     │
+│ Scenario comparison │ Cost of delay │ VoI │ Policy search    │
+│ Sensitivity │ Pareto frontiers │ Robustness                  │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                    SIMULATION ORCHESTRATOR                   │
+│ Runs models │ Resolves dependencies │ Time steps │ Reconcile │
+└───────────┬──────────────────┼───────────────────┬───────────┘
+            │                  │                   │
+     ┌──────▼──────┐    ┌──────▼──────┐    ┌───────▼─────┐
+     │ Household   │    │    Macro    │    │   Spatial   │
+     │ / Fiscal    │    │             │    │ / Physical  │
+     ├─────────────┤    ├─────────────┤    ├─────────────┤
+     │ Tax         │    │ GDP         │    │ Housing     │
+     │ WFF         │    │ Prices      │    │ Transport   │
+     │ Benefits    │    │ Wages       │    │ Energy      │
+     │ NZ Super    │    │ Employment  │    │ Water       │
+     └──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+            │                  │                  │
+     ┌──────▼──────┐    ┌──────▼──────┐           │
+     │   Health    │    │ Firms/Labour│           │
+     │ / Demography│    │ / Migration │           │
+     └──────┬──────┘    └──────┬──────┘           │
+            └──────────────────┼──────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                SHARED STATE + ACCOUNTING SPINE               │
+│ NZState │ Sector ledgers │ Stocks/flows │ Reconciliation     │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                     MICRO / POLICY ENGINE                    │
+│ Statutory kernel │ Microsimulation │ Synthetic population    │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                     KNOWLEDGE / EVIDENCE                     │
+│ Evidence graph │ Causal library │ Variable registry          │
+│ Assumptions │ Legislation │ Parameters │ Provenance          │
+└──────────────────────────────┬───────────────────────────────┘
+                               │
+┌──────────────────────────────▼───────────────────────────────┐
+│                         DATA PLATFORM                        │
+│ Official data │ Microdata │ Spatial │ Admin │ High-frequency │
+│ Historical State Store │ Versioned snapshots                 │
+└──────────────────────────────────────────────────────────────┘
+     ║ Validation ║ Uncertainty ║ Prediction Ledger ║
+     ║ Governance ║ Security    ║ Reproducibility   ║
+              CUT THROUGH EVERY LAYER
+```
+
+The critical architectural idea: models do not talk directly to each other
+however they want. They communicate through a common representation of New
+Zealand.
+
+### 1. The centre of Poltika: NZState
+
+At time `t`, `S_t` is Poltika's best representation of New Zealand at time
+`t`. Conceptually:
+
+```text
+NZState
+├── population   people, households, age structure, migration, health states
+├── economy      GDP, production, productivity, prices, wages, employment
+├── crown        revenue, expenditure, assets, liabilities, debt
+├── firms        industries, employment, investment, balance sheets
+├── households   incomes, taxes, transfers, housing, wealth/debt
+├── physical     housing stock, transport, electricity, water, infrastructure
+└── external     trade, capital flows, exchange rates, global conditions
+```
+
+NZState is not one enormous database table. It is a contract defining the
+variables different models can read and write.
+
+### 2. Underneath NZState: the National Variable Registry
+
+Every variable in NZState has exactly one canonical definition. For example:
+
+```yaml
+id: NZ.CROWN.NET_CORE_CROWN_DEBT
+type: stock
+unit: NZD
+frequency: quarterly
+geography: NZ
+price_basis: nominal
+source:
+  organisation: Treasury
+uncertainty: ...
+dependencies: ...
+versions: ...
+```
+
+```yaml
+id: NZ.POPULATION.AGE_65_PLUS
+type: stock
+unit: persons
+frequency: annual
+source:
+  organisation: Stats NZ
+dependencies: ...
+```
+
+This prevents a future where the fiscal model means one thing by "income",
+the household model another and a Stats NZ pipeline a third; where the
+health model works in calendar years and the fiscal model in fiscal years;
+or where the housing model uses nominal dollars and the macro model real
+ones. The Registry is Poltika's common language. It extends the canonical
+Poltika variables the Data Acquisition Doctrine already requires (see
+"External statistical data acquisition" above); it does not replace them.
+
+### 3. Beneath that: the Evidence Graph
+
+The Variable Registry says what things mean. The Evidence Graph says why
+Poltika believes them:
+
+```text
+Income tax legislation
+  → Tax threshold rule
+  → Statutory kernel
+  → Household disposable income
+  → Consumption response
+  → GST revenue
+  → Crown revenue
+  → Debt trajectory
+```
+
+Every edge carries metadata: source, equation, parameter, evidence class,
+population, reference period, uncertainty and validation status. So a
+question like "Why does Policy X reduce 2040 debt by $7.2b?" can be answered
+by traversing the graph backwards.
+
+NZState represents the world. The Evidence Graph represents Poltika's
+knowledge about the world.
+
+### 4. The statutory kernel changes policy settings
+
+This is the bottom of the policy machinery, and where v0.1's work sits. A
+policy change is not represented as "WFF increases". It becomes executable,
+effective-dated, source-cited parameters and rules:
+
+```text
+family_tax_credit_rate = X
+abatement_threshold    = Y
+abatement_rate         = Z
+effective_date         = <date>
+```
+
+Those rules execute against households:
+
+```text
+POLICY → STATUTORY KERNEL → HOUSEHOLD ENTITLEMENTS → HOUSEHOLD INCOME
+```
+
+The Ground Truth rules in CLAUDE.md and the doctrine apply here without
+change: every statutory value comes from a cited primary NZ source.
+
+### 5. Microsimulation translates rules into population effects
+
+The statutory kernel answers "What happens to this household?".
+Microsimulation asks "What happens to 2 million households?":
+
+```text
+PolicyRules + Household_i → Outcome_i,   for i = 1 … N
+```
+
+then aggregates:
+
+```text
+Policy
+  → synthetic/weighted population
+  → household outcomes
+  → by income decile, age group, region, family type,
+    housing tenure, employment type
+  → national totals
+```
+
+This produces both fiscal and distributional effects.
+
+### 6. The accounting spine prevents the models cheating
+
+It sits immediately around the shared state. A $2b government transfer
+cannot be written as `HouseholdIncome += $2b`. The spine requires both
+sides:
+
+```text
+Crown cash       −$2b
+Household cash   +$2b
+```
+
+Behavioural models then determine what happens next (consumption, saving,
+debt repayment, imports, investment → GST, firm revenue, bank deposits,
+trade balance → second-round effects). Every financial flow must reconcile.
+That is what keeps federation sane.
+
+### 7. Domain models become plug-ins
+
+Poltika does not contain one universal simulation algorithm. The
+orchestrator runs domain models (demography, housing, health, labour,
+energy, fiscal, trade, macro, transport, …), each implementing a common
+contract:
+
+```text
+INPUT:   NZState_t, PolicyState_t, ScenarioState_t
+OUTPUT:  ProposedStateChanges, FinancialFlows, Diagnostics,
+         Uncertainty, EvidenceReferences
+```
+
+A weak housing model can later be replaced without rewriting the health
+system. This is the long-term extension of the "Simulation module contract"
+above, which stays the binding contract for policy modules until a real
+cross-module need changes it through an explicit architecture decision.
+
+### 8. The orchestrator controls causality and time
+
+Models cannot run in arbitrary order. The orchestrator owns dependency
+resolution, time stepping, iteration/convergence, model versions, scenario
+configuration and accounting reconciliation. For one year:
+
+```text
+2029 STATE
+  → Demographics
+  → Migration / labour supply
+  → Production / wages
+  → Household incomes
+  → Tax + transfer engine
+  → Consumption / housing
+  → Health / infrastructure demand
+  → Crown accounts
+  → Macro feedback
+  → Reconciliation
+  → 2030 STATE
+```
+
+Some feedback relationships may need iteration within a year until the
+system converges. The core of mature Poltika is then:
+
+```text
+S_{t+1} = F(S_t, P_t, X_t, θ)
+
+S_t  national state
+P_t  policy settings
+X_t  external/scenario variables
+θ    model parameters
+```
+
+### 9. The baseline is one special simulation
+
+There is no separate "forecast model" and "policy model". Define
+`P_baseline` and simulate `S_2027 → S_2028 → … → S_2065`; that is the
+baseline. Change the policy to `P_reform` and simulate again. The policy
+effect is:
+
+```text
+ΔS_t = S_t(reform) − S_t(baseline)
+```
+
+This is the fundamental comparative operation throughout Poltika.
+
+### 10. Causal evidence supplies behavioural parameters
+
+The statutory kernel is deterministic; behaviour is not. If household
+disposable income rises 10%, the consumption response comes from the Causal
+Evidence Library:
+
+```text
+MARGINAL_PROPENSITY_TO_CONSUME
+  NZ causal estimate:          ...
+  NZ observational estimate:   ...
+  International estimate:      ...
+  Chosen parameter:            ...
+  Reason:                      ...
+  Distribution:                ...
+  External-validity rating:    ...
+```
+
+The domain model consumes the parameter. It does not invent it:
+
+```text
+Evidence → Parameter → Model        (this)
+Model → convenient parameter        (never this)
+```
+
+### 11. Uncertainty propagates through everything
+
+With uncertain parameters (for example productivity, migration and
+health-cost growth), Poltika runs ensembles across plausible values and
+scenarios instead of a single `F(S, P, θ)`:
+
+```text
+2065 Crown debt   (illustrative)
+  Median       78% GDP
+  50% range    68–91%
+  90% range    51–126%
+```
+
+Sensitivity analysis then asks why the range is so wide (for example: real
+interest rate 29%, productivity 24%, health-cost growth 21%, migration 12%,
+other 14%). That feeds directly into Value of Information. Per the Scope
+Doctrine, none of this is v0.1.
+
+### 12. Validation is a parallel architecture
+
+Poltika runs two systems side by side:
+
+```text
+PRODUCTION:   Data → State → Models → Simulation → Result
+                                  │
+                                  ▼
+VALIDATION:   Tests, historical replay, benchmark comparison,
+              prediction ledger, calibration scoring, model diagnostics
+```
+
+Every model carries a validation record as part of its metadata, for
+example:
+
+```text
+HousingModel v4.2   (illustrative)
+  Statutory tests       PASS
+  Regression tests      PASS
+  Historical fit        GOOD
+  Shock replay          MODERATE
+  Forward predictions   73 resolved
+  Calibration           GOOD
+  Known limitations     [...]
+```
+
+This grows out of the existing three test classes (spec, benchmark,
+regression) and the Assurance engine.
+
+### 13. Continuous state estimation closes the loop
+
+Once real data arrives:
+
+```text
+REAL NZ → OBSERVATIONS → STATE ESTIMATOR ← previous state
+                               │
+                               ▼
+                           NZState_t → POLTIKA → FORECAST → REAL NZ ↺
+```
+
+That is the point where Poltika becomes operational rather than
+periodically reconstructed.
+
+### 14. Decision intelligence sits above simulation
+
+Cost of Delay, Value of Information, Policy Search and Pareto frontiers are
+not separate models. They are algorithms operating one underlying
+simulator. Cost of Delay runs `Policy_2028`, `Policy_2031` and
+`Policy_2034` and compares outcomes. Value of Information manipulates
+uncertainty distributions. Policy Search repeatedly modifies `P` and runs
+Poltika.
+
+### 15. Policy search is an inverse problem
+
+Normal Poltika maps policy to outcomes. Policy Search reverses it:
+
+```text
+DESIRED CONSTRAINTS → SEARCH ENGINE → POLTIKA → RESULTS → SEARCH ENGINE ↺
+```
+
+For example, with constraints such as debt < X, poverty ≤ baseline,
+GDP/person > baseline, emissions < Y and infrastructure spend ≥ Z, the
+search engine proposes policies, Poltika simulates them, and the optimiser
+learns where feasible regions exist:
+
+```text
+10,000,000 candidate policies → simulation → constraints
+  → 18,400 feasible → Pareto dominance → 47 trajectories   (illustrative)
+```
+
+Humans choose among the survivors.
+
+### 16. AI sits above all of this and never bypasses it
+
+A user asks: "What combination of housing, migration and tax changes could
+raise median real disposable income without worsening the 2045 fiscal
+position?" The LLM converts that into a structured request:
+
+```yaml
+objective: maximize median_real_disposable_income
+constraints:
+  - fiscal_balance_2045 >= baseline
+allowed_policy_domains: [housing, migration, taxation]
+```
+
+```text
+LLM → Query planner → Policy Search → Poltika simulator
+    → Evidence Graph → Results → LLM explanation
+```
+
+The LLM is the interface and research assistant. It does not calculate the
+answer. This is the hard invariant above, applied at full scale.
+
+### 17. Three graphs
+
+- **State graph: what exists?** People, households, firms, government,
+  housing, infrastructure, money, resources.
+- **Causal/evidence graph: what affects what, and why do we believe it?**
+  For example tax → disposable income → consumption → firm revenue →
+  employment, with evidence attached to every edge.
+- **Accounting graph: where did everything go?** Government −$1 →
+  household +$1.
+
+Every major simulation must satisfy all three at once. That is a much
+stronger architecture than a "giant economic model".
+
+### 18. Five logical stores
+
+1. **Evidence store**: legislation, papers, reports, sources.
+2. **Data store**: observed historical NZ data.
+3. **State store**: versioned NZState snapshots.
+4. **Model registry**: models, parameters, dependencies, versions,
+   validation status.
+5. **Run store**: scenarios, inputs, outputs, traces, uncertainty,
+   predictions. The Prediction Ledger can be an immutable subset of it.
+
+These are logical stores, not a decision to deploy five databases. The
+"Deliberately not used" list above still stands.
+
+### 19. Worked example: NZ Super eligibility from 65 to 67
+
+A hypothetical proposal shows one run touching almost the whole
+architecture:
+
+1. **Policy**: the statutory kernel encodes the proposed transition
+   schedule.
+2. **Population**: the demographic model identifies affected cohorts.
+3. **Microsimulation**: the household engine calculates lost NZ Super
+   payments and other benefit and tax interactions.
+4. **Behaviour**: the Causal Library supplies evidence on retirement,
+   labour participation and savings responses.
+5. **Labour**: the labour model estimates employment changes.
+6. **Macro**: additional labour affects output, wages and tax bases.
+7. **Household**: income changes feed consumption and saving.
+8. **Crown**: the fiscal model calculates NZ Super savings, additional
+   taxes, other benefit spending and debt servicing.
+9. **Accounting**: the spine reconciles all flows.
+10. **Health**: where retirement behaviour affects relevant health
+    utilisation, the health model propagates supported effects.
+11. **Long-run state**: everything propagates `2028 → 2029 → … → 2065`.
+12. **Uncertainty**: plausible behavioural, demographic and economic
+    parameters are run as an ensemble.
+13. **Distribution**: effects by age, income, household type and other
+    supported dimensions.
+14. **Evidence**: every material pathway is traceable.
+15. **Validation**: relevant submodels have historical and forward
+    performance records.
+16. **Decision layer**: compare 65, 66, 67, indexation alternatives,
+    transition schedules and other user-specified scenarios; Cost of Delay
+    compares implementation dates.
+
+### The deepest principle: four kinds of truth
+
+There are four kinds of truth inside Poltika, and they must never be
+blurred:
+
+- **Observed**: what happened.
+- **Deterministic**: what laws and accounting identities mathematically
+  require.
+- **Estimated**: what evidence suggests about behaviour and causal
+  relationships.
+- **Simulated**: what follows when those are combined under specified
+  assumptions.
+
+Every number Poltika produces should know which category it belongs to.
+That single principle prevents an enormous amount of future epistemic
+debt. v0.1's outputs are all deterministic, and its `calculated` /
+`unsupported` / `needs_review` outcome states are the first instance of a
+number carrying its own epistemic status.
+
+### The architecture in one sentence
+
+Poltika maintains an evidence-linked representation of New Zealand's
+state; deterministic rules and validated domain models transform that state
+through time; a shared accounting spine reconciles their interactions;
+observations continuously test and update the system; decision-intelligence
+algorithms explore alternative futures; and AI lets humans interrogate the
+machinery without becoming the machinery itself.
+
+### First-class concepts
+
+The fundamental concepts of the eventual technical architecture are:
+`NationalVariable`, `Evidence`, `PolicyRule`, `NZState`, `Model`,
+`Parameter`, `Flow`, `Scenario`, `SimulationRun` and `ValidationRecord`.
+Every roadmap step ultimately plugs into those objects. As with the rest of
+this section, none of them is introduced as code until a task needs it,
+and a second real use justifies the abstraction.
