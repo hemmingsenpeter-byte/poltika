@@ -339,7 +339,7 @@ calculates" rule above apply unchanged at every layer. Figures in the
 examples below (debt ratios, dollar amounts, variance shares, model
 versions) are illustrative. They are not Poltika outputs or sourced values.
 
-The roadmap makes more sense if Poltika is not treated as many separate
+The roadmap makes more sense if Poltika is not treated as 33 separate
 features but as one layered computational system:
 
 ```text
@@ -840,6 +840,7 @@ machinery without becoming the machinery itself.
 The fundamental concepts of the eventual technical architecture are:
 `NationalVariable`, `Evidence`, `PolicyRule`, `NZState`, `Model`,
 `Parameter`, `Flow`, `Scenario`, `SimulationRun` and `ValidationRecord`.
-Every roadmap step ultimately plugs into those objects. As with the rest of
+Everything on the 33-step roadmap ([ROADMAP.md](ROADMAP.md)) ultimately
+plugs into those objects. As with the rest of
 this section, none of them is introduced as code until a task needs it,
 and a second real use justifies the abstraction.
