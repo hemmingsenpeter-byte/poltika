@@ -14,6 +14,9 @@ independent review and, for protected values and interpretations, Pete's
 decision. People choose
 objectives. Poltika measures consequences.
 
+Validation expectations follow the temporary classification deferral in
+Decision 1.
+
 This doctrine states what kinds of claim exist. It states no rate, threshold or
 policy value. Those come from cited primary NZ sources under `policy_specs/`
 (see "Ground truth" below).
@@ -27,8 +30,9 @@ policy value. Those come from cited primary NZ sources under `policy_specs/`
 
 ## The eight evidence classes
 
-Every claim has exactly one class. If a claim seems to fit two, it is two
-claims, and each is classed on its own.
+Every claim has exactly one class, except the validation expectations in
+Decision 1, whose classification is deferred to Step 6. If a claim seems
+to fit two, it is two claims, and each is classed on its own.
 
 | Class | Meaning |
 | --- | --- |

@@ -70,9 +70,11 @@ Never use model memory as authority for:
 If the source is missing or ambiguous, stop and flag it.
 
 Every claim carries one of the eight evidence classes in
-`doctrine/epistemic-constitution.md` (approved 2 October 2026). An
-AI-authored claim is an AI hypothesis until its promotion gate passes. The
-constitution adds to the ground-truth rules above and replaces none of them.
+`doctrine/epistemic-constitution.md` (approved 2 October 2026). Validation
+expectations retain Decision 1's temporary exception: their classification
+is deferred to Step 6. An AI-authored claim is an AI hypothesis until its
+promotion gate passes. The constitution adds to the ground-truth rules above
+and replaces none of them.
 A caller's assertion stays a Scenario, an explicit Assumption stays an
 Assumption, and a calculated result stays a Model output. None of them is
 treated as an independently verified Fact or Rule.
