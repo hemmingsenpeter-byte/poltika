@@ -37,6 +37,8 @@ poltika/
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
+├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
+│                         smallest action that clears it (ADR-0020)
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)
@@ -52,6 +54,8 @@ poltika/
 │                         run by hand from the repository root; not production code, and not
 │                         linted or type-checked by CI)
 ├── reviews/           — review and discrepancy records
+├── docs/decision_log.md — every Tier A and Tier B decision made under ADR-0020's
+│                         delegated acceptance, with options, rationale and reversal
 ├── docs/ORIENTATION.md — one-page summary of current v0.1 behaviour for a new session: outcomes,
 │                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
