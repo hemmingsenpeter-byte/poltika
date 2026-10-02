@@ -1,12 +1,12 @@
 ---
 name: pr-review-preflight
-description: Use before opening, reviewing, updating, or recommending acceptance of a Poltika implementation PR, especially while GPT/Codex is unavailable. Run an adversarial code and evidence preflight, record reproducible findings, and prepare a deferred independent-review handoff. Self-review never substitutes for the rotating reviewer or Pete's acceptance.
+description: Use before opening, self-reviewing, updating, or recommending acceptance of your own Poltika implementation PR, especially while GPT/Codex is unavailable. Run an adversarial code and evidence preflight, record reproducible findings, and prepare a deferred independent-review handoff. Self-review never substitutes for the rotating reviewer or Pete's acceptance. To review a PR someone else wrote, use pr-review.
 ---
 
 # PR review preflight
 
 This skill improves Claude Code's own work. It does **not** make the author an
-independent reviewer. Follow `BUILD_PLAN.md`'s Roles and Review Doctrine,
+independent reviewer. To review a PR you did not write, use `pr-review`. Follow `BUILD_PLAN.md`'s Roles and Review Doctrine,
 `doctrine/review-doctrine.md`, `doctrine/test-doctrine.md`, and
 `review_packets/README.md` if they impose a stricter gate.
 
@@ -43,7 +43,9 @@ know the rationale because you authored it, say so in the packet.
 
 Review `git diff --check` and the full base-to-head diff, not just the summary.
 Trace every changed input through validation, calculation, response, and
-tests. At minimum ask:
+tests. `.claude/skills/pr-review/scripts/pr_triage.sh <PR>` sorts a pushed
+PR's files by risk tier, and `pr-review`'s `references/checklist.md` is the
+full line-by-line list. At minimum ask:
 
 - Can a missing, contradictory, or unverified fact become `calculated` or
   numeric zero? Can one component's unresolved state contaminate another?
