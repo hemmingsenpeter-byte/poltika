@@ -102,3 +102,9 @@ Interpretation ambiguity must be escalated rather than silently resolved.
 Follow doctrine/ip-doctrine.md.
 
 OpenFisca or other external implementations must not be used as the source for Poltika policy logic.
+
+## GitHub and Render
+
+The repository remote is `https://github.com/hemmingsenpeter-byte/poltika.git` on branch `main`.
+
+Use the Render MCP server for Render workspace, service, deploy, log, metric, and database operations. Confirm the target Render workspace before creating or changing resources.
