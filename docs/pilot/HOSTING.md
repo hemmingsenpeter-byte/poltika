@@ -29,6 +29,14 @@ account and sets the password; the repository holds no credentials.
   the calculation routes and both pages don't need one. To enable them, set
   `POLTIKA_DATABASE_URL` to a PostgreSQL database; the entrypoint applies
   the migrations at start.
+- Reads `policy_specs/` from `/policy_specs`, the copy baked into the image
+  at build time (`POLTIKA_POLICY_SPECS_DIR=/policy_specs`, set in the
+  `Dockerfile`). To deploy a reviewed copy instead of the image's build-time
+  snapshot -- e.g. a platform volume mount, a config-management step, or a
+  sidecar that writes the directory before the container starts -- point
+  `POLTIKA_POLICY_SPECS_DIR` at it; the API reads from that path on every
+  request, and startup fails loudly if nothing is there (ADR-0011,
+  `tests/installed_artifact/test_installed_artifact.py`).
 
 Basic authentication sends the password with every request, so only serve
 it over HTTPS. The platforms below give every service an HTTPS address.
