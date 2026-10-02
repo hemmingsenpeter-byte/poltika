@@ -51,6 +51,7 @@ Read:
 - BUILD_PLAN.md
 - ARCHITECTURE.md
 - REPOSITORY_STRUCTURE.md — before creating any new production file, module, or directory; a proposed component with no obvious location means updating that file deliberately, not creating an ad-hoc directory
+- doctrine/epistemic-constitution.md
 - relevant files under doctrine/
 - relevant policy specification under policy_specs/
 
@@ -67,6 +68,12 @@ Never use model memory as authority for:
 - policy interactions
 
 If the source is missing or ambiguous, stop and flag it.
+
+`doctrine/epistemic-constitution.md` is a proposed classification framework,
+awaiting Pete's approval and the decisions it marks "For Pete". Read it as
+a draft; it does not change the ground-truth rules above or require caller
+Scenarios, explicit Assumptions or calculated Model outputs to be treated
+as independently verified Facts or Rules.
 
 ## Implementation
 
