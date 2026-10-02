@@ -175,7 +175,9 @@ poltika/
 │                            microsim_page.py (v0.2 Task 10.2: the
 │                            /analyst/microsim page); access.py (hosted
 │                            pilot password, HTTP Basic, operator-set
-│                            POLTIKA_ACCESS_PASSWORD); workbench.py
+│                            POLTIKA_ACCESS_PASSWORD); hardening.py
+│                            (security headers and request-size limit);
+│                            workbench.py
 │                            (the analyst workbench routes under
 │                            /workbench: registry, check, results,
 │                            Excel/CSV export, decision text) with

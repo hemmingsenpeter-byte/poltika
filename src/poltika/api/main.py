@@ -33,12 +33,13 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from poltika.api.access import BasicAuthMiddleware, configured_credentials
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
 from poltika.api.accommodation_supplement import router as as_router
 from poltika.api.analyst import router as analyst_router
+from poltika.api.hardening import SECURITY_HEADERS, BodyLimitMiddleware, SecurityHeadersMiddleware
 from poltika.api.household import router as household_router
 from poltika.api.microsim import router as microsim_router
 from poltika.api.microsim_page import router as microsim_page_router
@@ -105,7 +106,10 @@ app.include_router(analyst_router)
 app.include_router(microsim_router)
 app.include_router(microsim_page_router)
 app.include_router(workbench_router)
+# The last added runs first: headers go on every response, 401 and 413 too.
 app.add_middleware(BasicAuthMiddleware)
+app.add_middleware(BodyLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 @app.get("/healthz", include_in_schema=False)
@@ -164,4 +168,17 @@ async def _poltika_error_handler(request: Request, exc: PoltikaError) -> JSONRes
     return JSONResponse(
         status_code=500,
         content={"detail": "Internal server error: the deployed policy configuration is invalid."},
+    )
+
+
+@app.exception_handler(Exception)
+async def _unexpected_error_handler(request: Request, exc: Exception) -> Response:
+    """Unhandled errors reach Starlette's outer server-error middleware,
+    outside the response-header middleware. Keep that response generic
+    and apply the same headers; the server still logs the raised error."""
+    return Response(
+        "Internal Server Error",
+        status_code=500,
+        media_type="text/plain",
+        headers={name.decode("ascii"): value.decode("ascii") for name, value in SECURITY_HEADERS},
     )

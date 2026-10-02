@@ -24,6 +24,9 @@ result identity changes.
   on `$PORT` and includes the synthetic development population. Hosting
   steps are in `docs/pilot/HOSTING.md`. Local runs from a checkout are
   unchanged.
+- **Hosted pilot, hardened for outside use**: every response carries
+  security headers; request bodies over 64 KiB get 413; and population
+  runs are computed one at a time (429 while busy).
 - **Fact catalogues** (Task 1b.1, ADR-0016): every fact the WFF, AS and
   combined engines can report missing has a plain-language question and
   its admissible answers, in `policy_specs/<policy>/facts.yaml`. The

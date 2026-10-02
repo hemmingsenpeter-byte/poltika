@@ -114,6 +114,8 @@ def slot_from_label(label: str) -> Slot:
     scope, sep, name = label.partition(".")
     if not sep or not name or scope not in ("wff", "accommodation_supplement", "household"):
         raise ValueError(f"'{label}' is not a fact label")
+    if scope == "wff" and name.startswith("children."):
+        raise ValueError(f"'{label}' must name a child using children[index].field")
     return Slot(scope, name)
 
 

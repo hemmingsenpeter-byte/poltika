@@ -203,6 +203,13 @@ def test_results_need_a_population(monkeypatch: pytest.MonkeyPatch) -> None:
     assert client.post("/workbench/results", json=_results_body()).status_code == 503
 
 
+def test_workbench_population_run_honours_shared_admission(configured: Path) -> None:
+    with microsim._one_at_a_time():
+        response = client.post("/workbench/results", json=_results_body())
+    assert response.status_code == 429
+    assert response.headers["Retry-After"] == "30"
+
+
 def test_results_payload(configured: Path) -> None:
     response = client.post("/workbench/results", json=_results_body())
     assert response.status_code == 200, response.text
