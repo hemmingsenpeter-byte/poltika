@@ -57,8 +57,8 @@ this supersedes the previous "v0.1 frontend: Streamlit" line below; the
 decision is to go straight to Next.js rather than build and later replace
 a Streamlit UI. Optimises for four things: **determinism, auditability,
 developer speed, and an architecture that can expand into the
-multi-engine system (ROADMAP.md's v0.3+ Discovery/Hypothesis engines)
-without a rewrite.**
+multi-engine system (`BUILD_PLAN_PROGRAMME.md`'s state transition engine
+and federated model graph, Steps 14 and 17) without a rewrite.**
 
 | Layer | Choice | Why |
 | --- | --- | --- |
@@ -121,9 +121,9 @@ Agent → Agent → Agent → Agent        (NOT this, for v0.1)
 It is a modular Python monolith whose internal module boundaries are
 drawn so that Discovery, Hypothesis, Simulator, and Assurance *can* later
 become independent services or agents without a rewrite — paying that
-distributed-systems tax only when a real capability (ROADMAP.md's v0.6+
-Discovery/Hypothesis engines) actually needs it, not up front. Those
-module boundaries already exist in REPOSITORY_STRUCTURE.md's canonical
+distributed-systems tax only when a real capability (the federated
+domain engines, `BUILD_PLAN_PROGRAMME.md` Step 17) actually needs it, not
+up front. Those module boundaries already exist in REPOSITORY_STRUCTURE.md's canonical
 tree (`src/poltika/{data,semantics,policy,engines/{simulator,assurance,
 discovery,hypothesis},scenarios,llm,common}`) — this principle names why
 that tree is shaped the way it is; it does not introduce a second,

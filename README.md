@@ -10,7 +10,8 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 - [BUILD_PLAN.md](BUILD_PLAN.md) — what's being built now, in what order, and v0.1 acceptance criteria
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how Poltika works, conceptually and technically
 - [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — where every component belongs and the dependency rules between layers
-- [ROADMAP.md](ROADMAP.md) — what comes after v0.1
+- [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) — the programme plan (ADR-0019): Pete's master build order of 33 steps with Phase 0 foundations and eight delivery phases, what already exists against each step, tasks, validation gates, month targets and decisions
+- [ROADMAP.md](ROADMAP.md) — the master technical roadmap: the question Poltika answers, the north star, the foundations, eight delivery phases and their milestones, and the permanent layer
 - [BUILD_PLAN_v0_1_5.md](BUILD_PLAN_v0_1_5.md) — the v0.1.5 plan
 - [BUILD_PLAN_v0_1_6.md](BUILD_PLAN_v0_1_6.md) — the v0.1.6 plan: keep v0.1 current past 1 April 2027
 - [BUILD_PLAN_v0_2.md](BUILD_PLAN_v0_2.md) — the v0.2 plan: static population microsimulation (ADR-0014)
@@ -38,8 +39,9 @@ household. The other three components are unaffected.
 ## Policy coverage
 
 Poltika is building a deterministic policy kernel for New Zealand's
-household tax-and-transfer system, one reviewed domain at a time
-(`ROADMAP_REALIGNMENT.md` W10). What it models today:
+household tax-and-transfer system, then firms and government, one
+reviewed domain at a time (`BUILD_PLAN_PROGRAMME.md` Step 3). What it
+models today:
 
 | Domain | State |
 | --- | --- |
@@ -47,8 +49,9 @@ household tax-and-transfer system, one reviewed domain at a time
 | Accommodation Supplement | Implemented and reviewed (v0.1) |
 | Personal income tax | Planned: v0.3, Tier 1 |
 | Jobseeker Support, Sole Parent Support, Supported Living Payment | Planned: v0.3, Tier 1 |
-| Temporary Additional Support, Disability Allowance, Childcare and OSCAR Subsidies, NZ Super, Paid Parental Leave | Planned: v0.3.x, Tier 2 |
-| Student support, ACC, KiwiSaver, other MSD assistance, Child Support, other tax regimes | Planned: Tier 3 |
+| NZ Super, Childcare and OSCAR Subsidies, KiwiSaver interactions, Paid Parental Leave | Planned: Step 3 lane 3C |
+| Student support, ACC levies and earnings compensation, Temporary Additional Support, Disability Allowance, other MSD assistance, Child Support | Planned: Step 3 lane 3D |
+| GST, company tax, other tax regimes, selected regulatory costs, Crown revenue and expenditure classifications | Planned: Step 3 lane 3E |
 
 Anything not listed as implemented isn't modelled. A household that
 depends on it gets `unsupported` or `needs_review` for that part, never a

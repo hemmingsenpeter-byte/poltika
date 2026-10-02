@@ -3,9 +3,10 @@
 `ROADMAP_REALIGNMENT.md` W1.1. This lists every merged PR that has not had
 an independent (GPT/Codex) review. They merged on Claude Code's author
 preflight under Pete's recorded delegation, which the working agreement
-allows. The review-debt cap (`doctrine/development-doctrine.md`) counts the
-**open implementation** rows. At five or more, no further implementation
-PR merges. Plan, documentation and review-fix PRs are exempt.
+allows. The review-debt cap was suspended on 29 September 2026
+(`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` P17): open
+rows no longer stop merges, but every one is still listed here, and
+release gates skip, naming them, until they are reviewed.
 
 Work the queue in risk order:
 
@@ -18,7 +19,15 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 2 October 2026: 1 open implementation review row (#128).** GPT/Codex reviewed #124-127 in `reviews/2026-09-28-pr122-127.md`; the #124/#125 fixes need Claude's independent check and Pete's acceptance. #128 remains outside that review. #133 is reviewed in `reviews/2026-10-02-pr133.md`. Review packet: `review_packets/v0_3_phase_1b_codex_audit.md`. GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
+**As of 2 October 2026: 1 open implementation review row (#128).**
+GPT/Codex reviewed #124-127 in `reviews/2026-09-28-pr122-127.md`; their
+reviewer-authored fixes were accepted under Pete's explicit cross-model
+waiver on 2 October 2026. #132 and #133 are reviewed in
+`reviews/2026-10-02-pr132.md` and `reviews/2026-10-02-pr133.md`, with the
+same waiver for their fixes. #128 remains outside this open-PR round.
+Review packet: `review_packets/v0_3_phase_1b_codex_audit.md`.
+GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code
+checked its two fixes.
 Pete confirmed on 27 September 2026 that GPT/Codex cleared every PR up to
 #120 ("Yes all cleared by codex"), and approved all prior work. #111, #113,
 #114, #118 and #120 are marked reviewed on that confirmation; their review
@@ -35,6 +44,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #132 | pilot | Hosted hardening: security headers, body and request limits, cache admission, declined-label validation and CI smoke check | API, CI | Medium | reviewed (reviews/2026-10-02-pr132.md) |
 | #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
 | #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Low | open |
 | #127 | v0.3 | Task 1b.6: `scenarios/microsim/ranges.py` population ranges; `fiscal_ranges` on `/microsim/runs`; Fiscal tab | Microsim, API | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |

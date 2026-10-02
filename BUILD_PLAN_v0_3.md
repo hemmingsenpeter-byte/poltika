@@ -6,8 +6,15 @@ is Tier 1 of the policy kernel coverage map (`ROADMAP_REALIGNMENT.md` W10,
 decided 26 September 2026): personal income tax, Jobseeker Support, Sole
 Parent Support and Supported Living Payment. Phase 0 sets each one's
 supported slice from sources.
-**Starts:** after v0.2 ships and W1's review queue is below its cap.
+**Starts:** after v0.2 ships.
 Phase 0 can start as soon as ADR-0015 is accepted.
+**Redirect (ADR-0019, 29 September 2026):** this plan is now lane 3A of
+`BUILD_PLAN_PROGRAMME.md` (the statutory kernel's first lane). v0.3 also
+ships Phase 0: Step 1 (the epistemic constitution and model governance)
+and Step 2 (the National Variable Registry and common schemas; this
+plan's Phase 1 is Step 2.7). It also ships Step 5.1's conformance matrix
+for its domains. Its tasks
+are unchanged. The review-debt cap is suspended (programme plan P17).
 
 `BUILD_PLAN.md`'s doctrines apply unchanged: primary sources only, the
 three test classes, protected values changed only through the test
@@ -51,18 +58,28 @@ it. That shape is the aim, not an assumed rule. v0.3 delivers:
 6. **The real-data pipeline.** Poltika runs inside a secure environment
    and exports only checked aggregates (W3), ready for access when it's
    granted.
+7. **The epistemic constitution and model governance**
+   (`BUILD_PLAN_PROGRAMME.md` Step 1): evidence classes, the never-build
+   list, a model registry with change control, and validation gates.
+8. **The National Variable Registry and common schemas** (Step 2): every
+   number an engine reads or writes is a registered variable, and every
+   output is a quantity X = (x̂, D_x, E_x), carrying its value, uncertainty
+   and evidence.
+9. **A conformance matrix** for every Tier 1 rule (Step 5.1): golden,
+   boundary, contradiction and regression cases.
 
 **Not in v0.3:**
 
-- multi-year scenarios (v0.4);
-- uncertainty or Monte Carlo (v0.5);
-- the historical fiscal baseline (v0.5, per ADR-0015);
-- GST, company tax or other revenue (the v0.6 long-term model);
-- behavioural responses;
-- the Tier 2 and Tier 3 domains of the coverage map (Temporary
-  Additional Support, Disability Allowance, childcare subsidies, NZ
-  Super, Paid Parental Leave, student support and the rest). Tier 2 ships
-  as v0.3.x coverage releases alongside v0.4.
+- multi-year scenarios (programme plan Step 8);
+- uncertainty propagation or Monte Carlo (Step 11; each quantity's
+  uncertainty is represented from Step 2);
+- the historical state store and the baseline (Steps 9-10, per ADR-0019);
+- GST, company tax or other revenue (Step 3, lane 3E);
+- behavioural responses (Step 12);
+- the other household domains (Temporary Additional Support, Disability
+  Allowance, childcare subsidies, NZ Super, Paid Parental Leave, student
+  support, ACC levies, KiwiSaver and the rest). They follow as Step 3's
+  lanes 3C and 3D.
 
 ## Phases
 
@@ -521,6 +538,13 @@ or for Phase 0.
 - **The secure-environment runner** exports only checked aggregates, and a
   test proves no household-level record can leave.
 - **No release-scope PR** is left without independent review (W1).
+- **Steps 1 and 2's validation gates** (`BUILD_PLAN_PROGRAMME.md`):
+  every engine is registered with its validation status; every number it
+  reads or writes is a registered variable; every output is a quantity with D_x and E_x; the
+  precision rule, the interim governance rule and the never-build checks
+  are enforced.
+- **Every Tier 1 rule** has golden, boundary, contradiction and
+  regression cases (Step 5.1).
 
 ## Open decisions for Pete
 
@@ -529,10 +553,10 @@ or for Phase 0.
 - **D3:** The income-adequacy measures to report (5.3).
 - **D5 (decided 26 September 2026):** ADR-0016 accepted, with the
   32-branch cap and population-range reporting.
-- **D6:** Accept ADR-0017 (shared household model, Phase 1), and its three
-  questions: dated spells for income and benefit receipt, one family per
-  household in v0.3, and today's request formats kept as adapters.
-  Recommended.
+- **D6 (decided 29 September 2026):** ADR-0017 (shared household model,
+  Phase 1) accepted with its three recommended answers: dated spells for
+  income and benefit receipt, one family per household in v0.3, and
+  today's request formats kept as adapters.
 - **D4 (decided 26 September 2026):** v0.3 ships with all three core
-  main benefits (W10 Tier 1). Tier 2 domains follow as v0.3.x coverage
-  releases.
+  main benefits (W10 Tier 1). The original v0.3.x placement of Tier 2
+  domains is superseded by the programme plan's lanes 3C and 3D.

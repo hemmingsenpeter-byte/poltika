@@ -22,8 +22,9 @@ poltika/
 ├── BUILD_PLAN_v0_1_5.md  — v0.1.5 evidence and explainability tasks and release gate (approved 25 September 2026)
 ├── BUILD_PLAN_v0_1_6.md  — v0.1.6 tasks: the 2027-28 year and source currency (approved 26 September 2026)
 ├── BUILD_PLAN_v0_2.md    — v0.2 tasks: static population microsimulation (approved 26 September 2026; ADR-0014)
-├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015)
-├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015)
+├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015); since ADR-0019 also Phase 0 (Steps 1 and 2)
+├── BUILD_PLAN_PROGRAMME.md — the programme plan: Pete's master build order (33 steps with Phase 0 foundations and eight delivery phases), what exists against each step, tasks, validation gates, month targets and decisions (29 September 2026; ADR-0019)
+├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015); its sequence superseded by ADR-0019, its workstreams carried into the programme plan
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
 ├── ROADMAP.md
@@ -271,7 +272,7 @@ goes in exactly one of them:
 | Directory | Holds | Written by |
 | --- | --- | --- |
 | `docs/research/` | Source research: what a primary source says, dated checks, prior-art glances (clean-room) | GPT/Codex or Claude Code, before implementation |
-| `review_packets/` | Inputs handed to a reviewer: the packet (sources, spec, diff, tests) and any scripts that produced reviewed results; `review_queue.md` lists merged PRs awaiting independent review (the review-debt cap) | The author, before review |
+| `review_packets/` | Inputs handed to a reviewer: the packet (sources, spec, diff, tests) and any scripts that produced reviewed results; `review_queue.md` lists merged PRs awaiting independent review (the cap is suspended, P17) | The author, before review |
 | `reviews/` | A reviewer's output: findings, classifications and dispositions | The reviewer |
 
 Existing records stay where they are. Several protected, hash-bound files
@@ -319,8 +320,8 @@ poltika/
 │       ├── engines/
 │       │   ├── simulator/   — deterministic policy calculations (v0.1)
 │       │   ├── assurance/   — provenance, regression, change attribution (v0.1)
-│       │   ├── discovery/   — capability-driven, post-v1.0 (Roadmap Doctrine, ADR-0015)
-│       │   └── hypothesis/  — capability-driven, post-v1.0 (Roadmap Doctrine, ADR-0015)
+│       │   ├── discovery/   — causal-library intake (programme Step 12; AI intake Step 30)
+│       │   └── hypothesis/  — causal-library intake (programme Step 12; AI intake Step 30)
 │       ├── scenarios/       — scenario definitions, runner, results
 │       ├── llm/             — orchestration, prompts, guardrails (never calculates — see doctrine/llm_boundaries.md)
 │       ├── api/             — FastAPI app; HTTP request/response boundary only (Task 21, ADR-0010)
@@ -341,9 +342,16 @@ poltika/
 ```
 
 `engines/discovery/` and `engines/hypothesis/` are placeholders only:
-Roadmap Doctrine puts Discovery and Hypothesis capabilities after v1.0 (ADR-0015), so
-these subdirectories should not be created, or populated, for v0.1. Listing
-them here is about naming the eventual slot, not authorizing early work.
+Discovery and Hypothesis become the intake of the causal evidence library
+(`BUILD_PLAN_PROGRAMME.md` Step 12, ADR-0019), with AI hypothesis discovery
+at Step 30, built when there is data to run them on. Listing them here names the eventual slot; it doesn't
+authorise early work. The programme plan's new components (the model
+registry, the variable registry's extensions, the quantity type, the
+evidence graph, the conformance fixtures and harness, the validation
+framework and prediction ledger, the sector accounts, the state store,
+the baseline and transition engines, the scenario library and the causal
+library) get their locations here from the task that first creates each
+one.
 
 ## The dependency boundary
 
@@ -397,4 +405,5 @@ BUILD_PLAN.md            "What are we building now?"
             docs/        "Detailed specifications" (target only — not yet instantiated)
 ```
 
-`ROADMAP.md` answers what comes after v0.1.
+`ROADMAP.md` answers where Poltika is going, and `BUILD_PLAN_PROGRAMME.md`
+in what order and how, step by step.

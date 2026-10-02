@@ -142,69 +142,115 @@ what evidence was considered, who/what decided, when.
 
 ## Roadmap Doctrine (frozen)
 
-Superseded its original capability-sequence framing per ADR-0008 (2026-09-21):
-v0.1 through v1.0 are now a fully versioned sequence, defined in full in
-`ROADMAP.md` (scope and exit gate per release) — this section states the
-sequence and the dependency reasoning behind its order, not the detail.
+Superseded its original capability-sequence framing per ADR-0008 (2026-09-21),
+and its later release sequences per ADR-0014 and ADR-0015. Since ADR-0019
+(29 September 2026) the order is Pete's master build order: 33 steps with
+Phase 0 foundations and eight delivery phases, with a permanent layer and
+a validation gate at every stage. It is
+defined in `BUILD_PLAN_PROGRAMME.md` (what exists against each step, tasks,
+month targets, gates, releases and decisions) and summarised in `ROADMAP.md`.
+This section states the order and the reasoning behind it, not the detail.
 
-v0.1 (deterministic foundation) → v0.1.5 (evidence intelligence /
-pilotability) → v0.1.6 (keep v0.1 current) → v0.2 (static population
-microsimulation, per ADR-0014) → v0.3 (income tax, main benefits and the
-household graph) → v0.4 (scenario engine) → v0.5 (uncertainty, assurance and
-the historical baseline) → v0.6 (long-term NZ fiscal model) → v0.7
-(decision-intelligence product) → v1.0 (production hardening), per
-ADR-0015 → beyond v1.0, the Discovery and Hypothesis engines and an
-unnumbered capability-track sequence (Economic Digital Twin, Physical NZ,
-Adaptive Digital Twin, National Decision Intelligence).
+v0.1 (deterministic foundation) → v0.1.5 (evidence and explainability) →
+v0.1.6 (keep v0.1 current) → v0.2 (static population microsimulation), all
+unchanged. Then:
 
-**Why this order, not another:** each release is on the path to the v1.0
-definition below (ADR-0015).
+- **Phase 0, foundations:** epistemic constitution and model governance;
+  National Variable Registry and common schemas.
+- **Phase 1, executable New Zealand:** deterministic statutory kernel;
+  Evidence Intelligence and evidence graph; legislation conformance suite;
+  validation framework and forward prediction ledger v0.
+- **Phase 2, population and fiscal effects:** household microsimulation
+  engine; fiscal and shared accounting spine; Historical NZ State Store.
+- **Phase 3, baseline New Zealand:** National Baseline Engine; uncertainty
+  and sensitivity framework; Causal Evidence Library; Historical Validation
+  Laboratory.
+- **Phase 4, first national system model:** National State Transition
+  Engine; Canonical NZ Scenario Library; priority domain models.
+- **Phase 5, federated New Zealand:** Federated Model Graph; continuous
+  state estimation; Synthetic Population Programme; spatial and physical
+  twin.
+- **Phase 6, decision intelligence:** cost-of-delay engine;
+  value-of-information engine; policy-space search and inverse solver;
+  Pareto frontier engine.
+- **Phase 7, national decision infrastructure:** Public NZ Futures
+  Laboratory; policy and manifesto analysis interface; constraint-based
+  negotiation sandbox; research and institutional APIs.
+- **Phase 8, AI scientific layer:** natural-language policy interface; AI
+  hypothesis discovery; AI model orchestration; AI explanation and research
+  agent; autonomous research loop, with human gates.
 
-- **v0.2.** Static microsimulation needs only a data layer and the
-  existing combined runner, because WFF and the Accommodation Supplement
-  don't feed each other's income tests (AS-10, WFF DEC-003; ADR-0014).
-- **v0.3.** Adds the policies almost every later capability needs
-  (income tax, main benefits), and the household dependency graph the
-  first policies that do feed each other require. The graph's edges come
-  only from specifications.
-- **v0.4.** Multi-year, multi-policy scenarios need those policies and
-  that graph.
-- **v0.5.** Assurance and uncertainty harden the v0.1-v0.4 simulator and
-  scenario engine (backtesting, sensitivity, stress tests). Its
-  backtesting is the first consumer of the historical fiscal baseline,
-  which therefore lives there. This is the same "deterministic
-  correctness before probabilistic sophistication" principle as the
-  frozen Scope Doctrine, applied one level up.
-- **v0.6.** The long-term fiscal model is transparent accounting on
-  stated assumptions, and needs v0.5's assumption register and
-  sensitivity.
-- **v0.7.** The product comes last.
-- **After v1.0.** Discovery and Hypothesis are exploratory capabilities
-  with a human gate. They extend a hardened system after v1.0. Discovery
-  still precedes Hypothesis, and nothing re-enters the simulator without
-  passing the promotion gate `Discovery → Hypothesis → evidence →
-  validation → human approval → model specification → tests →
-  Simulator`.
+Releases are tagged at gates: v0.3 (Phase 0 and the kernel's first lane),
+v0.4 (Phase 1), v0.5 (Phase 2), v0.6-v0.7 and v1.0 (Phase 3), v1.x-v2.0
+(Phase 4), v2.x-v3.0 (Phase 5), v3.x-v4.0 (Phase 6), v5 (Phase 7), v6
+(Phase 8).
 
-The Stats NZ API connector and equivalents are pinned to v0.5 (moved from
-v0.2 by ADR-0014 and to v0.5 by ADR-0015, with the historical baseline that
-needs them) rather than left unpinned — this resolves the original
-doctrine's deliberate vagueness about "whichever later phase needs it", not
-a reversal of the underlying principle that automation follows real need.
+**Why this order, not another (ADR-0019):** each phase answers a harder
+version of one question: "If New Zealand changes X, what happens, to whom,
+when, through what mechanism, with what confidence, and compared with what
+alternatives?" In short: what are the rules → who do they affect → what do
+they cost → how does New Zealand work → why do outcomes change → what
+happens under different futures → where are we wrong → what information
+are we missing → what feasible choices exist → what are their trade-offs.
+
+- **Foundations first.** The constitution, model governance and the
+  variable registry come before further modelling, so every later model
+  shares one meaning for each variable, unit, period, population,
+  geography and identifier, and every quantity carries its value,
+  uncertainty and evidence: X = (x̂, D_x, E_x).
+- **Proof before impressive models.** The conformance suite, the
+  validation framework and the prediction ledger are in Phase 1, so the
+  external track record starts early.
+- **Observed state before projection.** Accounts and a historical state
+  store come before the baseline, and the baseline before causal claims
+  about the future.
+- **An integrated system before sophisticated parts.** A simple state
+  transition engine runs New Zealand forward before domain models replace
+  its parts, and each domain earns integration through validation.
+- **A digital twin is earned, then used.** Poltika is called an
+  operational national digital twin only at Phase 5's milestone. Decision
+  intelligence follows it.
+- **Value of information before search.** Poltika says when an answer
+  hinges on poorly evidenced parameters before it searches large policy
+  spaces, and it shows feasible trade-offs, never a single optimal answer.
+- **Public infrastructure, then AI.** Only after the machinery has earned
+  trust. AI operates the instrument; it is never the instrument.
+- **The permanent layer throughout:** evidence and provenance, validation
+  and benchmarking, forward prediction scoring, uncertainty and model
+  risk, versioning and reproducibility, Māori data governance, privacy and
+  security, human oversight, and model governance.
+- **Every stage has a validation gate.** Poltika doesn't move from "built"
+  to "trusted" because the code works.
+
+Discovery and Hypothesis are the causal library's intake (Step 12), with AI
+hypothesis discovery at Step 30, under the unchanged promotion gate
+`Discovery → Hypothesis → evidence → validation → human approval → model
+specification → tests → Simulator`. The Stats NZ API connector and
+equivalents are pinned to Step 9, the historical state store, which first
+needs them. Automation still follows real need.
 
 **v1.0 definition (testable, not aspirational):**
-Poltika v1.0 can ingest a structured package of material fiscal and policy changes
-represented within its supported NZ policy domains, propagate those interventions
-through an effective-dated policy interaction graph, and produce reproducible
-multi-year fiscal, distributional and selected economic/social outcome scenarios
-with explicit assumptions, uncertainty and source-level provenance.
+Phase 3's milestone. For a structured package of changes inside its
+supported kernel domains, Poltika v1.0 answers what happens (static, and
+behavioural where the causal library holds a classified relationship), to
+whom (by decile, household type, area and age on a graded population), when
+(year by year, through the Crown accounts, against the national baseline),
+through what mechanism (the evidence-graph chain to law and evidence), with
+what confidence (evidence classes, propagated uncertainty, the population
+grade, validation status, replay errors and the prediction ledger's
+record), and compared with what alternatives (the baseline and other
+scenarios). An independent analyst can reproduce and challenge the result
+without the builders.
 
-("Supported domain" status to be formally defined before v1.0 scoping: presumably
-= has a versioned POLICY_SPECS entry, passes its benchmark tests, has been through
-fresh-context review.)
+A "supported domain" has an approved specification, a complete
+conformance matrix, an independent review and current values
+(`BUILD_PLAN_PROGRAMME.md`).
 
-**North star (not a release gate):** a progressively improving executable digital
-twin of the New Zealand policy system.
+**North star (not a release gate):** New Zealand's open, evidence-linked
+policy intelligence infrastructure: a computational representation of how
+policy, people, businesses, government and physical systems interact, used
+to test interventions, discover trade-offs and learn from what actually
+happens. People choose the objectives; Poltika measures consequences.
 
 ---
 

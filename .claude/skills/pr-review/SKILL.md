@@ -89,10 +89,11 @@ go ahead at all.
   one sitting (roughly 1,000 lines), say so and review commit by commit.
 - **Earlier threads.** Read the existing reviews and comments so you
   don't repeat them. Check whether earlier findings were dealt with.
-- **Blockers that aren't code.** The review-debt cap (five or more open
-  implementation rows block implementation merges), a merge conflict, a
-  draft state. Put these in the verdict, not in the findings; they aren't
-  the author's defects.
+- **Blockers that aren't code.** A merge conflict, a draft state, or any
+  active gate in `doctrine/development-doctrine.md`. The review-debt cap
+  is suspended by programme plan P17: open rows still block their release
+  gates, but do not stop implementation merges. Put blockers in the
+  verdict, not in the findings; they aren't the author's defects.
 
 ## 3. Derive the contract before reading the rationale
 

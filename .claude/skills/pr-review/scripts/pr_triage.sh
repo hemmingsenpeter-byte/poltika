@@ -170,7 +170,10 @@ else
   open_rows="${open_rows% }"
   count=$(printf '%s' "$open_rows" | wc -w)
   echo "Open implementation rows: $count${open_rows:+ ($open_rows)}"
-  if [ "$count" -ge 5 ]; then
+  doctrine=$(git show "origin/$base:doctrine/development-doctrine.md" 2> /dev/null || true)
+  if grep -qF 'Review debt is recorded but not capped.' <<< "$doctrine"; then
+    echo "Review-debt cap is suspended; open rows do not stop merges."
+  elif [ "$count" -ge 5 ]; then
     echo "At or over the cap of five: no implementation PR merges until the queue is below five."
   fi
   row=$(printf '%s\n' "$queue" | grep -E "^\|[[:space:]]*#$pr[[:space:]]*\|" || true)
