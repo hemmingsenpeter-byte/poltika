@@ -80,9 +80,17 @@ class BodyLimitMiddleware:
             await self.app(scope, receive, send)
             return
         declared = dict(scope["headers"]).get(b"content-length")
-        if declared is not None and (not declared.isdigit() or int(declared) > MAX_BODY_BYTES):
-            await _too_large(send)
-            return
+        if declared is not None:
+            normalized = declared.lstrip(b"0") or b"0"
+            # Bound the conversion: Python rejects excessively long integers,
+            # and malformed client headers must not become server errors.
+            if (
+                not declared.isdigit()
+                or len(normalized) > len(str(MAX_BODY_BYTES))
+                or int(normalized) > MAX_BODY_BYTES
+            ):
+                await _too_large(send)
+                return
 
         received = 0
         started = False
