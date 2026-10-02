@@ -12,10 +12,11 @@ import pytest
 from fastapi.testclient import TestClient
 from openpyxl import load_workbook
 
-from poltika.api import workbench_registry
+from poltika.api import microsim, workbench, workbench_registry
 from poltika.api.main import app
 from poltika.scenarios.microsim.runner import COMPONENTS
 from poltika.scenarios.microsim.synthetic import generate
+from poltika.semantics.population import PopulationDataset
 from tests.unit.scenarios.microsim.test_synthetic import _spec
 
 client = TestClient(app)
@@ -457,3 +458,95 @@ def test_the_registry_title_drops_the_specification_suffix() -> None:
         "Working for Families",
         "Accommodation Supplement",
     }
+
+
+def test_entirely_unresolved_headline_is_not_zero_in_screen_or_exports(configured: Path) -> None:
+    population = PopulationDataset.model_validate_json(configured.read_text())
+    for household in population.households:
+        household.facts["household"]["wff"]["family_scheme_income"] = None
+    configured.write_text(population.model_dump_json())
+    payload = client.post("/workbench/results", json=_results_body()).json()
+    ftc = next(h for h in payload["headline"] if h["measure_id"] == "family_tax_credit")
+    assert ftc["change_total"] == "not calculated" and ftc["mean_change"] is None
+    assert Decimal(ftc["not_calculated"]) == sum(h.weight for h in population.households)
+    body = _export_body(payload)
+    csv_text = client.post("/workbench/export/headline.csv", json=body).text
+    assert "Family tax credit,Option A,NZD per tax year,not calculated," in csv_text
+    wb = load_workbook(io.BytesIO(client.post("/workbench/export.xlsx", json=body).content))
+    row = next(r for r in wb["Summary"].iter_rows(values_only=True) if r[0] == "Family tax credit")
+    assert row[3] == "not calculated" and row[4] is None
+
+
+def test_invalid_households_are_counted_in_workbench_coverage(configured: Path) -> None:
+    population = PopulationDataset.model_validate_json(configured.read_text())
+    # One record has no claimant and is excluded before running.
+    invalid = population.households[0]
+    changed = invalid.model_copy(update={
+        "persons": tuple(p for p in invalid.persons if p.role.value != "claimant")
+    })
+    population = population.model_copy(update={"households": (changed, *population.households[1:])})
+    configured.write_text(population.model_dump_json())
+    payload = client.post("/workbench/results", json=_results_body()).json()
+    coverage = _table(payload, "fiscal_coverage")
+    invalid_at = next(i for i, c in enumerate(coverage["columns"]) if c["id"] == "invalid")
+    share_at = next(i for i, c in enumerate(coverage["columns"]) if c["id"] == "share")
+    total_weight = sum(h.weight for h in population.households)
+    for row in coverage["rows"]:
+        assert Decimal(row[invalid_at]) == invalid.weight
+        expected_share = (Decimal(row[2]) * 100 / total_weight).quantize(Decimal("0.1"))
+        assert Decimal(row[share_at]) == expected_share
+    winners = _table(payload, "winners_losers_family_tax_credit")
+    invalid_at = next(i for i, c in enumerate(winners["columns"]) if c["id"] == "invalid")
+    assert sum(Decimal(row[invalid_at]) for row in winners["rows"]) == invalid.weight
+
+
+def test_export_refuses_different_populations_with_equal_baseline_totals(configured: Path) -> None:
+    first = client.post("/workbench/results", json=_results_body()).json()
+    population = PopulationDataset.model_validate_json(configured.read_text())
+    configured.write_text(population.model_copy(update={"population_id": "other"}).model_dump_json())
+    second = client.post("/workbench/results", json=_results_body()).json()
+    assert _table(first, "fiscal_components")["rows"] == _table(second, "fiscal_components")["rows"]
+    options = [
+        {"label": label, "run_id": payload["runs"][0]["run_id"]}
+        for label, payload in (("A", first), ("B", second))
+    ]
+    for path in ("/workbench/export.xlsx", "/workbench/export/fiscal_components.csv"):
+        response = client.post(path, json={"options": options})
+        assert response.status_code == 409
+        assert "same population" in response.json()["detail"]
+
+
+def test_export_refuses_changed_policy_artifacts(
+    configured: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "specs"
+    shutil.copytree(workbench_registry.specs_root(), root)
+    monkeypatch.setattr(workbench_registry, "specs_root", lambda: root)
+    monkeypatch.setattr(workbench, "specs_root", lambda: root)
+    for module in (microsim, workbench):
+        monkeypatch.setattr(module, "WFF_POLICY_DIR", root / "working_for_families")
+        monkeypatch.setattr(module, "AS_POLICY_DIR", root / "accommodation_supplement")
+    payload = client.post("/workbench/results", json=_results_body()).json()
+    specification = root / "working_for_families" / "specification.md"
+    specification.write_text(specification.read_text() + "\nChanged after this run.\n")
+    for path in ("/workbench/export.xlsx", "/workbench/export/worked_examples.csv"):
+        response = client.post(path, json=_export_body(payload))
+        assert response.status_code == 409
+        assert "policy files have changed" in response.json()["detail"]
+        assert str(root) not in response.text
+
+
+def test_check_config_errors_use_generic_server_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "specs"
+    shutil.copytree(workbench_registry.specs_root(), root)
+    policy = root / "working_for_families" / "policy.yaml"
+    policy.write_text(policy.read_text().replace("source_catalog: sources.yaml", "source_catalog: missing.yaml"))
+    monkeypatch.setattr(workbench, "specs_root", lambda: root)
+    response = client.post("/workbench/check", json={"reform": _reform()})
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "Internal server error: the deployed policy configuration is invalid."
+    }
+    assert str(root) not in response.text

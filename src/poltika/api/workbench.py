@@ -15,11 +15,13 @@
 
 Nothing here calculates policy. Runs are `poltika.scenarios.microsim`'s,
 kept in memory like `/microsim/runs` (gone after a restart; rerunning the
-same inputs gives the same run ID).
+same inputs gives the same run ID). Exports reject changed policy evidence
+and options with different population/code/policy baselines with HTTP 409.
 """
 
 from __future__ import annotations
 
+import hashlib
 from datetime import date
 from functools import lru_cache
 from typing import Annotated, Any, Literal
@@ -38,11 +40,17 @@ from poltika.api.wff import WFF_POLICY_DIR
 from poltika.api.workbench_export import table_csv, to_xlsx
 from poltika.api.workbench_registry import decision_text, instruments, specs_root
 from poltika.api.workbench_tables import FamilyType, OptionResult, build_results
-from poltika.common.errors import PoltikaError
 from poltika.policy.loader import load_policy_parameters, load_policy_spec
-from poltika.scenarios.microsim.reform import Reform, apply_reform
+from poltika.scenarios.microsim.reform import (
+    InvalidReformError,
+    Reform,
+    UnsupportedReformError,
+    apply_reform,
+)
+from poltika.scenarios.microsim.runner import PopulationRun
 from poltika.scenarios.microsim.worked_examples import run_examples
 from poltika.scenarios.record import ScenarioRecord
+from poltika.semantics.population import PopulationDataset
 
 router = APIRouter(prefix="/workbench", tags=["workbench"])
 
@@ -168,7 +176,7 @@ def check(request: CheckRequest) -> dict[str, Any]:
             )
             resulting = apply_reform(baseline, single).get(override.parameter_id)
             before = baseline.get(override.parameter_id)
-        except (PoltikaError, KeyError) as exc:
+        except (InvalidReformError, UnsupportedReformError, KeyError) as exc:
             problems.append({**where, "message": str(exc).strip("'\"")})
             continue
         changes.append(
@@ -184,9 +192,26 @@ def check(request: CheckRequest) -> dict[str, Any]:
     return {"ok": not problems, "changes": changes, "problems": problems}
 
 
+def _check_bound_artifacts(run: PopulationRun) -> None:
+    """Examples and source tables must describe the stored run's policy files."""
+    root = specs_root()
+    for name, expected in run.policy_artifacts:
+        try:
+            actual = hashlib.sha256((root / name).read_bytes()).hexdigest()
+        except OSError:
+            actual = None
+        if actual != expected:
+            raise HTTPException(
+                status_code=409,
+                detail="the run's policy files have changed; rerun before exporting or comparing",
+            )
+
+
 def _payload(
-    scenario: ScenarioHeader, labelled: list[tuple[str, Any, Any]]
+    scenario: ScenarioHeader, labelled: list[tuple[str, PopulationDataset, PopulationRun]]
 ) -> dict[str, Any]:
+    for _, _, run in labelled:
+        _check_bound_artifacts(run)
     families = _families()
     records = [(f.family_id, r) for f, r in families]
     options = [
@@ -198,12 +223,15 @@ def _payload(
         )
         for label, dataset, run in labelled
     ]
-    return build_results(
-        scenario.model_dump(),
-        options,
-        instruments(config.BASELINE_DATE),
-        [f for f, _ in families],
-    )
+    try:
+        return build_results(
+            scenario.model_dump(),
+            options,
+            instruments(config.BASELINE_DATE),
+            [f for f, _ in families],
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.post("/results")
@@ -258,4 +286,3 @@ def decision(
     if text is None:
         raise HTTPException(status_code=404, detail="no such decision")
     return text
-

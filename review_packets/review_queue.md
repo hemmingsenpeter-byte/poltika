@@ -18,7 +18,7 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
 editing history.
 
-**As of 28 September 2026: 6 open implementation review rows (#124, #125, #126, #127, #128, #133).** The review-debt cap is reached: no further implementation PR merges until GPT/Codex clears rows or Pete records an exemption. Review packet: `review_packets/v0_3_phase_1b_codex_audit.md`. GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
+**As of 2 October 2026: 5 open implementation review rows (#124, #125, #126, #127, #128).** The review-debt cap is reached: no further implementation PR merges until GPT/Codex clears rows or Pete records an exemption. Review packet: `review_packets/v0_3_phase_1b_codex_audit.md`. GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code checked its two fixes.
 Pete confirmed on 27 September 2026 that GPT/Codex cleared every PR up to
 #120 ("Yes all cleared by codex"), and approved all prior work. #111, #113,
 #114, #118 and #120 are marked reviewed on that confirmation; their review
@@ -35,7 +35,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
-| #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | open |
+| #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
 | #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Low | open |
 | #127 | v0.3 | Task 1b.6: `scenarios/microsim/ranges.py` population ranges; `fiscal_ranges` on `/microsim/runs`; Fiscal tab | Microsim, API | Medium | open |
 | #126 | v0.3 | Tasks 1b.2b, 1b.3b-1b.3d: `FactEntry.monotone`, `resolve(ranges=...)`, `Bounds.kind`; property tests | Scenarios, fact schema, API | Medium | open |

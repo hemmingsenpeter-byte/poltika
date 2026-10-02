@@ -32,6 +32,7 @@ from poltika.api import workbench_config as config
 from poltika.engines.simulator.trace import plain
 from poltika.scenarios.microsim import analysis
 from poltika.scenarios.microsim.runner import COMPONENTS, UNITS, PopulationRun
+from poltika.scenarios.microsim.validation import RecordStatus
 from poltika.scenarios.microsim.weighting import weighted_mean
 from poltika.scenarios.microsim.worked_examples import WorkedExample
 from poltika.scenarios.population import household_type
@@ -98,7 +99,7 @@ def _classify(change: analysis.HouseholdChange, threshold: Decimal) -> str:
     return "no_material_change"
 
 
-_CLASSES = ("better_off", "worse_off", "no_material_change", "needs_review", "unsupported")
+_CLASSES = ("better_off", "worse_off", "no_material_change", "needs_review", "unsupported", "invalid")
 
 
 def _summary(
@@ -113,7 +114,7 @@ def _summary(
     total = sum((v * w for v, w in calculated), Decimal(0))
     return {
         "weights": weights,
-        "total_change": total,
+        "total_change": total if calculated else None,
         "mean_change": weighted_mean(calculated),
     }
 
@@ -128,6 +129,15 @@ def _measure_changes(
         out.append(
             (household_type(by_id[result.household_id]).value, change, _classify(change, threshold))
         )
+    for checked in option.run.validation.households:
+        if checked.status is RecordStatus.INVALID:
+            change = analysis.HouseholdChange(
+                checked.household_id,
+                option.run.validation.weights[checked.household_id],
+                analysis.ChangeClass.UNSUPPORTED,
+                None,
+            )
+            out.append((household_type(by_id[checked.household_id]).value, change, "invalid"))
     return out
 
 
@@ -152,13 +162,19 @@ def headline(options: Sequence[OptionResult]) -> list[dict[str, Any]]:
                     "measure": measure.label,
                     "unit": unit,
                     "option": option.label,
-                    "change_total": _money(s["total_change"]),
+                    "change_total": (
+                        _money(s["total_change"])
+                        if s["total_change"] is not None
+                        else NOT_CALCULATED
+                    ),
                     "mean_change": _money(s["mean_change"]),
                     "better_off": _count(s["weights"]["better_off"]),
                     "worse_off": _count(s["weights"]["worse_off"]),
                     "no_material_change": _count(s["weights"]["no_material_change"]),
                     "not_calculated": _count(
-                        s["weights"]["needs_review"] + s["weights"]["unsupported"]
+                        s["weights"]["needs_review"]
+                        + s["weights"]["unsupported"]
+                        + s["weights"]["invalid"]
                     ),
                     "threshold": str(threshold),
                 }
@@ -198,7 +214,8 @@ def _fiscal_tab(options: Sequence[OptionResult]) -> dict[str, Any]:
             ok = f.coverage["calculated"] > 0
             row.append(_money(f.reform_total) if ok else NOT_CALCULATED)
             row.append(_money(f.delta_total) if ok else NOT_CALCULATED)
-            total = sum(f.coverage.values(), Decimal(0))
+            invalid = option.run.validation.by_status()[RecordStatus.INVALID][1]
+            total = sum(f.coverage.values(), Decimal(0)) + invalid
             share = (
                 (f.coverage["calculated"] * 100 / total).quantize(Decimal("0.1"), ROUND_HALF_UP)
                 if total
@@ -211,6 +228,7 @@ def _fiscal_tab(options: Sequence[OptionResult]) -> dict[str, Any]:
                     _count(f.coverage["calculated"]),
                     _count(f.coverage["needs_review"]),
                     _count(f.coverage["unsupported"]),
+                    _count(invalid),
                     str(share),
                 ]
             )
@@ -257,6 +275,7 @@ def _fiscal_tab(options: Sequence[OptionResult]) -> dict[str, Any]:
                     _col("calculated", "Calculated", "count"),
                     _col("needs_review", "Needs review", "count"),
                     _col("unsupported", "Unsupported", "count"),
+                    _col("invalid", "Invalid (excluded)", "count"),
                     _col("share", "Calculated, % of households", "share"),
                 ],
                 coverage_rows,
@@ -291,6 +310,7 @@ def _winners_losers_tables(options: Sequence[OptionResult]) -> list[dict[str, An
                         _count(w["no_material_change"]),
                         _count(w["needs_review"]),
                         _count(w["unsupported"]),
+                        _count(w["invalid"]),
                         _money(s["mean_change"]) if s["mean_change"] is not None else NOT_CALCULATED,
                     ]
                 )
@@ -306,6 +326,7 @@ def _winners_losers_tables(options: Sequence[OptionResult]) -> list[dict[str, An
                     _col("no_material_change", "No material change", "count"),
                     _col("needs_review", "Needs review", "count"),
                     _col("unsupported", "Unsupported", "count"),
+                    _col("invalid", "Invalid (excluded)", "count"),
                     _col("mean_change", f"Mean change of those calculated ({unit})", "money"),
                 ],
                 rows,
@@ -522,6 +543,14 @@ def build_results(
     instruments: Sequence[dict[str, Any]],
     families: Sequence[FamilyType],
 ) -> dict[str, Any]:
+    first = options[0].run
+    for option in options[1:]:
+        if (
+            option.run.population_sha256 != first.population_sha256
+            or option.run.code != first.code
+            or option.run.policy_artifacts != first.policy_artifacts
+        ):
+            raise ValueError("options must share the same population, code and policy baseline")
     active = {
         "fiscal": _fiscal_tab(options),
         "households": _households_tab(options, families),
@@ -533,7 +562,6 @@ def build_results(
         else {"id": t.tab_id, "title": t.title, "status": "deferred", "note": t.note, "blocks": []}
         for t in config.TABS
     ]
-    first = options[0].run
     return {
         "scenario": scenario,
         "law_baseline": config.BASELINE_LABEL,
