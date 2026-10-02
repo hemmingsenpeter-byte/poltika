@@ -10,6 +10,10 @@ result identity changes.
   `PETE_QUEUE.md`, and Tier A and B decisions are logged in
   `docs/decision_log.md`. Merges are squash merges.
 - **Programme status** (ADR-0020): `PROGRAMME_STATUS.md` tracks every programme step and task with status, owner, PR and blocker; `BUILD_PLAN_PROGRAMME.md`'s Progress table points to it.
+- **Governance files** (Tier A, docs): `.github/CODEOWNERS`, `SECURITY.md`,
+  `CONTRIBUTING.md`, issue forms under `.github/ISSUE_TEMPLATE/` and
+  `docs/releases/RELEASE_CHECKLIST.md`. No amount changes.
+
 - **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`
   lists every instrument under `policy_specs/` with its parameters (current
   value, unit, effective dates, review status), sources and decisions, so a

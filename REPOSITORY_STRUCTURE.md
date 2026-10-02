@@ -40,6 +40,10 @@ poltika/
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
 ├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
 │                         smallest action that clears it (ADR-0020)
+├── CONTRIBUTING.md     — the route into the repository: worktree flow, tests, review, tiers (ADR-0020), Make targets, where files go
+├── SECURITY.md         — what is in scope, how to report privately, supported versions, the automated checks
+├── .github/CODEOWNERS  — the owner, and the high-risk paths (policy_specs/, engines/simulator/, tests/fixtures/, workflows)
+├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)
@@ -61,7 +65,7 @@ poltika/
 │                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
-├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map and the v0.2 population methodology
+├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map, the v0.2 population methodology and RELEASE_CHECKLIST.md (the gate-based release steps, ending in a PETE_QUEUE.md tagging request)
 ├── docs/pilot/        — v0.1.5 pilot guide, hosting guide (HOSTING.md), and the pilot findings
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question

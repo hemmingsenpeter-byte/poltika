@@ -1,0 +1,17 @@
+# Code owners for Poltika.
+#
+# Zero approvals are required to merge (ADR-0020, "The ruleset on main").
+# CODEOWNERS therefore routes review requests and marks risk. It does not
+# block a merge.
+
+# Everything.
+*                                   @hemmingsenpeter-byte
+
+# High risk. A PR that touches these needs the independent GPT/Codex review
+# cleared in review_packets/review_queue.md before it merges (ADR-0020,
+# merge rule 4). Protected statutory values and CI guards are Tier C
+# (doctrine/test-doctrine.md).
+/policy_specs/                      @hemmingsenpeter-byte
+/src/poltika/engines/simulator/     @hemmingsenpeter-byte
+/tests/fixtures/                    @hemmingsenpeter-byte
+/.github/workflows/                 @hemmingsenpeter-byte
