@@ -156,9 +156,9 @@ def create_run(request: RunRequest) -> dict[str, Any]:
         except (UnsupportedReformError, InvalidReformError, ValueError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         body = _summary(p, run, request.component_set)
-    if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
-        _RUNS.pop(next(iter(_RUNS)))
-    _RUNS[run.run_id] = (p, run)
+        if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
+            _RUNS.pop(next(iter(_RUNS)))
+        _RUNS[run.run_id] = (p, run)
     return body
 
 
@@ -167,11 +167,12 @@ def fetch_run(
     run_id: RunId,
     component_set: Annotated[list[str] | None, Query()] = None,
 ) -> dict[str, Any]:
-    if run_id not in _RUNS:
+    stored = _RUNS.get(run_id)
+    if stored is None:
         raise HTTPException(
             status_code=404, detail=f"no run {run_id} in this process; rerun it to reproduce it"
         )
-    p, run = _RUNS[run_id]
+    p, run = stored
     components = ["family_tax_credit"] if component_set is None else component_set
     try:
         analysis.component_set_unit(components)

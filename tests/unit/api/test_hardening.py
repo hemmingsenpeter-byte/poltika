@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 from collections.abc import Iterator
 
 import httpx
 import pytest
 from fastapi.testclient import TestClient
+from starlette.types import Message, Receive, Scope, Send
 
-from poltika.api.hardening import MAX_BODY_BYTES
+from poltika.api.hardening import MAX_BODY_BYTES, BodyLimitMiddleware, SecurityHeadersMiddleware
 from poltika.api.main import app
 
 
@@ -64,6 +66,39 @@ def test_an_oversized_streamed_body_is_refused(client: TestClient) -> None:
     _assert_security_headers(response.headers)
 
 
+@pytest.mark.parametrize("declared", [None, b"2"])
+def test_stream_limit_stops_reading_after_multiple_chunks(declared: bytes | None) -> None:
+    """Actual ASGI chunks, including a dishonest small Content-Length:
+    the consumer stops before reading the rest of an oversized stream."""
+    chunks = [b"x" * MAX_BODY_BYTES, b"x", b"unread trailing data"]
+    reads = 0
+    sent: list[Message] = []
+
+    async def receive() -> Message:
+        nonlocal reads
+        body = chunks[reads]
+        reads += 1
+        return {"type": "http.request", "body": body, "more_body": reads < len(chunks)}
+
+    async def send(message: Message) -> None:
+        sent.append(message)
+
+    async def consume(scope: Scope, receive: Receive, send: Send) -> None:
+        while (await receive())["more_body"]:
+            pass
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"ok"})
+
+    scope: Scope = {
+        "type": "http", "headers": [] if declared is None else [(b"content-length", declared)]
+    }
+    middleware = SecurityHeadersMiddleware(BodyLimitMiddleware(consume))
+    asyncio.run(middleware(scope, receive, send))
+    assert reads == 2
+    assert sent[0]["status"] == 413
+    assert dict(sent[0]["headers"])[b"x-content-type-options"] == b"nosniff"
+
+
 def test_a_malformed_content_length_is_refused(client: TestClient) -> None:
     response = client.post("/household/calculate", content=b"{}", headers={"content-length": "x"})
     assert response.status_code in (400, 413)
@@ -115,14 +150,18 @@ def test_a_body_under_the_limit_reaches_the_route(client: TestClient) -> None:
     assert client.post("/household/calculate", json={}).status_code == 422
 
 
+@pytest.mark.parametrize("credentials", [None, "pilot:wrong", "pilot:p"])
 def test_the_limit_applies_before_the_password_check(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, credentials: str | None
 ) -> None:
     monkeypatch.setenv("POLTIKA_ACCESS_PASSWORD", "p")
-    token = base64.b64encode(b"pilot:p").decode()
+    headers = {}
+    if credentials is not None:
+        token = base64.b64encode(credentials.encode()).decode()
+        headers["Authorization"] = f"Basic {token}"
     response = client.post(
         "/household/calculate",
         content=b"x" * (MAX_BODY_BYTES + 1),
-        headers={"Authorization": f"Basic {token}"},
+        headers=headers,
     )
     assert response.status_code == 413
