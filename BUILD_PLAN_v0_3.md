@@ -553,8 +553,8 @@ or for Phase 0.
 - **D3:** The income-adequacy measures to report (5.3).
 - **D5 (decided 26 September 2026):** ADR-0016 accepted, with the
   32-branch cap and population-range reporting.
-- **D6 (decided 29 September 2026):** ADR-0017 (shared household model,
-  Phase 1) accepted with its three recommended answers: dated spells for
+- **D6 (decided 2 October 2026):** ADR-0017 accepted (shared household
+  model, Phase 1), with all three recommended answers: dated spells for
   income and benefit receipt, one family per household in v0.3, and
   today's request formats kept as adapters.
 - **D4 (decided 26 September 2026):** v0.3 ships with all three core
