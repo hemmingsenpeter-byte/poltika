@@ -22,9 +22,9 @@ poltika/
 ├── BUILD_PLAN_v0_1_5.md  — v0.1.5 evidence and explainability tasks and release gate (approved 25 September 2026)
 ├── BUILD_PLAN_v0_1_6.md  — v0.1.6 tasks: the 2027-28 year and source currency (approved 26 September 2026)
 ├── BUILD_PLAN_v0_2.md    — v0.2 tasks: static population microsimulation (approved 26 September 2026; ADR-0014)
-├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015); since ADR-0018 also Phase 0 (Steps 1 and 2)
-├── BUILD_PLAN_PROGRAMME.md — the programme plan: Pete's master build order (33 steps in eight phases), what exists against each step, tasks, validation gates, month targets and decisions (29 September 2026; ADR-0018)
-├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015); its sequence superseded by ADR-0018, its workstreams carried into the programme plan
+├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015); since ADR-0019 also Phase 0 (Steps 1 and 2)
+├── BUILD_PLAN_PROGRAMME.md — the programme plan: Pete's master build order (33 steps with Phase 0 foundations and eight delivery phases), what exists against each step, tasks, validation gates, month targets and decisions (29 September 2026; ADR-0019)
+├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015); its sequence superseded by ADR-0019, its workstreams carried into the programme plan
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
 ├── ROADMAP.md
@@ -36,6 +36,10 @@ poltika/
 │                       — v0.1.5 Task 8.1 pilot container: API + PostgreSQL,
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
+├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
+├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
+│                         (`agents/`: `poltika-worker` implements one briefed subtask,
+│                         `poltika-reviewer` reviews a diff with a fresh context)
 │
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
 ├── adr/               — architecture decisions with rationale and context
@@ -124,7 +128,8 @@ poltika/
 │   │                        loaded parameters, runner.py baseline and
 │   │                        reform runs with run identity, analysis.py
 │   │                        weighted tables, withdrawal.py withdrawal
-│   │                        paths and sweeps, ranges.py (v0.3 Task 1b.6)
+│   │                        paths and sweeps, worked_examples.py named
+│   │                        households run once under a reform, ranges.py (v0.3 Task 1b.6)
 │   │                        needs-review population ranges, explain.py verified
 │   │                        population explanations, synthetic.py the
 │   │                        seeded synthetic population generator and its
@@ -175,8 +180,25 @@ poltika/
 │                            microsim_page.py (v0.2 Task 10.2: the
 │                            /analyst/microsim page); access.py (hosted
 │                            pilot password, HTTP Basic, operator-set
-│                            POLTIKA_ACCESS_PASSWORD) — no llm/
-│                            layer yet;
+│                            POLTIKA_ACCESS_PASSWORD); hardening.py
+│                            (security headers and request-size limit);
+│                            workbench.py
+│                            (the analyst workbench routes under
+│                            /workbench: registry, check, results,
+│                            Excel/CSV export, decision text) with
+│                            workbench_registry.py (instruments,
+│                            parameters, sources and decisions read from
+│                            the specs directory, so a new instrument
+│                            spec appears with no code change),
+│                            workbench_tables.py (results as generic
+│                            table blocks; the page and both exports
+│                            render the same blocks),
+│                            workbench_export.py (xlsx and csv writers)
+│                            and workbench_config.py (presentation
+│                            config only: tabs, fiscal-year slots,
+│                            measures, winner/loser thresholds, family
+│                            types, limitations; never a policy value)
+│                            — no llm/ layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
 │                            time, ADR-0011)
@@ -254,7 +276,7 @@ goes in exactly one of them:
 | Directory | Holds | Written by |
 | --- | --- | --- |
 | `docs/research/` | Source research: what a primary source says, dated checks, prior-art glances (clean-room) | GPT/Codex or Claude Code, before implementation |
-| `review_packets/` | Inputs handed to a reviewer: the packet (sources, spec, diff, tests) and any scripts that produced reviewed results; `review_queue.md` lists merged PRs awaiting independent review (the review-debt cap) | The author, before review |
+| `review_packets/` | Inputs handed to a reviewer: the packet (sources, spec, diff, tests) and any scripts that produced reviewed results; `review_queue.md` lists merged PRs awaiting independent review (the cap is suspended, P17) | The author, before review |
 | `reviews/` | A reviewer's output: findings, classifications and dispositions | The reviewer |
 
 Existing records stay where they are. Several protected, hash-bound files
@@ -302,8 +324,8 @@ poltika/
 │       ├── engines/
 │       │   ├── simulator/   — deterministic policy calculations (v0.1)
 │       │   ├── assurance/   — provenance, regression, change attribution (v0.1)
-│       │   ├── discovery/   — capability-driven, post-v1.0 (Roadmap Doctrine, ADR-0015)
-│       │   └── hypothesis/  — capability-driven, post-v1.0 (Roadmap Doctrine, ADR-0015)
+│       │   ├── discovery/   — causal-library intake (programme Step 12; AI intake Step 30)
+│       │   └── hypothesis/  — causal-library intake (programme Step 12; AI intake Step 30)
 │       ├── scenarios/       — scenario definitions, runner, results
 │       ├── llm/             — orchestration, prompts, guardrails (never calculates — see doctrine/llm_boundaries.md)
 │       ├── api/             — FastAPI app; HTTP request/response boundary only (Task 21, ADR-0010)
@@ -325,7 +347,7 @@ poltika/
 
 `engines/discovery/` and `engines/hypothesis/` are placeholders only:
 Discovery and Hypothesis become the intake of the causal evidence library
-(`BUILD_PLAN_PROGRAMME.md` Step 12, ADR-0018), with AI hypothesis discovery
+(`BUILD_PLAN_PROGRAMME.md` Step 12, ADR-0019), with AI hypothesis discovery
 at Step 30, built when there is data to run them on. Listing them here names the eventual slot; it doesn't
 authorise early work. The programme plan's new components (the model
 registry, the variable registry's extensions, the quantity type, the

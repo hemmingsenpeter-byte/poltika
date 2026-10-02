@@ -5,12 +5,28 @@
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`
+  lists every instrument under `policy_specs/` with its parameters (current
+  value, unit, effective dates, review status), sources and decisions, so a
+  new instrument spec appears with no code change (it is runnable only if the
+  engines model it). `POST /workbench/check` shows what each override of a
+  reform would do, or why it is refused, before a run. `POST /workbench/results`
+  runs one or two options against the status quo and returns a headline and
+  Fiscal, Households and Assumptions & provenance tabs as generic table blocks;
+  `POST /workbench/export.xlsx` and `/workbench/export/{table}.csv` write the
+  same blocks, with the run ID on every sheet. No amount changes. Nothing is
+  added across units, the in-work tax credit stays `needs_review`, and there is
+  no total row. Worked examples run the golden households under a reform
+  (`scenarios/microsim/worked_examples.py`). Adds `openpyxl`.
 - **Hosted pilot, password protected**: the pilot image refuses to start
   without `POLTIKA_ACCESS_PASSWORD`, then asks for it on every page and
   route (HTTP Basic; `/healthz` stays open for health checks). It listens
   on `$PORT` and includes the synthetic development population. Hosting
   steps are in `docs/pilot/HOSTING.md`. Local runs from a checkout are
   unchanged.
+- **Hosted pilot, hardened for outside use**: every response carries
+  security headers; request bodies over 64 KiB get 413; and population
+  runs are computed one at a time (429 while busy).
 - **Fact catalogues** (Task 1b.1, ADR-0016): every fact the WFF, AS and
   combined engines can report missing has a plain-language question and
   its admissible answers, in `policy_specs/<policy>/facts.yaml`. The

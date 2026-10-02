@@ -115,6 +115,37 @@ def test_declined_fact_gives_incomplete_with_resolution() -> None:
     assert step["calculation"]["wff"]["family_tax_credit"]["outcome"] == "needs_review"
 
 
+@pytest.mark.parametrize(
+    ("label", "message"),
+    [
+        ("wff.children.best_start_cohort", "child"),
+        ("children[9].best_start_cohort", "child"),
+        ("children[-1].best_start_cohort", "not a fact label"),
+        ("wff.no_such_fact", "not a catalogued fact"),
+        ("nonsense", "not a fact label"),
+    ],
+)
+def test_invalid_declined_labels_are_422(label: str, message: str) -> None:
+    partial = _payload(G1)
+    partial["wff"]["children"][0]["best_start_cohort"] = "unknown"
+    response = _intake(partial, declined=["wff.household_eligibility", label])
+    assert response.status_code == 422
+    assert "declined[1]" in response.json()["detail"]
+    assert message in response.json()["detail"]
+
+
+@pytest.mark.parametrize("label", ["children[0].best_start_cohort", "children[00].best_start_cohort"])
+def test_declined_child_fact_is_not_asked_again(label: str) -> None:
+    partial = _payload(G1)
+    partial["wff"]["children"][0]["best_start_cohort"] = "unknown"
+    response = _intake(partial, declined=[label], asked=["best_start"])
+    assert response.status_code == 200
+    step = response.json()
+    assert step["status"] == "incomplete" and step["question"] is None
+    assert [q["fact"] for q in step["remaining"]] == ["children[0].best_start_cohort"]
+    assert step["calculation"]["wff"]["best_start"]["outcome"] == "needs_review"
+
+
 def test_asked_components_limit_the_questions() -> None:
     partial = _payload(G1, claimant_category=None)
     partial["wff"]["household_eligibility"] = "unknown"

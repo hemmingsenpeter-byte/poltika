@@ -1,10 +1,9 @@
 # ADR-0017: Shared household model
 
 **Date:** 27 September 2026
-**Status:** accepted. Pete approved it on 29 September 2026 with the
-three recommended answers below ("Approve and proceed all",
-`BUILD_PLAN_PROGRAMME.md` Decisions). v0.3 Phase 1, `ROADMAP_REALIGNMENT.md`
-W6. Drafted by Claude Code.
+**Status:** accepted. Pete accepted it on 2 October 2026, with all three
+recommended answers below (`BUILD_PLAN_v0_3.md` D6; v0.3 Phase 1,
+`ROADMAP_REALIGNMENT.md` W6). Drafted by Claude Code.
 
 ## Context
 

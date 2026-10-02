@@ -3,8 +3,11 @@
 import subprocess
 from pathlib import Path
 
+import pytest
 
-def test_triage_counts_pilot_implementation_rows(tmp_path: Path) -> None:
+
+@pytest.mark.parametrize("cap_suspended", [False, True])
+def test_triage_counts_pilot_implementation_rows(tmp_path: Path, cap_suspended: bool) -> None:
     script = Path(__file__).resolve().parents[2] / ".claude/skills/pr-review/scripts/pr_triage.sh"
     remote = tmp_path / "remote.git"
     repo = tmp_path / "repo"
@@ -29,6 +32,12 @@ def test_triage_counts_pilot_implementation_rows(tmp_path: Path) -> None:
         "| #129 | Plan | open |\n",
         encoding="utf-8",
     )
+    if cap_suspended:
+        doctrine = repo / "doctrine"
+        doctrine.mkdir()
+        (doctrine / "development-doctrine.md").write_text(
+            "- Review debt is recorded but not capped.\n", encoding="utf-8",
+        )
     git("add", ".")
     git("commit", "-m", "Queue fixture")
     git("push", "origin", "HEAD:refs/heads/main", "HEAD:refs/pull/123/head")
@@ -36,4 +45,8 @@ def test_triage_counts_pilot_implementation_rows(tmp_path: Path) -> None:
         ["bash", str(script), "123"], cwd=repo, check=True, capture_output=True, text=True,
     )
     assert "5 (#124 #125 #126 #127 #128)" in result.stdout
-    assert "At or over the cap of five" in result.stdout
+    if cap_suspended:
+        assert "Review-debt cap is suspended" in result.stdout
+        assert "At or over the cap of five" not in result.stdout
+    else:
+        assert "At or over the cap of five" in result.stdout

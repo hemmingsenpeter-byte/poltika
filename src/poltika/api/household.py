@@ -401,13 +401,19 @@ def intake(request: IntakeRequest) -> IntakeResponse:
             record = apply_answer(record, fact_for(record, given.fact, facts()), given.answer)
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=f"answers[{i}]: {exc}") from exc
+    declined = []
+    for i, label in enumerate(request.declined):
+        try:
+            declined.append(fact_for(record, label, facts()).slot.label)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=f"declined[{i}]: {exc}") from exc
     step = next_step(
         record,
         WFF_POLICY_DIR,
         AS_POLICY_DIR,
         facts(),
         asked=request.asked,
-        declined=request.declined,
+        declined=declined,
     )
     return IntakeResponse(
         status=step.status,

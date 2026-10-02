@@ -6,9 +6,9 @@ is Tier 1 of the policy kernel coverage map (`ROADMAP_REALIGNMENT.md` W10,
 decided 26 September 2026): personal income tax, Jobseeker Support, Sole
 Parent Support and Supported Living Payment. Phase 0 sets each one's
 supported slice from sources.
-**Starts:** after v0.2 ships and W1's review queue is below its cap.
+**Starts:** after v0.2 ships.
 Phase 0 can start as soon as ADR-0015 is accepted.
-**Redirect (ADR-0018, 29 September 2026):** this plan is now lane 3A of
+**Redirect (ADR-0019, 29 September 2026):** this plan is now lane 3A of
 `BUILD_PLAN_PROGRAMME.md` (the statutory kernel's first lane). v0.3 also
 ships Phase 0: Step 1 (the epistemic constitution and model governance)
 and Step 2 (the National Variable Registry and common schemas; this
@@ -73,7 +73,7 @@ it. That shape is the aim, not an assumed rule. v0.3 delivers:
 - multi-year scenarios (programme plan Step 8);
 - uncertainty propagation or Monte Carlo (Step 11; each quantity's
   uncertainty is represented from Step 2);
-- the historical state store and the baseline (Steps 9-10, per ADR-0018);
+- the historical state store and the baseline (Steps 9-10, per ADR-0019);
 - GST, company tax or other revenue (Step 3, lane 3E);
 - behavioural responses (Step 12);
 - the other household domains (Temporary Additional Support, Disability
@@ -553,10 +553,10 @@ or for Phase 0.
 - **D3:** The income-adequacy measures to report (5.3).
 - **D5 (decided 26 September 2026):** ADR-0016 accepted, with the
   32-branch cap and population-range reporting.
-- **D6 (decided 29 September 2026):** ADR-0017 (shared household model,
-  Phase 1) accepted with its three recommended answers: dated spells for
+- **D6 (decided 2 October 2026):** ADR-0017 accepted (shared household
+  model, Phase 1), with all three recommended answers: dated spells for
   income and benefit receipt, one family per household in v0.3, and
   today's request formats kept as adapters.
 - **D4 (decided 26 September 2026):** v0.3 ships with all three core
-  main benefits (W10 Tier 1). Tier 2 domains follow as v0.3.x coverage
-  releases.
+  main benefits (W10 Tier 1). The original v0.3.x placement of Tier 2
+  domains is superseded by the programme plan's lanes 3C and 3D.

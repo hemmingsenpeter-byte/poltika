@@ -143,9 +143,10 @@ what evidence was considered, who/what decided, when.
 ## Roadmap Doctrine (frozen)
 
 Superseded its original capability-sequence framing per ADR-0008 (2026-09-21),
-and its later release sequences per ADR-0014 and ADR-0015. Since ADR-0018
-(29 September 2026) the order is Pete's master build order: 33 steps in eight
-phases, with a permanent layer and a validation gate at every stage. It is
+and its later release sequences per ADR-0014 and ADR-0015. Since ADR-0019
+(29 September 2026) the order is Pete's master build order: 33 steps with
+Phase 0 foundations and eight delivery phases, with a permanent layer and
+a validation gate at every stage. It is
 defined in `BUILD_PLAN_PROGRAMME.md` (what exists against each step, tasks,
 month targets, gates, releases and decisions) and summarised in `ROADMAP.md`.
 This section states the order and the reasoning behind it, not the detail.
@@ -184,7 +185,7 @@ v0.4 (Phase 1), v0.5 (Phase 2), v0.6-v0.7 and v1.0 (Phase 3), v1.x-v2.0
 (Phase 4), v2.x-v3.0 (Phase 5), v3.x-v4.0 (Phase 6), v5 (Phase 7), v6
 (Phase 8).
 
-**Why this order, not another (ADR-0018):** each phase answers a harder
+**Why this order, not another (ADR-0019):** each phase answers a harder
 version of one question: "If New Zealand changes X, what happens, to whom,
 when, through what mechanism, with what confidence, and compared with what
 alternatives?" In short: what are the rules → who do they affect → what do

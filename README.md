@@ -10,8 +10,8 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 - [BUILD_PLAN.md](BUILD_PLAN.md) — what's being built now, in what order, and v0.1 acceptance criteria
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how Poltika works, conceptually and technically
 - [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — where every component belongs and the dependency rules between layers
-- [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) — the programme plan (ADR-0018): Pete's master build order of 33 steps in eight phases, what already exists against each step, tasks, validation gates, month targets and decisions
-- [ROADMAP.md](ROADMAP.md) — the master technical roadmap: the question Poltika answers, the north star, the eight phases and their milestones, and the permanent layer
+- [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) — the programme plan (ADR-0019): Pete's master build order of 33 steps with Phase 0 foundations and eight delivery phases, what already exists against each step, tasks, validation gates, month targets and decisions
+- [ROADMAP.md](ROADMAP.md) — the master technical roadmap: the question Poltika answers, the north star, the foundations, eight delivery phases and their milestones, and the permanent layer
 - [BUILD_PLAN_v0_1_5.md](BUILD_PLAN_v0_1_5.md) — the v0.1.5 plan
 - [BUILD_PLAN_v0_1_6.md](BUILD_PLAN_v0_1_6.md) — the v0.1.6 plan: keep v0.1 current past 1 April 2027
 - [BUILD_PLAN_v0_2.md](BUILD_PLAN_v0_2.md) — the v0.2 plan: static population microsimulation (ADR-0014)
