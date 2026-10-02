@@ -2,9 +2,10 @@
 
 **Date:** 29 September 2026
 **Status:** Pete's master technical roadmap, set on 29 September 2026
-(ADR-0018). It consolidates the whole planning thread of that day,
-including Pete's lessons from MIT's work in Andorra, into 33 steps in
-eight phases. It replaces two earlier versions from the same day (20
+(ADR-0019). It consolidates the whole planning thread of that day,
+including Pete's lessons from MIT's work in Andorra, into 33 steps with
+Phase 0 foundations and eight delivery phases. It replaces two earlier
+versions from the same day (20
 steps, then 22). Pete approved the first version with its recommended
 decisions ("Approve and proceed all"), and those decisions carry over
 unless marked otherwise ("Decisions"). The reconciliation, month targets,
@@ -43,11 +44,13 @@ and physical constraints. Debt alone or GDP alone is not the objective.
 **People choose the objectives and trade-offs. Poltika measures
 consequences. It doesn't decide what New Zealand ought to value.**
 
-**Why now:** Treasury's He Tirohanga Mokopuna 2025 projects net core
-Crown debt at 200.0% of GDP by 2065 if fiscal policy is unchanged.
-Treasury calls this a projection, not a prediction (treasury.govt.nz,
-retrieved 29 September 2026). Step 10 reproduces that baseline or explains
-where Poltika's differs.
+**Why now:** Treasury's [He Tirohanga Mokopuna 2025](https://www.treasury.govt.nz/publications/ltfp/he-tirohanga-mokopuna-2025)
+projects net core Crown debt, excluding NZSF and advances, at 200.0% of
+GDP by 2065 in its unchanged-policy LTFM baseline (Table 2, p. 38).
+The executive summary (p. 2) calls this a projection, not a prediction.
+Published 24 September 2025; retrieved 29 September 2026 and rechecked
+2 October 2026. Step 10 reproduces that baseline or explains where
+Poltika's differs.
 
 ## The journey in one line
 
@@ -150,7 +153,8 @@ adds Phase 0:
 
 ## How to read this plan
 
-- **33 steps in eight phases, in Pete's order.** A step's exit gate needs
+- **33 steps with Phase 0 foundations and eight delivery phases, in Pete's
+  order.** A step's exit gate needs
   the earlier gates, except where a step says it starts early. The
   permanent layer starts in the step named, then grows.
 - **Months are targets**, counted from M0 = October 2026 (M3 = January
@@ -183,7 +187,7 @@ the step exists and is reused, not rebuilt.
 | # | Step | What exists | State |
 | --- | --- | --- | --- |
 | 1 | Epistemic constitution and model governance | CLAUDE.md's ground truth; doctrines (deterministic core, LLM boundaries, test, review, IP, scope, development); `calculated`/`unsupported`/`needs_review`, and a missing fact is never zero; source ranks; `review_status`, with `scenario_assumption` for reform values; the caller-asserted fact ledger; independent review and the review queue | Partial. Missing: evidence classes on every output, a precision rule, the AI gate written down, the never-build list, data governance, a model registry and change control |
-| 2 | National Variable Registry and common schemas | `CanonicalVariable` (unit, frequency, price basis, stock or flow, geography and population, validity) with 54 registered variables; `Observation` and `Lineage`; the population schema; `DataContext` with vintages; ADR-0017 accepted | Partial: external data only. Missing: engine inputs and outputs, unit, period, entity and geography registries, identifiers, the quantity type, the household model, the state schema |
+| 2 | National Variable Registry and common schemas | `CanonicalVariable` (unit, frequency, price basis, stock or flow, geography and population, validity) with 60 registered variables; `Observation` and `Lineage`; the population schema; `DataContext` with vintages; ADR-0017 accepted | Partial: external data only. Missing: engine inputs and outputs, unit, period, entity and geography registries, identifiers, the quantity type, the household model, the state schema |
 | 3 | Deterministic statutory kernel | WFF 2026-27 (in-work tax credit `needs_review`) and the Accommodation Supplement, to v0.1's standard; fact catalogues, intake questions and conditional answers (v0.3 Phase 1b, mostly done); reforms as overrides; the source-currency report | Partial: 2 of about 24 domains |
 | 4 | Evidence Intelligence and evidence graph | Sources with locators and ranks; rule ids; decision records; traces; provenance reports; verified explanations; evidence coverage check; data lineage | Partial: forward, per result. Missing: the graph, reverse queries, click-through |
 | 5 | Legislation conformance suite | Spec cases (WFF 23, AS 26, interaction 5), benchmarks, 9 golden households, golden traces, 100+ explanation fixtures, statutory-value guard, properties, shared-fact contradiction checks | Partial. Missing: per-rule matrix with boundary and contradiction classes, portable fixtures, harness, publication |
@@ -314,7 +318,7 @@ of truth.
   the quantity type (2.6).
 - **1.4 — Pete, with the people Pete engages; GPT/Codex sources. Māori
   data governance, privacy and security as architecture.**
-  - From the Algorithm Charter for Aotearoa New Zealand, the Privacy Act
+  - From the [Algorithm Charter for Aotearoa New Zealand](https://www.data.govt.nz/toolkit/data-ethics/government-algorithm-transparency-and-accountability/algorithm-charter), the Privacy Act
     2020, Stats NZ's microdata and IDI rules and published Māori data
     governance frameworks, record the constraints Poltika must meet.
   - Record who decides about Māori data and outputs about Māori, which
@@ -1270,7 +1274,7 @@ conformance matrix, an independent review and current values.
 | W6 Shared household model | Step 2.7 |
 | W7 Household dependency graph | Lane 3A, sharing node ids with Step 4 |
 | W8 Multi-year parameters | Lane 3B |
-| W9 Roadmap reorder | Superseded by ADR-0018 |
+| W9 Roadmap reorder | Superseded by ADR-0019 |
 | W10 Coverage map | Extended by lanes 3C-3E, in the direction's order |
 
 ## What Poltika never builds
@@ -1345,5 +1349,5 @@ decisions below carry over, with their step numbers updated.
 
 | Step | State |
 | --- | --- |
-| Plan | Master order of 33 steps in eight phases, 29 September 2026 (ADR-0018) |
+| Plan | Master order of 33 steps with Phase 0 foundations and eight delivery phases, 29 September 2026 (ADR-0019) |
 | 1-33 | As in "Where Poltika stands". Each row is updated as its tasks land. |

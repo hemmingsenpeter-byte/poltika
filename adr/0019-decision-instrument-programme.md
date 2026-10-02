@@ -1,4 +1,4 @@
-# ADR-0018: The master build order: 33 steps in eight phases, with validation gates
+# ADR-0019: The master build order: 33 steps with Phase 0 foundations and eight delivery phases, with validation gates
 
 **Date:** 29 September 2026
 **Status:** accepted as direction. Pete set it on 29 September 2026 in
@@ -36,10 +36,12 @@ epistemic constitution, a permanent layer of capabilities, and a list of
 things Poltika never builds. People choose objectives and trade-offs;
 Poltika measures consequences.
 
-The motivating baseline is Treasury's. He Tirohanga Mokopuna 2025
-projects net core Crown debt at 200.0% of GDP by 2065 if fiscal policy is
-unchanged, and Treasury calls it a projection, not a prediction
-(treasury.govt.nz, retrieved 29 September 2026).
+The motivating baseline is Treasury's [He Tirohanga Mokopuna 2025](https://www.treasury.govt.nz/publications/ltfp/he-tirohanga-mokopuna-2025).
+Table 2 (p. 38) projects net core Crown debt, excluding NZSF and
+advances, at 200.0% of GDP by 2065 in its unchanged-policy LTFM baseline.
+The executive summary (p. 2) distinguishes the projection from a
+prediction. Published 24 September 2025; retrieved 29 September 2026
+and rechecked 2 October 2026.
 
 Across the day's three versions, Pete's reasoning was:
 
@@ -93,7 +95,7 @@ transition engine.
 
 ## Decision
 
-1. **The build order is Pete's master order: 33 steps in eight phases.**
+1. **The build order is Pete's master order: 33 steps with Phase 0 foundations and eight delivery phases.**
    - **Phase 0, foundations:**
      1. epistemic constitution and model governance;
      2. National Variable Registry and common schemas.
@@ -159,7 +161,7 @@ transition engine.
 
 ## Consequences
 
-- `ROADMAP.md` is rewritten on the eight phases. `BUILD_PLAN.md`'s Roadmap
+- `ROADMAP.md` is rewritten on Phase 0 and the eight delivery phases. `BUILD_PLAN.md`'s Roadmap
   Doctrine, v1.0 definition and north star are updated. `BUILD_PLAN_v0_3.md`
   and `ROADMAP_REALIGNMENT.md` carry notes saying how they are re-homed.
 - Nothing already built is discarded. v0.2's canonical variables become

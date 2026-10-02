@@ -13,8 +13,9 @@ Detailed tasks for each release are in its own plan:
 
 ## Planning status
 
-Operative from 29 September 2026. ADR-0018 records Pete's master build
-order: 33 steps in eight phases, a permanent layer, and a validation gate
+Operative from 29 September 2026. ADR-0019 records Pete's master build
+order: 33 steps with Phase 0 foundations and eight delivery phases, a
+permanent layer, and a validation gate
 at every stage, with targets in months. It supersedes ADR-0015's sequence
 (and through it ADR-0008's and ADR-0014's). Nothing here changes v0.1's
 scope, approvals or acceptance criteria, or anything already built.
@@ -43,9 +44,11 @@ fiscal, distributional, environmental, institutional and physical
 constraints. People choose the objectives and trade-offs. Poltika
 measures consequences; it doesn't decide what New Zealand ought to value.
 
-The motivating baseline: Treasury's He Tirohanga Mokopuna 2025 projects
-net core Crown debt at 200.0% of GDP by 2065 under unchanged fiscal
-policy, a projection rather than a prediction.
+The motivating baseline: Treasury's [He Tirohanga Mokopuna 2025](https://www.treasury.govt.nz/publications/ltfp/he-tirohanga-mokopuna-2025)
+projects net core Crown debt, excluding NZSF and advances, at 200.0% of
+GDP by 2065 in its unchanged-policy LTFM baseline (Table 2, p. 38).
+The executive summary (p. 2) distinguishes the projection from a
+prediction. Published 24 September 2025; rechecked 2 October 2026.
 
 ## The journey in one line
 
@@ -94,7 +97,7 @@ milestones decide when something is done.
    ledger begins small and grows with Poltika.
 
 **Milestone:** Poltika can reliably answer "What does current New Zealand
-policy actually do?"
+policy actually do?", for the domains it covers.
 
 ### Phase 2 - Population and Fiscal Effects (M3-M9)
 
@@ -238,9 +241,9 @@ Māori data governance engagement and Pete's decisions.
 | v0.2 | Ready to tag: static microsimulation on a synthetic development population | |
 | v0.1.6 | The 2027-28 year, by 1 April 2027 | |
 | v0.3 | Phase 0; income tax and the core benefits | |
-| v0.4 | Steps 4-6 | Phase 1 |
-| v0.5 | Steps 7-9 | Phase 2 |
-| v0.6, v0.7 | Steps 10-13 | |
+| v0.4 | Steps 4-6; kernel lane 3C | Phase 1, for covered domains |
+| v0.5 | Steps 7-9; kernel lane 3D | Phase 2 |
+| v0.6, v0.7 | Steps 10-13; kernel lane 3E | |
 | v1.0 | Gates 1-13 | Phase 3 |
 | v1.x, v2.0 | Steps 14-16 | Phase 4 |
 | v2.x, v3.0 | Steps 17-20 | Phase 5 |
