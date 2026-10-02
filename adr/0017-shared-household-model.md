@@ -1,8 +1,9 @@
 # ADR-0017: Shared household model
 
 **Date:** 27 September 2026
-**Status:** proposed. For Pete (v0.3 Phase 1, `ROADMAP_REALIGNMENT.md`
-W6). Drafted by Claude Code. Nothing is built until it is accepted.
+**Status:** accepted. Pete accepted it on 2 October 2026, with all three
+recommended answers below (`BUILD_PLAN_v0_3.md` D6; v0.3 Phase 1,
+`ROADMAP_REALIGNMENT.md` W6). Drafted by Claude Code.
 
 ## Context
 
@@ -26,7 +27,7 @@ checks grow with every pair of every shared fact. v0.2's population
 schema (`semantics/population.py`) already has persons, but its facts are
 the per-policy scenario forms.
 
-## Decision (proposed)
+## Decision
 
 ### 1. One household record in `semantics/`
 
