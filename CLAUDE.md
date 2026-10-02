@@ -51,6 +51,7 @@ Read:
 - BUILD_PLAN.md
 - ARCHITECTURE.md
 - REPOSITORY_STRUCTURE.md — before creating any new production file, module, or directory; a proposed component with no obvious location means updating that file deliberately, not creating an ad-hoc directory
+- doctrine/epistemic-constitution.md
 - relevant files under doctrine/
 - relevant policy specification under policy_specs/
 
@@ -67,6 +68,10 @@ Never use model memory as authority for:
 - policy interactions
 
 If the source is missing or ambiguous, stop and flag it.
+
+Every claim carries one evidence class. A claim with no cited primary source
+and independent review is an AI hypothesis, never a fact or a rule. See
+`doctrine/epistemic-constitution.md`.
 
 ## Implementation
 
