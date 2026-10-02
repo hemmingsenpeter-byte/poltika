@@ -144,22 +144,47 @@ def parameters() -> list[dict[str, Any]]:
     return rows
 
 
+def execute_reform(
+    reform: Reform, component_set: list[str]
+) -> tuple[PopulationDataset, PopulationRun]:
+    """Run `reform` on the configured population and keep the run for
+    `fetch_run`. Shared by `POST /microsim/runs` and the workbench routes."""
+    with _one_at_a_time():
+        return _execute_reform(reform, component_set)
+
+
+def _execute_reform(
+    reform: Reform, component_set: list[str]
+) -> tuple[PopulationDataset, PopulationRun]:
+    """Compute and publish while the caller holds `_one_at_a_time`."""
+    p = population()
+    try:
+        analysis.component_set_unit(component_set)
+        run = run_population(
+            p, reform, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
+        )
+    except (UnsupportedReformError, InvalidReformError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
+        _RUNS.pop(next(iter(_RUNS)))
+    _RUNS[run.run_id] = (p, run)
+    return p, run
+
+
+def stored_run(run_id: str) -> tuple[PopulationDataset, PopulationRun]:
+    stored = _RUNS.get(run_id)
+    if stored is None:
+        raise HTTPException(
+            status_code=404, detail=f"no run {run_id} in this process; rerun it to reproduce it"
+        )
+    return stored
+
+
 @router.post("/runs")
 def create_run(request: RunRequest) -> dict[str, Any]:
-    p = population()
     with _one_at_a_time():
-        try:
-            analysis.component_set_unit(request.component_set)
-            run = run_population(
-                p, request.reform, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
-            )
-        except (UnsupportedReformError, InvalidReformError, ValueError) as exc:
-            raise HTTPException(status_code=422, detail=str(exc)) from exc
-        body = _summary(p, run, request.component_set)
-        if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
-            _RUNS.pop(next(iter(_RUNS)))
-        _RUNS[run.run_id] = (p, run)
-    return body
+        p, run = _execute_reform(request.reform, request.component_set)
+        return _summary(p, run, request.component_set)
 
 
 @router.get("/runs/{run_id}")
@@ -167,12 +192,7 @@ def fetch_run(
     run_id: RunId,
     component_set: Annotated[list[str] | None, Query()] = None,
 ) -> dict[str, Any]:
-    stored = _RUNS.get(run_id)
-    if stored is None:
-        raise HTTPException(
-            status_code=404, detail=f"no run {run_id} in this process; rerun it to reproduce it"
-        )
-    p, run = stored
+    p, run = stored_run(run_id)
     components = ["family_tax_credit"] if component_set is None else component_set
     try:
         analysis.component_set_unit(components)

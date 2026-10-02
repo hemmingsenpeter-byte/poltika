@@ -123,7 +123,8 @@ poltika/
 │   │                        loaded parameters, runner.py baseline and
 │   │                        reform runs with run identity, analysis.py
 │   │                        weighted tables, withdrawal.py withdrawal
-│   │                        paths and sweeps, ranges.py (v0.3 Task 1b.6)
+│   │                        paths and sweeps, worked_examples.py named
+│   │                        households run once under a reform, ranges.py (v0.3 Task 1b.6)
 │   │                        needs-review population ranges, explain.py verified
 │   │                        population explanations, synthetic.py the
 │   │                        seeded synthetic population generator and its
@@ -174,10 +175,25 @@ poltika/
 │                            microsim_page.py (v0.2 Task 10.2: the
 │                            /analyst/microsim page); access.py (hosted
 │                            pilot password, HTTP Basic, operator-set
-│                            POLTIKA_ACCESS_PASSWORD)
-│                            and hardening.py (security headers, request-
-│                            size limit) — no llm/
-│                            layer yet;
+│                            POLTIKA_ACCESS_PASSWORD); hardening.py
+│                            (security headers and request-size limit);
+│                            workbench.py
+│                            (the analyst workbench routes under
+│                            /workbench: registry, check, results,
+│                            Excel/CSV export, decision text) with
+│                            workbench_registry.py (instruments,
+│                            parameters, sources and decisions read from
+│                            the specs directory, so a new instrument
+│                            spec appears with no code change),
+│                            workbench_tables.py (results as generic
+│                            table blocks; the page and both exports
+│                            render the same blocks),
+│                            workbench_export.py (xlsx and csv writers)
+│                            and workbench_config.py (presentation
+│                            config only: tabs, fiscal-year slots,
+│                            measures, winner/loser thresholds, family
+│                            types, limitations; never a policy value)
+│                            — no llm/ layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
 │                            time, ADR-0011)

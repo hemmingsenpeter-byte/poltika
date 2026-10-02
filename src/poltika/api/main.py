@@ -46,6 +46,7 @@ from poltika.api.microsim_page import router as microsim_page_router
 from poltika.api.scenarios import router as scenarios_router
 from poltika.api.wff import WFF_POLICY_DIR
 from poltika.api.wff import router as wff_router
+from poltika.api.workbench import router as workbench_router
 from poltika.common.errors import (
     ImmutableRecordError,
     PolicyVersionMismatchError,
@@ -104,6 +105,7 @@ app.include_router(scenarios_router)
 app.include_router(analyst_router)
 app.include_router(microsim_router)
 app.include_router(microsim_page_router)
+app.include_router(workbench_router)
 # The last added runs first: headers go on every response, 401 and 413 too.
 app.add_middleware(BasicAuthMiddleware)
 app.add_middleware(BodyLimitMiddleware)

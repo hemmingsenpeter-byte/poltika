@@ -183,8 +183,10 @@ uv run --extra dev uvicorn poltika.api.main:app    # routes at /docs; analyst pa
 
 Routes: `POST /wff/calculate`, `POST /accommodation-supplement/calculate`,
 `POST /household/calculate`, `/analyst` (page, examples, pilot cases,
-evidence), `/microsim` (population, parameters, runs, and a page), and `/scenarios` (stored runs; these need `POLTIKA_DATABASE_URL`
-and return 503 without it). `docs/pilot/GUIDE.md` runs it in Docker.
+evidence), `/microsim` (population, parameters, runs, and a page), `/workbench` (the analyst workbench:
+instruments and parameters read from `policy_specs/`, reform checks, tabbed results for up to two
+options, and Excel/CSV export; ADR-0018), and `/scenarios` (stored runs; these need
+`POLTIKA_DATABASE_URL` and return 503 without it). `docs/pilot/GUIDE.md` runs it in Docker.
 
 The demo household through the API, with no server needed:
 
