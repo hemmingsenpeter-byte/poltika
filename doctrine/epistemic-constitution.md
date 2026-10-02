@@ -8,7 +8,8 @@
 Every number Poltika shows is one of eight kinds of claim, and it says which.
 It carries its provenance, its uncertainty and its model version. No AI-generated
 claim becomes a fact, a rule or a model input without a cited primary source,
-independent review and, for protected values, Pete's decision. People choose
+independent review and, for protected values and interpretations, Pete's
+decision. People choose
 objectives. Poltika measures consequences.
 
 This doctrine states what kinds of claim exist. It states no rate, threshold or
@@ -70,17 +71,16 @@ evidence E_x for it. Together they carry eleven fields:
 A quantity with a field missing is incomplete. It is never filled with a
 default.
 
-The types are defined in Task 2.6 (the quantity type) and the National Variable
-Registry (Step 2). The types accept intervals and distributions now.
-Distributions are propagated only from Step 11.
+Task 2.6 will define the quantity type, using the National Variable Registry
+(Step 2). Its design accepts intervals and distributions; their propagation
+starts at Step 11. This is a planned type, not a claim that the existing
+output schemas already carry all eleven fields.
 
-**For Pete:** the plan lists eleven fields but doesn't say which belong to
-x̂, D_x and E_x. A reading that follows the repository: x̂ is the value and the
-context that says what it measures (unit, reference period, geography,
-population). D_x is the uncertainty. E_x is source, method, evidence class,
-model version and dependencies. The other option is to treat all eleven as
-equals and keep the triple only as a summary. This doctrine uses neither
-until you choose.
+Task 2.6 already assigns the fields: x̂ is the value at full stored precision;
+D_x is the uncertainty; E_x carries evidence class, sources, method,
+dependencies and model version. Unit, reference period, geography and
+population come from the registry as the quantity's context. This follows
+the approved plan without adding an allocation decision.
 
 ## The four non-negotiables
 
@@ -143,14 +143,15 @@ than one answer. It is not settled here.
 | A caller-asserted household fact: an input to a run, including a fact marked `verified` | `FactStatus` in `src/poltika/engines/simulator/outcome.py`; `policy_specs/*/facts.yaml` | Scenario (decision P2) |
 | An answer to a missing-fact question, and each branch the conditional resolver tries | `src/poltika/scenarios/conditional.py` | Scenario |
 | A policy parameter with `source_id` and `review_status: approved` | `policy_specs/*/policy.yaml` | Rule |
-| A policy parameter with `review_status: needs_review`, or either draft status | `policy_specs/*/policy.yaml`; `ParameterReviewStatus` in `src/poltika/semantics/schemas/policy_spec.py` | AI hypothesis until reviewed (Task 1.2) |
+| A policy parameter with `review_status: needs_review`, or either draft status | `policy_specs/*/policy.yaml`; `ParameterReviewStatus` in `src/poltika/semantics/schemas/policy_spec.py` | The evidence class follows the claim's sources and review, not this operational gate alone. An unpromoted AI-authored draft is an AI hypothesis; `needs_review` also gates reviewed values with unresolved period coverage |
+| A reform override with `review_status: scenario_assumption` and no statutory source | `src/poltika/scenarios/microsim/reform.py` | Scenario: an explicit hypothetical, never an approved statutory Rule |
 | A source catalogue entry | `policy_specs/*/sources.yaml` | Not a claim. It is E_x: the source and its authority rank (1-4, from `kind`) |
 | A `calculated` component result | `ComponentResult` in `src/poltika/engines/simulator/outcome.py` | Model output |
 | A `needs_review` or `unsupported` outcome | same file | Not a quantity. It has no x̂. It says why no number exists |
 | Conditional `Bounds` (low and high) | `src/poltika/scenarios/conditional.py`; `src/poltika/scenarios/microsim/ranges.py` | Model output with D_x. Never labelled `calculated` |
 | A run's `scenario_id`, `result_id` and artifact hashes | `src/poltika/scenarios/record.py` | E_x for a Model output (model version, dependencies) |
 | A provenance report | `src/poltika/engines/assurance/provenance.py` | E_x, rendered |
-| A v0.2 data snapshot and its manifest | `data/metadata/datasets/*.yaml`, `data/raw/` | See the first For Pete below |
+| A v0.2 data snapshot and its manifest | `data/metadata/datasets/*.yaml`, `data/raw/` | See "For Pete: data snapshots" below |
 | A canonical variable definition | `data/metadata/variables/dictionary.yaml`; `src/poltika/semantics/variables.py` | Not a claim. It is the definition behind unit, period, geography, population (Step 2 seed) |
 
 **For Pete: expected values in tests.** A `spec_cases.yaml` expected value is
@@ -161,8 +162,10 @@ calculated by hand from an approved specification
 is a figure from an independently published worked example
 (`policy_specs/working_for_families/benchmarks.yaml`,
 `policy_specs/accommodation_supplement/benchmarks.yaml`). Golden households
-(`policy_specs/wff_as_interaction/golden_households.yaml`) and golden snapshots
-(`tests/fixtures/golden_results_v0_1.json`) record run results. Options:
+(`policy_specs/wff_as_interaction/golden_households.yaml`) carry independently
+hand-calculated expected values from approved specifications and parameters.
+Golden snapshots (`tests/fixtures/golden_results_v0_1.json`) freeze run
+results. Options:
 (a) spec cases are Model output (by hand), benchmarks are Fact (a published
 observation of what the agency says), golden files are Model output;
 (b) all four are validation cases with no class of their own, and Step 6 gives
@@ -212,11 +215,17 @@ gate allows ranks 1-3 (`src/poltika/engines/assurance/evidence.py`). Options:
 what the agency published until a rank 1-2 source confirms it.
 
 **For Pete: Assumption versus unknown.** The plan defines Assumption as
-"something we don't know". The repository's `needs_review` means a fact or rate
-is not yet known or settled. This doctrine reads an Assumption as an unknown
-with a value written down, and a `needs_review` as an unknown with none. If you
-read the plan as "unknown is the Assumption", then `needs_review` is an
-Assumption with no value, and the second bullet under "The eight evidence classes" changes.
+"something we don't know". This draft proposes requiring an explicit value
+before an unknown is used as an Assumption. Alternatively, an unknown could
+itself be classed as an Assumption with no value. That choice is still open.
+
+The existing `needs_review` outcome is a calculation gate, not an evidence
+class or a declaration that no candidate value is recorded. WFF's
+source-linked `in_work_base`, for example, retains a value after independent
+review while its future period remains unverified (`BUILD_PLAN.md` Task
+10.2/10.3). The gate suppresses an authoritative result until the condition
+is resolved. Neither option above removes that gate or changes an unknown
+into zero.
 
 ## LLM and AI output today
 
@@ -230,9 +239,13 @@ no AI output is a source.
 ## Ground truth
 
 `CLAUDE.md` says policy rules must be derived from cited primary NZ sources,
-and that model memory is never authority. In this doctrine's words: a Rule
-needs a cited primary source and independent review, and a claim that has
-neither is an AI hypothesis. `CLAUDE.md`'s "Ground truth" points here.
+and that model memory is never authority. In this draft's words: a Rule
+needs a cited primary source and independent review. An AI-authored claim
+presented as a Fact or Rule remains an AI hypothesis until its promotion
+gate passes. Caller Scenarios, explicit Assumptions and calculated Model
+outputs keep their labels and trace their dependencies; lacking an
+independent statutory source does not itself turn them into AI hypotheses.
+`CLAUDE.md`'s "Ground truth" identifies this framework as a pending draft.
 
 ## Hooks for later tasks
 

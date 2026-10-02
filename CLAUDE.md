@@ -69,9 +69,11 @@ Never use model memory as authority for:
 
 If the source is missing or ambiguous, stop and flag it.
 
-Every claim carries one evidence class. A claim with no cited primary source
-and independent review is an AI hypothesis, never a fact or a rule. See
-`doctrine/epistemic-constitution.md`.
+`doctrine/epistemic-constitution.md` is a proposed classification framework,
+awaiting Pete's approval and the decisions it marks "For Pete". Read it as
+a draft; it does not change the ground-truth rules above or require caller
+Scenarios, explicit Assumptions or calculated Model outputs to be treated
+as independently verified Facts or Rules.
 
 ## Implementation
 
