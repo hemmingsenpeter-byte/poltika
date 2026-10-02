@@ -5,11 +5,13 @@ description: Use whenever a task creates or changes a number, source, parameter,
 
 # Evidence classes
 
-`doctrine/epistemic-constitution.md` is the only authority (approved by Pete,
-2 October 2026). This skill applies it and never extends it. It restates no
-class definition beyond naming them. Read the constitution's tables and
-"Decisions" section whenever you classify, because this skill points to
-them and does not replace them.
+`doctrine/epistemic-constitution.md` (approved by Pete, 2 October 2026) is the
+authority for what the evidence classes are and how they apply. This skill
+applies it and never extends it. The constitution adds to `CLAUDE.md`'s
+ground-truth rules and replaces none of them. This skill restates no class
+definition beyond naming them. Read the constitution's tables and "Decisions"
+section whenever you classify, because this skill points to them and does not
+replace them.
 
 Other skills and doctrine still govern their own areas: `provenance` for
 sources and datasets, `new-policy` for onboarding a policy,
@@ -29,9 +31,16 @@ whether a claim is in scope, it is.
    Model output, AI hypothesis). For repository concepts, use the
    constitution's mapping table, "Mapping today's concepts to the classes".
    Look the concept up there before reasoning from first principles. A
-   source catalogue entry, a canonical variable definition and a
-   `needs_review` or `unsupported` outcome are not claims. The mapping says
-   what they are instead.
+   source catalogue entry and a canonical variable definition are not claims,
+   and a `needs_review` or `unsupported` outcome is not a quantity (it has no
+   x-hat). The mapping says what each is instead. A `review_status` of
+   `needs_review` and the `needs_review` outcome are calculation gates, not
+   evidence classes: the class follows the claim's sources and review.
+   Every claim has exactly one class, and a class is never relabelled. The
+   constitution leaves two gaps on purpose: validation expectations (decision
+   1, deferred to Step 6) and existing decision records (decision 3, classed
+   in a later change for Pete's confirmation). Leave those without a class,
+   and do not assign one yourself.
 2. **Record the eleven fields (value, unit, reference period, geography,
    population, source, method, evidence class, uncertainty, model version,
    dependencies) where the artifact supports them today.** The quantity type
@@ -42,34 +51,45 @@ whether a claim is in scope, it is.
    left missing and flagged. It is never defaulted.
 3. **Apply the seven decisions by number.** When the claim is one of these,
    write the decision number in your notes and PR text:
-   - 1: test expectations are validation cases with no class yet.
+   - 1: test expectations (spec cases, benchmarks, golden households, golden
+     snapshots) are validation cases with no class of their own until Step 6.
+     Their protected-value process is unchanged (`doctrine/test-doctrine.md`).
    - 2: data snapshots are Fact or Estimate, by dataset.
-   - 3: each decision record states its own class.
+   - 3: new decision records state their own class (Rule or Assumption).
+     Existing ones are classed later, for Pete's confirmation.
    - 4: synthetic population: inputs keep their classes, the records are a
      Scenario.
    - 5: an explanation inherits the class of the result it explains.
    - 6: a rate cited from an agency page (rank 3) is a Rule, rank in E_x.
    - 7: an Assumption needs a written value, with who chose it and why.
-   Programme decision P2 (caller-asserted facts are Scenario) is in the mapping table.
+   Programme decision P2 (caller-asserted facts are Scenario) is in the
+   mapping table.
 4. **Never turn an unknown into zero, or into an Assumption without a
    written value.** An unknown is reported as unknown (a missing fact gives
    `needs_review`). It becomes an Assumption only when someone writes the
    value down, with who chose it and why (decision 7).
-5. **AI-drafted content stays an AI hypothesis until the AI gate passes.**
-   That includes anything you draft into the repository: a source, a value,
-   an interpretation, a summary. Do not label it Fact or Rule. The AI gate
-   section of the constitution names the gate for each kind of artifact. Use
-   it when it lands (Task 1.2). Do not decide a gate yourself.
-6. **When a claim fits two classes, split it.** Each part is classed on its
-   own (for example, a published figure and the choice to apply it to a
-   different population). **When the constitution does not settle a case,
-   stop and flag it for Pete.** Say what you looked up, which two readings
-   remain, and the `file:line` that raised it. Do not pick one.
+5. **AI-drafted content stays an AI hypothesis until it passes its gate.**
+   That includes anything Claude Code or GPT/Codex drafts into the
+   repository: a source, a value, an interpretation, an estimate. Do not
+   label it Fact or Rule. The constitution fixes the minimum today: no
+   AI-generated claim becomes a Fact, a Rule or a model input without a cited
+   primary source, independent review and, for protected values and
+   interpretations, Pete's decision. The AI gate (Task 1.2) will name the gate
+   for each kind of artifact and is not in the constitution yet. Do not
+   decide a gate yourself. The qualifier is in the constitution's "Ground
+   truth": caller Scenarios, explicit Assumptions and calculated Model outputs
+   keep their labels and trace their dependencies, and lacking an independent
+   statutory source does not turn them into AI hypotheses.
+6. **When a claim seems to fit two classes, it is two claims.** Class each
+   on its own. **When the constitution does not settle a case, stop and flag
+   it for Pete.** Say what you looked up, which two readings remain, and the
+   `file:line` that raised it. Do not pick one.
 
-Two display rules reach you from other tasks. A single household's Rule
-output keeps the precision the law sets, and estimate-dependent figures show
-their range (the precision rule, Task 1.3). A Transferred estimate is
-always labelled as borrowed and never shown as an Estimate for New Zealand.
+Two rules from the constitution apply when a number is shown. A single
+household's Rule output keeps the precision the law sets, and
+estimate-dependent figures show their range (non-negotiable 2; the display
+rule is Task 1.3). A Transferred estimate is always labelled as borrowed and
+never shown as an Estimate for New Zealand.
 
 ## Worked examples
 
@@ -130,6 +150,9 @@ labelled `calculated`.
 ## Stop conditions
 
 Stop and report, with `file:line`, if: a claim has no class in the
-constitution; a Rule has no resolvable cited source; a value was supplied
-from memory; an AI-drafted claim is being used as a source, parameter or
-model input; or a test expectation would change to make a check pass.
+constitution, other than the two gaps it leaves on purpose (validation
+expectations, decision 1; existing decision records, decision 3); a Rule has
+no resolvable cited primary source or no independent review; a value was
+supplied from memory; an AI-drafted claim is being used as a source,
+parameter or model input; or a test expectation would change to make a check
+pass.
