@@ -90,6 +90,19 @@ the ruleset is in `PETE_QUEUE.md` as a one-command action. Until it is
 active, the merge rules above are kept by agreement, as the working
 agreement already is (`doctrine/development-doctrine.md`).
 
+ADR-0007 found that required checks needed GitHub Pro on this private
+repository, and made the statutory-value guard visibility only. On 2
+October 2026 the API returned a branch-protection object for `main`, so
+the plan now appears to allow it. If GitHub still refuses the ruleset,
+ADR-0007 stands, Q1 closes as not possible, and the merge rules stay by
+agreement. Once the ruleset is active, it supersedes ADR-0007's
+"visibility only" for the checks it requires: the guard still warns rather
+than fails, but it must run.
+
+Source currency runs weekly, not on pull requests, so it cannot yet be a
+required check. It becomes one when a pull-request trigger is added (a
+report only; its issue step stays on the schedule).
+
 ### What changes elsewhere
 
 - `CLAUDE.md` and `AGENTS.md`: the tiers, the merge rules and the three
@@ -103,8 +116,8 @@ agreement already is (`doctrine/development-doctrine.md`).
 
 ### Tracking
 
-- `PROGRAMME_STATUS.md`: every step and task, with status, owner, PR and
-  blocker.
+- `PROGRAMME_STATUS.md` (added in the PR after this one): every step and
+  task, with status, owner, PR and blocker.
 - `docs/decision_log.md`: every Tier A and B decision.
 - `PETE_QUEUE.md`: the open Tier C items.
 

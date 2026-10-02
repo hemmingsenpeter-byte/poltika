@@ -14,6 +14,7 @@ commit that records it.
 | Q2 | Task 1.4: Māori data governance, privacy and security. Engaging people with standing in Māori data governance (P5's process). | Step 1's validation gate; any output about Māori; microdata (Steps 7, 19). The interim rule (P5) holds meanwhile. | Name who you will engage, or say to proceed with GPT/Codex's source research first. |
 | Q3 | IDI access (P12): lodging the application. | Step 7's IDI-calibrated grade; Step 19. | Lodge it once W3.1 documents the route. |
 | Q4 | Open programme decisions P6, P7, P8, P13, P14, P18, P20. | Nothing in Phase 0. P7 blocks Step 6.4-6.5; P13 Step 16; P14 Step 23; P18 each milestone; P20 Step 15; P6 Step 5.5; P8 the first product. | None yet. Each is raised again, with options, when its step starts. |
+| Q6 | `.claude/skills/pr-review/SKILL.md` (lines 3, 11) and `.claude/skills/pr-review-preflight/SKILL.md` (line 106) still say Pete is the acceptance judge for every PR. Editing Claude Code's own skill files was outside the session's permissions. | Nothing: ADR-0020, CLAUDE.md and the doctrines govern. A session reading only a skill could think every merge waits for Pete. | Add one line to each: "Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete decides Tier C." Or allow a session to make that edit. |
 | Q5 | v0.3 D1-D3: each Tier 1 domain's supported slice, the disposable-income definition and the income-adequacy measures. | v0.3 Phases 2-5 implementation (Step 3A). | Decide once GPT/Codex's Phase 0 sourcing is in. |
 
 ### Q1 commands
