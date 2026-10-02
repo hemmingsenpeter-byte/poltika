@@ -35,6 +35,10 @@ poltika/
 │                       — v0.1.5 Task 8.1 pilot container: API + PostgreSQL,
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
+├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
+├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
+│                         (`agents/`: `poltika-worker` implements one briefed subtask,
+│                         `poltika-reviewer` reviews a diff with a fresh context)
 │
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
 ├── adr/               — architecture decisions with rationale and context
