@@ -82,7 +82,7 @@ sets, kept apart so it doesn't read as programme progress.
 | 2.3 | Time periods | In progress | Claude Code | None yet | |
 | 2.4 | Populations, entities and identifiers | In progress | Claude Code | None yet | |
 | 2.5 | Geography | Planned | Claude Code; GPT/Codex sources concordances | None | Geography types first (no blocker). Dated concordances need GPT/Codex sourcing |
-| 2.6 | Quantity type X = (x̂, D_x, E_x) | Planned | Claude Code | None | 2.2, 2.3, 2.4 |
+| 2.6 | Quantity type X = (x̂, D_x, E_x) | Planned | Claude Code | None (a parked 29 September draft is on `claude/step2-quantity`, not for review) | 2.2, 2.3, 2.4 |
 | 2.7 | Shared household model (ADR-0017; v0.3 Phase 1) | Planned | Claude Code | None | GPT/Codex review of 1.2's mappings |
 | 2.8 | State schema v0 | Planned | Claude Code drafts, GPT/Codex reviewing | None | 2.1. The P19 scope is Tier A under ADR-0020 |
 | 2.9 | Every shown or stored number is a quantity | Planned | Claude Code | None | 2.6 |
@@ -100,14 +100,15 @@ Lane 3A follows `BUILD_PLAN_v0_3.md`. Its Phase 1 is task 2.7. Its Phase 6
 | 3A, v0.3 0.1-0.3 | Phase 0 scoping: source packs for income tax and the three core main benefits; the stated interactions | Not started | GPT/Codex, Pete deciding ambiguity | None | No `policy_specs/` pack for either exists yet |
 | 3A, v0.3 0.4 | Confirm each domain's slice, the disposable-income definition and the income-adequacy measures (D1-D3) | Pete | Pete | None | PETE_QUEUE Q5; waits on 0.1-0.3 |
 | 3A, v0.3 0.5 | Plan each policy's tasks with the onboarding skill | Not started | Claude Code | None | v0.3 0.1-0.2 |
-| 3A, v0.3 1b.1-1b.6 | Fact catalogues, conditional answers, intake planner, API and page, population ranges, release gate (done parts) | Done | Claude Code; GPT/Codex reviewed catalogues | #109, #112, #121, #125, #126, #127, #128 | #128 still has an open review row (`review_packets/review_queue.md`) |
+| 3A, v0.3 1b.1-1b.6 | Fact catalogues, conditional answers, intake planner, API and page, population ranges, release gate: done except 1b.2b (GPT/Codex part), 1b.2c and 1b.3e (rows below) | Done | Claude Code; GPT/Codex reviewed catalogues | #109, #112, #121, #125, #126, #127, #128 | #128 still has an open review row (`review_packets/review_queue.md`) |
 | 3A, v0.3 1b.2b | Monotone declarations in the real catalogues | Not started | GPT/Codex | None | Cited rules; none declared yet |
 | 3A, v0.3 1b.2c, 1b.3e | Candidate values and their checks | Blocked | GPT/Codex, then Claude Code | None | A structured `candidates` list from GPT/Codex |
 | 3A, v0.3 Phase 2 | Income tax | Not started | GPT/Codex sources, Claude Code implements | None | v0.3 0.1; PETE_QUEUE Q5 |
 | 3A, v0.3 Phase 3 | Jobseeker Support, Sole Parent Support, Supported Living Payment | Not started | GPT/Codex sources, Claude Code implements | None | v0.3 0.2; PETE_QUEUE Q5 |
 | 3A, v0.3 Phase 4 | Household dependency graph | Not started | Claude Code | None | Phases 2-3; shares node ids with Step 4 |
 | 3A, v0.3 Phase 5 | Disposable income and effective marginal tax rates | Not started | Claude Code | None | PETE_QUEUE Q5 (the disposable-income definition) |
-| 3B | Dates: multi-year parameters (M1), 2027-28 (M4-M6), historical years | Not started | GPT/Codex sources, Claude Code implements | None. Lane tasks are v0.1.6 1.1-1.2, 2.1-2.3, 3.1-3.3, 4.1-4.5, 5.1 | v0.1.6 2.1 is Done (#92). The plan records no state for the rest. 2027-28 needs published values and the 1 April 2027 deadline; 2.2 needs Pete's network access; historical years wait on P11 |
+| 3A, v0.3 Phase 7 | Release (exit gate, then Pete tags) | Not started | Claude Code; Pete tags | None | Phases 1-6; tagging is Tier C |
+| 3B | Dates: multi-year parameters (M1), 2027-28 (M4-M6), historical years | Not started | GPT/Codex sources, Claude Code implements | None. Lane tasks are v0.1.6 1.1-1.2, 2.1-2.3, 3.1-3.3, 4.1-4.5, 5.1 | v0.1.6 2.1 is Done (#92). The plan records no state for the rest. 2027-28 needs published values and the 1 April 2027 deadline; 2.2 needs Pete's network access; historical years wait on P11 (PETE_QUEUE Q7) |
 | 3C | NZ Superannuation, childcare support, KiwiSaver interactions, Paid Parental Leave | Not started | GPT/Codex sources, Claude Code implements | None | Each domain follows the five-PR `new-policy` structure; needs Step 1.5 and Step 2 entries |
 | 3D | Student support, ACC, Temporary Additional Support, Disability Allowance, other MSD assistance, Child Support | Not started | GPT/Codex sources, Claude Code implements | None | After 3A and 3C |
 | 3E | GST, company tax, other tax regimes, regulatory costs, Crown classifications | Not started | GPT/Codex sources, Claude Code implements | None | Company tax needs a firm state (2.4); classifications need 8.1 |
@@ -149,7 +150,7 @@ Lane 3A follows `BUILD_PLAN_v0_3.md`. Its Phase 1 is task 2.7. Its Phase 6
 
 | Task | Title | Status | Owner | PR | Blocker |
 | --- | --- | --- | --- | --- | --- |
-| 7.1 | Tag `v0.2.0` | Pete | Pete | None | Ready to tag |
+| 7.1 | Tag `v0.2.0` | Pete | Pete | None | Ready to tag (PETE_QUEUE Q8) |
 | 7.2 | Confidence grade on every population and run | Not started | Claude Code | None | Criteria from P4 |
 | 7.3 | Public-data calibration | Not started | Claude Code, GPT/Codex reviewing | None | 7.2 |
 | 7.4 | Validation against published aggregates | Not started | Claude Code | None | 6.1 |
@@ -167,7 +168,7 @@ Lane 3A follows `BUILD_PLAN_v0_3.md`. Its Phase 1 is task 2.7. Its Phase 6
 | 8.3 | Crown accounts on the spine | Not started | Claude Code | None | 8.1, 8.2 |
 | 8.4 | Map kernel outputs to Crown lines | Not started | Claude Code | None | 8.3; lane 3E |
 | 8.5 | Multi-year scenarios | Not started | Claude Code | None | |
-| 8.6 | Batch engine (W4.2 prototype, W4.3 ADR) | Not started | Claude Code drafts, Pete decides (P10) | None | P10 |
+| 8.6 | Batch engine (W4.2 prototype, W4.3 ADR) | Not started | Claude Code (P10 is Tier A under ADR-0020) | None | None; due by M4 |
 | 8.7 | Static fiscal scoring | Not started | Claude Code | None | 8.3, 8.5 |
 | 8.8 | Reconciliation with the Crown's statements | Not started | Claude Code | None | 8.3 |
 
@@ -197,7 +198,7 @@ Lane 3A follows `BUILD_PLAN_v0_3.md`. Its Phase 1 is task 2.7. Its Phase 6
 
 Each gets its own detailed plan when it starts.
 
-| Step | Title | Phase | Status | Owner | PR | Blocker |
+| Step | Title | Phase | Status | Owner (provisional; set by each step's plan) | PR | Blocker |
 | --- | --- | --- | --- | --- | --- | --- |
 | 11 | Uncertainty and sensitivity framework | 3 | Not started | Claude Code | None | Step 2 (D_x), batch engine (8.6) |
 | 12 | Causal Evidence Library | 3 | Not started | Claude Code, GPT/Codex | None | Published studies, each reviewed |
