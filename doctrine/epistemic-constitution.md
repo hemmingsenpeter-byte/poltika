@@ -143,7 +143,7 @@ decided it; see "Decisions" below.
 
 | Concept in the repository | Where | Class |
 | --- | --- | --- |
-| A caller-asserted household fact: an input to a run, including a fact marked `verified` | `FactStatus` in `src/poltika/engines/simulator/outcome.py`; `policy_specs/*/facts.yaml` | Scenario (decision P2) |
+| A caller-asserted household fact: an input to a run, including a fact marked `verified` | `FactStatus` in `src/poltika/engines/simulator/outcome.py`; `policy_specs/*/facts.yaml` | Scenario (Programme decision P2, `BUILD_PLAN_PROGRAMME.md`) |
 | An answer to a missing-fact question, and each branch the conditional resolver tries | `src/poltika/scenarios/conditional.py` | Scenario |
 | A policy parameter with `source_id` and `review_status: approved` | `policy_specs/*/policy.yaml` | Rule |
 | A policy parameter with `review_status: needs_review`, or either draft status | `policy_specs/*/policy.yaml`; `ParameterReviewStatus` in `src/poltika/semantics/schemas/policy_spec.py` | The evidence class follows the claim's sources and review, not this operational gate alone. An unpromoted AI-authored draft is an AI hypothesis; `needs_review` also gates reviewed values with unresolved period coverage |
@@ -182,7 +182,7 @@ decided it; see "Decisions" below.
    hash-bound files are not edited to do it.
 4. **Synthetic population: the inputs keep their classes, and the records
    are a Scenario.** The published shares the generator draws on keep their
-   class (decision 2). Its listed assumptions (A1-A8 in
+   class (decision 2). Its listed assumptions (A1-A13 in
    `data/metadata/populations/nz_synthetic_development.v1.yaml`) are
    Assumptions. The household records it draws
    (`src/poltika/scenarios/microsim/synthetic.py`) are a Scenario, always
