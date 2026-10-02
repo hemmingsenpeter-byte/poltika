@@ -7,6 +7,10 @@ name: Source Currency
 # opens an issue, or updates the open one.
 
 on:
+  # On a pull request the job only builds and prints the report, so a change
+  # is checked against it. It never fails a PR because something is due.
+  pull_request:
+    branches: [main]
   schedule:
     - cron: "47 19 * * 0"  # Sunday 19:47 UTC, Monday morning in NZ
   workflow_dispatch:
@@ -38,6 +42,7 @@ jobs:
           cat currency.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open or update the issue when anything is due
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           TITLE: Source currency report
