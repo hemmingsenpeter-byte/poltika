@@ -39,6 +39,7 @@
 | Task | Read |
 | --- | --- |
 | Running scenarios or answering questions about v0.1 | `docs/ORIENTATION.md` and `docs/demo/v0_1/` |
+| Planning, sequencing or starting new work | `BUILD_PLAN_PROGRAMME.md` (ADR-0019: the master build order of 33 steps with Phase 0 foundations and eight delivery phases, and what exists against each step), then the step's own plan |
 | Checking or explaining a result | Also the policy's `specification.md` calculation sequence and `decisions/` |
 | Changing policy logic, statutory values, code or repository structure | Everything under "Before making changes" below |
 | Opening or reviewing a PR | The "Review" section below |
@@ -94,6 +95,9 @@ Use the discrepancy taxonomy in doctrine/review-doctrine.md.
 Before publishing or recommending acceptance of an implementation PR, use
 `.claude/skills/pr-review-preflight/SKILL.md`. An author preflight is not the
 independent reviewer rotation required by BUILD_PLAN.md.
+
+To review a PR you did not write (a Codex PR, a review-queue row, a
+re-review after new commits), use `.claude/skills/pr-review/SKILL.md`.
 
 Interpretation ambiguity must be escalated rather than silently resolved.
 

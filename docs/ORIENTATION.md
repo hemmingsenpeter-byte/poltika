@@ -183,8 +183,10 @@ uv run --extra dev uvicorn poltika.api.main:app    # routes at /docs; analyst pa
 
 Routes: `POST /wff/calculate`, `POST /accommodation-supplement/calculate`,
 `POST /household/calculate`, `/analyst` (page, examples, pilot cases,
-evidence), `/microsim` (population, parameters, runs, and a page), and `/scenarios` (stored runs; these need `POLTIKA_DATABASE_URL`
-and return 503 without it). `docs/pilot/GUIDE.md` runs it in Docker.
+evidence), `/microsim` (population, parameters, runs, and a page), `/workbench` (the analyst workbench:
+instruments and parameters read from `policy_specs/`, reform checks, tabbed results for up to two
+options, and Excel/CSV export; ADR-0018), and `/scenarios` (stored runs; these need
+`POLTIKA_DATABASE_URL` and return 503 without it). `docs/pilot/GUIDE.md` runs it in Docker.
 
 The demo household through the API, with no server needed:
 
@@ -263,7 +265,7 @@ lookup_date, scenario, requested_policy_version=..., assessment_week=...)`.
 | Checking or explaining a result | Also the calculation sequence in the policy's `specification.md`, and its `decisions/` |
 | Changing policy logic or statutory values | CLAUDE.md's full list: `BUILD_PLAN.md`, `ARCHITECTURE.md`, `REPOSITORY_STRUCTURE.md`, `doctrine/` and the policy's specification. Protected expected values follow `doctrine/test-doctrine.md` |
 | Current work | The latest `BUILD_PLAN_v*.md` (v0.1.5, v0.1.6, v0.2, v0.3) and its status table |
-| Opening or reviewing a PR | `.claude/skills/pr-review-preflight/SKILL.md` and `doctrine/review-doctrine.md` |
+| Opening or reviewing a PR | `.claude/skills/pr-review-preflight/SKILL.md` for your own PR, `.claude/skills/pr-review/SKILL.md` for one you didn't write, and `doctrine/review-doctrine.md` |
 
 ## Keeping this page current
 

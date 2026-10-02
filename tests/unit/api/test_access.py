@@ -44,6 +44,15 @@ def test_every_route_needs_the_password(client: TestClient, path: str) -> None:
 
 
 @pytest.mark.usefixtures("protected")
+@pytest.mark.parametrize("scheme", ["Basic", "basic", "BASIC", "bAsIc"])
+def test_auth_scheme_is_case_insensitive(client: TestClient, scheme: str) -> None:
+    token = _basic("pilot", "s3cret pass")["Authorization"].split(" ", 1)[1]
+    assert client.get("/analyst", headers={"Authorization": f"{scheme} {token}"}).status_code == 200
+    wrong = _basic("pilot", "S3CRET PASS")["Authorization"].split(" ", 1)[1]
+    assert client.get("/analyst", headers={"Authorization": f"{scheme} {wrong}"}).status_code == 401
+
+
+@pytest.mark.usefixtures("protected")
 def test_post_routes_are_protected_too(client: TestClient) -> None:
     assert client.post("/household/calculate", json={}).status_code == 401
 
