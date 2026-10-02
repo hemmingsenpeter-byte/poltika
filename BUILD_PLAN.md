@@ -28,6 +28,12 @@ ideally a fresh session regardless. Given sources + spec + code + tests, never t
 implementer's explanation. Independently derives expected behaviour before
 comparing.
 
+*Status note, 2 October 2026:* acceptance of engineering work is delegated
+to Claude Code under ADR-0020's tiers. The rotation stands: a fresh-context
+`poltika-reviewer` pass on every PR, and the independent GPT/Codex review
+before any PR touching `policy_specs/`, `engines/simulator/` or a
+calculated amount merges. Pete keeps every Tier C decision.
+
 **Primary sources** (Acts, IRD/MSD/Treasury, published worked examples) — the only
 ground truth. Neither model is authoritative on policy correctness.
 

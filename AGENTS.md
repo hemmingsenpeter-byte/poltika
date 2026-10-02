@@ -56,6 +56,17 @@ independent reviewer rotation required by BUILD_PLAN.md.
 
 Interpretation ambiguity must be escalated rather than silently resolved.
 
+## Delegated acceptance (ADR-0020)
+
+Since 2 October 2026 Claude Code accepts and merges engineering work under
+three tiers (`adr/0020-delegated-acceptance.md`). Sources, interpretation,
+protected statutory values, Māori data governance and anything public stay
+with Pete (Tier C, listed in `PETE_QUEUE.md`). An independent GPT/Codex
+review is still required before a PR touching `policy_specs/`,
+`engines/simulator/` or any calculated amount merges: its row in
+`review_packets/review_queue.md` must be cleared first. Merges are squash
+merges, on green CI and an up-to-date branch.
+
 ## External prior art
 
 Follow doctrine/ip-doctrine.md.
