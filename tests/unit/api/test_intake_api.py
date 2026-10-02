@@ -130,6 +130,9 @@ def test_asked_components_limit_the_questions() -> None:
         ([{"fact": "wff.no_such_fact", "answer": "verified"}], "not a catalogued fact"),
         ([{"fact": "nonsense", "answer": "verified"}], "not a fact label"),
         ([{"fact": "children[9].best_start_cohort", "answer": "unknown"}], "child"),
+        ([{"fact": "wff.children.qualifies_whole_year", "answer": "verified"}], "child"),
+        ([{"fact": "wff.children.best_start_cohort", "answer": "outside_best_start_entitlement"}], "child"),
+        ([{"fact": "wff.children.best_start_no_disqualifying_payment", "answer": "verified"}], "child"),
         ([{"fact": "accommodation_supplement.weekly_income", "answer": "-5"}], "non-negative"),
     ],
 )

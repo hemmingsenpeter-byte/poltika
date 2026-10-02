@@ -47,7 +47,7 @@ def configured_credentials() -> tuple[str, str] | None:
 
 
 def _authorised(header: bytes | None, user: str, password: str) -> bool:
-    if header is None or not header.startswith(b"Basic "):
+    if header is None or header[:6].lower() != b"basic ":
         return False
     try:
         decoded = base64.b64decode(header[6:].strip(), validate=True).decode("utf-8")

@@ -96,6 +96,9 @@ Before publishing or recommending acceptance of an implementation PR, use
 `.claude/skills/pr-review-preflight/SKILL.md`. An author preflight is not the
 independent reviewer rotation required by BUILD_PLAN.md.
 
+To review a PR you did not write (a Codex PR, a review-queue row, a
+re-review after new commits), use `.claude/skills/pr-review/SKILL.md`.
+
 Interpretation ambiguity must be escalated rather than silently resolved.
 
 ## External prior art
