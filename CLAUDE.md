@@ -69,11 +69,13 @@ Never use model memory as authority for:
 
 If the source is missing or ambiguous, stop and flag it.
 
-`doctrine/epistemic-constitution.md` is a proposed classification framework,
-awaiting Pete's approval and the decisions it marks "For Pete". Read it as
-a draft; it does not change the ground-truth rules above or require caller
-Scenarios, explicit Assumptions or calculated Model outputs to be treated
-as independently verified Facts or Rules.
+Every claim carries one of the eight evidence classes in
+`doctrine/epistemic-constitution.md` (approved 2 October 2026). An
+AI-authored claim is an AI hypothesis until its promotion gate passes. The
+constitution adds to the ground-truth rules above and replaces none of them.
+A caller's assertion stays a Scenario, an explicit Assumption stays an
+Assumption, and a calculated result stays a Model output. None of them is
+treated as an independently verified Fact or Rule.
 
 ## Implementation
 

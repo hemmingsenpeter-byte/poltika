@@ -1,7 +1,9 @@
 # Epistemic constitution
 
-**Status:** draft by Claude Code, awaiting Pete's approval (Task 1.1 of
-`BUILD_PLAN_PROGRAMME.md`). Nothing here is in force until Pete approves it.
+**Status:** approved by Pete on 2 October 2026 (Task 1.1 of
+`BUILD_PLAN_PROGRAMME.md`), with the seven classification decisions under
+"Decisions" below. Drafted by Claude Code; reviewed by GPT/Codex
+(`reviews/2026-10-02-pr136.md`).
 
 ## Rule
 
@@ -45,7 +47,8 @@ Four consequences:
   dependencies field), so a reader can see which inputs are Rules and which
   are Assumptions or Scenarios.
 - An unknown is not an Assumption until someone writes down a value for it.
-  Until then, Poltika says it is unknown (`needs_review`) and never uses zero.
+  Until then, Poltika reports it as unknown (a missing fact gives
+  `needs_review`) and never uses zero.
 - An AI hypothesis enters a model only through the AI gate (Task 1.2). The
   other classes enter labelled with their class, never relabelled.
 - A Transferred estimate is always labelled as borrowed. It is never shown as
@@ -135,8 +138,8 @@ for it are Task 1.6.
 ## Mapping today's concepts to the classes
 
 Each row is derived from the file cited. The class is where the concept fits
-today. "For Pete:" marks a place where the repository or the plan allows more
-than one answer. It is not settled here.
+today. Where the repository or the plan allowed more than one answer, Pete
+decided it; see "Decisions" below.
 
 | Concept in the repository | Where | Class |
 | --- | --- | --- |
@@ -151,80 +154,57 @@ than one answer. It is not settled here.
 | Conditional `Bounds` (low and high) | `src/poltika/scenarios/conditional.py`; `src/poltika/scenarios/microsim/ranges.py` | Model output with D_x. Never labelled `calculated` |
 | A run's `scenario_id`, `result_id` and artifact hashes | `src/poltika/scenarios/record.py` | E_x for a Model output (model version, dependencies) |
 | A provenance report | `src/poltika/engines/assurance/provenance.py` | E_x, rendered |
-| A v0.2 data snapshot and its manifest | `data/metadata/datasets/*.yaml`, `data/raw/` | See "For Pete: data snapshots" below |
+| A v0.2 data snapshot and its manifest | `data/metadata/datasets/*.yaml`, `data/raw/` | Fact or Estimate, by dataset (decision 2) |
 | A canonical variable definition | `data/metadata/variables/dictionary.yaml`; `src/poltika/semantics/variables.py` | Not a claim. It is the definition behind unit, period, geography, population (Step 2 seed) |
 
-**For Pete: expected values in tests.** A `spec_cases.yaml` expected value is
-calculated by hand from an approved specification
-(`policy_specs/working_for_families/spec_cases.yaml`,
-`policy_specs/accommodation_supplement/spec_cases.yaml`,
-`policy_specs/wff_as_interaction/spec_cases.yaml`). A `benchmarks.yaml` value
-is a figure from an independently published worked example
-(`policy_specs/working_for_families/benchmarks.yaml`,
-`policy_specs/accommodation_supplement/benchmarks.yaml`). Golden households
-(`policy_specs/wff_as_interaction/golden_households.yaml`) carry independently
-hand-calculated expected values from approved specifications and parameters.
-Golden snapshots (`tests/fixtures/golden_results_v0_1.json`) freeze run
-results. Options:
-(a) spec cases are Model output (by hand), benchmarks are Fact (a published
-observation of what the agency says), golden files are Model output;
-(b) all four are validation cases with no class of their own, and Step 6 gives
-them one; (c) benchmarks are Rule illustrations, since a worked example is
-guidance (rank 4), not law.
+### Decisions (Pete, 2 October 2026)
 
-**For Pete: data snapshots.** The v0.2 snapshots are tables published by Stats NZ,
-IRD and MSD. Options: (a) Fact, because each is sourced to the publication
-and E_x carries the publisher's own caveats; (b) Fact for registrations and
-administrative counts, and Estimate for survey-based figures such as household
-income and net worth (`data/metadata/datasets/stats_nz_household_income_housing_costs.v1.yaml`,
-`data/metadata/datasets/stats_nz_household_net_worth.v1.yaml`). Option (b)
-needs a per-dataset class in each manifest.
-
-**For Pete: decisions.** `DEC-*.md` files record a person's reading of an
-ambiguity (`policy_specs/working_for_families/decisions/DEC-001-evidenced-ineligibility-outcome.md`,
-`policy_specs/accommodation_supplement/decisions/DEC-001-income-excess-rounding.md`,
-`DEC-002-published-thresholds-and-rate-scope.md`,
-`DEC-003-msd-paid-wff-income-exclusion.md`). Options: (a) Rule, an authorised
-interpretation of law, with the decider and date as E_x; (b) Assumption, a
-choice made where the law is silent, kept visible and revisable. Some decisions
-may be one and some the other, so the class may need to be written in each
-decision.
-
-**For Pete: synthetic population records.** The seeded population
-(`src/poltika/scenarios/microsim/synthetic.py`,
-`data/metadata/populations/nz_synthetic_development.v1.yaml`) draws shares from
-published tables (Fact or Estimate, as above), adds listed assumptions (A1-A8
-in its manifest) and draws households at random from a seed. Options: (a) the
-population is a Scenario (a deliberately chosen hypothetical, always labelled
-with `SYNTHETIC_LABEL` in `src/poltika/semantics/population.py`); (b) it is a
-Model output of the generator; (c) the inputs keep their own classes and the
-records are a Scenario. In every option, it is never presented as an estimate
-for New Zealand.
-
-**For Pete: explanations.** An explanation is rendered from the recorded result and
-trace, with fixed templates and no LLM
-(`src/poltika/engines/assurance/explanation.py`). It adds no claim. This
-doctrine proposes that it inherits the class of the result it explains. The
-alternative is to class it as Model output in its own right. The plan doesn't
-say.
-
-**For Pete: Rule or Fact for agency-published rates.** A parameter can cite an
-agency rates page (rank 3) instead of an Act or order (ranks 1-2); the release
-gate allows ranks 1-3 (`src/poltika/engines/assurance/evidence.py`). Options:
-(a) such a parameter is still a Rule, with rank 3 in E_x; (b) it is a Fact about
-what the agency published until a rank 1-2 source confirms it.
-
-**For Pete: Assumption versus unknown.** The plan defines Assumption as
-"something we don't know". This draft proposes requiring an explicit value
-before an unknown is used as an Assumption. Alternatively, an unknown could
-itself be classed as an Assumption with no value. That choice is still open.
+1. **Test expectations are validation cases.** `spec_cases.yaml` values
+   (hand-calculated from an approved specification), `benchmarks.yaml`
+   values (from published worked examples), golden households
+   (`policy_specs/wff_as_interaction/golden_households.yaml`, independently
+   hand-calculated) and golden snapshots
+   (`tests/fixtures/golden_results_v0_1.json`, frozen run results) have no
+   evidence class of their own yet. The Step 6 validation framework gives
+   them one. Their protected-value process is unchanged.
+2. **Data snapshots are Fact or Estimate, by dataset.** Administrative
+   counts and registrations are Fact. Survey-based figures, such as
+   household income and net worth
+   (`data/metadata/datasets/stats_nz_household_income_housing_costs.v1.yaml`,
+   `data/metadata/datasets/stats_nz_household_net_worth.v1.yaml`), are
+   Estimate, because they carry sampling error. Each dataset manifest will
+   record its class (Step 2).
+3. **Each decision record states its own class.** A `DEC-*.md` is a Rule
+   where it chooses between readings of the law's text, with the decider
+   and date in E_x. It is an Assumption where the law is silent, and stays
+   visible and revisable. New decision records state their class. Existing
+   ones are classed in a later change for Pete's confirmation. Their
+   hash-bound files are not edited to do it.
+4. **Synthetic population: the inputs keep their classes, and the records
+   are a Scenario.** The published shares the generator draws on keep their
+   class (decision 2). Its listed assumptions (A1-A8 in
+   `data/metadata/populations/nz_synthetic_development.v1.yaml`) are
+   Assumptions. The household records it draws
+   (`src/poltika/scenarios/microsim/synthetic.py`) are a Scenario, always
+   carrying `SYNTHETIC_LABEL` (`src/poltika/semantics/population.py`). They
+   are never presented as an estimate for New Zealand.
+5. **An explanation inherits the class of the result it explains.** It is
+   rendered from the recorded result and trace with fixed templates and no
+   LLM (`src/poltika/engines/assurance/explanation.py`), and adds no claim.
+6. **A rate cited from an agency page (rank 3) is a Rule.** Its rank is
+   recorded in E_x, so a reader sees that it rests on an agency publication
+   rather than an Act or Order. The release gate already accepts ranks 1-3
+   (`src/poltika/engines/assurance/evidence.py`).
+7. **An Assumption needs a written value.** An unknown becomes an
+   Assumption only when someone writes down a value for it, with who chose
+   it and why. Until then it is unknown, and is never zero.
 
 The existing `needs_review` outcome is a calculation gate, not an evidence
 class or a declaration that no candidate value is recorded. WFF's
 source-linked `in_work_base`, for example, retains a value after independent
 review while its future period remains unverified (`BUILD_PLAN.md` Task
 10.2/10.3). The gate suppresses an authoritative result until the condition
-is resolved. Neither option above removes that gate or changes an unknown
+is resolved. Decision 7 neither removes that gate nor turns an unknown
 into zero.
 
 ## LLM and AI output today
@@ -239,13 +219,13 @@ no AI output is a source.
 ## Ground truth
 
 `CLAUDE.md` says policy rules must be derived from cited primary NZ sources,
-and that model memory is never authority. In this draft's words: a Rule
+and that model memory is never authority. In this doctrine's words: a Rule
 needs a cited primary source and independent review. An AI-authored claim
 presented as a Fact or Rule remains an AI hypothesis until its promotion
 gate passes. Caller Scenarios, explicit Assumptions and calculated Model
 outputs keep their labels and trace their dependencies; lacking an
 independent statutory source does not itself turn them into AI hypotheses.
-`CLAUDE.md`'s "Ground truth" identifies this framework as a pending draft.
+`CLAUDE.md`'s "Ground truth" points here.
 
 ## Hooks for later tasks
 
