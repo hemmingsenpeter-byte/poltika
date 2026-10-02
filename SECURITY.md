@@ -43,7 +43,8 @@ anyone else.
 
 ## Automated checks
 
-The baseline, each added by its own PR:
+The baseline (ADR-0020). Each runs in CI from the PR that adds it, listed
+in `PROGRAMME_STATUS.md` under "Professional baseline":
 
 - Dependabot: dependency update PRs.
 - pip-audit: known vulnerabilities in Python dependencies.

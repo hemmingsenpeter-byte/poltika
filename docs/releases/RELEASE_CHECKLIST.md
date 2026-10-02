@@ -31,7 +31,7 @@ Work from a worktree off `origin/main`. Record each result in the release PR.
 
 - [ ] `review_packets/review_queue.md` has no open row in the release's
       scope, or each open row is named in the release notes.
-- [ ] No open P0 or P1 finding.
+- [ ] No open P1 or P2 finding.
 
 ## 4. Documents
 
