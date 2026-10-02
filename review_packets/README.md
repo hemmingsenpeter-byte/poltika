@@ -2,7 +2,9 @@
 
 GitHub pull requests carry task artifacts between the two models. Pete remains
 the v0.1 message bus, acceptance judge, and owner of genuine interpretation
-decisions, as specified in `BUILD_PLAN.md`. This process replaces copy-pasting
+decisions, as specified in `BUILD_PLAN.md`. Since 2 October 2026 Claude Code
+accepts engineering work under ADR-0020's tiers; Pete keeps every Tier C
+decision (`PETE_QUEUE.md`). This process replaces copy-pasting
 artifacts, not Pete's approval or the fresh-context review gate.
 Codex is the tool carrying out the build plan's GPT role here, not a third
 actor in the review rotation.

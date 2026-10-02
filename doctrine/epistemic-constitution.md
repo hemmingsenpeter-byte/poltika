@@ -14,6 +14,9 @@ independent review and, for protected values and interpretations, Pete's
 decision. People choose
 objectives. Poltika measures consequences.
 
+Validation expectations follow the temporary classification deferral in
+Decision 1.
+
 This doctrine states what kinds of claim exist. It states no rate, threshold or
 policy value. Those come from cited primary NZ sources under `policy_specs/`
 (see "Ground truth" below).
@@ -27,8 +30,9 @@ policy value. Those come from cited primary NZ sources under `policy_specs/`
 
 ## The eight evidence classes
 
-Every claim has exactly one class. If a claim seems to fit two, it is two
-claims, and each is classed on its own.
+Every claim has exactly one class, except the validation expectations in
+Decision 1, whose classification is deferred to Step 6. If a claim seems
+to fit two, it is two claims, and each is classed on its own.
 
 | Class | Meaning |
 | --- | --- |
@@ -143,7 +147,7 @@ decided it; see "Decisions" below.
 
 | Concept in the repository | Where | Class |
 | --- | --- | --- |
-| A caller-asserted household fact: an input to a run, including a fact marked `verified` | `FactStatus` in `src/poltika/engines/simulator/outcome.py`; `policy_specs/*/facts.yaml` | Scenario (decision P2) |
+| A caller-asserted household fact: an input to a run, including a fact marked `verified` | `FactStatus` in `src/poltika/engines/simulator/outcome.py`; `policy_specs/*/facts.yaml` | Scenario (Programme decision P2, `BUILD_PLAN_PROGRAMME.md`) |
 | An answer to a missing-fact question, and each branch the conditional resolver tries | `src/poltika/scenarios/conditional.py` | Scenario |
 | A policy parameter with `source_id` and `review_status: approved` | `policy_specs/*/policy.yaml` | Rule |
 | A policy parameter with `review_status: needs_review`, or either draft status | `policy_specs/*/policy.yaml`; `ParameterReviewStatus` in `src/poltika/semantics/schemas/policy_spec.py` | The evidence class follows the claim's sources and review, not this operational gate alone. An unpromoted AI-authored draft is an AI hypothesis; `needs_review` also gates reviewed values with unresolved period coverage |
@@ -182,7 +186,7 @@ decided it; see "Decisions" below.
    hash-bound files are not edited to do it.
 4. **Synthetic population: the inputs keep their classes, and the records
    are a Scenario.** The published shares the generator draws on keep their
-   class (decision 2). Its listed assumptions (A1-A8 in
+   class (decision 2). Its listed assumptions (A1-A13 in
    `data/metadata/populations/nz_synthetic_development.v1.yaml`) are
    Assumptions. The household records it draws
    (`src/poltika/scenarios/microsim/synthetic.py`) are a Scenario, always

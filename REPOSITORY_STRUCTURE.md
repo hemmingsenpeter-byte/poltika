@@ -24,6 +24,7 @@ poltika/
 ├── BUILD_PLAN_v0_2.md    — v0.2 tasks: static population microsimulation (approved 26 September 2026; ADR-0014)
 ├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015); since ADR-0019 also Phase 0 (Steps 1 and 2)
 ├── BUILD_PLAN_PROGRAMME.md — the programme plan: Pete's master build order (33 steps with Phase 0 foundations and eight delivery phases), what exists against each step, tasks, validation gates, month targets and decisions (29 September 2026; ADR-0019)
+├── PROGRAMME_STATUS.md   — live status of every programme step and task: status, owner, PR, blocker (ADR-0020); updated by every PR that changes a task's state
 ├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015); its sequence superseded by ADR-0019, its workstreams carried into the programme plan
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
@@ -37,6 +38,8 @@ poltika/
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
+├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
+│                         smallest action that clears it (ADR-0020)
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)
@@ -52,6 +55,8 @@ poltika/
 │                         run by hand from the repository root; not production code, and not
 │                         linted or type-checked by CI)
 ├── reviews/           — review and discrepancy records
+├── docs/decision_log.md — every Tier A and Tier B decision made under ADR-0020's
+│                         delegated acceptance, with options, rationale and reversal
 ├── docs/ORIENTATION.md — one-page summary of current v0.1 behaviour for a new session: outcomes,
 │                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the

@@ -5,6 +5,11 @@
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Delegated acceptance** (ADR-0020): Claude Code accepts and merges
+  engineering work under three tiers; Tier C decisions stay with Pete in
+  `PETE_QUEUE.md`, and Tier A and B decisions are logged in
+  `docs/decision_log.md`. Merges are squash merges.
+- **Programme status** (ADR-0020): `PROGRAMME_STATUS.md` tracks every programme step and task with status, owner, PR and blocker; `BUILD_PLAN_PROGRAMME.md`'s Progress table points to it.
 - **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`
   lists every instrument under `policy_specs/` with its parameters (current
   value, unit, effective dates, review status), sources and decisions, so a
