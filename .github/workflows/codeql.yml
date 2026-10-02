@@ -15,6 +15,9 @@ on:
 
 permissions:
   contents: read
+  # The analyze step reads this workflow run's metadata; on a private
+  # repository that needs actions: read.
+  actions: read
 
 jobs:
   analyze:
