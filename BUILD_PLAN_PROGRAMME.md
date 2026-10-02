@@ -1351,4 +1351,4 @@ decisions below carry over, with their step numbers updated.
 | --- | --- |
 | Plan | Master order of 33 steps with Phase 0 foundations and eight delivery phases, 29 September 2026 (ADR-0019) |
 | 1.1 | Done, 2 October 2026: `doctrine/epistemic-constitution.md`, drafted by Claude Code (#136), reviewed by GPT/Codex (`reviews/2026-10-02-pr136.md`), approved by Pete with seven classification decisions. Follow-ups: a class in each dataset manifest (Step 2), and the existing `DEC-*` records classed for Pete's confirmation. |
-| 1-33 | As in "Where Poltika stands". Each row is updated as its tasks land. |
+| 1-33 | Live status, owner, PR and blocker for every step and task: `PROGRAMME_STATUS.md`. "Where Poltika stands" above is the 29 September snapshot. |
