@@ -71,7 +71,8 @@ jobs:
           set -euo pipefail
           # Without a password the image refuses to start (api/access.py).
           docker run --name poltika-open poltika:pilot && exit 1 || true
-          docker logs poltika-open 2>&1 | grep -q POLTIKA_ACCESS_PASSWORD
+          docker logs poltika-open > poltika-open.log 2>&1
+          grep -q POLTIKA_ACCESS_PASSWORD poltika-open.log
           docker run -d --name poltika -p 8000:8000 -e POLTIKA_ACCESS_PASSWORD=ci-pass poltika:pilot
           for i in $(seq 1 60); do curl -sf localhost:8000/healthz >/dev/null && break; sleep 1; done
           test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8000/analyst)" = 401

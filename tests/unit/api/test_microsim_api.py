@@ -3,13 +3,17 @@ population written to a temporary file."""
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from pathlib import Path
+from threading import Event
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
 
+from poltika.api import microsim
 from poltika.api.main import app
 from poltika.scenarios.microsim.synthetic import generate
 from poltika.semantics.population import SYNTHETIC_LABEL
@@ -148,3 +152,64 @@ def test_page_is_self_contained_and_shows_every_tab() -> None:
         assert f'"{tab}"' in html
     assert "src=" not in html and "<link rel=\"stylesheet\"" not in html
     assert "full take-up" in html and "never counted as zero" in html
+
+
+def test_one_population_computation_at_a_time(configured: Path) -> None:
+    """A run or run summary arriving while another is computed is turned
+    away with 429, not queued; the lock is released afterwards."""
+    run_id = client.post("/microsim/runs", json={"reform": THRESHOLD}).json()["run_id"]
+    with microsim._one_at_a_time():
+        busy = client.post("/microsim/runs", json={"reform": THRESHOLD})
+        assert busy.status_code == 429 and busy.headers["retry-after"] == "30"
+        assert client.get(f"/microsim/runs/{run_id}").status_code == 429
+        assert client.get("/microsim/population").status_code == 200  # cheap routes unaffected
+    assert client.get(f"/microsim/runs/{run_id}").status_code == 200
+
+
+def test_cache_publication_keeps_concurrent_runs_out(
+    configured: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A second writer must not refill the cache between eviction and
+    insertion, which would exceed the memory bound."""
+    publishing = Event()
+    resume = Event()
+
+    class PausedCache(dict[str, Any]):
+        def __setitem__(self, key: str, value: Any) -> None:
+            if key == "a" * 64:
+                publishing.set()
+                assert resume.wait(5), "cache publication probe timed out"
+            super().__setitem__(key, value)
+
+    cache = PausedCache({"0" * 64: None})
+    monkeypatch.setattr(microsim, "_RUNS", cache)
+    monkeypatch.setattr(microsim, "_RUN_LIMIT", 1)
+    monkeypatch.setattr(
+        microsim, "run_population",
+        lambda p, reform, *args, **kw: SimpleNamespace(run_id=reform.reform_id),
+    )
+    monkeypatch.setattr(microsim, "_summary", lambda p, run, components: {"run_id": run.run_id})
+    first = {"reform": {**THRESHOLD, "reform_id": "a" * 64}}
+    second = {"reform": {**THRESHOLD, "reform_id": "b" * 64}}
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        pending = executor.submit(client.post, "/microsim/runs", json=first)
+        try:
+            assert publishing.wait(5), "first request did not reach publication"
+            busy = client.post("/microsim/runs", json=second)
+            assert busy.status_code == 429
+            assert busy.headers["retry-after"] == "30"
+        finally:
+            resume.set()
+        assert pending.result(timeout=5).status_code == 200
+    assert list(cache) == ["a" * 64]
+
+
+def test_admission_is_released_after_a_failed_run(
+    configured: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def fail(*args: Any, **kwargs: Any) -> Any:
+        raise ValueError("invalid reform")
+
+    monkeypatch.setattr(microsim, "run_population", fail)
+    for _ in range(2):
+        assert client.post("/microsim/runs", json={"reform": THRESHOLD}).status_code == 422

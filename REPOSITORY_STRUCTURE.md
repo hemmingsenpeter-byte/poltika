@@ -174,7 +174,9 @@ poltika/
 │                            microsim_page.py (v0.2 Task 10.2: the
 │                            /analyst/microsim page); access.py (hosted
 │                            pilot password, HTTP Basic, operator-set
-│                            POLTIKA_ACCESS_PASSWORD) — no llm/
+│                            POLTIKA_ACCESS_PASSWORD)
+│                            and hardening.py (security headers, request-
+│                            size limit) — no llm/
 │                            layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy

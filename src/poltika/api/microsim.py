@@ -17,6 +17,10 @@ the other routes still work.
   Runs are kept in memory only, so they are gone after a restart.
   Rerunning the same inputs gives the same `run_id` and `results_sha256`.
 
+A run takes tens of seconds of CPU, so this process computes one run or
+run summary at a time; a request that arrives meanwhile gets 429 with
+`Retry-After` rather than queueing behind it.
+
 Everything is computed by `scenarios/microsim/`. These routes only
 translate.
 """
@@ -25,6 +29,9 @@ from __future__ import annotations
 
 import json
 import os
+import threading
+from collections.abc import Iterator
+from contextlib import contextmanager
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any
@@ -51,6 +58,21 @@ router = APIRouter(prefix="/microsim", tags=["microsim"])
 RunId = Annotated[str, PathParam(pattern=r"^[0-9a-f]{64}$")]
 _RUNS: dict[str, tuple[PopulationDataset, PopulationRun]] = {}
 _RUN_LIMIT = 32
+_COMPUTING = threading.Lock()
+
+
+@contextmanager
+def _one_at_a_time() -> Iterator[None]:
+    if not _COMPUTING.acquire(blocking=False):
+        raise HTTPException(
+            status_code=429,
+            detail="another population run is being computed; try again shortly",
+            headers={"Retry-After": "30"},
+        )
+    try:
+        yield
+    finally:
+        _COMPUTING.release()
 
 
 @lru_cache(maxsize=2)
@@ -125,17 +147,18 @@ def parameters() -> list[dict[str, Any]]:
 @router.post("/runs")
 def create_run(request: RunRequest) -> dict[str, Any]:
     p = population()
-    try:
-        analysis.component_set_unit(request.component_set)
-        run = run_population(
-            p, request.reform, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
-        )
-    except (UnsupportedReformError, InvalidReformError, ValueError) as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    body = _summary(p, run, request.component_set)
-    if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
-        _RUNS.pop(next(iter(_RUNS)))
-    _RUNS[run.run_id] = (p, run)
+    with _one_at_a_time():
+        try:
+            analysis.component_set_unit(request.component_set)
+            run = run_population(
+                p, request.reform, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
+            )
+        except (UnsupportedReformError, InvalidReformError, ValueError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        body = _summary(p, run, request.component_set)
+        if run.run_id not in _RUNS and len(_RUNS) >= _RUN_LIMIT:
+            _RUNS.pop(next(iter(_RUNS)))
+        _RUNS[run.run_id] = (p, run)
     return body
 
 
@@ -144,17 +167,19 @@ def fetch_run(
     run_id: RunId,
     component_set: Annotated[list[str] | None, Query()] = None,
 ) -> dict[str, Any]:
-    if run_id not in _RUNS:
+    stored = _RUNS.get(run_id)
+    if stored is None:
         raise HTTPException(
             status_code=404, detail=f"no run {run_id} in this process; rerun it to reproduce it"
         )
-    p, run = _RUNS[run_id]
+    p, run = stored
     components = ["family_tax_credit"] if component_set is None else component_set
     try:
         analysis.component_set_unit(components)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    return _summary(p, run, components)
+    with _one_at_a_time():
+        return _summary(p, run, components)
 
 
 def _summary(p: PopulationDataset, run: PopulationRun, components: list[str]) -> dict[str, Any]:
