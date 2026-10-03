@@ -3,7 +3,9 @@
 - Date: 3 October 2026, Pacific/Auckland.
 - Author: GPT/Codex source writer, coordinated by GPT/Codex project manager.
 - Base: prepared programme migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
-- Fixed sources/scope: `cf83e16e956ff5e5bed9c49f6a38a26c091add74`.
+- Original author sources/scope: `cf83e16e956ff5e5bed9c49f6a38a26c091add74`.
+- Final source-backed category correction: `b238820`, separately delta-checked
+  against reviewed `59d5e4a`; inventories unchanged, no remaining finding.
 - Branch: `codex/core-benefit-source-scope`; no PR, push or merge by this writer.
 - Label: **author preflight**, followed by a separate same-model source check
   recorded in `reviews/2026-10-03-core-benefit-source-scope.md`. Claude source
@@ -96,8 +98,9 @@ Results: all three catalogues validate, with 9/10/10 unique entries; official
 hosts, dated retrievals, locators, limitations and future-law separation are
 present. Changed-document relative links resolve. Each new policy directory
 contains `sources.yaml` only; no `policy.yaml` or runnable discovery is added.
-The final packet-only commit must be checked against this source SHA before
-publication; its head is obtained with `git rev-parse HEAD`.
+The later category-label correction is recorded separately above; all
+catalogues remain byte-identical to this source SHA. Final delta whitespace
+passes. Later commits only record checks and the draft PR tracking number.
 
 Full pytest, Ruff and strict mypy were not rerun for this source/document-only
 change. The project manager holds the separately measured clean-main baseline;

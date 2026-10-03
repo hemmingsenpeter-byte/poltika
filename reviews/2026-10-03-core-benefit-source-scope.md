@@ -49,6 +49,9 @@ inspected. Full runtime tests are outside this source/document-only change.
 
 ## Author response
 
-The project manager made the narrow category correction; a final delta check
-follows. The source catalogues are unchanged; no policy parameter,
+The project manager made the narrow category correction at `b238820`. The
+checker inspected `59d5e4a..b238820` and confirmed the source-backed fix,
+unchanged catalogues and no new actionable finding; whitespace passes.
+The historical P2 is resolved. Later changes only record checks and draft
+tracking. No policy parameter,
 protected case or approved interpretation is created. Task 8 stays In progress.
