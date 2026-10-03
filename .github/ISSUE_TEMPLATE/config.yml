@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Report a security problem
-    url: https://github.com/hemmingsenpeter-byte/poltika/security/advisories/new
-    about: Report vulnerabilities privately. Do not open a public issue (see SECURITY.md).
+  - name: Security reporting policy
+    url: https://github.com/hemmingsenpeter-byte/poltika/blob/main/SECURITY.md
+    about: Current collaborators use the Security report form; reports are visible to repository collaborators. See the policy for confidential details.

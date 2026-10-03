@@ -18,7 +18,22 @@ One bounded task per pull request.
 
 ## Make targets
 
-A Makefile gives one name to each routine step:
+The existing dev-tooling work will add the targets below. This PR does not
+contain a Makefile; until that work merges, use the current commands:
+
+```sh
+uv sync --locked --extra dev
+uv run --extra dev ruff check src tests
+uv run --extra dev mypy --strict src
+uv run --extra dev pytest -q
+uv run --extra dev python -m poltika.engines.assurance.evidence policy_specs/working_for_families policy_specs/accommodation_supplement
+```
+
+CI also runs the snapshot/statutory guards, installed-artifact, PostgreSQL,
+retained-code replay and pilot-image checks. Inspect their results on the
+latest PR commit; the local commands above do not establish all those checks.
+
+Planned Make targets, available only once dev tooling merges:
 
 | Target | What it does |
 | --- | --- |

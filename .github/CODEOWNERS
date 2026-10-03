@@ -7,10 +7,10 @@
 # Everything.
 *                                   @hemmingsenpeter-byte
 
-# High risk. A PR that touches these needs the independent GPT/Codex review
-# cleared in review_packets/review_queue.md before it merges (ADR-0020,
-# merge rule 4). Protected statutory values and CI guards are Tier C
-# (doctrine/test-doctrine.md).
+# Policy specs, simulator changes and calculated amounts require the
+# independent review in ADR-0020 merge rule 4. Protected statutory expected
+# value changes are Tier C. CI and test infrastructure maintenance is Tier A;
+# these ownership patterns route it for review without changing its tier.
 /policy_specs/                      @hemmingsenpeter-byte
 /src/poltika/engines/simulator/     @hemmingsenpeter-byte
 /tests/fixtures/                    @hemmingsenpeter-byte

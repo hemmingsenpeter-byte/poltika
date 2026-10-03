@@ -14,12 +14,19 @@ result" issue for it.
 
 ## Report a vulnerability
 
-Report it privately. Do not open a public issue.
+The repository is currently private. Collaborators can use the
+[Security report issue form](https://github.com/hemmingsenpeter-byte/poltika/issues/new?template=security_report.yml).
+Reports are visible to everyone with repository access, not only the owner.
+Address the report to `@hemmingsenpeter-byte`; include a minimal description
+and ask for an existing confidential channel if access-sensitive details
+need narrower disclosure. Never paste credentials, personal data or unit records.
 
-1. Use GitHub private vulnerability reporting: the "Security" tab of the
-   repository, then "Report a vulnerability".
-2. If that is not available to you, send a private message to the
-   repository owner, `@hemmingsenpeter-byte`, on GitHub.
+Someone without repository access should use an existing private channel
+to the owner. No external confidential inbox is configured by this PR.
+Before making the repository or product public, Pete must configure and
+verify the external confidential reporting route under ADR-0020's Tier C
+publication gate. GitHub's private vulnerability reporting is an option
+for public repositories when enabled; it is not the current private-repo route.
 
 Say what you found, how to reproduce it and what it could expose. You will
 get an acknowledgement. Please give us time to fix it before you tell
@@ -48,7 +55,10 @@ in `PROGRAMME_STATUS.md` under "Professional baseline":
 
 - Dependabot: dependency update PRs.
 - pip-audit: known vulnerabilities in Python dependencies.
-- CodeQL: static analysis of the code.
-- gitleaks: secrets in commits.
+- Static analysis: the scanners and thresholds actually merged with the
+  security-CI PR, recorded in that PR and `PROGRAMME_STATUS.md`.
+
+This PR does not add a secrets scanner. Do not infer that secret detection
+is covered by dependency or static-analysis checks.
 
 These help. They do not replace a private report.

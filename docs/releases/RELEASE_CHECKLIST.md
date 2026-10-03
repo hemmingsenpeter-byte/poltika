@@ -16,21 +16,26 @@ Work from a worktree off `origin/main`. Record each result in the release PR.
 
 ## 2. Checks
 
-- [ ] `make check` passes on the latest `origin/main`.
-- [ ] The release-gate acceptance tests pass, with nothing skipped except
-      rows the gate names:
-      `uv run --extra dev pytest -q tests/acceptance`. The gate tests are
+- [ ] The current lint, strict typing, evidence and test commands in
+      `CONTRIBUTING.md` pass on the commit to be tagged; use `make check`
+      only after the Makefile has merged. Inspect the remaining CI checks.
+- [ ] This release's gate tests pass with **zero skipped rows**. Select
+      the relevant release gate from
       `test_v0_1_release.py`, `test_v0_1_5_release_gate.py`,
-      `test_v0_2_release_gate.py` and `test_v0_3_release_gate.py`. A skip
-      names the PRs or phases it waits on. A green run with no skips means
-      the gate is met.
-- [ ] `pytest -q -m installed_artifact` and `pytest -q -m code_replay` pass.
+      `test_v0_2_release_gate.py` and `test_v0_3_release_gate.py` under
+      `tests/acceptance/`, for example
+      `uv run --extra dev pytest -q tests/acceptance/test_v0_2_release_gate.py`.
+      A skipped row identifies an unmet gate and blocks this release;
+      gates for future releases need not be complete to tag this one.
+- [ ] `uv run --extra dev pytest -q -m installed_artifact` and
+      `uv run --extra dev pytest -q -m code_replay` pass.
 - [ ] CI is green on the commit to be tagged.
 
 ## 3. Review
 
 - [ ] `review_packets/review_queue.md` has no open row in the release's
-      scope, or each open row is named in the release notes.
+      scope. Naming pending reviews in notes explains a blocker; it does
+      not satisfy the review gate.
 - [ ] No open P1 or P2 finding.
 
 ## 4. Documents

@@ -43,7 +43,7 @@ poltika/
 ├── CONTRIBUTING.md     — the route into the repository: worktree flow, tests, review, tiers (ADR-0020), Make targets, where files go
 ├── SECURITY.md         — what is in scope, how to report privately, supported versions, the automated checks
 ├── .github/CODEOWNERS  — the owner, and the high-risk paths (policy_specs/, engines/simulator/, tests/fixtures/, workflows)
-├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task
+├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task and collaborator-visible security report; no secrets/personal data
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)

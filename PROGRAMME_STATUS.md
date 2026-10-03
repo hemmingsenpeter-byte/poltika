@@ -43,7 +43,7 @@ sets, kept apart so it doesn't read as programme progress.
 | B2 | Ruleset on `main` and squash-only auto-merge | Pete | Pete | None | PETE_QUEUE Q1 (needs the repository owner's shell) |
 | B3 | Dev tooling: import-linter, pre-commit, Makefile, coverage | In progress | Claude Code | None yet | B1 |
 | B4 | Security CI: Dependabot, pip-audit, CodeQL, lychee | In progress | Claude Code | None yet | B1; new jobs join the ruleset's required checks only after Q1 |
-| B5 | Governance files: CODEOWNERS and the like | In progress | Claude Code | None yet | B1 |
+| B5 | Governance files: CODEOWNERS and the like | In progress (review fixes) | Claude Code authored; GPT/Codex reviewed/fixed | #143 | Private reporting, release-gate and pending-tooling guidance corrected; final-head review/CI and delegated acceptance pending |
 
 ## Releases
 
