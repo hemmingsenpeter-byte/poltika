@@ -5,6 +5,13 @@
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Conditional-summary corrections** (independent review of #128): preserve
+  exact Decimal amounts, distinguish evidenced exclusions from missing model
+  coverage, describe only evaluated cases and retain branch-limit caveats.
+  Verification checks the complete fixed sentences and figure inventory.
+  Analyst range wording follows the same certainty limit. Review findings
+  remain open until the follow-up is accepted and integrated.
+
 - **Delegated acceptance** (ADR-0020): Claude Code accepts and merges
   engineering work under three tiers; Tier C decisions stay with Pete in
   `PETE_QUEUE.md`, and Tier A and B decisions are logged in

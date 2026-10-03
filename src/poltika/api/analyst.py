@@ -458,13 +458,13 @@ function conditional(res) {
     for (const [id, b] of ranged) {
       const name = LABELS[id] || (id === "wff_total" ? "WFF total" : id);
       let text;
-      if (b.calculated === 0) text = "not calculable under any answer";
-      else if (b.low === b.high) text = money(b.low, id) + (b.complete ? " under every answer" : " where calculable");
+      if (b.calculated === 0) text = "no calculated amount in the evaluated cases";
+      else if (b.low === b.high) text = money(b.low, id) + (b.complete ? " across the evaluated cases" : " where calculable");
       else text = "between " + money(b.low, id) + " and " + money(b.high, id) + (b.complete ? "" : " where calculable");
       const points = b.kind === "points" ? "; values at these points, not bounds" : "";
       list.append(el("li", {}, name + ": " + text + " (calculated in " + b.calculated + " of " + b.branches + " cases" + points + ")"));
     }
-    card.append(el("p", {}, "Ranges across the possible answers:"), list);
+    card.append(el("p", {}, "Ranges across the evaluated cases:"), list);
   }
   if (res.branches.length > 1 || (res.branches[0] && res.branches[0].assignment.length)) {
     const ids = ["family_tax_credit", "in_work_tax_credit", "minimum_family_tax_credit", "best_start", "accommodation_supplement"];
@@ -480,8 +480,8 @@ function conditional(res) {
       el("div", {class: "scroll"}, table));
     card.append(why);
   }
-  if (res.capped) card.append(el("p", {class: "note"}, "Too many combinations to show them all: " +
-    "the facts that matter most are branched, and the rest are listed as still missing."));
+  if (res.capped) card.append(el("p", {class: "note"},
+    "Some fact combinations were not evaluated because the branch limit was reached."));
   if (res.next_question) card.append(el("p", {}, el("strong", {}, "The answer that would narrow this most: "),
     res.next_question.question));
   return card;
