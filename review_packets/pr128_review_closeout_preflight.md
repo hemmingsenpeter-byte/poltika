@@ -18,5 +18,23 @@ statutory amount, expected value, runtime code, test or dataset change.
 Existing review-queue and v0.3 release tests verify closure and preserve seven
 unbuilt-capability skips. No new tests for this documentation-only increment.
 
-Separate final document check and latest-head CI/acceptance follow. The
-whole v0.3 release and programme goal remain incomplete.
+At `2c1e44e4068ac2828c2e8461de8d44a779da2ea1`, a separate GPT/Codex
+document checker found no actionable discrepancy against the accepted base.
+It independently checked the actual Claude evidence, GitHub merge SHA/time,
+four passing integration checks, queue scope, local links and whitespace.
+This is a same-model document check, not delegated acceptance.
+
+Existing review-queue and release-gate tests pass: **7 passed, 7 skipped**
+with exit status 0. The seven skips remain unbuilt capability gates; closing
+the review row does not make the release complete. Reproduction:
+
+```sh
+PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q -ra tests/acceptance/test_review_queue.py tests/acceptance/test_v0_3_release_gate.py
+```
+
+Log: `/private/tmp/poltika-pr128-closeout-checks.log`. An earlier command
+included a migration-only test absent from main and collected no tests; the
+corrected command above ran both existing files. `git diff --check` passes.
+
+Independent Claude document review, latest-head CI and delegated acceptance
+follow. The whole v0.3 release and programme goal remain incomplete.
