@@ -9,7 +9,8 @@
   Decimal/presentation contract; outcome categories; original and follow-up
   diffs; existing golden inputs; negative summary probes.
 - Label: author preflight; the author knows the fix rationale. Separate
-  testing and same-model checks follow. Claude review/acceptance remains pending.
+  testing, same-model checking and independent Claude review are recorded below.
+  Claude delegated acceptance and integration remain pending.
 
 ## Contract and scope
 
@@ -35,7 +36,33 @@ cross-model waivers do not extend to this new follow-up.
 - New selected regressions before fix: 13 failed, three passed. After fix:
   16 passed, 32 deselected. API half-cent test compares text with the engine's
   output rather than introducing a statutory expected number.
-- Ruff and strict mypy (80 files) pass. Exact-head adversarial/focused checks,
-  final diff inspection and GitHub CI are recorded after they complete.
+- Ruff and strict mypy (80 files) pass. Author inspected the complete fixed
+  diff in the separate detached preflight worktree at `948fb24`.
+- Separate testing at `948fb243d490a50ef87dc3030904dacf72c15d55`: seven-file
+  focused suite 254 passed, eight expected skips; adversarial probes 15/15;
+  nine golden calculation payloads/policy hashes/scenario IDs unchanged.
+  Result IDs match when CodeIdentity is held constant; actual runtime code
+  commits differ, so cross-commit runtime-ID equality is not claimed.
+- Actual API half-cent/status transport and tampered-renderer failure pass.
+  Server JavaScript ran against seven real-resolution fixtures in a temporary
+  Node DOM shim; no browser layout/interaction test is inferred.
+- Separate GPT/Codex security/simplification check found no actionable issue;
+  it had prior knowledge of the fix direction and is not fresh cross-model review.
+
+## Independent Claude review
+
+An actual local Claude Code session used the repository's `poltika-reviewer`
+procedure with model `claude-sonnet-5`, restricted Read/Grep/Glob tools,
+no session persistence and no mutation tools. It independently derived the
+contract before the diff at `e52f5d3..948fb24`. It returned **Approve**, with
+no outstanding finding, after 32 read-only turns and no permission denial.
+Exact Decimal, evaluated-branch certainty, exclusion categories, complete
+fixed text/figure inventory, caller contracts, test cases, DOM construction
+and truthful open-gate records were inspected. It did not execute tests/lint
+or audit new statutory sources. Test results support this review separately.
+
+Code/tests remain unchanged after the reviewed SHA. Later commits only record
+checks and draft PR #150. Latest-head GitHub CI is checked separately; the
+review verdict is input to delegated acceptance, not a merge action.
 
 No release or independent Claude acceptance is claimed by this packet.
