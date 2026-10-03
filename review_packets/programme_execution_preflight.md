@@ -28,8 +28,8 @@ values, decisions, resources, publication, tags and merge authority remain intac
 - All 58 task IDs remain exactly once in order; 12 local Markdown targets resolve.
 - `git diff --check` passes. All changes are tracker/map/docs/review evidence;
   production, policy, tests, dependencies and data are untouched against base.
-- #142 final-head applicable CI is green; #138/#143 final review checks passed
-  and their full test jobs remain pending in this snapshot. Recheck remote
+- #138/#142/#143 final-head applicable CI is green; their separate review
+  checks passed. Recheck remote
   SHAs before any acceptance; documentation is not a merge permission.
 - Baseline full-run plus identity-rerun distinction and local environment skips
   are retained in `reviews/2026-10-03-programme-verification.md`.

@@ -44,10 +44,10 @@ and review again before merge; this is the reconciliation snapshot.
 | --- | --- | --- | --- |
 | Delegated acceptance | Done; Claude Code, Pete's recorded delegation | #139 merged, `dd2650b` | ADR-0020 accepted; #141 added live tracking. |
 | Main ruleset / squash auto-merge | Pete | None | Q1; repository settings action remains Pete's; merge rules hold by agreement. |
-| Evidence-classes skill | In progress (review fixes); Claude author, GPT/Codex checks/fixes | #138 open; `d868564` | Promotion exception fixed; separate final check has no actionable findings; latest-head CI and delegated acceptance pending. Legacy 1.7. |
+| Evidence-classes skill | In progress (review fixes); Claude author, GPT/Codex checks/fixes | #138 open; `d868564` | Promotion exception fixed; separate final check has no actionable findings; latest-head CI green; delegated acceptance pending. Legacy 1.7. |
 | Dev tooling | In flight (other session); Claude Code | No PR | Existing uncommitted worker includes tooling and calculation-adjacent `conditional.py`; preserve files and apply relevant independent review. |
 | Security CI | In progress (handoff); Claude author, GPT/Codex checks/fixes | #142 open; `f483fb90` | Applicable final-head CI green; separate security/test/simplification checks complete. Delegated acceptance pending; Bandit medium/low findings retained for triage. |
-| Governance files | In progress (review fixes); Claude author, GPT/Codex checks/fixes | #143 open; `82990da` | Private reporting, release gates, pending tooling and CI tiers corrected; separate final check has no actionable findings; latest-head CI and delegated acceptance pending. |
+| Governance files | In progress (review fixes); Claude author, GPT/Codex checks/fixes | #143 open; `82990da` | Private reporting, release gates, pending tooling and CI tiers corrected; separate final check has no actionable findings; latest-head CI green; delegated acceptance pending. |
 | Hosting policy-path documentation | In flight (other session); Claude Code | #140 draft; `ffa05168` | Exact-head installed-wheel probe passes (local database sub-probe unavailable); no actionable doc finding. Draft CI/acceptance pending; this is not the dev-tooling PR. |
 | Independent review debt | In progress; GPT/Codex, Claude Code coordinates | #128 merged, review open | `review_packets/review_queue.md` is current: one open implementation row. |
 
@@ -94,7 +94,7 @@ packets can still say “open” historically and do not override current record
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Bounded governance/baseline closeout | In progress | GPT/Codex coordinates checks/fixes; Claude Code acceptance | #138, #142, #143 open; #139 merged | Final PR dispositions; #142 CI green; #138/#143 checks and acceptance pending | Separate security/testing/simplification evidence; constitution preserved | Step 1; baseline B1–B5 |
+| 1 | Bounded governance/baseline closeout | In progress | GPT/Codex coordinates checks/fixes; Claude Code acceptance | #138, #142, #143 open; #139 merged | Final PR dispositions; #138/#142/#143 CI green; delegated acceptance pending | Separate security/testing/simplification evidence; constitution preserved | Step 1; baseline B1–B5 |
 | 2 | PR/review-debt reconciliation | In progress | GPT/Codex coordinates/reviews; Claude Code acceptance | #128 review outstanding; #138/#140/#142/#143 examined | Complete #128 independent review; retain all open/draft ownership | Live review_queue; first-cycle verification record and execution practice | W1; P17 |
 | 3 | Release baseline | Pete | Pete; Claude Code prepares | No new release PR | v0.2 tag; v0.1.5 external pilot/tag; verify baseline/gates | v0.1.0 tagged; retained release evidence | 7.1; v0.1.5 8.2–8.6; v0.2 10.3 |
 | 4 | End abstract Phase 0 expansion | In progress | Claude Code acceptance; GPT/Codex coordinates | #144–147 draft migration | Independent migration review/CI and coordinated integration; preserve existing workers | ADR-0021 direction; existing migration stack is not duplicated | Steps 1–2 sequencing |

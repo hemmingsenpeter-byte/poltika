@@ -66,5 +66,11 @@ visibility/issues enabled, actual tooling, release-gate doctrine, tiers and
 promotion safeguards were checked. Both whitespace checks passed. This is
 fresh same-model review of GPT/Codex fixes, not independent Claude acceptance.
 
+At the recorded heads, both PRs also have successful test, pilot-image and
+guard checks: [#138 test](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37083113350)
+and [#143 test](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37083111237).
+The workflow includes the PostgreSQL and installed-artifact checks unavailable
+locally. Passing CI does not clear delegated acceptance.
+
 The source-scoping draft has its separate dated source check in #148.
 All pending cross-model, policy, milestone, pilot and acceptance gates remain.
