@@ -5,9 +5,9 @@
 - Base: prepared migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
 - Scope: coordination practice, current tracker and dated first/second-cycle verification;
   no new roadmap, doctrine, acceptance delegation or model implementation.
-- Label: author preflight; separate fresh same-model document check applies
-  only to the first-cycle diff identified below. The second-cycle update
-  awaits its own fresh review; Claude acceptance/migration integration remain pending.
+- Label: author preflight plus separate fresh same-model document checks
+  at the exact first/second-cycle revisions below. Claude acceptance and
+  migration integration remain pending.
 
 The author knows the operating rationale. Reviewers derive their contract
 from the user goal, master programme, doctrine and ADR-0020 before comparing
@@ -108,8 +108,8 @@ review queue, dependencies and data remain untouched. The committed archive
 is checked separately at handoff, preserving the tested file contents.
 
 No broad test, new policy-source audit or live CI rerun by this writer is claimed.
-The final diff requires a fresh reviewer; the `422b055..687ed4d` check above
-does not cover it. Retargeting/reconciliation onto main and latest-head CI
+The `422b055..687ed4d` check above does not cover this increment; its separate
+check is recorded below. Retargeting/reconciliation onto main and latest-head CI
 remain acceptance prerequisites; nothing here grants merge authority.
 
 External reviewer permission is pending for new bounded Claude review and
@@ -132,3 +132,12 @@ uncommitted drafts, but the reporting writer had committed at
 The preservation gates remain valid; the current inventory needs to distinguish
 committed/uncommitted work. Record precedes the narrow factual correction.
 No broad tests or new statutory-source audit were performed by this checker.
+
+The coordinator confirmed the reporting pin and other four uncommitted
+worktrees with read-only git checks at 02:14 UTC. The narrow correction
+distinguishes their states without changing ownership or acceptance gates.
+In a separate pinned author-preflight worktree at `bdf7d497`, the coordinator
+also ran the final 15 focused tests: all passed, with two existing warnings,
+in 8.25 seconds. No production, policy, test or fixture change followed;
+the later correction affects inventory wording and this review record only.
+Final correction recheck remains a same-model document check.

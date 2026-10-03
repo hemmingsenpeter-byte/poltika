@@ -26,11 +26,14 @@ The task tables remain the live backlog; ADR-0020 acceptance and Tier C
 boundaries remain unchanged. New work is prepared beside the still-draft
 migration #144–147, not recorded as merged programme adoption.
 
-The second-cycle ownership inventory also preserves uncommitted drafts on
+The second-cycle ownership inventory preserves unmerged drafts on
 `build/p1-household`, `build/p1-income-tax`, `build/p1-benefits`,
 `build/p1-reporting` and `build/p1-sim-analysis` in the corresponding
 `/Users/peterhemmingsen/poltika-p1-*` worktrees. Older Not started rows do
-not establish unowned implementation paths: obtain pinned owner handoffs
+not establish unowned implementation paths. Reporting is clean and committed
+at `8a541368cc2dda4a0ef18df3288d28b1934bc701`; the other four listed worktrees
+remain uncommitted at the coordinator's 02:14 UTC check on 3 October 2026.
+Obtain pinned owner handoffs
 before assigning overlapping writers. This is unaccepted ownership evidence,
 not a code audit or test/approval result. #148/#151 remain separate source
 drafts. The simulation-analysis owner also owns both existing snapshot tests;

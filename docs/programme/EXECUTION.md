@@ -122,8 +122,10 @@ claims are unaccepted ownership evidence, not capability acceptance.
 
 ### Existing draft ownership — second-cycle inventory
 
-The coordinator's planning inventory records the following uncommitted
-branch-local work. This note is ownership evidence only: no code audit,
+The coordinator's inventory records the following unmerged branch-local
+work. At the 02:14 UTC check on 3 October 2026, reporting is clean and
+committed at `8a541368cc2dda4a0ef18df3288d28b1934bc701`; the other four listed
+worktrees remain uncommitted at `9451859`. This is ownership evidence only: no code audit,
 test result or approval is inferred, and no capability becomes Done.
 
 | Existing worktree | Branch | Handoff constraint |
@@ -131,7 +133,7 @@ test result or approval is inferred, and no capability becomes Done.
 | `/Users/peterhemmingsen/poltika-p1-household` | `build/p1-household` | Preserve household/mapping files, tests and pass1/pass2 docs; pinned review intake comes first. |
 | `/Users/peterhemmingsen/poltika-p1-income-tax` | `build/p1-income-tax` | Preserve the implementation draft; reconcile with source draft #148 and source/slice gates before assigning a tax writer. |
 | `/Users/peterhemmingsen/poltika-p1-benefits` | `build/p1-benefits` | Preserve the implementation draft; reconcile with source draft #151 and source/slice gates before assigning a benefit writer. |
-| `/Users/peterhemmingsen/poltika-p1-reporting` | `build/p1-reporting` | Preserve the reporting draft and obtain its owner's pinned handoff before assigning overlapping reporting work. |
+| `/Users/peterhemmingsen/poltika-p1-reporting` | `build/p1-reporting` | Clean committed draft at `8a541368`; preserve it and obtain the owner's review handoff before assigning overlapping reporting work. |
 | `/Users/peterhemmingsen/poltika-p1-sim-analysis` | `build/p1-sim-analysis` | Preserve simulation-analysis work, including both existing snapshot test files; obtain a pinned owner handoff before overlapping changes. |
 
 Do not assign new tax/benefit/reporting/simulation writers from older

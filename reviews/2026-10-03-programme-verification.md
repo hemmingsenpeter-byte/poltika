@@ -159,9 +159,13 @@ handoff, not a new code audit by this PM writer. Reconcile/review that increment
 before assigning another household/model/mapping writer; golden parity and
 source-derived mapping acceptance are still required.
 
-The same ownership handoff records substantial uncommitted implementation
+The same ownership handoff records substantial unmerged implementation
 drafts on `build/p1-income-tax`, `build/p1-benefits`, `build/p1-reporting`
 and `build/p1-sim-analysis` in their corresponding `poltika-p1-*` worktrees.
+The coordinator's 02:14 UTC check on 3 October 2026 found reporting clean at
+committed `8a541368cc2dda4a0ef18df3288d28b1934bc701`, with household, tax,
+benefits and simulation-analysis still uncommitted at `9451859`. The earlier
+collective uncommitted label was a P3 factual discrepancy; it is corrected.
 These are branch-local, unaccepted observations; this writer performed no
 code audit/tests of them. Source drafts #148/#151 keep their separate state.
 The simulation-analysis owner owns both existing snapshot test files;
