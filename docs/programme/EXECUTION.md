@@ -146,3 +146,109 @@ their policy content, values or construction-mode claims.
 The next engineering handoffs are #152 closure,
 baseline PR refresh/acceptance, migration integration and the new PM/source
 review packets. Previous review does not cover this second-cycle PM update.
+
+## Third-cycle reporting and coordination handoff — 3 October 2026
+
+The first-candidate observations below are historical; the corrected handoff
+at the end of this section supplies the subsequent reporting state.
+
+The reporting owner's clean Claude-authored draft remains preserved at
+`8a541368cc2dda4a0ef18df3288d28b1934bc701` on `build/p1-reporting` in
+`/Users/peterhemmingsen/poltika-p1-reporting`. Independent GPT/Codex review
+derived the reporting contract before reading the implementation and author
+rationale. That review found retained-result, precision, provenance, artifact
+identity and chart discrepancies despite the original focused tests passing.
+It does not imply acceptance of the original draft.
+
+The coordinator ported the reporting increment onto accepted main
+`3bea73fba44f9173ecc4ee3d00be3aa22328b993` at
+`99c9aa0e01431180058f448a8df4d752bc0eddca`, then addressed the findings in
+the isolated `codex/reporting-review-fixes` branch. The pinned fix candidate is
+`8235506ca8fb1b211b847a805e95d57f2956ac7b`; a reporting PR has not yet been
+created. The original owner's checkout remains untouched. Separate testing
+work added focused regressions without changing protected statutory expected
+values. The first candidate's reporting, analysis, worked-example, withdrawal
+and orientation checks passed **120 tests with no skips**. Whole `src/` and
+`tests/` Ruff checks passed; strict mypy passed all **85 production source
+files**. Subsequent security review found a new P2 resource defect, R12:
+extreme Decimal exponents could expand into very large fixed-point strings
+before the chart guard. The finding is retained in reporting review commit
+`60e15af`. Candidate `8235506` is not cleared; a bounded fix and regression
+handoff are underway. Broader pinned verification and a wheel build are also
+underway at this handoff. No green CI or acceptance is claimed.
+
+Separate same-model checks of the GPT/Codex fixes remain incomplete, with R12
+unresolved at this recorded handoff. They will not replace the fresh-context
+Claude review and ADR-0020 acceptance gates.
+The reporting prototype remains short of Task 24/Phase F acceptance: missing
+uncertainty bounds and the WFF annual reference period remain explicit gaps,
+and complete baseline parameter resolutions cannot be verified from the
+retained inputs. Source interpretation, protected values, Māori data
+governance and public decisions remain with Pete; #148/#151 retain their
+separate source-review gates. The other owner handoffs above remain required.
+
+The bounded coordination check compared draft #153 at
+`ce7c5921a5cb1b613c944f7a46b5e1f73b8369d6` with draft #152 at
+`2404ab47fc17b5c685382155cf616e5b014e92ee` and this PM draft. #153 and #152
+start from the same accepted main and overlap the 3A1b status row and #128
+review-queue closure: #153 retains the pending state; #152 records the proposed
+closeout. A safe order is #153 first, then refresh #152 against the resulting
+main. If #152 merges first, refresh #153 so it preserves the accepted closeout
+instead of reopening it. In either order, latest-head CI, author preflight,
+fresh-context review and acceptance still apply. The later #149/migration
+refresh must carry accepted closure into the 58-task tracker while preserving
+the dated historical evidence; selecting a whole stale tracker during a
+conflict would lose that distinction.
+
+Pete's authorised current working order remains the coordinator's instruction;
+the unmerged #144–147/#149 migration is not yet repository adoption. #153 is
+also unaccepted and its proposed doctrine is not authority. Its wording that
+speculative abstractions “may wait” needs reconciliation with AGENTS.md's
+existing prohibition on introducing them. That wording concern belongs to
+the #153 owner; this handoff does not modify that branch or waive any source,
+ownership, review or acceptance gate.
+
+### Corrected reporting handoff and draft publication
+
+The preceding first-candidate status is historical. R12 was fixed at code pin
+`3a10771bc3dfdb27002ed03286cb61cd36d93809` and published in
+[draft #154](https://github.com/hemmingsenpeter-byte/poltika/pull/154), initial
+head `10e5e122e8fd97b4d896abe390b0c0c164e5fa67` (later verification docs only).
+Final review-record head is `9b6413c8135491b4cd6dd75cc8256eb74648cb15`;
+source and tests remain byte-identical to `3a10771`.
+Separate pinned author checks passed **136 focused tests/no skips**, whole
+src/tests Ruff, strict mypy over 85 files and an isolated installed-wheel
+reporting-library smoke. The earlier default suite at `8235506` passed 1,380
+tests/22 skips/two excluded opt-in tests; it is not final-delta evidence.
+Sixteen bounded resource regressions were red before the correction and green
+afterward. Separate same-model security recheck at `3a10771` has no remaining
+blocker, with 52 targeted tests and guarded exponent/all-export probes passed.
+
+The contract checker found no actionable finding at `8235506` with 82 focused
+regressions, then no remaining blocker in the final `3a10771` delta with 21
+resource/precision tests. These are separate same-model checks, not Claude
+rotation. All four initial #154 checks passed at `10e5e122`; the test job
+finished 03:40:33 UTC. The final documentation update still needs latest-head
+CI. Required Claude review and ADR-0020 acceptance still await
+private-payload destination authorization. This draft library and its checks
+do not start or complete Task 24 ahead of prerequisites 21–23, supply missing
+uncertainty evidence or integrate the workbench.
+
+### Security-CI base maintenance
+
+#142 was refreshed force-free onto accepted main `3bea73f` at merge
+`7ab7cbb92ec4a4cf1297485ba61b9392db1abed6`, then published at documentation
+head `94f08fc4b541e14cf054b408b13399b972fbe5ee`. All prior workflow blobs
+and authored/main change payloads were preserved; no conflicts or hand edits.
+A separate same-model maintenance check found no actionable issue. Bounded
+author preflight passed 15 workflow/publisher/scanner probe groups, seven
+currency tests/no skips, whole Ruff and strict mypy over 80 source files.
+Fresh cached scans returned no zizmor findings and retained Bandit's 35 low,
+four medium and zero high findings; negative controls failed as expected.
+The documentation-only handoff leaves tested workflows/source unchanged.
+
+Latest-head CI and ADR-0020 acceptance remain pending. Prior actual Sonnet
+review and green CI remain historical to their submitted artifacts/head.
+No actual new Claude review, hosted issue operation, protected-value change,
+source approval or merge occurred. Governance #143 base maintenance is a
+separate owner-preserving handoff; its older checks do not cover a new head.

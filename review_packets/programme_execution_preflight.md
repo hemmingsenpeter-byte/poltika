@@ -3,11 +3,30 @@
 - Date: 3 October 2026, Pacific/Auckland.
 - Author: GPT/Codex project manager, appointed by Pete's current goal.
 - Base: prepared migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
-- Scope: coordination practice, current tracker and dated first/second-cycle verification;
+- Scope: coordination practice, current tracker and dated first/second/third-cycle verification;
   no new roadmap, doctrine, acceptance delegation or model implementation.
 - Label: author preflight plus separate fresh same-model document checks
   at the exact first/second-cycle revisions below. Claude acceptance and
   migration integration remain pending.
+
+The third-cycle addition is a bounded reporting/coordination handoff in the
+existing execution and verification records, with one current tracker note.
+It preserves all 58 task rows, earlier evidence hashes, owner files and
+source/Claude/Pete gates. Reporting is now draft #154, code `3a10771` and final
+review-record head `9b6413c`; source/tests are unchanged between those pins.
+Initial draft CI passed at `10e5e122`; latest-head checks remain required.
+Final targeted same-model security/contract checks found no remaining blocker,
+without replacing the missing Claude rotation and acceptance. This addition
+awaits the coordinator's
+checks of the revised PM diff; the historical preflight and document reviews
+below do not cover it. No #153 doctrine adoption or reporting acceptance is
+claimed.
+
+The third-cycle handoff also records #142's force-free main refresh at
+`7ab7cbb` and published documentation head `94f08fc`. Its bounded verification
+and separate same-model check are recorded with exact limits; latest-head CI
+and ADR-0020 acceptance remain pending. No prior actual Claude approval is
+represented as fresh review of the new head.
 
 The author knows the operating rationale. Reviewers derive their contract
 from the user goal, master programme, doctrine and ADR-0020 before comparing

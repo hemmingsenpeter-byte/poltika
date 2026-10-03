@@ -183,3 +183,151 @@ portable repository artifacts or a fresh review of the revised PM draft.
 | `/private/tmp/poltika-pr128-claude-review.json` | `80e2a55413a208180d32e0cda5e0eb119da3173dbf06c4b81713f14ddf83a74b` |
 | `/private/tmp/poltika-pr150-opus-acceptance.json` | `31bb9a15cacf2d4039865af24794fccf81eaac207dd7b33117ec0966e80b0dc8` |
 | `/private/tmp/poltika-baseline-claude-review.json` | `ca0b0574109fb6476aad922a0f4b62883a9bae4e422471ea9907b4a7141e92eb` |
+
+## Third-cycle reporting and coordination evidence — 3 October 2026
+
+This additive handoff preserves the first- and second-cycle records and their
+evidence hashes. It records a new reporting review/fix cycle and a bounded
+draft-coherence check; it is not a fresh independent review of this revised
+PM document, programme adoption or reporting acceptance.
+
+The original reporting author was Claude. Independent GPT/Codex review used
+the source, architecture, test and review contract before inspecting the
+implementation and author rationale at
+`8a541368cc2dda4a0ef18df3288d28b1934bc701` (base
+`9451859c0a80c26ee02714cc843635a36f785351`). The original owner checkout
+`/Users/peterhemmingsen/poltika-p1-reporting` remains untouched. Review found
+discrepancies in retained-result reconciliation, metadata/provenance,
+precision, export identity and charts. Passing the original focused tests did
+not resolve those findings or establish Task 24/Phase F completion.
+
+The finding-first isolated port is
+`99c9aa0e01431180058f448a8df4d752bc0eddca` on accepted main
+`3bea73fba44f9173ecc4ee3d00be3aa22328b993`. The coordinator's GPT/Codex fixes
+and separate testing work are pinned at
+`8235506ca8fb1b211b847a805e95d57f2956ac7b` on
+`codex/reporting-review-fixes`; no reporting PR number exists at this handoff.
+The retained tests exercise exact household amounts, population display
+precision with full stored Decimal values, stale IDs/deltas, retained metadata,
+separately supplied examples/paths, literal Markdown, chart numeric limits,
+unknown-outcome gaps, synthetic warnings and native units. Protected statutory
+expected values were not changed.
+
+The locked local environment is
+`/private/tmp/poltika-testing-e52f5d3-venv`, with `PYTHONPATH=src` for source
+assets. The final focused command was:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/pytest -q -p no:cacheprovider tests/unit/scenarios/reporting tests/unit/scenarios/microsim/test_analysis.py tests/unit/scenarios/microsim/test_worked_examples.py tests/unit/scenarios/microsim/test_withdrawal.py tests/acceptance/test_orientation_examples.py
+```
+
+At the first fix candidate it exited 0 with **120 passed, no skips**, and two
+dependency deprecation warnings in **38.30 seconds**. Whole `src/` and `tests/`
+Ruff checks passed;
+the coordinator also reported strict mypy passing all **85 production source
+files**. The reporting tests' scoped strict mypy check passed separately; it
+does not establish that all inherited test files type-check. Detailed local
+testing evidence is retained in
+`/private/tmp/poltika-reporting-fix-testing-20261003.md` and its named logs.
+Subsequent security review found new P2 resource defect R12: extreme Decimal
+exponents can expand into very large fixed-point strings before a chart guard.
+The finding is retained in reporting review commit `60e15af`; candidate
+`8235506` is not cleared. A bounded resource fix and additional regression
+handoff are underway. Broader pinned-suite verification and the wheel build
+remain underway at this handoff. The earlier 120-pass result does not resolve
+R12, and these local checks are not green CI evidence.
+
+Separate same-model checks of the GPT/Codex fix candidate remain incomplete,
+with R12 unresolved at this recorded handoff. They cannot supply the cross-model
+review of their author or Claude acceptance.
+The pinned reporting review and author preflight retain the missing annual
+WFF reference period, uncertainty bounds and unverifiable complete baseline
+parameter resolutions as limits. Task 24/Phase F, source/Pete decisions,
+fresh-context review and ADR-0020 acceptance remain gated.
+
+The read-only coordination check compared open drafts #153
+(`ce7c5921a5cb1b613c944f7a46b5e1f73b8369d6`), #152
+(`2404ab47fc17b5c685382155cf616e5b014e92ee`) and #149
+(`40cc0505a2896c7136f43b3e218d88e4dc1b1222`). #153 and #152 overlap the
+3A1b tracker status and #128 review-queue row from the same accepted base:
+#153 retains pending assurance; #152 proposes closure. Merge #153 first and
+refresh #152, or, if #152 is accepted first, refresh #153 to preserve that
+closure. Refresh the later PM/migration tracker with actual accepted outcomes
+while leaving these dated records historical. Each refreshed head still needs
+its required checks and acceptance; this check approves none of the drafts.
+
+The check also distinguished Pete's authorised current working sequence from
+unmerged migration adoption. Draft #153 is not doctrine authority. Its phrase
+that speculative abstractions “may wait” needs the owner's reconciliation
+with AGENTS.md's prohibition on introducing them. No #153 owner file was
+changed, and no source, ownership or ADR-0020 gate was relaxed.
+
+### Corrected reporting pin and initial draft CI
+
+The first-candidate paragraphs above are historical. Corrected code pin
+`3a10771bc3dfdb27002ed03286cb61cd36d93809` is published in
+[draft #154](https://github.com/hemmingsenpeter-byte/poltika/pull/154).
+Initial documentation head `10e5e122e8fd97b4d896abe390b0c0c164e5fa67` and
+final review-record head `9b6413c8135491b4cd6dd75cc8256eb74648cb15` have source
+and test files identical to that code pin; only verification documents changed.
+
+The separate pinned author preflight passed **136 focused tests, no skips**,
+two dependency warnings, 40.16s; whole src/tests Ruff and strict mypy over
+85 production files also passed. Log:
+`/private/tmp/poltika-reporting-final-3a10771-tests.log`. The corrected wheel
+built/installed offline and an isolated installed-library smoke passed. It
+does not claim the full opt-in artifact/API/database/code-replay suite.
+
+The earlier default-suite run at `8235506` exited 0 with **1,380 passed,
+22 skipped, two opt-in tests deselected**, two dependency warnings, 792.05s.
+Log: `/private/tmp/poltika-reporting-default-tests-8235506.log`. This belongs
+to the earlier candidate and is not final Decimal-delta verification.
+All 16 bounded resource regressions failed before R12's fix and passed after.
+Separate same-model security delta review found no remaining blocker at
+`3a10771`, with 52 targeted tests and guarded exponent/export probes passed;
+local log: `/private/tmp/poltika-reporting-r12-security-probe.log`.
+The same-model contract checker found no actionable findings at `8235506`
+with 82 tests, then no remaining blocker in the final `3a10771` delta with
+21 resource/precision tests (0.65s). The earlier 82 tests were not rerun or
+represented as final-pin evidence. Local record:
+`/private/tmp/poltika-reporting-contract-review-3a10771.md`.
+
+At initial #154 documentation head `10e5e122`, all four exact-head checks
+passed: test and pilot-image
+([run 37093544795](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37093544795)),
+immutable snapshots
+([run 37093544762](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37093544762))
+and protected paths
+([run 37093544827](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37093544827)).
+The test job finished at 03:40:33 UTC, 3 October 2026. Latest-head checks for
+the final documentation update remain pending at this handoff. Claude rotation
+and ADR-0020 acceptance remain pending; no gate or task row is changed. Task 24
+remains behind prerequisites 21–23, with no Phase F completion claim.
+
+### Security-CI refreshed handoff
+
+#142's local force-free merge `7ab7cbb92ec4a4cf1297485ba61b9392db1abed6`
+has parents `f483fb90` and exact accepted main `3bea73f`. The subsequent
+documentation-only head `94f08fc4b541e14cf054b408b13399b972fbe5ee` is published
+on `infra/security-ci`. Complete authored/main change payloads survive;
+ten non-shared authored blobs and all seven main-only files were checked
+byte-for-byte. Both shared documents preserve both sides, with no conflicts.
+
+Separate same-model security/contract review found no actionable finding,
+with seven report-reader and four isolated publisher probes passed expected
+exits. Bounded author preflight passed 15 existing probe groups and seven
+currency tests/no skips (1.46s), whole src/tests Ruff and strict mypy over
+80 source files. Cached offline zizmor 1.30.1 returned exit 0/empty findings;
+its unsafe fixture returned expected exit 14. Fresh cached Bandit 1.9.4 and
+the exact workflow reader returned exit 0, with 11,677 scanned lines, zero
+errors, 35 low/four medium/zero high findings. The backlog remains unresolved.
+Local commands/results and environment limits are retained in
+`/private/tmp/poltika-pr142-refresh-preflight-20261003.md`; preservation and
+separate-check evidence are in
+`/private/tmp/poltika-pr142-base-refresh-20261003.md` and
+`/private/tmp/poltika-pr142-refresh-security-20261003.md`.
+
+No broad-suite, live advisory/link, hosted issue, PostgreSQL, Docker,
+installed-artifact or replay verification was repeated locally. Latest-head
+CI and ADR-0020 acceptance remain pending at publication. Historical Sonnet
+review is not a new review of this head; no new Claude call or merge occurred.

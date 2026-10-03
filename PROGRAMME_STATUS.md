@@ -39,6 +39,22 @@ not a code audit or test/approval result. #148/#151 remain separate source
 drafts. The simulation-analysis owner also owns both existing snapshot tests;
 later additive parity work needs an unoccupied path after the owner handoff.
 
+Third-cycle note: the original reporting owner draft at `8a541368` remains
+preserved. [Draft #154](https://github.com/hemmingsenpeter-byte/poltika/pull/154)
+contains the isolated reporting review/fixes, code pin `3a10771`, docs head
+`9b6413c`. The earlier `8235506` passed 1,380 default-suite tests with 22 skips
+and two opt-in exclusions, but security found R12's Decimal expansion defect.
+The corrected pin passed 136 focused tests/no skips, whole Ruff, strict mypy
+(85 source files) and installed-library smoke; targeted same-model security
+and contract rechecks have no remaining blocker. All four CI checks pass at
+initial documentation head `10e5e12`; the final review-record update requires
+latest-head CI. Required Claude review/acceptance remains pending.
+Task 24 remains gated by 21–23;
+prototype review changes no task state. The [execution handoff](docs/programme/EXECUTION.md)
+and [dated evidence](reviews/2026-10-03-programme-verification.md) record the
+reporting limits and #153/#152 refresh order; neither draft doctrine nor the
+unmerged migration displaces Pete's authorised working sequence.
+
 | Status | Meaning |
 | --- | --- |
 | Done | Merged and the task's done-when is met. |
