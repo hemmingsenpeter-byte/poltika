@@ -146,6 +146,12 @@ poltika/
 │   │                        CLIs are the only modules outside poltika.data
 │   │                        that build a DataContext) --
 │   │                        never a second engine);
+│   │                        reporting/ (Pass 1 capabilities 16-17: tables.py
+│   │                        neutral analytical tables, charts.py Vega-Lite
+│   │                        and static SVG charts derived from a table,
+│   │                        report.py the templated economist report and its
+│   │                        JSON/Markdown/HTML renderers, adapter.py the
+│   │                        single import point for microsim result types);
 │   │                        store.py (Task 32, ADR-0013: append-only
 │   │                        PostgreSQL scenario store -- runs, content-
 │   │                        addressed artifact bytes, replay, drift re-run;
