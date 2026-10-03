@@ -36,7 +36,8 @@ whether a claim is in scope, it is.
    x-hat). The mapping says what each is instead. A `review_status` of
    `needs_review` and the `needs_review` outcome are calculation gates, not
    evidence classes: the class follows the claim's sources and review.
-   Every claim has exactly one class, and a class is never relabelled. The
+   Every claim has exactly one class. Existing classes are preserved;
+   an AI hypothesis may be promoted only through its required gate. The
    constitution leaves two gaps on purpose: validation expectations (decision
    1, deferred to Step 6) and existing decision records (decision 3, classed
    in a later change for Pete's confirmation). Leave those without a class,
@@ -153,6 +154,6 @@ Stop and report, with `file:line`, if: a claim has no class in the
 constitution, other than the two gaps it leaves on purpose (validation
 expectations, decision 1; existing decision records, decision 3); a Rule has
 no resolvable cited primary source or no independent review; a value was
-supplied from memory; an AI-drafted claim is being used as a source,
-parameter or model input; or a test expectation would change to make a check
-pass.
+supplied from memory; an AI-drafted claim is being used as authoritative
+evidence, a parameter or a model input before its required promotion gate
+passes; or a test expectation would change to make a check pass.
