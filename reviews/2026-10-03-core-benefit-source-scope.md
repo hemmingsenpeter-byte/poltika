@@ -49,6 +49,6 @@ inspected. Full runtime tests are outside this source/document-only change.
 
 ## Author response
 
-The project manager will make the narrow category correction, then obtain a
-final delta check. The source catalogues are unchanged; no policy parameter,
+The project manager made the narrow category correction; a final delta check
+follows. The source catalogues are unchanged; no policy parameter,
 protected case or approved interpretation is created. Task 8 stays In progress.

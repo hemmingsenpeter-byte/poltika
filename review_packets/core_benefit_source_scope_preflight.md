@@ -5,9 +5,9 @@
 - Base: prepared programme migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
 - Fixed sources/scope: `cf83e16e956ff5e5bed9c49f6a38a26c091add74`.
 - Branch: `codex/core-benefit-source-scope`; no PR, push or merge by this writer.
-- Label: **author preflight**. The author knows the rationale; no separate
-  fresh-context or independent review is claimed. Source acceptance and Pete
-  D1 remain pending under ADR-0020.
+- Label: **author preflight**, followed by a separate same-model source check
+  recorded in `reviews/2026-10-03-core-benefit-source-scope.md`. Claude source
+  acceptance and Pete D1 remain pending under ADR-0020.
 
 ## Mechanical review inputs
 
@@ -37,6 +37,7 @@ WFF/AS meanings, periods and decisions remain dependencies.
 
 | Finding | Proposed classification | Scope and resolution |
 |---|---|---|
+| JS Schedule 4 Part 1 cl 1(a) mistakenly labelled at/away from parental home | `SPEC_ERROR`, P2, found by separate source checker | Corrected to under 20 living with parent plus benefit commencement condition; cl 1(b) separately identifies other under-25 singles without dependent children. Dated Act independently retrieved; no amount changed |
 | Detailed local 3.4 household prohibition versus Act s 18 own-right per-person restriction and Schedule 4 partner categories | `SPEC_ERROR`, subject to reviewer confirmation | Recorded with sources; detailed plan remains unchanged. Clarification is required before implementation |
 | Benefit-specific rounding, gross/net M reconciliation, tax treatment and payment/deduction ordering are not established by this scoped source pass | `MISSING_SOURCE` for a dependent monetary claim | Numerical implementation/benchmarks remain gated; this draft supplies no guessed values |
 | D1 assessment period, established-grant result meaning, population breadth and SPS/SLP assessment basis | Pete supported-slice decisions; not silently classified as settled policy | Proposed ordinary single slices and excluded routes are explicit; no DEC or approval created |
