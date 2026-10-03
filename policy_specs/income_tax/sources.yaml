@@ -1,0 +1,213 @@
+# Programme Phase B Task 7 / BUILD_PLAN_v0_3.md local 0.1.
+# A source inventory and scope proposal, not an approved executable policy.
+as_of: 2026-10-03
+status: draft_source_scope
+review_status: independent_review_and_pete_d1_pending
+scope_note: ../../docs/research/task_0_1_income_tax_scope.md
+proposed_reference_period:
+  from: 2026-04-01
+  to: 2027-04-01
+  status: proposal_not_approved
+annual_rates_status:
+  reference_tax_year: 2026-27
+  status: needs_review
+  reason: >-
+    BB 1 requires an annual taxing Act. The retrieved 2026-27 instrument
+    is Bill 344-1, not an enacted annual rates Act. Current Schedule 1
+    and an IRD operational table do not clear that statutory gate.
+  recheck: >-
+    Locate enacted 2026-27 annual rates legislation and its application
+    provision, recheck relevant amendments for the approved period,
+    and obtain independent review before approving parameters.
+retrieval_note: >-
+  Checked 3 October 2026 Pacific/Auckland. NZ Legislation HTML was
+  retrieved directly using curl with a browser user agent after the web
+  reader returned 403 or an access error. Modern /en/<version>/ routes
+  worked; legacy whole.html did not. Only the provisions listed below
+  were reviewed. Agency HTML is a dated observation, not an immutable
+  historical snapshot. No raw statistical dataset was acquired.
+sources:
+  - id: it-income-tax-act-core
+    kind: legislation
+    title: Income Tax Act 2007 - personal income-tax scope and annual basis
+    url: https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/
+    source_version: 2026-09-04
+    retrieved_on: 2026-10-03
+    locator: >-
+      BB 1; BC 1-8; CE 1(1)(a); CF 1(1)(c); CW 33(1)(a);
+      DA 2(4), (7); LC 13(1)-(6); MA 3; RD 3(1);
+      YA 1 definition of main benefit; YD 1; YE 1(1)-(5).
+    covers: >-
+      Annual-taxing-Act requirement; taxable income versus gross income;
+      basic liability versus credits and terminal tax; ordinary salary
+      and wages; main benefits and exempt benefit categories; distinct
+      PAYE rules; residency and tax-year scope; IETC as a separate credit.
+    verification_status: listed_provisions_author_checked_independent_review_pending
+    scope_check:
+      finding: >-
+        BC 2-5 distinguish assessable income, deductions, losses and
+        taxable income. BC 6 and Schedule 1 determine basic tax; BC 8
+        separately deals with credits and terminal tax. CE 1 includes
+        salary and wages. CF 1 includes main-benefit payments, while
+        CW 33 exempts specified other monetary benefits. LC 13 has
+        separate eligibility and whole-month rules. YE 1 identifies
+        the April-March tax year and distinguishes non-standard years.
+      limitation: >-
+        Not a complete income-classification, timing, deduction, tax-credit,
+        residency or filing-status specification. No final assessment,
+        rounding convention or graph edge is approved by this inventory.
+  - id: it-income-tax-act-basic-rates
+    kind: legislation
+    title: Income Tax Act 2007 - basic income-tax rates
+    url: https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/
+    source_version: 2026-09-04
+    retrieved_on: 2026-10-03
+    locator: Schedule 1 Part A clause 1 and Table 1; cross-reference BB 1 and BC 6.
+    covers: General basic-rate table, subject to the annual taxing Act and special-rate exclusions.
+    verification_status: listed_provisions_author_checked_independent_review_pending
+    scope_check:
+      finding: >-
+        Clause 1 uses Table 1 for each dollar of taxable income and applies
+        only to persons without a basic rate under clauses 2-14. Its
+        history note identifies the 2024 Budget Measures Act amendment.
+      limitation: >-
+        No rates are copied into runtime parameters or expected-value
+        fixtures here. The 2026-27 annual-rates gate remains unresolved;
+        fractional-dollar treatment and rounding need separate research.
+  - id: it-budget-measures-act-2024
+    kind: amending_legislation
+    title: Taxation (Budget Measures) Act 2024
+    url: https://www.legislation.govt.nz/act/public/2024/19/en/2024-06-04/
+    source_version: 2024-06-04 as enacted
+    retrieved_on: 2026-10-03
+    locator: Sections 2(5), 37(1), 37(4).
+    covers: Commencement and income-year application of the replacement Schedule 1 Part A Table 1.
+    verification_status: listed_provisions_author_checked_independent_review_pending
+    effective_note: >-
+      Part 4 commences on 1 April 2025; section 37(4) applies the table
+      replacement for the 2025-26 and later income years. This is
+      applicability evidence, not annual-rates enactment for every later year.
+  - id: it-annual-rates-act-2025-26
+    kind: amending_legislation
+    title: Taxation (Annual Rates for 2025-26, Compliance Simplification, and Remedial Measures) Act 2026
+    url: https://www.legislation.govt.nz/act/public/2026/8/en/2026-03-30C/
+    source_version: 2026-03-30C as enacted
+    retrieved_on: 2026-10-03
+    locator: Part 1 section 3.
+    covers: Enacted annual rates for the 2025-26 tax year only.
+    verification_status: section_3_author_checked_independent_review_pending
+    scope_check:
+      finding: Section 3 applies Schedule 1 basic rates to the 2025-26 tax year.
+      limitation: >-
+        Not authority for 2026-27 annual rates. A 2025-26 alternative
+        needs a separate period-specific source/specification review;
+        it cannot be combined with existing 2026-27 WFF by relabelling a date.
+  - id: it-social-security-act-main-benefit
+    kind: legislation
+    title: Social Security Act 2018 - main-benefit definition
+    url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/
+    source_version: 2026-09-04
+    retrieved_on: 2026-10-03
+    locator: Schedule 2 definition of main benefit, paragraph (a)(i)-(iv).
+    covers: Named Jobseeker Support, Sole Parent Support and Supported Living Payment categories for the Income Tax Act YA 1 cross-reference.
+    verification_status: schedule_2_definition_author_checked_independent_review_pending
+    scope_check:
+      finding: >-
+        The general definition includes Jobseeker Support, Sole Parent
+        Support, and both specified Supported Living Payment grounds.
+        This is the definition YA 1 cites; section 326 has its own
+        context-specific definition and is not substituted for it.
+      limitation: >-
+        No benefit eligibility, gross-up, rate, net-to-gross reconstruction,
+        partner allocation, or weekly-to-annual conversion is established here.
+  - id: it-ird-individual-rates
+    kind: agency_rates
+    title: Inland Revenue - Tax rates for individuals
+    url: https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals
+    source_version: Page labelled last updated 3 June 2025, retrieved 3 October 2026.
+    retrieved_on: 2026-10-03
+    locator: Income tax rates / From 1 April 2025; introductory income and withholding paragraphs; Secondary tax rates.
+    covers: Operational cross-check of the basic-rate table and the distinction between annual tax and withholding codes.
+    verification_status: named_sections_author_checked_independent_review_pending
+    limitation: >-
+      Current agency guidance is not a dated full-year legislative audit.
+      Income-category examples do not establish that every payment from
+      a payer is taxable, or that household grouping income is taxable income.
+  - id: it-ird-basic-annual-calculator-scope
+    kind: agency_guidance
+    title: Inland Revenue - Work out tax on your yearly income
+    url: https://www.ird.govt.nz/income-tax/income-tax-for-individuals/how-income-is-taxed/work-out-tax-on-your-yearly-income
+    source_version: Page labelled last updated 1 April 2025, retrieved 3 October 2026.
+    retrieved_on: 2026-10-03
+    locator: Introductory calculator scope and Gather your information.
+    covers: Basic yearly tax on total taxable income, separately from credits, tax already paid and the ACC earners levy.
+    verification_status: page_scope_author_checked_independent_review_pending
+    limitation: >-
+      The interactive calculator was not executed and no result PDF or
+      independent numerical benchmark was retained. This entry proves
+      output scope only; it is not a benchmark expectation.
+  - id: it-ird-taxable-income
+    kind: agency_guidance
+    title: Inland Revenue - Your taxable income
+    url: https://www.ird.govt.nz/income-tax/income-tax-for-individuals/how-income-is-taxed/your-taxable-income
+    source_version: Page labelled last updated 16 January 2025, retrieved 3 October 2026.
+    retrieved_on: 2026-10-03
+    locator: Your taxable income; taxable and non-taxable income examples.
+    covers: Guidance that individual income classification precedes annual assessment.
+    verification_status: named_sections_author_checked_independent_review_pending
+    limitation: Broad examples are not a complete specification of exemptions, investments or business deductions.
+  - id: it-ird-independent-earner-credit
+    kind: agency_guidance
+    title: Inland Revenue - Independent earner tax credit (IETC)
+    url: https://www.ird.govt.nz/ietc
+    source_version: Page labelled last updated 31 March 2025, retrieved 3 October 2026.
+    retrieved_on: 2026-10-03
+    locator: Eligibility introduction; Your type of income counts; whole-month paragraph; How much you can get.
+    covers: Separate IETC eligibility and its interaction with benefits and WFF; statutory anchor LC 13.
+    verification_status: named_sections_author_checked_independent_review_pending
+    limitation: >-
+      Not approved as a tax-credit model. Excluding this credit from a
+      basic-tax component does not mean its entitlement is zero, or that
+      the component can alone produce complete disposable income.
+  - id: it-ird-paye-tables-2026
+    kind: agency_rates
+    title: Inland Revenue IR340 - Weekly and fortnightly PAYE deduction tables, April 2026
+    url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-apr-2026.pdf?modified=20260323203256
+    source_version: IR340 April 2026 revision; tax year 1 April 2026 to 31 March 2027.
+    retrieved_on: 2026-10-03
+    locator: Cover; printed page 3 / Using these tables, Deductions included, Tax codes, ACC earners levy.
+    covers: PAYE as a distinct pay-period calculation; table coverage includes ACC and other listed deductions.
+    verification_status: cover_and_printed_page_3_author_checked_independent_review_pending
+    limitation: >-
+      No numerical deduction row or worked calculation is approved or
+      used as a benchmark. An annual basic-tax amount divided by a
+      number of weeks has not been established as PAYE withholding.
+  - id: it-ird-annual-rates-bill-2026-status
+    kind: agency_change_notice
+    title: Inland Revenue Tax Policy - 2026-27 annual rates Bill status
+    url: https://www.taxpolicy.ird.govt.nz/bills/2026-fbt-simplification-tax-bill
+    source_version: Page status as at 15 September 2026, retrieved 3 October 2026.
+    retrieved_on: 2026-10-03
+    locator: Bill status and links to NZ Legislation and Parliament; Bill 344-1 Part 1 clause 3.
+    covers: Monitoring the proposed 2026-27 annual-rates instrument, not establishing an enacted tax rule.
+    proposed_instrument_url: https://www.legislation.govt.nz/bill/government/2026/344/en/latest/
+    proposed_instrument_version: Introduction 10 September 2026; 344-1; HTML checked directly.
+    verification_status: agency_page_and_bill_clause_3_author_checked
+    limitation: >-
+      The Bill is proposed law and is not placed in this catalogue as
+      legislation or amending legislation. IRD's dated status page is
+      supplemented by the later Parliament progress entry below.
+  - id: it-parliament-annual-rates-bill-2026-progress
+    kind: agency_change_notice
+    title: New Zealand Parliament - Bill 344-1 progress
+    url: https://bills.parliament.nz/v/6/ae9d3517-66d6-4a30-c155-08df0eed0d02?Tab=history&lang=en
+    source_version: Page published 1 October 2026, retrieved 3 October 2026.
+    retrieved_on: 2026-10-03
+    locator: Progress of the Bill; Bill History; Document ID ae9d3517-66d6-4a30-c155-08df0eed0d02.
+    covers: Retrieved progress shows select committee stage with no completed Royal Assent entry.
+    verification_status: progress_and_history_author_checked
+    source_conflict: >-
+      Parliament records introduction 9 September 2026; IRD and NZ
+      Legislation label introduction 10 September. The difference is
+      recorded, not resolved; it does not supply an enacted rates Act.
+    limitation: Recheck enactment immediately before any 2026-27 parameter approval; do not infer future passage or commencement.
