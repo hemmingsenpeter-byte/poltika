@@ -42,7 +42,7 @@ sets, kept apart so it doesn't read as programme progress.
 | B1 | ADR-0020: delegated acceptance | In progress | Claude Code | #139 (open) | Merge |
 | B2 | Ruleset on `main` and squash-only auto-merge | Pete | Pete | None | PETE_QUEUE Q1 (needs the repository owner's shell) |
 | B3 | Dev tooling: import-linter, pre-commit, Makefile, coverage | In progress | Claude Code | None yet | B1 |
-| B4 | Security CI: Dependabot, pip-audit, CodeQL, lychee | In progress | Claude Code | None yet | B1; new jobs join the ruleset's required checks only after Q1 |
+| B4 | Security CI: Dependabot, pip-audit, static analysis, lychee | In progress | Claude Code; GPT/Codex review and fixes | #142 | Original CodeQL/permission findings addressed in review fixes; final-head CI and fresh review pending. Bandit retains four medium XML-parser findings for triage; Q1 required-check names must follow the merged workflows |
 | B5 | Governance files: CODEOWNERS and the like | In progress | Claude Code | None yet | B1 |
 
 ## Releases

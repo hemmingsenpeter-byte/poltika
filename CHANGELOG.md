@@ -12,8 +12,9 @@ result identity changes.
 - **Programme status** (ADR-0020): `PROGRAMME_STATUS.md` tracks every programme step and task with status, owner, PR and blocker; `BUILD_PLAN_PROGRAMME.md`'s Progress table points to it.
 - **Supply-chain, security and link checks** (ADR-0020): Dependabot (uv and
   GitHub Actions, weekly, grouped), `pip-audit` of the locked dependencies,
-  CodeQL for python and actions (fails on any result, SARIF kept as an
-  artifact), an offline lychee check of markdown links and anchors, and the
+  Bandit for Python (high-severity gate, every finding retained) and zizmor
+  for actions (all findings gate), with immutable action pins and read-only
+  report execution, an offline lychee check of markdown links and anchors, and the
   source-currency report now runs on pull requests (report only). CI only; no
   amount changes.
 - **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`

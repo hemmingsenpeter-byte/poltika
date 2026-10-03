@@ -39,7 +39,7 @@ poltika/
 ├── uv.lock
 ├── .github/dependabot.yml — weekly grouped minor/patch updates for the uv lock and pinned actions (ADR-0020)
 ├── .github/workflows/security.yml — pip-audit of the locked dependencies (PR, main, weekly)
-├── .github/workflows/codeql.yml   — CodeQL for python and actions; no upload, fails on any SARIF result, SARIF kept as an artifact
+├── .github/workflows/static-analysis.yml — Bandit (Python; high-severity gate, all findings retained) and zizmor (all workflow findings gate); private-CI compatible
 ├── .github/workflows/links.yml    — lychee: offline relative-link and anchor check on `**/*.md` (required), weekly external report
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
 ├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
