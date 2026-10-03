@@ -300,7 +300,18 @@ immutable snapshots
 and protected paths
 ([run 37093544827](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37093544827)).
 The test job finished at 03:40:33 UTC, 3 October 2026. Latest-head checks for
-the final documentation update remain pending at this handoff. Claude rotation
+the final documentation update were pending at that handoff. Subsequently,
+all four checks passed at final head `9b6413c`; its
+[test run](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37094271115)
+finished 03:53:53 UTC. The downloaded exact-job log
+`/private/tmp/poltika-reporting-ci-9b6413c-test.log` records default suite
+**1,409 passed, nine skipped, two deselected**, two warnings, 442.50s;
+installed-artifact **one passed/1,419 deselected**, two warnings, 17.35s;
+code replay **one passed/1,419 deselected**, two warnings, 14.88s. Neither
+test deselection nor the nine default skips is a zero-skip release claim.
+These hosted checks cover their declared PostgreSQL/artifact/replay scopes,
+without establishing live Vega rendering or workbench/report acceptance.
+Claude rotation
 and ADR-0020 acceptance remain pending; no gate or task row is changed. Task 24
 remains behind prerequisites 21–23, with no Phase F completion claim.
 

@@ -47,8 +47,9 @@ and two opt-in exclusions, but security found R12's Decimal expansion defect.
 The corrected pin passed 136 focused tests/no skips, whole Ruff, strict mypy
 (85 source files) and installed-library smoke; targeted same-model security
 and contract rechecks have no remaining blocker. All four CI checks pass at
-initial documentation head `10e5e12`; the final review-record update requires
-latest-head CI. Required Claude review/acceptance remains pending.
+final documentation head `9b6413c`; its default suite passed 1,409 tests with
+nine skips, and both installed-artifact and replay checks passed separately.
+Required Claude review/acceptance remains pending.
 Task 24 remains gated by 21–23;
 prototype review changes no task state. The [execution handoff](docs/programme/EXECUTION.md)
 and [dated evidence](reviews/2026-10-03-programme-verification.md) record the

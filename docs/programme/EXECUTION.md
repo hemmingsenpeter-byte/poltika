@@ -228,8 +228,11 @@ The contract checker found no actionable finding at `8235506` with 82 focused
 regressions, then no remaining blocker in the final `3a10771` delta with 21
 resource/precision tests. These are separate same-model checks, not Claude
 rotation. All four initial #154 checks passed at `10e5e122`; the test job
-finished 03:40:33 UTC. The final documentation update still needs latest-head
-CI. Required Claude review and ADR-0020 acceptance still await
+finished 03:40:33 UTC. All four final-head checks at `9b6413c` also passed;
+test finished 03:53:53 UTC. Its default CI suite passed 1,409 tests/nine skips/
+two deselections; installed-artifact and code-replay checks each passed one
+test separately. These are CI results at the final head, distinct from earlier
+local checks. Required Claude review and ADR-0020 acceptance still await
 private-payload destination authorization. This draft library and its checks
 do not start or complete Task 24 ahead of prerequisites 21–23, supply missing
 uncertainty evidence or integrate the workbench.

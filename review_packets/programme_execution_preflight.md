@@ -14,7 +14,9 @@ existing execution and verification records, with one current tracker note.
 It preserves all 58 task rows, earlier evidence hashes, owner files and
 source/Claude/Pete gates. Reporting is now draft #154, code `3a10771` and final
 review-record head `9b6413c`; source/tests are unchanged between those pins.
-Initial draft CI passed at `10e5e122`; latest-head checks remain required.
+Initial draft CI passed at `10e5e122`; all four final-head checks now pass at
+`9b6413c` (test finished 03:53:53 UTC). Default CI had 1,409 passed/nine skips/
+two deselections; installed-artifact and replay each passed one test separately.
 Final targeted same-model security/contract checks found no remaining blocker,
 without replacing the missing Claude rotation and acceptance. This addition
 awaits the coordinator's
@@ -160,3 +162,34 @@ also ran the final 15 focused tests: all passed, with two existing warnings,
 in 8.25 seconds. No production, policy, test or fixture change followed;
 the later correction affects inventory wording and this review record only.
 Final correction recheck remains a same-model document check.
+
+## Third-cycle pinned author preflight and separate document check
+
+Candidate `82b18f5de7c6ffec3de3d1f3be85bf90e557af0c` was checked in a separate
+detached author worktree. The programme-authority, orientation-example and
+review-queue command below exited 0 with **15 passed, no skips**, two existing
+dependency warnings, 3.96s:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/pytest -q -p no:cacheprovider tests/acceptance/test_programme_authority.py tests/acceptance/test_orientation_examples.py tests/acceptance/test_review_queue.py
+```
+
+Log: `/private/tmp/poltika-pm-third-preflight-tests-20261003.log`.
+Complete accepted-migration diff whitespace passed; all 58 task rows are
+unchanged from `40cc0505`, earlier execution/verification records remain
+verbatim prefixes, and all 19 relative Markdown targets resolve.
+
+A separate same-model document reviewer checked the full six-document
+`422b055..82b18f5` PR and four-document `40cc0505..82b18f5` increment after
+deriving the contract. No actionable finding. It confirmed task/phase order,
+links and retained Git targets, actual Claude evidence hashes, source/owner/
+review/Pete gates, reporting code/docs identity and historical/current limits.
+It did not rerun tests, audit code, verify live remote state or accept the PR.
+Local record: `/private/tmp/poltika-pm-third-document-check-20261003.md`.
+
+The subsequent narrow factual update records final #154 CI and these PM
+checks. It changes no source/test/task-row or acceptance authority. Its final
+documentation-delta check and exact-head mechanical preflight remain pending;
+the earlier 15-test result stays identified with `82b18f5`. #149 is still
+stacked on the prepared migration: retargeting/reconciliation, applicable
+latest-head CI and required Claude acceptance remain integration prerequisites.
