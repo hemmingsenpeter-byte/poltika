@@ -262,3 +262,11 @@ Evidence-class #138 was also refreshed force-free at `887deee9` and published
 at documentation head `93d31300`. Its skill blobs and both parents' change
 payloads are preserved; a separate same-model document check found no issue.
 Current-head CI and acceptance remain pending; no source promotion occurred.
+
+Subsequently all four #138 checks passed at `93d31300`; test finished
+04:11:57 UTC. Governance #143's force-free merge `3a53fd5a` was published at
+documentation head `68de57d698a9e631796587fcb8bf2eefb3f0bcde`. Separate
+same-model document and bounded form/reference/command checks passed, with
+governance/source/test artifacts preserved. Current-head CI remains pending
+at publication. The external confidential contact remains Pete's publication
+gate; all three refreshed baseline PRs still require ADR-0020 acceptance.

@@ -359,3 +359,23 @@ Local records: `/private/tmp/poltika-pr138-base-refresh-20261003.md` and
 author checkout at the final documentation head passed whitespace and artifact
 identity checks; no tests were repeated for preserved wording. Latest-head CI
 and ADR-0020 acceptance remain pending at that publication, with no promotion.
+
+Subsequent #138 observation: all four final-head checks at `93d31300` are
+SUCCESS; [test run](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37095502645)
+finished 04:11:57 UTC. No new Claude review or acceptance is inferred.
+
+#143 force-free merge `3a53fd5ae30064746a83d7d986778693f38b7795` preserves
+parents `82990da6` and `3bea73f`. Published documentation head is
+`68de57d698a9e631796587fcb8bf2eefb3f0bcde`; verified governance, source and
+test contents are unchanged between these pins. All authored/incoming-main
+payloads and non-shared blobs survive. Separate same-model document check
+found no actionable finding; bounded validation passed five YAML files/four
+forms, 16 links, five owner patterns, documented commands/release references
+and the two-policy evidence CLI. Root rechecked current private visibility
+and final identity/whitespace in a separate pinned author checkout. Local
+records: `/private/tmp/poltika-pr143-base-refresh-20261003.md`,
+`/private/tmp/poltika-pr143-refresh-document-check-20261003.md` and
+`/private/tmp/poltika-pr143-refresh-preflight-20261003.md`.
+No broad tests, hosted form/reporting operation, source decision or external
+contact was added. Latest-head CI and ADR-0020 acceptance remain pending at
+publication; the confidential external route remains Pete's publication gate.

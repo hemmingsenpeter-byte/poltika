@@ -206,3 +206,17 @@ task/source/test/authority boundaries. No P1/P2 finding. One P3/proposed
 with “prepared migration base”; no programme adoption or authority change.
 Local record: `/private/tmp/poltika-pm-third-final-delta-check-20261003.md`.
 The following factual correction does not rerun or relabel earlier tests.
+
+Correction recheck at `720de66726ff2bc972bfe8ec67b331b5c3dec012` resolves
+that P3 wording finding, with no actionable issue in its bounded handoff delta.
+Source/test/policy/data/ADR/doctrine trees, all 58 task rows and prior counts
+remain unchanged. Local record:
+`/private/tmp/poltika-pm-third-correction-check-20261003.md`.
+The coordinator's mechanical recheck also confirms all 19 relative targets,
+preserved earlier record prefixes and all three actual Claude evidence hashes.
+
+The final dated publication update records #138's four successful final-head
+checks and #143's preserved publication at `68de57d`, with CI/acceptance still
+pending at that publication. It changes no verified artifacts or task state;
+its bounded final record check follows separately. The 15-test result remains
+at `82b18f5`; no final-head test rerun or accepted programme adoption is claimed.
