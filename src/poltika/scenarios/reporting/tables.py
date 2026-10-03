@@ -40,6 +40,8 @@ MATURITY = "IMPLEMENTED"
 SCENARIO_ASSUMPTION = "scenario_assumption"
 NOT_AVAILABLE = "not available"
 RATE_UNIT = "fraction (NZD withdrawn per NZD of income)"
+# An output-size limit, not a policy/input limit. Wider exponents use compact notation.
+_MAX_FIXED_DIGITS = 1000
 
 Cell = str | Decimal | None
 ColumnKind = Literal["text", "number"]
@@ -136,7 +138,7 @@ class Table:
             "rows": [[_plain_cell(v) for v in row] for row in self.rows],
             "notes": list(self.notes),
             "coverage": list(self.coverage),
-            "exclusions": [[reason, format(w, "f")] for reason, w in self.exclusions],
+            "exclusions": [[reason, str(w)] for reason, w in self.exclusions],
             "source_result_ids": list(self.source_result_ids),
             "maturity": self.maturity,
             "population_label": self.population_label,
@@ -150,7 +152,7 @@ class Table:
 
 def _plain_cell(value: Cell) -> str | None:
     if isinstance(value, Decimal):
-        return format(value, "f")
+        return str(value)
     return value
 
 
@@ -158,9 +160,15 @@ def format_decimal(value: Decimal, *, population: bool = False) -> str:
     """Round population presentation only; household/rule amounts stay exact."""
     if not value.is_finite():
         raise ValueError("displayed numbers must be finite")
+    if len(value.as_tuple().digits) + abs(value.adjusted()) > _MAX_FIXED_DIGITS:
+        if not population:
+            return str(value)
+        with localcontext() as context:
+            context.rounding = ROUND_HALF_UP
+            return format(value, ".2E")
     if population and value:
         with localcontext() as context:
-            context.prec = max(context.prec, len(value.as_tuple().digits) + 1)
+            context.prec = max(context.prec, 3, len(value.as_tuple().digits) + 1)
             value = value.quantize(Decimal(1).scaleb(value.adjusted() - 2), ROUND_HALF_UP)
     return format(value, ",f")
 

@@ -61,8 +61,33 @@ method and bounds exist. This is a draft library, not Task 24/Phase F acceptance
 
 ## Pinned author preflight and separate checks
 
-Pending candidate SHA, separate read-only worktree, focused/default tests,
-security probes and simplification recheck. No acceptance recommendation yet.
+First candidate `8235506ca8fb1b211b847a805e95d57f2956ac7b` was inspected in
+separate detached author checkout
+`/private/tmp/poltika-reporting-author-preflight-20261003`. Complete accepted-base
+diff, whitespace, whole src/tests Ruff and strict mypy (85 source files) passed.
+Its wheel built offline and was installed offline in the temporary testing
+environment so isolated child-process tests used the correct package.
+
+Default suite at that fixed head: **1,380 passed, 22 skipped, two deselected**,
+two dependency deprecation warnings, 792.05s; exit 0. Opt-in installed-artifact
+and code-replay tests were excluded by the repository default. PostgreSQL and
+deferred/pilot skips remain limitations, not a zero-skip release claim. Log:
+`/private/tmp/poltika-reporting-default-tests-8235506.log`.
+
+The separate same-model security check resolved the original injection/hang/
+stale-ID probes, with 101 reporting tests and 48 additional numeric cases passed,
+but found R12/P2: unbounded fixed-point expansion before hashing. This was
+recorded before fixing in `60e15af`; it prevents clearing `8235506`.
+
+R12 correction uses compact exact Decimal strings for storage/exclusions,
+bounded fixed-point display with exact/scientific fallback, and rejects chart
+numeric range errors before hashing. Sixteen bounded regressions failed at
+archived `8235506` (allocation guards prevented billion-character output) and
+passed after correction. Working-fix focused run: **136 passed, no skips**,
+two dependency warnings, 38.29s. Whole src/tests Ruff and scoped eight-file
+reporting-test mypy passed. A final pin and targeted security/simplification
+rechecks follow; the earlier broad result does not cover this formatting delta.
+No acceptance recommendation yet.
 
 ## Deferred Claude audit
 

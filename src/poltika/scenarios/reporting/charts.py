@@ -60,6 +60,10 @@ def chart_from_table(
             raise ValueError(f"column {column_id!r} is not numeric")
     if kind == "line" and table.column(x).kind != "number":
         raise ValueError("a line chart needs a numeric x column")
+    for row in range(len(table.rows)):
+        for column_id in (x, *y):
+            if table.column(column_id).kind == "number":
+                _number(table.cell(row, column_id))
     digest = hashlib.sha256(
         json.dumps([table.sha256, kind, x, list(y)], separators=(",", ":")).encode()
     ).hexdigest()

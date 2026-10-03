@@ -125,3 +125,13 @@ independent acceptance of coordinator-written code.
 
 Missing uncertainty ranges, annual WFF period evidence, decision dependencies
 and reporting/workbench acceptance remain explicit gates.
+
+R12 follow-up: compact exact Decimal storage and exclusion weights prevent
+exponent expansion; fixed-point display falls back to compact notation at an
+output-size boundary, and chart values are range-checked before hashing. The
+boundary controls presentation size, not statutory input validity. Sixteen
+bounded regressions failed on `8235506` and passed after correction; the focused
+working-fix checks passed 136 tests with no skips. Final pinned review remains
+pending. The separate author preflight's earlier default-suite result (1,380
+passed/22 skipped/two deselected at `8235506`) is preserved separately, not
+mislabelled as final-delta verification.
