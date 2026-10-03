@@ -4,6 +4,9 @@
 - Author: GPT/Codex source-writer agent, coordinated by GPT/Codex project manager.
 - Base: prepared programme migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
 - Scope: Programme Task 7 / detailed household lane local 0.1.
+- Draft PR: #148, stacked on migration #147.
+- Separate result: [fresh same-model source check](../reviews/2026-10-03-income-tax-source-scope.md),
+  at source head `cd2f116`; source files remain unchanged in later tracking commits.
 - Label: author preflight and subsequent fresh same-model source check;
   independent cross-model review and Pete D1 remain pending.
 
