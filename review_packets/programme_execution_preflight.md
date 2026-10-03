@@ -220,3 +220,12 @@ checks and #143's preserved publication at `68de57d`, with CI/acceptance still
 pending at that publication. It changes no verified artifacts or task state;
 its bounded final record check follows separately. The 15-test result remains
 at `82b18f5`; no final-head test rerun or accepted programme adoption is claimed.
+
+Final bounded publication-record check at
+`b4eba65bb58267543fd9a9b8a6cdddafde07b09d` found no actionable finding.
+The 42-line addition preserves prior evidence, all 58 task rows and authority
+gates; cited #143 objects/records support the handoff. Local record:
+`/private/tmp/poltika-pm-third-publication-check-20261003.md`.
+This final disposition changes this packet only; author mechanical and
+artifact-identity checks are repeated at its committed head before pushing.
+Required Claude acceptance and migration/main integration remain pending.
