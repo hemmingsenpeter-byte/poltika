@@ -1,14 +1,15 @@
 ---
 name: pr-review
-description: Use whenever asked to review, check, look over, give feedback on, re-review or clear a Poltika pull request you did not write in this session. That includes a PR number or URL, a Codex/GPT-authored PR, a row in review_packets/review_queue.md, new commits pushed after an earlier review, and whether a PR is ready to merge. Runs a professional reviewer's pass. It pins the exact head SHA and triages CI, scope and risk. It derives expected behaviour before reading the author's rationale, reads the whole diff and reproduces every suspected defect before reporting it. Findings are graded (P1-P3, nit, question, escalation) and classified under the Review Doctrine. The output is inline comments and one summary with a clear verdict, posted as a comment and never as an approval or merge, because Pete accepts. To check your own change before opening or updating it, use pr-review-preflight instead.
+description: Use whenever asked to review, check, look over, give feedback on, re-review or clear a Poltika pull request you did not write in this session. That includes a PR number or URL, a Codex/GPT-authored PR, a row in review_packets/review_queue.md, new commits pushed after an earlier review, and whether a PR is ready to merge. Runs a professional reviewer's pass. It pins the exact head SHA and triages CI, scope and risk. It derives expected behaviour before reading the author's rationale, reads the whole diff and reproduces every suspected defect before reporting it. Findings are graded (P1-P3, nit, question, escalation) and classified under the Review Doctrine. The output is inline comments and one summary with a clear verdict, posted as a comment and never as an approval or merge; acceptance follows ADR-0020. To check your own change before opening or updating it, use pr-review-preflight instead.
 ---
 
 # PR review
 
 You are the reviewer in `BUILD_PLAN.md`'s rotation. A review finds the
-defects that matter before they merge, proves each one, and gives Pete
-what's needed to decide without redoing your work. It is not acceptance.
-Pete is the acceptance judge and decides interpretation ambiguity.
+defects that matter before they merge, proves each one, and gives the
+accepting party what's needed to decide without redoing your work. Review
+is distinct from acceptance: Claude Code accepts Tier A/B under ADR-0020;
+Pete decides Tier C, including interpretation ambiguity.
 
 Review the way a careful senior engineer reviews a colleague's PR.
 Understand what the change is for before judging how it does it. Read all
@@ -54,7 +55,7 @@ it to know which gate a review can close.
 
 | Who wrote the PR | Your pass is | Closes the independent-review gate |
 | --- | --- | --- |
-| GPT/Codex | Independent cross-model review (Claude Code) | Yes, once Pete accepts it |
+| GPT/Codex | Independent cross-model review (Claude Code) | Yes for that author's work; acceptance separately follows ADR-0020 |
 | Claude Code, another session | Fresh same-model check | No. Say so, as `reviews/2026-09-27-v0-2-fresh-same-model-check.md` does |
 | Claude Code, this session | Author preflight: stop and use `pr-review-preflight` | No |
 | Mixed (e.g. Codex fixes on a Claude PR) | Split by commit: cross-model for the other model's commits, same-model for the rest | Only for the other model's commits |
@@ -253,7 +254,8 @@ Choose one verdict for the SHA:
 Always use `COMMENT`, never `APPROVE` or `REQUEST_CHANGES`. The tools act
 as Pete's account, which opened the PR, so GitHub refuses the other two
 events. An approval from that account would also read as Pete's
-acceptance. End every post with the Claude Code attribution footer.
+acceptance. Review comments remain distinct from acceptance under
+ADR-0020. End every post with the Claude Code attribution footer.
 
 Posting is outward-facing. Post straight away if the user asked you to
 review *and post*, or if the review was triggered by a PR event.
@@ -300,4 +302,4 @@ Remove the worktree when you're done: `git worktree remove <dir>/pr-<N>`.
 - Settling an interpretation question yourself, or accepting a protected
   expected value changed to match the code.
 - Calling a same-model check independent, or wording a review so it
-  implies Pete's acceptance.
+  implies acceptance by Claude Code or Pete.

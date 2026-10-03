@@ -78,8 +78,8 @@ packets can still say “open” historically and do not override current record
 | Population explanations / analyst population API and page | #97, #99 | Existing verified population explanations and `/analyst/microsim`; population operator-set, run store in memory. |
 | Household analyst page / pilot scripts | #85, #87, #89 | Existing `/analyst`, case pack and findings template; external user/session not recorded. |
 | Fact catalogues, conditional branches and intake | #109, #112, #121, #125–#128 | Reviewed questions, finite/ranged branches, intake API/page, population ranges; #128 independent review outstanding; source-based monotone/candidate declarations pending. |
-| Hosted pilot protection/hardening | #124, #132, #134 | Password-required image, security headers, body/concurrency limits; deployment/resource actions not completed by this migration. |
-| Workbench backend / export | #133, #134; ADR-0018 proposed | Registry, checks, generic blocks, worked examples, CSV/Excel export reviewed; completed workbench UI and ADR acceptance not evidenced. |
+| Hosted pilot protection/hardening | #124, #132 | Password-required image, security headers, body/concurrency limits; deployment/resource actions not completed by this migration. |
+| Workbench backend / export | #133; ADR-0018 proposed | Registry, checks, generic blocks, worked examples, CSV/Excel export reviewed; completed workbench UI and ADR acceptance not evidenced. |
 | Epistemic constitution | #136, #137, Pete approval 2 October | Eight classes and seven decisions are approved; preserve them while re-scoping implementation. |
 | Source currency | #92 | Existing report/workflow; statutory new-year parameters still require dated primary sources. |
 
@@ -111,7 +111,7 @@ packets can still say “open” historically and do not override current record
 | 12 | Legislation conformance | Not started | Claude Code matrix; GPT/Codex independent cases | Existing tests reuse | Build per-rule matrix alongside B; P6 only for publication | Existing Spec/Benchmark/Regression, goldens, value guard | Step 5; v0.3 Tier 1 matrix |
 | 13 | Model/benchmark validation | Not started | Claude Code; GPT/Codex independent checks | #117, #114 reuse | B models and bounded validation contract; P18 tolerances | Existing cases and cross-validation reused | 6.1–6.3; Step 5 |
 | 14 | Counterfactual scenario contract | Not started | Claude Code; GPT/Codex reviews | #60, #63, #64, #65, #68, #94–#95 reuse | Complete retained baseline/reform/comparison contract with 15 | Household persistence/replay and population reform identities exist separately | 8.5; Step 15 core split |
-| 15 | End-to-end Analyst Workbench | Not started | Claude Code; GPT/Codex review; Pete ADR-0018 | #133, #134 backend reuse | Usable UI/workflow, 12–14; separate ADR-0018 acceptance | Backend/CSV/Excel reviewed; no completed workbench UI evidence | P8; ADR-0018; Steps 4/28/32 reuse |
+| 15 | End-to-end Analyst Workbench | Not started | Claude Code; GPT/Codex review; Pete ADR-0018 | #133 backend reuse | Usable UI/workflow, 12–14; separate ADR-0018 acceptance | Backend/CSV/Excel reviewed; no completed workbench UI evidence | P8; ADR-0018; Steps 4/28/32 reuse |
 
 ## Phase D — Pilot 1
 
