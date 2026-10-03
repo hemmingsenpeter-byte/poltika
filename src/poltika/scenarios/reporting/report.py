@@ -28,7 +28,7 @@ import hashlib
 import html
 import json
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal
 from typing import Any
 
@@ -52,9 +52,8 @@ from poltika.semantics.population import PopulationDataset
 
 REPORT_FORMAT = "poltika-economist-report/0.1"
 MATURITY_BANNER = (
-    "MATURITY: IMPLEMENTED (Pass 1). The components behind this report exist, run and have "
-    "tests. Correctness checks, external benchmarking and independent review have not been "
-    "done. Treat every figure as a working figure for development, not as a published or "
+    "MATURITY: IMPLEMENTED draft. Reporting acceptance and external benchmarking remain pending. "
+    "Treat every figure as a working figure for development, not as a published or "
     "official result and not as a finding about New Zealand."
 )
 UNAVAILABLE = "Not available in this run"
@@ -108,6 +107,8 @@ class EconomistReport:
         found: dict[str, Table] = {}
         for s in self.sections:
             for table in s.tables:
+                if table.table_id in found:
+                    raise ValueError(f"duplicate table identifier: {table.table_id}")
                 found[table.table_id] = table
         return found
 
@@ -154,10 +155,11 @@ def _scenario(
     policy_versions: Mapping[str, str] | None,
 ) -> Section:
     missing: list[str] = []
+    missing.append("WFF annual reference period (the run retains lookup dates, not this period)")
     if reference_period is None:
-        missing.append("reference period (the run does not record one)")
+        missing.append("assessment context (no runnable records were retained)")
     if not policy_versions:
-        missing.append("policy versions (the run records file hashes, not version labels)")
+        missing.append("policy versions (no runnable records were retained)")
     code = run.code
     facts = (
         ("run_id", run.run_id),
@@ -200,7 +202,7 @@ def _baseline(fiscal_table: Table) -> Section:
     table = t.baseline_totals(fiscal_table)
     narrative = [
         Sentence(
-            "The baseline applies the approved policy parameters unchanged. Totals are static "
+            "The baseline totals come from the retained results. Totals are static "
             "entitlements at full take-up over the households whose component was calculated."
         )
     ]
@@ -351,14 +353,18 @@ def _distributional(winners: Table, deciles: Table, types: Table, unit: str) -> 
     )
 
 
-def _examples(examples: Sequence[WorkedExample], ids: Sequence[str]) -> Section:
+def _examples(examples: Sequence[WorkedExample]) -> Section:
     if not examples:
         return Section(
             "household_impacts",
             "Household impacts",
             unavailable=_na("example households (none were supplied)"),
         )
-    table = t.example_households(examples, dict(UNITS), source_result_ids=ids)
+    table = t.example_households(
+        examples,
+        dict(UNITS),
+        source_result_ids=tuple(f"supplied_example:{ex.example_id}" for ex in examples),
+    )
     narrative: list[Sentence] = []
     for r, row in enumerate(table.rows):
         who, component = _tick(str(row[0])), _tick(str(row[1]))
@@ -377,11 +383,17 @@ def _examples(examples: Sequence[WorkedExample], ids: Sequence[str]) -> Section:
         else:
             narrative.append(Sentence(f"For {who}, {component} is {row[6]}; no amount is shown."))
     return Section(
-        "household_impacts", "Household impacts", narrative=tuple(narrative), tables=(table,)
+        "household_impacts",
+        "Household impacts",
+        narrative=tuple(narrative),
+        tables=(table,),
+        unavailable=_na(
+            "separately supplied examples lack retained run/reform identity; their connection to this population run is unverified"
+        ),
     )
 
 
-def _incentives(paths: Sequence[tuple[str, WithdrawalPath]], ids: Sequence[str]) -> Section:
+def _incentives(paths: Sequence[tuple[str, WithdrawalPath]]) -> Section:
     if not paths:
         return Section(
             "incentive_analysis",
@@ -398,7 +410,14 @@ def _incentives(paths: Sequence[tuple[str, WithdrawalPath]], ids: Sequence[str])
         )
     ]
     for label, path in paths:
-        path_ids = (*ids, f"withdrawal_path:{label}")
+        components = {c for point in path.points for c in point.values} | {
+            c for step in path.steps for c in step.rates
+        }
+        if any(UNITS.get(c) != path.unit for c in components):
+            raise ValueError(
+                "supplied withdrawal path component units do not match their native period"
+            )
+        path_ids = (f"supplied_withdrawal_path:{label}",)
         rates = t.withdrawal_rates(path, label=label, source_result_ids=path_ids)
         profile = t.payment_profile(path, label=label, source_result_ids=path_ids)
         tables += [rates, profile]
@@ -442,13 +461,19 @@ def _incentives(paths: Sequence[tuple[str, WithdrawalPath]], ids: Sequence[str])
         narrative=tuple(narrative),
         tables=tuple(tables),
         charts=tuple(charts),
+        unavailable=_na(
+            "separately supplied paths lack retained run/reform identity; their connection to this population run is unverified"
+        ),
     )
 
 
 def _data(run: PopulationRun, ids: Sequence[str]) -> Section:
-    validation = t.validation_summary(run.validation.by_status(), source_result_ids=ids)
+    validation = replace(
+        t.validation_summary(run.validation.by_status(), source_result_ids=ids),
+        population_label=run.label,
+    )
     evidence = (
-        "synthetic"
+        "Scenario"
         if run.synthetic
         else f"{UNAVAILABLE}: the population is not marked synthetic and no evidence class is "
         "recorded"
@@ -458,6 +483,7 @@ def _data(run: PopulationRun, ids: Sequence[str]) -> Section:
         ("population_version", str(run.population_version)),
         ("population_sha256", run.population_sha256),
         ("evidence_class", evidence),
+        ("synthetic", _yn(run.synthetic)),
         ("population_label", run.label),
     )
     narrative: list[Sentence] = []
@@ -493,14 +519,19 @@ def _provenance(
         if not parameter_sets
         else ()
     )
+    if parameter_sets:
+        missing += _na(
+            "full baseline resolutions are separately supplied context; the run retains only overridden parameters' baseline fields, so other resolutions are not independently verified"
+        )
     return Section(
         "provenance",
         "Provenance",
         narrative=(
             Sentence(
-                "Baseline parameters come from the repository's cited policy sources. Each "
-                "carries its source, a locator and a review status; reform values are scenario "
-                "assumptions with no source."
+                "The run records baseline evidence for overridden parameters and hashes of its "
+                "policy artifacts. Supplied baseline sets are checked against those hashes and "
+                "retained fields; this consistency check does not authenticate their origin. "
+                "Reform values are scenario assumptions with no source."
             ),
         ),
         tables=(params, artifacts),
@@ -524,10 +555,12 @@ def _limitations(run: PopulationRun, has_paths: bool) -> Section:
         ),
         "Reform values are scenario assumptions, not sourced law.",
         (
-            "The components behind this report are implemented but not checked for correctness, benchmarked "
-            "externally or independently reviewed."
+            "Reporting acceptance and external benchmarking remain pending; implemented draft "
+            "status does not establish these gates."
         ),
         "The narrative is templated text filled from table cells; it adds no judgement.",
+        "Uncertainty ranges are unavailable: the retained run supplies no uncertainty method or bounds.",
+        "Result and report hashes check content consistency; they do not authenticate caller-supplied artifacts or establish policy correctness.",
     ]
     if run.synthetic:
         items.append("The population is synthetic; nothing here describes New Zealand.")
@@ -544,6 +577,81 @@ def _limitations(run: PopulationRun, has_paths: bool) -> Section:
 # -------------------------------------------------------------------- build
 
 
+def _retained_context(
+    run: PopulationRun,
+) -> tuple[str | None, dict[str, str], set[tuple[str, str, str]]]:
+    records = [h.record for h in run.validation.households if h.record is not None]
+    if not records:
+        return None, {}, set()
+    wff_dates = sorted({str(r.wff_lookup_date) for r in records})
+    weeks = sorted({f"[{r.assessment_week.start}, {r.assessment_week.end})" for r in records})
+    context = f"WFF lookup dates: {', '.join(wff_dates)}; AS assessment weeks: {', '.join(weeks)}"
+    versions = {
+        "working_for_families": ", ".join(
+            sorted({r.requested_wff_policy_version for r in records})
+        ),
+        "accommodation_supplement": ", ".join(
+            sorted({r.requested_as_policy_version for r in records})
+        ),
+    }
+    keys = {
+        key
+        for r in records
+        for key in (
+            ("working_for_families", str(r.wff_lookup_date), r.requested_wff_policy_version),
+            ("accommodation_supplement", str(r.as_lookup_date), r.requested_as_policy_version),
+        )
+    }
+    return context, versions, keys
+
+
+def _check_parameters(
+    run: PopulationRun, parameters: Sequence[PolicyParameterSet], keys: set[tuple[str, str, str]]
+) -> None:
+    seen: set[tuple[str, str, str]] = set()
+    for ps in parameters:
+        key = (ps.policy_id, str(ps.modelled_date), ps.policy_version)
+        if key not in keys or key in seen:
+            raise ValueError(
+                "supplied baseline parameter date/version is absent or duplicate in the retained run"
+            )
+        seen.add(key)
+        expected = {
+            path.removeprefix(f"{ps.policy_id}/"): sha
+            for path, sha in run.policy_artifacts
+            if path.startswith(f"{ps.policy_id}/")
+        }
+        if not expected or ps.artifact_sha256 != expected:
+            raise ValueError(
+                "supplied baseline parameter artifact hashes do not match retained provenance"
+            )
+        if any(r.review_status == t.SCENARIO_ASSUMPTION for r in ps.resolutions.values()):
+            raise ValueError("reform parameter values cannot be supplied as baseline provenance")
+        for override in run.overridden:
+            if (override.policy_id, override.modelled_date) != (
+                ps.policy_id,
+                str(ps.modelled_date),
+            ):
+                continue
+            resolution = ps.resolutions.get(override.parameter_id)
+            if resolution is None or (
+                resolution.outcome,
+                resolution.value,
+                resolution.unit,
+                resolution.source_id,
+                resolution.locator,
+            ) != (
+                override.baseline_outcome,
+                override.baseline_value,
+                override.unit,
+                override.baseline_source_id,
+                override.baseline_locator,
+            ):
+                raise ValueError(
+                    "supplied baseline parameter fields do not match retained baseline provenance"
+                )
+
+
 def build_report(
     population: PopulationDataset,
     run: PopulationRun,
@@ -558,25 +666,39 @@ def build_report(
 ) -> EconomistReport:
     """Assemble the report. `components` names the set whose change the
     distribution tables measure (one unit, per `analysis.component_set_unit`)."""
-    if population.content_sha256() != run.population_sha256:
-        raise ValueError("the population is not the one this run used")
     results = analyse(population, run, components)
+    retained_period, retained_versions, keys = _retained_context(run)
+    if reference_period is not None and reference_period != retained_period:
+        raise ValueError("supplied reference period does not match the retained assessment context")
+    if policy_versions is not None and dict(policy_versions) != retained_versions:
+        raise ValueError("supplied policy versions do not match retained records")
+    _check_parameters(run, parameter_sets, keys)
     ids = (run.run_id,)
-    fiscal_table = t.fiscal_components(results.fiscal, source_result_ids=ids)
-    winners = t.winners_losers(results.overall, source_result_ids=ids)
-    deciles = t.distribution_by_income_group(results.deciles, source_result_ids=ids)
-    types = t.household_types(results.household_types, source_result_ids=ids)
+    fiscal_table = replace(
+        t.fiscal_components(results.fiscal, source_result_ids=ids), population_label=run.label
+    )
+    winners = replace(
+        t.winners_losers(results.overall, source_result_ids=ids), population_label=run.label
+    )
+    deciles = replace(
+        t.distribution_by_income_group(results.deciles, source_result_ids=ids),
+        population_label=run.label,
+    )
+    types = replace(
+        t.household_types(results.household_types, source_result_ids=ids),
+        population_label=run.label,
+    )
     reform, assumptions = _reform(run, ids)
 
     sections = (
-        _scenario(run, reference_period, policy_versions),
+        _scenario(run, retained_period, retained_versions),
         _baseline(fiscal_table),
         reform,
         assumptions,
         _fiscal(fiscal_table),
         _distributional(winners, deciles, types, results.unit),
-        _examples(examples, ids),
-        _incentives(withdrawal_paths, ids),
+        _examples(examples),
+        _incentives(withdrawal_paths),
         _data(run, ids),
         _provenance(run, parameter_sets, ids),
         _limitations(run, bool(withdrawal_paths)),
@@ -591,7 +713,7 @@ def build_report(
 
 
 def _dumps(content: Any) -> str:
-    return json.dumps(content, sort_keys=True, indent=2, ensure_ascii=False)
+    return json.dumps(content, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False)
 
 
 def _chart_plain(chart: ChartSpec, table: Table) -> dict[str, Any]:
@@ -646,19 +768,47 @@ def _plain(report: EconomistReport, *, with_id: bool = True) -> dict[str, Any]:
 
 
 def to_json(report: EconomistReport) -> str:
+    _verify_report(report)
     return _dumps(_plain(report)) + "\n"
 
 
+def _verify_report(report: EconomistReport) -> None:
+    """Detect stale content identities; this is not a trusted-origin guarantee."""
+    tables = report.tables()
+    ids = [s.section_id for s in report.sections]
+    if len(set(ids)) != len(ids):
+        raise ValueError("duplicate report section identifier")
+    digest = hashlib.sha256(_dumps(_plain(report, with_id=False)).encode()).hexdigest()
+    if digest != report.report_id:
+        raise ValueError("report content does not match report identity")
+    for section in report.sections:
+        for sentence in section.narrative:
+            for ref in sentence.refs:
+                if (
+                    ref.table_id not in tables
+                    or ref.row < 0
+                    or ref.row >= len(tables[ref.table_id].rows)
+                ):
+                    raise ValueError("report narrative refers to an absent table cell")
+                table = tables[ref.table_id]
+                if table.display(ref.row, ref.column) not in sentence.text:
+                    raise ValueError("report narrative does not contain its referenced cell")
+
+
 def _md_cell(text: str) -> str:
-    return text.replace("|", "\\|").replace("\n", " ")
+    escaped = html.escape(text.replace("\r", " ").replace("\n", " "), quote=False)
+    # Escape all text; only the exporter emits trusted structural Markdown/SVG.
+    for char in "\\`*_{}[]()#+-.!|~":
+        escaped = escaped.replace(char, "\\" + char)
+    return escaped
 
 
 def _md_table(table: Table) -> list[str]:
     heads = [f"{c.label} ({c.unit})" if c.unit else c.label for c in table.columns]
     lines = [
         (
-            f"**{table.title}** (table `{table.table_id}`, sha256 `{table.sha256}`, "
-            f"maturity {table.maturity})"
+            f"**{_md_cell(table.title)}** (table {_md_cell(table.table_id)}, sha256 `{table.sha256}`, "
+            f"maturity {_md_cell(table.maturity)})"
         ),
         "",
         "| " + " | ".join(_md_cell(h) for h in heads) + " |",
@@ -669,44 +819,46 @@ def _md_table(table: Table) -> list[str]:
             "| " + " | ".join(_md_cell(table.display(r, c.column_id)) for c in table.columns) + " |"
         )
     lines.append("")
-    lines += [f"- Coverage: {c}" for c in table.coverage]
+    lines += [f"- Coverage: {_md_cell(c)}" for c in table.coverage]
     lines += [
-        f"- Left out: {reason}: weight {t.format_decimal(w)}" for reason, w in table.exclusions
+        f"- Left out: {_md_cell(reason)}: weight {t.format_decimal(w, population=True)}"
+        for reason, w in table.exclusions
     ]
-    lines += [f"- Note: {n}" for n in table.notes]
-    lines += [f"- Source result: `{i}`" for i in table.source_result_ids]
+    lines += [f"- Note: {_md_cell(n)}" for n in table.notes]
+    lines += [f"- Source result: {_md_cell(i)}" for i in table.source_result_ids]
     lines.append("")
     return lines
 
 
 def to_markdown(report: EconomistReport) -> str:
+    _verify_report(report)
     tables = report.tables()
-    lines = [f"# {report.title}", "", f"> **{report.maturity_banner}**", ""]
+    lines = [f"# {_md_cell(report.title)}", "", f"> **{_md_cell(report.maturity_banner)}**", ""]
     lines += [f"Report id: `{report.report_id}`", ""]
     for s in report.sections:
-        lines += [f"## {s.title}", ""]
+        lines += [f"## {_md_cell(s.title)}", ""]
         if s.status == "not_available":
-            lines += [f"*{u}*" for u in s.unavailable] or [f"*{UNAVAILABLE}.*"]
+            lines += [f"*{_md_cell(u)}*" for u in s.unavailable] or [f"*{UNAVAILABLE}.*"]
             lines.append("")
             continue
-        lines += [f"- **{k}**: {v}" for k, v in s.facts]
+        lines += [f"- **{_md_cell(k)}**: {_md_cell(v)}" for k, v in s.facts]
         if s.facts:
             lines.append("")
         for n in s.narrative:
-            lines += [n.text, ""]
+            lines += [_md_cell(n.text), ""]
         for table in s.tables:
             lines += _md_table(table)
         for chart in s.charts:
             lines += [
                 (
-                    f"*Chart `{chart.chart_id}`, derived from table `{chart.table_id}` "
+                    f"*Chart {_md_cell(chart.chart_id)}, derived from table {_md_cell(chart.table_id)} "
                     f"(sha256 `{chart.table_sha256}`).*"
                 ),
                 "",
                 render_svg(chart, tables[chart.table_id]),
                 "",
             ]
-        lines += [f"*{u}*" for u in s.unavailable]
+        lines += [f"*{_md_cell(u)}*" for u in s.unavailable]
         if s.unavailable:
             lines.append("")
     return "\n".join(lines).rstrip("\n") + "\n"
@@ -752,7 +904,7 @@ def _html_table(table: Table) -> list[str]:
     out.append('</tbody></table></div><ul class="meta">')
     out += [f"<li>Coverage: {_h(c)}</li>" for c in table.coverage]
     out += [
-        f"<li>Left out: {_h(reason)}: weight {t.format_decimal(w)}</li>"
+        f"<li>Left out: {_h(reason)}: weight {t.format_decimal(w, population=True)}</li>"
         for reason, w in table.exclusions
     ]
     out += [f"<li>Note: {_h(n)}</li>" for n in table.notes]
@@ -762,6 +914,7 @@ def _html_table(table: Table) -> list[str]:
 
 
 def to_html(report: EconomistReport) -> str:
+    _verify_report(report)
     tables = report.tables()
     body = [
         f"<h1>{_h(report.title)}</h1>",

@@ -18,12 +18,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import sys
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any, Literal
 from xml.sax.saxutils import escape, quoteattr
 
-from poltika.scenarios.reporting.tables import Table, format_cell
+from poltika.scenarios.reporting.tables import Table, format_cell, format_decimal
 
 VEGA_LITE_SCHEMA = "https://vega.github.io/schema/vega-lite/v5.json"
 ChartKind = Literal["bar", "line"]
@@ -93,7 +95,14 @@ def _y_title(spec: ChartSpec, table: Table) -> str:
 
 
 def _number(value: Any) -> float | None:
-    return float(value) if isinstance(value, Decimal) else None
+    if value is None:
+        return None
+    if not isinstance(value, Decimal) or not value.is_finite():
+        raise ValueError("chart values must be finite Decimals or missing")
+    converted = float(value)
+    if not math.isfinite(converted) or (value != 0 and abs(converted) < sys.float_info.min):
+        raise ValueError("chart value is outside the supported numeric range")
+    return converted
 
 
 def vega_lite(spec: ChartSpec, table: Table) -> dict[str, Any]:
@@ -115,13 +124,14 @@ def vega_lite(spec: ChartSpec, table: Table) -> dict[str, Any]:
         "title": spec.title,
         "description": (
             f"{spec.title}. Derived from table {spec.table_id} (sha256 {spec.table_sha256}). "
-            f"Maturity: {spec.maturity}."
+            f"Maturity: {spec.maturity}. {table.population_label}"
         ),
         "usermeta": {
             "chart_id": spec.chart_id,
             "table_id": spec.table_id,
             "table_sha256": spec.table_sha256,
             "maturity": spec.maturity,
+            "population_label": table.population_label,
         },
         "data": {"values": values},
         "transform": [
@@ -130,38 +140,43 @@ def vega_lite(spec: ChartSpec, table: Table) -> dict[str, Any]:
                 "calculate": json.dumps(labels, sort_keys=True) + "[datum.series]",
                 "as": "series_label",
             },
-            {"filter": "isValid(datum.value)"},
         ],
-        "mark": {"type": "bar"} if spec.kind == "bar" else {"type": "line", "point": True},
+        "mark": {"type": "bar"}
+        if spec.kind == "bar"
+        else {"type": "line", "point": True, "invalid": "break-paths-show-path-domains"},
         "encoding": {
             "x": {"field": spec.x, "type": x_type, "title": _axis_title(table, spec.x)},
             "y": {"field": "value", "type": "quantitative", "title": _y_title(spec, table)},
             "color": {"field": "series_label", "type": "nominal", "title": "Series"},
         },
     }
+    if table.population_label:
+        result["title"] = {"text": spec.title, "subtitle": table.population_label}
     if spec.kind == "bar" and len(spec.y) > 1:
         result["encoding"]["xOffset"] = {"field": "series_label"}
     return result
 
 
 def _nice_step(span: float, target: int = 5) -> float:
+    if not math.isfinite(span) or span <= 0:
+        raise ValueError("chart span is outside the supported numeric range")
     raw = span / target
+    if raw <= 0:
+        raise ValueError("chart tick step is outside the supported numeric range")
     magnitude = 10.0 ** _floor_log10(raw)
+    if magnitude <= 0 or not math.isfinite(magnitude):
+        raise ValueError("chart magnitude is outside the supported numeric range")
     for m in (1, 2, 2.5, 5, 10):
-        if raw <= m * magnitude:
-            return m * magnitude
-    return 10 * magnitude
+        step = m * magnitude
+        if raw <= step and math.isfinite(step):
+            return step
+    raise ValueError("chart tick step is outside the supported numeric range")
 
 
 def _floor_log10(x: float) -> int:
-    n = 0
-    while x >= 10:
-        x /= 10
-        n += 1
-    while x < 1:
-        x *= 10
-        n -= 1
-    return n
+    if not math.isfinite(x) or x <= 0:
+        raise ValueError("chart magnitude must be finite and positive")
+    return math.floor(math.log10(x))
 
 
 def _ticks(lo: float, hi: float) -> list[float]:
@@ -169,24 +184,26 @@ def _ticks(lo: float, hi: float) -> list[float]:
         hi = lo + 1
     step = _nice_step(hi - lo)
     first = _floor_div(lo, step)
-    ticks = []
-    k = 0
-    while True:
+    ticks: list[float] = []
+    for k in range(52):
         t = (first + k) * step
-        ticks.append(round(t, 10))
-        if t >= hi or k > 50:
-            break
-        k += 1
-    return ticks
+        if not math.isfinite(t) or (ticks and t <= ticks[-1]):
+            raise ValueError("chart ticks are outside the supported numeric range")
+        ticks.append(t)
+        if t >= hi:
+            return ticks
+    raise ValueError("chart tick generation exceeded its bound")
 
 
 def _floor_div(a: float, b: float) -> int:
-    q = int(a // b)
-    return q
+    ratio = a / b
+    if not math.isfinite(ratio):
+        raise ValueError("chart axis is outside the supported numeric range")
+    return math.floor(ratio)
 
 
-def _tick_label(value: float, step_hint: float) -> str:
-    return f"{value:,.0f}" if step_hint >= 1 else f"{value:,.2f}"
+def _tick_label(value: float) -> str:
+    return format_decimal(Decimal(str(value)), population=True)
 
 
 def _f(x: float) -> str:
@@ -203,7 +220,7 @@ def render_svg(spec: ChartSpec, table: Table) -> str:
     series = [
         (table.column(c).label, [table.cell(r, c) for r in range(len(table.rows))]) for c in spec.y
     ]
-    nums = [float(v) for _, vals in series for v in vals if isinstance(v, Decimal)]
+    nums = [n for _, vals in series for v in vals if (n := _number(v)) is not None]
     plot_w, plot_h = _W - _LEFT - _RIGHT, _H - _TOP - _BOTTOM
     height = _H + 16 * ((len(series) - 1) // 2)
     parts: list[str] = []
@@ -215,7 +232,8 @@ def render_svg(spec: ChartSpec, table: Table) -> str:
         lo = min(lo, 0.0)
     ticks = _ticks(lo, hi)
     lo, hi = min(lo, ticks[0]), max(hi, ticks[-1])
-    step_hint = (ticks[1] - ticks[0]) if len(ticks) > 1 else 1.0
+    if not math.isfinite(hi - lo) or hi <= lo:
+        raise ValueError("chart axis is outside the supported numeric range")
 
     def ypx(v: float) -> float:
         return _TOP + plot_h * (1 - (v - lo) / (hi - lo))
@@ -226,7 +244,7 @@ def render_svg(spec: ChartSpec, table: Table) -> str:
             f'<line x1="{_LEFT}" x2="{_W - _RIGHT}" y1="{y}" y2="{y}" stroke="#d0d0d0" '
             f'stroke-width="1"/>'
             f'<text x="{_LEFT - 8}" y="{_f(ypx(t) + 4)}" text-anchor="end" font-size="11" '
-            f'fill="#333333">{escape(_tick_label(t, step_hint))}</text>'
+            f'fill="#333333">{escape(_tick_label(t))}</text>'
         )
     zero = _f(ypx(0.0))
     parts.append(
@@ -273,13 +291,15 @@ def render_svg(spec: ChartSpec, table: Table) -> str:
                 )
     else:
         xs = [
-            float(c)
+            n
             for c in (table.cell(r, spec.x) for r in range(n_rows))
-            if isinstance(c, Decimal)
+            if (n := _number(c)) is not None
         ]
         xlo, xhi = min(xs, default=0.0), max(xs, default=1.0)
         if xhi == xlo:
             xhi = xlo + 1
+        if not math.isfinite(xhi - xlo) or xhi <= xlo:
+            raise ValueError("chart x axis is outside the supported numeric range")
 
         def xpx(v: float) -> float:
             return _LEFT + plot_w * (v - xlo) / (xhi - xlo)
@@ -289,7 +309,7 @@ def render_svg(spec: ChartSpec, table: Table) -> str:
                 continue
             parts.append(
                 f'<text x="{_f(xpx(t))}" y="{_TOP + plot_h + 16}" font-size="11" '
-                f'text-anchor="middle" fill="#333333">{escape(f"{t:,.0f}")}</text>'
+                f'text-anchor="middle" fill="#333333">{escape(_tick_label(t))}</text>'
             )
         for s, (_, vals) in enumerate(series):
             colour = _PALETTE[s % len(_PALETTE)]
@@ -338,8 +358,14 @@ def render_svg(spec: ChartSpec, table: Table) -> str:
 
     desc = (
         f"Derived from table {spec.table_id} (sha256 {spec.table_sha256}). "
-        f"Maturity: {spec.maturity}."
+        f"Maturity: {spec.maturity}. {table.population_label}"
     )
+    if table.population_label:
+        height += 48
+        parts.append(
+            f'<text x="16" y="{height - 16}" font-size="11" fill="#333333">'
+            f"{escape(table.population_label)}</text>"
+        )
     header = (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {_W} {height}" width="{_W}" '
         f'height="{height}" role="img" font-family="sans-serif" '

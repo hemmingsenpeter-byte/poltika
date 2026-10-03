@@ -39,6 +39,11 @@ household amount:
   unknown, the household is rerun once per possible answer. The base result
   stays `needs_review`; branches are labelled as conditional.
 
+Draft reporting helpers (`scenarios/reporting/`) assemble tables, charts and
+templated JSON/Markdown/HTML reports from retained population results. They
+preserve native periods, exact household amounts and synthetic labels. Reporting
+acceptance, uncertainty methodology and workbench integration remain pending.
+
 Not modelled: income tax, instalments or square-up, other benefits, any
 policy not listed above. Results are conditional simulations built from
 facts the caller asserts. They are not entitlement determinations.

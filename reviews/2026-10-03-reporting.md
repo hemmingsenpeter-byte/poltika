@@ -91,5 +91,20 @@ transmission for a prior review; no bypass or new Claude call is made here.
 
 ## Author response and resolution
 
-Pending follow-up fixes and pinned verification. Missing uncertainty ranges,
-decision dependencies and reporting/workbench acceptance remain explicit gates.
+The coordinator's follow-up addresses R1–R11 with literal Markdown text,
+finite/range-checked bounded charts, retained-input/result and export-content
+checks, baseline artifact/date/version/override reconciliation, exact household
+display and unquantized stored averages/shares, population presentation, visible
+synthetic chart context, Scenario classification and explicit duplicate rejection.
+Optional paths also reject native-period mismatches. Supplied examples/paths have
+their own context labels, and unchecked baseline fields retain partial status.
+
+Separate testing lead: final focused 120 passed, no skips (101 reporting,
+16 related, three orientation); whole src/tests Ruff and scoped new-test mypy
+passed. Protected expectations were unchanged. Red regressions were recorded
+against the original port before fixes. Pinned security/simplification rechecks,
+author preflight and broad verification follow below; this response is not
+independent acceptance of coordinator-written code.
+
+Missing uncertainty ranges, annual WFF period evidence, decision dependencies
+and reporting/workbench acceptance remain explicit gates.

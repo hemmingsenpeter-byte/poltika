@@ -21,7 +21,7 @@ import json
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import ROUND_HALF_UP, Decimal, localcontext
 from typing import Any, Literal
 
 from poltika.policy.loader import PolicyParameterSet
@@ -51,7 +51,7 @@ class Column:
     label: str
     unit: str | None = None
     kind: ColumnKind = "number"
-    decimals: int = 2
+    display_mode: Literal["exact", "population_3sf"] = "exact"
 
 
 @dataclass(frozen=True)
@@ -65,6 +65,7 @@ class Table:
     exclusions: tuple[tuple[str, Decimal], ...]  # reason, weight left out
     source_result_ids: tuple[str, ...]
     maturity: str = MATURITY
+    population_label: str = ""
 
     def __post_init__(self) -> None:
         ids = [c.column_id for c in self.columns]
@@ -73,6 +74,17 @@ class Table:
         for row in self.rows:
             if len(row) != len(self.columns):
                 raise ValueError(f"table {self.table_id}: a row has the wrong number of cells")
+            if any(isinstance(v, Decimal) and not v.is_finite() for v in row):
+                raise ValueError(f"table {self.table_id}: numeric cells must be finite")
+            if any(
+                c.kind == "number" and v is not None and not isinstance(v, Decimal)
+                for c, v in zip(self.columns, row, strict=True)
+            ):
+                raise ValueError(
+                    f"table {self.table_id}: numeric cells must be Decimals or missing"
+                )
+        if any(not weight.is_finite() for _, weight in self.exclusions):
+            raise ValueError(f"table {self.table_id}: exclusion weights must be finite")
 
     def column_index(self, column_id: str) -> int:
         for i, c in enumerate(self.columns):
@@ -103,7 +115,7 @@ class Table:
             for c in self.columns:
                 if c.kind == "number" and isinstance(self.cell(r, c.column_id), Decimal):
                     shown.add(self.display(r, c.column_id))
-        shown.update(format_decimal(w, 2) for _, w in self.exclusions)
+        shown.update(format_decimal(w, population=True) for _, w in self.exclusions)
         return shown
 
     def plain(self) -> dict[str, Any]:
@@ -117,7 +129,7 @@ class Table:
                     "label": c.label,
                     "unit": c.unit,
                     "kind": c.kind,
-                    "decimals": c.decimals,
+                    "display_mode": c.display_mode,
                 }
                 for c in self.columns
             ],
@@ -127,6 +139,7 @@ class Table:
             "exclusions": [[reason, format(w, "f")] for reason, w in self.exclusions],
             "source_result_ids": list(self.source_result_ids),
             "maturity": self.maturity,
+            "population_label": self.population_label,
         }
 
     @property
@@ -141,16 +154,22 @@ def _plain_cell(value: Cell) -> str | None:
     return value
 
 
-def format_decimal(value: Decimal, decimals: int = 2) -> str:
-    quantum = Decimal(1).scaleb(-decimals)
-    return f"{value.quantize(quantum, ROUND_HALF_UP):,}"
+def format_decimal(value: Decimal, *, population: bool = False) -> str:
+    """Round population presentation only; household/rule amounts stay exact."""
+    if not value.is_finite():
+        raise ValueError("displayed numbers must be finite")
+    if population and value:
+        with localcontext() as context:
+            context.prec = max(context.prec, len(value.as_tuple().digits) + 1)
+            value = value.quantize(Decimal(1).scaleb(value.adjusted() - 2), ROUND_HALF_UP)
+    return format(value, ",f")
 
 
 def format_cell(column: Column, value: Cell) -> str:
     if value is None:
         return NOT_AVAILABLE
     if isinstance(value, Decimal):
-        return format_decimal(value, column.decimals)
+        return format_decimal(value, population=column.display_mode == "population_3sf")
     return value
 
 
@@ -158,14 +177,14 @@ def slug(text: str) -> str:
     return re.sub(r"[^A-Za-z0-9]+", "_", text).strip("_").lower()
 
 
-def _q(value: Decimal, places: str = "0.01") -> Decimal:
-    return value.quantize(Decimal(places), ROUND_HALF_UP)
-
-
 _CALCULATED = "Households whose change was calculated in both runs."
 _NEVER_ZERO = (
     "Households needing review or outside the modelled scope are shown separately and never "
     "counted as zero."
+)
+_PRECISION = (
+    "Population figures are displayed to three significant figures; stored Decimals are retained. "
+    "Uncertainty ranges are unavailable: this retained run supplies no uncertainty method or bounds."
 )
 
 
@@ -180,19 +199,45 @@ def _grouped_table(
     unit = grouped.unit
     columns = (
         Column("group", group_label, kind="text"),
-        Column("households", "Households (count)", "households", decimals=0),
-        Column("weight", "Weight", "weighted households"),
-        Column("calculated_weight", "Weight calculated", "weighted households"),
-        Column("total_change", "Total change", f"{unit}, weighted total"),
-        Column("average_change", "Average change per calculated household", unit),
-        Column("gain_weight", "Weight gaining", "weighted households"),
-        Column("loss_weight", "Weight losing", "weighted households"),
-        Column("needs_review_weight", "Weight needing review", "weighted households"),
-        Column("unsupported_weight", "Weight outside scope", "weighted households"),
+        Column("households", "Households (count)", "households"),
+        Column("weight", "Weight", "weighted households", display_mode="population_3sf"),
+        Column(
+            "calculated_weight",
+            "Weight calculated",
+            "weighted households",
+            display_mode="population_3sf",
+        ),
+        Column(
+            "total_change", "Total change", f"{unit}, weighted total", display_mode="population_3sf"
+        ),
+        Column(
+            "average_change",
+            "Average change per calculated household",
+            unit,
+            display_mode="population_3sf",
+        ),
+        Column(
+            "gain_weight", "Weight gaining", "weighted households", display_mode="population_3sf"
+        ),
+        Column(
+            "loss_weight", "Weight losing", "weighted households", display_mode="population_3sf"
+        ),
+        Column(
+            "needs_review_weight",
+            "Weight needing review",
+            "weighted households",
+            display_mode="population_3sf",
+        ),
+        Column(
+            "unsupported_weight",
+            "Weight outside scope",
+            "weighted households",
+            display_mode="population_3sf",
+        ),
     )
     rows: list[tuple[Cell, ...]] = []
     for name, s in grouped.groups.items():
-        average = _q(s.total_change / s.calculated_weight) if s.calculated_weight else None
+        average = s.total_change / s.calculated_weight if s.calculated_weight else None
         rows.append(
             (
                 name,
@@ -210,6 +255,7 @@ def _grouped_table(
     notes = [
         f"Component set: {' + '.join(grouped.component_set)} ({unit}).",
         "A household with no calculated change contributes no amount, not a zero.",
+        _PRECISION,
     ]
     if not rows:
         notes.append("No household fell into this table.")
@@ -268,22 +314,28 @@ def winners_losers(grouped: GroupedTable, *, source_result_ids: Sequence[str]) -
     rows: list[tuple[Cell, ...]] = []
     for cls in ChangeClass:
         weight = summary.by_class[cls]
-        share = _q(weight * 100 / summary.weight, "0.1") if summary.weight else None
+        share = weight * 100 / summary.weight if summary.weight else None
         rows.append((_CLASS_LABELS[cls], weight, share, means.get(cls), largest.get(cls)))
     return Table(
         table_id="winners_losers",
         title="Winners and losers",
         columns=(
             Column("outcome", "Outcome", kind="text"),
-            Column("weight", "Weight", "weighted households"),
-            Column("share", "Share of weight", "per cent of weighted households", decimals=1),
-            Column("mean_change", "Mean change", unit),
-            Column("largest_change", "Largest change", unit),
+            Column("weight", "Weight", "weighted households", display_mode="population_3sf"),
+            Column(
+                "share",
+                "Share of weight",
+                "per cent of weighted households",
+                display_mode="population_3sf",
+            ),
+            Column("mean_change", "Mean change", unit, display_mode="population_3sf"),
+            Column("largest_change", "Largest change", unit, display_mode="population_3sf"),
         ),
         rows=tuple(rows),
         notes=(
             f"Component set: {' + '.join(grouped.component_set)} ({unit}).",
             "Mean and largest change are shown for gainers and losers only.",
+            _PRECISION,
         ),
         coverage=(
             "All households that ran, weighted.",
@@ -320,17 +372,33 @@ def fiscal_components(
         columns=(
             Column("component", "Component", kind="text"),
             Column("unit", "Unit", kind="text"),
-            Column("baseline_total", "Baseline total", money),
-            Column("reform_total", "Reform total", money),
-            Column("change", "Change", money),
-            Column("calculated_weight", "Weight calculated", "weighted households"),
-            Column("needs_review_weight", "Weight needing review", "weighted households"),
-            Column("unsupported_weight", "Weight outside scope", "weighted households"),
+            Column("baseline_total", "Baseline total", money, display_mode="population_3sf"),
+            Column("reform_total", "Reform total", money, display_mode="population_3sf"),
+            Column("change", "Change", money, display_mode="population_3sf"),
+            Column(
+                "calculated_weight",
+                "Weight calculated",
+                "weighted households",
+                display_mode="population_3sf",
+            ),
+            Column(
+                "needs_review_weight",
+                "Weight needing review",
+                "weighted households",
+                display_mode="population_3sf",
+            ),
+            Column(
+                "unsupported_weight",
+                "Weight outside scope",
+                "weighted households",
+                display_mode="population_3sf",
+            ),
         ),
         rows=rows,
         notes=(
             "Static entitlement at full take-up, with no behavioural response.",
             "Components in different periods (tax year, week) are not added together.",
+            _PRECISION,
         ),
         coverage=(
             "Totals cover households whose component was calculated in both runs.",
@@ -350,10 +418,11 @@ def baseline_totals(table: Table) -> Table:
         title="Baseline static entitlement by component",
         columns=tuple(table.columns[i] for i in idx),
         rows=tuple(tuple(row[i] for i in idx) for row in table.rows),
-        notes=("The approved policy parameters apply unchanged.",),
+        notes=("Baseline totals are read from the retained population results.", _PRECISION),
         coverage=table.coverage,
         exclusions=table.exclusions,
         source_result_ids=table.source_result_ids,
+        population_label=table.population_label,
     )
 
 
@@ -413,7 +482,7 @@ def withdrawal_rates(
     columns = (
         Column("income_from", "Income from", path.unit),
         Column("income_to", "Income to", path.unit),
-        *(Column(f"rate_{c}", f"{c} withdrawal rate", RATE_UNIT, decimals=4) for c in components),
+        *(Column(f"rate_{c}", f"{c} withdrawal rate", RATE_UNIT) for c in components),
     )
     rows = tuple(
         (
@@ -525,11 +594,11 @@ def validation_summary(
         title="Population records by validation status",
         columns=(
             Column("status", "Status", kind="text"),
-            Column("households", "Households (count)", "households", decimals=0),
-            Column("weight", "Weight", "weighted households"),
+            Column("households", "Households (count)", "households"),
+            Column("weight", "Weight", "weighted households", display_mode="population_3sf"),
         ),
         rows=rows,
-        notes=("Invalid households are left out of the run and counted here.",),
+        notes=("Invalid households are left out of the run and counted here.", _PRECISION),
         coverage=("Every household in the population.",),
         exclusions=(),
         source_result_ids=tuple(source_result_ids),
@@ -604,7 +673,7 @@ def parameter_provenance(
         )
     return Table(
         table_id="parameter_provenance",
-        title="Parameter sources and review statuses (baseline)",
+        title="Baseline parameter evidence and supplied context",
         columns=(
             Column("parameter", "Parameter", kind="text"),
             Column("outcome", "Outcome", kind="text"),

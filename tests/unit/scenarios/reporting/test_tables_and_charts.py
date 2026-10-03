@@ -42,7 +42,7 @@ def test_every_table_is_well_formed_and_hashes_stably(case: Case) -> None:
 def test_winners_losers_weights_equal_the_population_weight(case: Case) -> None:
     r = analyse(case.population, case.run, FTC)
     table = t.winners_losers(r.overall, source_result_ids=(case.run.run_id,))
-    total = sum((c for c in table.rows for c in [c[1]] if isinstance(c, D)), D(0))
+    total = sum((row[1] for row in table.rows if isinstance(row[1], D)), D(0))
     assert total == r.overall.groups["all"].weight
 
 

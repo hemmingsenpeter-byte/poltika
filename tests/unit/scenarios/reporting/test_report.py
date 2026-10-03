@@ -33,9 +33,6 @@ SECTIONS = [
     "provenance",
     "limitations",
 ]
-VERSIONS = {"working_for_families": "x", "accommodation_supplement": "y"}
-
-
 def _full(case: Case) -> EconomistReport:
     return build_report(
         case.population,
@@ -44,8 +41,6 @@ def _full(case: Case) -> EconomistReport:
         withdrawal_paths=case.paths,
         examples=case.examples,
         parameter_sets=case.parameter_sets,
-        policy_versions=VERSIONS,
-        reference_period="2026-06-01",
     )
 
 
@@ -56,9 +51,9 @@ def report(case: Case) -> EconomistReport:
 
 def test_all_sections_present_in_order(report: EconomistReport) -> None:
     assert [s.section_id for s in report.sections] == SECTIONS
-    assert all(s.status == "complete" for s in report.sections), [
-        (s.section_id, s.unavailable) for s in report.sections if s.status != "complete"
-    ]
+    partial = {"scenario", "household_impacts", "incentive_analysis", "provenance"}
+    assert {s.section_id for s in report.sections if s.status == "partial"} == partial
+    assert all(s.status == "complete" for s in report.sections if s.section_id not in partial)
 
 
 def test_deterministic_bytes(case: Case, report: EconomistReport) -> None:
@@ -92,7 +87,7 @@ def test_every_narrative_number_is_a_table_cell(report: EconomistReport) -> None
 def test_maturity_banner_is_first_and_never_overclaims(report: EconomistReport) -> None:
     assert "IMPLEMENTED" in MATURITY_BANNER and report.maturity == "IMPLEMENTED"
     markdown, page, data = to_markdown(report), to_html(report), to_json(report)
-    assert markdown.index(MATURITY_BANNER) < markdown.index("## Scenario")
+    assert markdown.index("MATURITY: IMPLEMENTED") < markdown.index("## Scenario")
     assert page.index(MATURITY_BANNER) < page.index("<section")
     assert json.loads(data)["maturity_banner"] == MATURITY_BANNER
     for text in (markdown, page, data):
@@ -102,7 +97,7 @@ def test_maturity_banner_is_first_and_never_overclaims(report: EconomistReport) 
 
 def test_synthetic_population_is_labelled(case: Case, report: EconomistReport) -> None:
     facts = dict(report.section("data").facts)
-    assert facts["evidence_class"] == "synthetic"
+    assert facts["evidence_class"] == "Scenario"
     assert case.run.label in facts["population_label"]
     text = to_markdown(report)
     assert "population is synthetic" in text.lower() and "not a sample or estimate" in text
@@ -157,8 +152,8 @@ def test_missing_inputs_are_said_not_omitted(case: Case) -> None:
         assert s.status == "not_available"
         assert s.unavailable and s.unavailable[0].startswith("Not available in this run")
     scenario = dict(bare.section("scenario").facts)
-    assert scenario["reference_period"] == "Not available in this run"
-    assert scenario["policy_versions"] == "Not available in this run"
+    assert scenario["reference_period"] != "Not available in this run"
+    assert scenario["policy_versions"] != "Not available in this run"
     assert bare.section("provenance").status == "partial"
     for text in (to_markdown(bare), to_html(bare)):
         assert text.count("Not available in this run") >= 4
