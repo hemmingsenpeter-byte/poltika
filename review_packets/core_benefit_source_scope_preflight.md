@@ -6,7 +6,9 @@
 - Original author sources/scope: `cf83e16e956ff5e5bed9c49f6a38a26c091add74`.
 - Final source-backed category correction: `b238820`, separately delta-checked
   against reviewed `59d5e4a`; inventories unchanged, no remaining finding.
-- Branch: `codex/core-benefit-source-scope`; no PR, push or merge by this writer.
+- Branch: `codex/core-benefit-source-scope`; writer made no PR/push/merge.
+  Project manager published draft [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151)
+  after the separate final source check; no merge or source approval.
 - Label: **author preflight**, followed by a separate same-model source check
   recorded in `reviews/2026-10-03-core-benefit-source-scope.md`. Claude source
   acceptance and Pete D1 remain pending under ADR-0020.
