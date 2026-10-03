@@ -52,7 +52,11 @@ Code holds delegated Tier A/B acceptance; Pete holds Tier C. This coordination
 request does not silently transfer merge or reserved decision authority.
 Publication, resources, release tags and protected values keep their gates.
 
-## First work-cycle handoff
+## First work-cycle handoff — historical snapshot, 3 October 2026
+
+This snapshot precedes #150's merge. CI/review statements apply to the
+recorded heads and the then-current `e52f5d3` baseline; the second-cycle
+handoff below supersedes its next-action status without rewriting the evidence.
 
 The live GitHub list showed migration #144–147 prepared as drafts, not merged.
 Preserve that stack; new programme/source documents are stacked on its final
@@ -69,10 +73,47 @@ branch `docs/economist-programme` at `422b055`. Do not repeat the migration.
 See [the verification record](../../reviews/2026-10-03-programme-verification.md)
 for the local test-run distinction and environment limits. No model amount,
 protected expected value, data snapshot or production code changed in this cycle.
-No PR or migration is marked merged here.
+No PR or migration was marked merged in this first-cycle snapshot.
 
 Next startable work is the outstanding #128 independent review and primary
 source scoping for the three core main benefits. The next coding slice remains
 ADR-0017's shared household model with named WFF/AS mappings and golden parity,
 coordinated with existing minimum-semantics owners. Neither income-tax scoping
 nor release tags justify building deferred universal registries or AI layers.
+
+## Second work-cycle handoff — 3 October 2026, after 01:38:42 UTC
+
+The recorded main advanced through actual delegated acceptance of #150;
+the migration #144–147 remains unmerged and preserved. This is an update to
+draft #149, not programme adoption or acceptance of this revised PM record.
+
+| Work | Recorded result | Remaining gate |
+| --- | --- | --- |
+| #150 conditional-summary fixes | Actual fresh Sonnet review approved the submitted fixes; Opus accepted Tier A and squash-merged head `ea872403acdd3e3a37a15040161d4fb847332f12` at `3bea73fba44f9173ecc4ee3d00be3aa22328b993`. Latest-head PR checks and up-to-date branch were checked by Opus before merge. | #128 queue closure remains a separate docs change; this merge does not complete a new economic-model capability. |
+| #128 review closure / #152 | Draft #152 targets main at `2404ab47fc17b5c685382155cf616e5b014e92ee`. Separate same-model doc check has no findings; its local checks record 7 passed/7 skipped. | Actual Sonnet review has not run. New Claude review/Opus acceptance await external destination permission; no closure has landed on main. |
+| #151 core-benefit source scope | Draft final head `50f13f44533cdab2939dd80e37538c8313ecb774`: three source-only inventories and proposed slices/interactions. Separate source check found a JS category discrepancy; narrow correction `b238820` was rechecked and resolved. | Separate same-model checking does not replace Claude source review or Pete D1. Payment/rounding, assessment basis, population breadth and later onboarding gates remain; no values/spec/engine approved. |
+| #148 income-tax source scope | Draft final head `0db2bfaf787280a6cda252f6fa7e9287ba107ef7`; retained dated source check has no actionable discrepancy in its bounded draft. | Claude source review, Pete D1, enacted-period coverage and rounding/benchmark gates remain. |
+| #138/#142/#143 baseline closeout | Actual read-only Sonnet review reports no blocking findings on the submitted artifacts, distinct from the earlier GPT/Codex checks. | All remain behind main after #150 at this handoff. Refresh bases, inspect changed diffs, obtain latest-head CI and Opus acceptance. Review of earlier artifacts does not automatically cover later updates. |
+
+The actual Claude results are retained in the verification record with their
+local evidence-file identities and limits. Sonnet did not execute broad
+test/lint runs; the baseline Sonnet pass could not independently verify live
+CI or action-pin authenticity. These limits do not become new test evidence.
+
+Automatic approval review rejected the attempted new #152 Sonnet invocation
+because transmitting the private review payload to Anthropic lacked explicit
+destination consent. The bounded permission request is pending. This blocks
+the affected external reviewer/acceptance steps; authorised local writing,
+verification, conflict preparation and source work continue. It does not
+mark the whole programme blocked.
+
+Next coding handoff is to reconcile and review the existing ADR-0017 writer's
+increment in `/Users/peterhemmingsen/poltika-p1-household`, branch
+`build/p1-household`, before assigning another household/model/mapping writer.
+Its uncommitted `semantics/household.py`, `scenarios/household_mappings.py`,
+roundtrip/semantics tests and pass1/pass2 documents must be preserved.
+Source-derived WFF/AS mapping review and byte-identical golden results/IDs
+remain acceptance requirements, coordinated with minimum-semantics owners.
+The next engineering handoffs are #152 closure,
+baseline PR refresh/acceptance, migration integration and the new PM/source
+review packets. Previous review does not cover this second-cycle PM update.
