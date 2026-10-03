@@ -95,7 +95,7 @@ packets can still say “open” historically and do not override current record
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Bounded governance/baseline closeout | In progress | GPT/Codex coordinates checks/fixes; Claude Code acceptance | #138, #142, #143 open; #139 merged | Final PR dispositions; #138/#142/#143 CI green; delegated acceptance pending | Separate security/testing/simplification evidence; constitution preserved | Step 1; baseline B1–B5 |
-| 2 | PR/review-debt reconciliation | In progress | GPT/Codex coordinates/reviews; Claude Code acceptance | #128 review outstanding; #138/#140/#142/#143 examined | Complete #128 independent review; retain all open/draft ownership | Live review_queue; first-cycle verification record and execution practice | W1; P17 |
+| 2 | PR/review-debt reconciliation | In progress | GPT/Codex coordinates/reviews; Claude Code acceptance | #128 review outstanding; #138/#140/#142/#143 examined; #149 draft execution record | Complete #128 independent review; retain all open/draft ownership | Live review_queue; first-cycle verification record and execution practice | W1; P17 |
 | 3 | Release baseline | Pete | Pete; Claude Code prepares | No new release PR | v0.2 tag; v0.1.5 external pilot/tag; verify baseline/gates | v0.1.0 tagged; retained release evidence | 7.1; v0.1.5 8.2–8.6; v0.2 10.3 |
 | 4 | End abstract Phase 0 expansion | In progress | Claude Code acceptance; GPT/Codex coordinates | #144–147 draft migration | Independent migration review/CI and coordinated integration; preserve existing workers | ADR-0021 direction; existing migration stack is not duplicated | Steps 1–2 sequencing |
 

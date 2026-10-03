@@ -5,7 +5,8 @@ GPT/Codex to coordinate Poltika with separate writing, security, testing and
 simplification roles. This file records that operating practice and the
 current handoff; [PROGRAMME_STATUS.md](../../PROGRAMME_STATUS.md) remains the
 task tracker and [BUILD_PLAN_PROGRAMME.md](../../BUILD_PLAN_PROGRAMME.md)
-remains the single build order. It does not add a second roadmap.
+remains the single build order. It does not add a second roadmap. This
+execution record is proposed in draft [PR #149](https://github.com/hemmingsenpeter-byte/poltika/pull/149).
 
 ## Roles and capacity
 
