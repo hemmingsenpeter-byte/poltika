@@ -17,6 +17,13 @@ alone does not complete a larger new capability. PRs labelled “reuse” prove
 existing assets, not a new task's completion. No A–P capability gate is claimed
 by this migration. Later owners are provisional until their bounded plan starts.
 
+Pete appointed GPT/Codex as coordinating project manager on 3 October 2026.
+[Execution practice](docs/programme/EXECUTION.md) records separate writing,
+security, testing and simplification roles within the four concurrent slots.
+The task tables remain the live backlog; ADR-0020 acceptance and Tier C
+boundaries remain unchanged. New work is prepared beside the still-draft
+migration #144–147, not recorded as merged programme adoption.
+
 | Status | Meaning |
 | --- | --- |
 | Done | Merged and the task's done-when is met. |
@@ -37,11 +44,11 @@ and review again before merge; this is the reconciliation snapshot.
 | --- | --- | --- | --- |
 | Delegated acceptance | Done; Claude Code, Pete's recorded delegation | #139 merged, `dd2650b` | ADR-0020 accepted; #141 added live tracking. |
 | Main ruleset / squash auto-merge | Pete | None | Q1; repository settings action remains Pete's; merge rules hold by agreement. |
-| Evidence-classes skill | In flight (other session); Claude Code | #138 open; `e34e681` | Latest checks green; reviewer/merge disposition outstanding. Legacy 1.7. |
+| Evidence-classes skill | In progress (review fixes); Claude author, GPT/Codex checks/fixes | #138 open; `d868564` | Promotion exception fixed; separate final check has no actionable findings; latest-head CI and delegated acceptance pending. Legacy 1.7. |
 | Dev tooling | In flight (other session); Claude Code | No PR | Existing uncommitted worker includes tooling and calculation-adjacent `conditional.py`; preserve files and apply relevant independent review. |
-| Security CI | Blocked; Claude Code | #142 open; `f11f692` | CodeQL actions check fails on missing permissions in data-snapshot-guard, statutory-value-guard and tests workflows; fix/review latest head. |
-| Governance files | In flight (other session); Claude Code | #143 open; `75eb7a9` | Latest checks green; reviewer/merge disposition outstanding. |
-| Hosting policy-path documentation | In flight (other session); Claude Code | #140 draft; `ffa05168` | Documents `POLTIKA_POLICY_SPECS_DIR`; no CI evidence on draft. This is not the dev-tooling PR. |
+| Security CI | In progress (handoff); Claude author, GPT/Codex checks/fixes | #142 open; `f483fb90` | Applicable final-head CI green; separate security/test/simplification checks complete. Delegated acceptance pending; Bandit medium/low findings retained for triage. |
+| Governance files | In progress (review fixes); Claude author, GPT/Codex checks/fixes | #143 open; `82990da` | Private reporting, release gates, pending tooling and CI tiers corrected; separate final check has no actionable findings; latest-head CI and delegated acceptance pending. |
+| Hosting policy-path documentation | In flight (other session); Claude Code | #140 draft; `ffa05168` | Exact-head installed-wheel probe passes (local database sub-probe unavailable); no actionable doc finding. Draft CI/acceptance pending; this is not the dev-tooling PR. |
 | Independent review debt | In progress; GPT/Codex, Claude Code coordinates | #128 merged, review open | `review_packets/review_queue.md` is current: one open implementation row. |
 
 ## Release and maintenance state
@@ -87,10 +94,10 @@ packets can still say “open” historically and do not override current record
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Bounded governance/baseline closeout | In progress | Claude Code; GPT/Codex reviews | #138, #142, #143 open; #139 merged | PR dispositions; #142 checks fail; coordinate existing workers | Professional-baseline rows above; constitution already approved | Step 1; baseline B1–B5 |
-| 2 | PR/review-debt reconciliation | In progress | Claude Code coordinates; GPT/Codex reviews | #128 review outstanding | Complete independent review; retain open/draft PR ownership | Live review_queue; most earlier rows cleared | W1; P17 |
+| 1 | Bounded governance/baseline closeout | In progress | GPT/Codex coordinates checks/fixes; Claude Code acceptance | #138, #142, #143 open; #139 merged | Final PR dispositions; #142 CI green; #138/#143 checks and acceptance pending | Separate security/testing/simplification evidence; constitution preserved | Step 1; baseline B1–B5 |
+| 2 | PR/review-debt reconciliation | In progress | GPT/Codex coordinates/reviews; Claude Code acceptance | #128 review outstanding; #138/#140/#142/#143 examined | Complete #128 independent review; retain all open/draft ownership | Live review_queue; first-cycle verification record and execution practice | W1; P17 |
 | 3 | Release baseline | Pete | Pete; Claude Code prepares | No new release PR | v0.2 tag; v0.1.5 external pilot/tag; verify baseline/gates | v0.1.0 tagged; retained release evidence | 7.1; v0.1.5 8.2–8.6; v0.2 10.3 |
-| 4 | End abstract Phase 0 expansion | In progress | Claude Code coordinates | This migration, not merged | Merge migration; agree scoped/parked worker dispositions | ADR-0021 direction; snapshots preserve old tasks | Steps 1–2 sequencing |
+| 4 | End abstract Phase 0 expansion | In progress | Claude Code acceptance; GPT/Codex coordinates | #144–147 draft migration | Independent migration review/CI and coordinated integration; preserve existing workers | ADR-0021 direction; existing migration stack is not duplicated | Steps 1–2 sequencing |
 
 ## Phase B — Household economic kernel
 
@@ -98,7 +105,7 @@ packets can still say “open” historically and do not override current record
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 5 | Minimum household semantics | In progress | Claude Code; GPT/Codex mapping review | None yet | Reconcile existing units/periods/entities work with minimum household scope | CanonicalVariable and population contracts; uncommitted workers retained | 2.1–2.6, 2.10 scoped |
 | 6 | Shared household model | Planned | Claude Code; GPT/Codex mapping review | None | 5; independently reviewed policy mappings | ADR-0017 accepted; adapters/golden parity required | 2.7; v0.3 Phase 1; W6 |
-| 7 | Personal income tax | Not started | GPT/Codex sources; Claude Code implements; Pete slice | None | Source pack and D1 decision; 5–6 for integration | No personal-income-tax policy pack on reconciled main | 3A; v0.3 0.1 / Phase 2 |
+| 7 | Personal income tax | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #148 draft, stacked on #147 | Migration #144–147 integration; independent cross-model source review and D1; enacted 2026–27 annual rates unverified; 5–6 for integration | Draft sources.yaml and task_0_1_income_tax_scope.md; no approved specification, parameters, benchmarks or engine | 3A; v0.3 0.1 / Phase 2 |
 | 8 | Three core main benefits | Not started | GPT/Codex sources; Claude Code implements; Pete slice | None | Source packs and D1 decisions; 5–6 for integration | No new main-benefit policy packs on reconciled main | 3A; v0.3 0.2 / Phase 3 |
 | 9 | Household dependency graph | Not started | Claude Code; GPT/Codex interaction review | None | Sourced interactions; 6–8 for integrated paths | Existing combined WFF/AS runner reused | 3A; v0.3 Phase 4; W7 |
 | 10 | Disposable income | Blocked | Claude Code; GPT/Codex definition; Pete D2 | None | Sourced definition/D2; connected 7–9 outputs | Existing per-policy results remain separate | v0.3 0.4 / 5.1 |

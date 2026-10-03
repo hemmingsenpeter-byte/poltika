@@ -65,7 +65,7 @@ poltika/
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
 ├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map and the v0.2 population methodology
-├── docs/programme/    — repository reconciliation and reference audit for programme migrations
+├── docs/programme/    — repository reconciliation/reference audits and EXECUTION.md (agent roles, bounded cycles, current handoff; PROGRAMME_STATUS remains the task tracker)
 ├── docs/archive/      — superseded planning snapshots, never an implementation authority
 │   ├── programmes/    — ADR-0019 programme and W1–W10 realignment history
 │   ├── roadmaps/      — dated roadmap snapshots
