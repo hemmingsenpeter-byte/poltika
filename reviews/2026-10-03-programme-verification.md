@@ -105,7 +105,15 @@ a separate documentation PR.
 
 Draft #152 now targets main at `2404ab47fc17b5c685382155cf616e5b014e92ee`.
 Its local checks record **7 passed/7 skipped** and a separate same-model
-document check has no findings. Those are not zero-skip release evidence.
+document check has no findings; the seven retained skips are unbuilt capability
+rows. The coordinator's latest live check records all four latest-head CI
+checks **SUCCESS**: test, pilot-image and both guards. The
+[#152 test run](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37087917287)
+finished at 02:01:40 UTC; guard runs are
+[37087917283](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37087917283)
+and [37087917310](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37087917310).
+No file/head change followed that check. #152 remains OPEN/DRAFT; successful
+CI is not zero-skip release evidence or source/acceptance approval.
 The #128 row remains open on main until the closure PR is accepted and merged.
 Actual Sonnet review of #152 has not run: automatic approval review rejected
 the new invocation because the private payload's transmission to Anthropic
@@ -150,6 +158,16 @@ documents. This ownership state is retained from the coordinator's planning
 handoff, not a new code audit by this PM writer. Reconcile/review that increment
 before assigning another household/model/mapping writer; golden parity and
 source-derived mapping acceptance are still required.
+
+The same ownership handoff records substantial uncommitted implementation
+drafts on `build/p1-income-tax`, `build/p1-benefits`, `build/p1-reporting`
+and `build/p1-sim-analysis` in their corresponding `poltika-p1-*` worktrees.
+These are branch-local, unaccepted observations; this writer performed no
+code audit/tests of them. Source drafts #148/#151 keep their separate state.
+The simulation-analysis owner owns both existing snapshot test files;
+additive household snapshot/trace parity must wait for a pinned owner
+handoff and use an unoccupied path. No capability is marked Done from this
+inventory, and older Not started rows do not authorise overlapping writers.
 
 ### Local evidence identities
 

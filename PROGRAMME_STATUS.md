@@ -26,6 +26,16 @@ The task tables remain the live backlog; ADR-0020 acceptance and Tier C
 boundaries remain unchanged. New work is prepared beside the still-draft
 migration #144–147, not recorded as merged programme adoption.
 
+The second-cycle ownership inventory also preserves uncommitted drafts on
+`build/p1-household`, `build/p1-income-tax`, `build/p1-benefits`,
+`build/p1-reporting` and `build/p1-sim-analysis` in the corresponding
+`/Users/peterhemmingsen/poltika-p1-*` worktrees. Older Not started rows do
+not establish unowned implementation paths: obtain pinned owner handoffs
+before assigning overlapping writers. This is unaccepted ownership evidence,
+not a code audit or test/approval result. #148/#151 remain separate source
+drafts. The simulation-analysis owner also owns both existing snapshot tests;
+later additive parity work needs an unoccupied path after the owner handoff.
+
 | Status | Meaning |
 | --- | --- |
 | Done | Merged and the task's done-when is met. |
@@ -53,7 +63,7 @@ the first-cycle snapshots remain in the execution/verification records.
 | Governance files | In progress (acceptance handoff); Claude author, GPT/Codex checks/fixes | #143 open; recorded `82990da` | Actual Sonnet review has no blocking findings on submitted artifacts. Behind main after #150: base refresh, latest-head CI and Opus acceptance pending. Private reporting/publication gates retained. |
 | Hosting policy-path documentation | In flight (other session); Claude Code | #140 draft; `ffa05168` | Exact-head installed-wheel probe passes (local database sub-probe unavailable); no actionable doc finding. Draft CI/acceptance pending; this is not the dev-tooling PR. |
 | Conditional-summary review fixes | Done — bounded engineering fix; GPT/Codex author, Sonnet reviewer, Opus acceptance | #150 merged; `3bea73f` | Exact amounts/truthful branch summaries fixed; actual Sonnet review and Opus Tier A acceptance recorded. This does not close #128's queue row or a programme capability gate. |
-| Independent review debt | In progress (closure draft); GPT/Codex, Claude Code coordinates | #128 merged, queue open on main; #152 draft `2404ab47` | #152 targets main and records closure only in its draft branch. Same-model doc check has no findings; local checks 7 passed/7 skipped. Fresh Sonnet review/Opus acceptance pending external-reviewer permission; closure has not landed on main. |
+| Independent review debt | In progress (closure draft); GPT/Codex, Claude Code coordinates | #128 merged, queue open on main; #152 draft `2404ab47` | #152 targets main; latest-head test, image and both guards SUCCESS (test finished 02:01:40 UTC). Same-model doc check has no findings; local checks 7 passed/7 unbuilt-capability skips. Fresh Sonnet/Opus pending destination consent; no closure landed on main. |
 
 ## Release and maintenance state
 
@@ -99,7 +109,7 @@ packets can still say “open” historically and do not override current record
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Bounded governance/baseline closeout | In progress | GPT/Codex coordinates checks/fixes; Claude Code acceptance | #138, #142, #143 open; #139/#150 merged | Refresh behind-main branches, latest-head CI and Opus acceptance; new reviewer/acceptance runs await external destination permission | Actual Sonnet no-blocking-finding reviews; separate engineering probes; constitution preserved | Step 1; baseline B1–B5 |
-| 2 | PR/review-debt reconciliation | In progress | GPT/Codex coordinates/reviews; Claude Code acceptance | #150 merged; #152 draft closure at `2404ab47`; #149 draft PM record | Fresh #152 Sonnet review/Opus acceptance awaiting external-reviewer permission; #128 row stays open on main until closure lands | Recorded #150 merge/acceptance; #152 local 7 passed/7 skipped and same-model check; dated first/second-cycle records | W1; P17 |
+| 2 | PR/review-debt reconciliation | In progress | GPT/Codex coordinates/reviews; Claude Code acceptance | #150 merged; #152 draft closure at `2404ab47`; #149 draft PM record | Fresh #152 Sonnet review/Opus acceptance awaiting destination consent; #128 row stays open on main until closure lands | #150 actual merge; #152 latest-head four CI checks SUCCESS, local 7 passed/7 unbuilt-capability skips and same-model check; dated cycle records | W1; P17 |
 | 3 | Release baseline | Pete | Pete; Claude Code prepares | No new release PR | v0.2 tag; v0.1.5 external pilot/tag; verify baseline/gates | v0.1.0 tagged; retained release evidence | 7.1; v0.1.5 8.2–8.6; v0.2 10.3 |
 | 4 | End abstract Phase 0 expansion | In progress | Claude Code acceptance; GPT/Codex coordinates | #144–147 draft migration | Independent migration review/CI and coordinated integration; preserve existing workers | ADR-0021 direction; existing migration stack is not duplicated | Steps 1–2 sequencing |
 
@@ -267,7 +277,10 @@ increment in `/Users/peterhemmingsen/poltika-p1-household` on
 Preserve its uncommitted household/mapping files, tests and pass1/pass2 docs;
 source-derived WFF/AS mapping review and byte-identical golden results/IDs
 (v0.3 1.1–1.3) remain acceptance requirements, coordinated with minimum
-semantics owners. Primary-source tax/benefit scoping and D1–D3 proposals
+semantics owners. The next intake needs a pinned committed handoff; no unowned
+household implementation is assigned while those files move. Branch-local
+construction-mode claims remain unaccepted ownership evidence.
+Primary-source tax/benefit scoping and D1–D3 proposals
 are parallel research (#148/#151 drafts); existing A closeout continues with
 its current owners. #150's actual merge is recorded separately from #152's
 pending queue closure. External reviewer permission blocks the affected new

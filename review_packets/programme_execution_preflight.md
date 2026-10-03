@@ -54,8 +54,9 @@ remained pending at that snapshot.
 This writer knows the operating rationale and is not the independent reviewer.
 Mechanical prior PM head: `14476d03c9f0de8af52788f7cf3bd8f91187ad04`.
 The bounded update changes only `docs/programme/EXECUTION.md`,
-`PROGRAMME_STATUS.md`, `reviews/2026-10-03-programme-verification.md` and
-this packet. The exact handoff head is returned by `git rev-parse HEAD`.
+`PROGRAMME_STATUS.md`, `reviews/2026-10-03-programme-verification.md`,
+this packet and the coordinator-authorised Q5 evidence preparation in
+`PETE_QUEUE.md`. The exact handoff head is returned by `git rev-parse HEAD`.
 
 Expected contract: preserve all 58 task IDs/order and the A–P gates; retain
 first-cycle checks with their original revisions; record only actual #150
@@ -65,11 +66,24 @@ require refreshed heads/CI/Opus acceptance for #138/#142/#143. Preserve the
 unmerged migration stack and existing workers. Reconcile/review the uncommitted
 `build/p1-household` increment before assigning another household/model/mapping
 writer; ADR-0017 mapping/parity requirements remain acceptance gates.
+Q5 links the fixed #148/#151 source/scope drafts and records the sourced
+§3.4 household versus s 18 per-person discrepancy for a later Pete decision.
+It changes no plan rule or decision, asks no approval now, and keeps source
+review, D1, payment precision and period coverage pending. No new household
+writer is assigned before the existing owner's pinned committed handoff.
+The existing income-tax, benefits, reporting and simulation-analysis drafts
+are preserved as unaccepted ownership evidence; the simulation-analysis
+owner already owns both snapshot test files. An eventual additive parity
+increment needs an unoccupied path after the pinned owner handoff. No code
+audit, test result, policy approval or completed capability is inferred.
 
 Inputs are the actual Claude JSON results identified and summarised in the
 verification record, fixed source-review artifacts at #148 `0db2bfaf` and
 #151 `50f13f44`, and the coordinator's bounded second-cycle state. They are
 evidence of those reviews only, not review of this new PM diff.
+The latest coordinator-provided live #152 check is all four checks SUCCESS
+at unchanged `2404ab47` (test finished 02:01:40 UTC); it remains OPEN/DRAFT,
+with seven unbuilt-capability skips and Sonnet/Opus awaiting destination consent.
 
 Second-cycle writer checks exited 0:
 
@@ -83,12 +97,17 @@ Starlette/anyio deprecation warnings. This checks programme authority,
 orientation examples and the queue reader; it does not establish release gates.
 Mechanical comparison to `14476d03` preserves all 58 task IDs/capabilities and
 A–P phase order. The master, architecture/map and acceptance/sequence ADRs
-are byte-identical; exactly the four authorised documentation paths changed;
-all 12 relative Markdown targets resolve. Production, policy, tests, live
+are byte-identical; the initial update changed exactly four documentation
+paths, with all 12 relative Markdown targets resolving. The later authorised
+Q5/ownership addition passes the mechanical scope check: exactly five authorised
+documents, 13 relative targets, six pinned source/scope blobs present in retained
+git objects, and unchanged non-Q5 items, Q1 commands and Done entries. The
+detailed household plan and live review queue are also byte-identical.
+Production, policy, tests, live
 review queue, dependencies and data remain untouched. The committed archive
 is checked separately at handoff, preserving the tested file contents.
 
-No broad test, new policy-source audit or live CI rerun is claimed.
+No broad test, new policy-source audit or live CI rerun by this writer is claimed.
 The final diff requires a fresh reviewer; the `422b055..687ed4d` check above
 does not cover it. Retargeting/reconciliation onto main and latest-head CI
 remain acceptance prerequisites; nothing here grants merge authority.

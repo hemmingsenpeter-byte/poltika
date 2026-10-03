@@ -90,7 +90,7 @@ draft #149, not programme adoption or acceptance of this revised PM record.
 | Work | Recorded result | Remaining gate |
 | --- | --- | --- |
 | #150 conditional-summary fixes | Actual fresh Sonnet review approved the submitted fixes; Opus accepted Tier A and squash-merged head `ea872403acdd3e3a37a15040161d4fb847332f12` at `3bea73fba44f9173ecc4ee3d00be3aa22328b993`. Latest-head PR checks and up-to-date branch were checked by Opus before merge. | #128 queue closure remains a separate docs change; this merge does not complete a new economic-model capability. |
-| #128 review closure / #152 | Draft #152 targets main at `2404ab47fc17b5c685382155cf616e5b014e92ee`. Separate same-model doc check has no findings; its local checks record 7 passed/7 skipped. | Actual Sonnet review has not run. New Claude review/Opus acceptance await external destination permission; no closure has landed on main. |
+| #128 review closure / #152 | Draft #152 targets main at `2404ab47fc17b5c685382155cf616e5b014e92ee`. All four latest-head CI checks SUCCESS; test finished 02:01:40 UTC. Separate same-model doc check has no findings; local checks record 7 passed/7 unbuilt-capability skips. | Still OPEN/DRAFT. Actual Sonnet review has not run; Claude review/Opus acceptance await destination consent. No closure landed on main or source/release approval inferred. |
 | #151 core-benefit source scope | Draft final head `50f13f44533cdab2939dd80e37538c8313ecb774`: three source-only inventories and proposed slices/interactions. Separate source check found a JS category discrepancy; narrow correction `b238820` was rechecked and resolved. | Separate same-model checking does not replace Claude source review or Pete D1. Payment/rounding, assessment basis, population breadth and later onboarding gates remain; no values/spec/engine approved. |
 | #148 income-tax source scope | Draft final head `0db2bfaf787280a6cda252f6fa7e9287ba107ef7`; retained dated source check has no actionable discrepancy in its bounded draft. | Claude source review, Pete D1, enacted-period coverage and rounding/benchmark gates remain. |
 | #138/#142/#143 baseline closeout | Actual read-only Sonnet review reports no blocking findings on the submitted artifacts, distinct from the earlier GPT/Codex checks. | All remain behind main after #150 at this handoff. Refresh bases, inspect changed diffs, obtain latest-head CI and Opus acceptance. Review of earlier artifacts does not automatically cover later updates. |
@@ -114,6 +114,33 @@ Its uncommitted `semantics/household.py`, `scenarios/household_mappings.py`,
 roundtrip/semantics tests and pass1/pass2 documents must be preserved.
 Source-derived WFF/AS mapping review and byte-identical golden results/IDs
 remain acceptance requirements, coordinated with minimum-semantics owners.
+The planning review found no genuinely unowned household implementation task:
+take a pinned review intake of that writer's committed handoff first. A later
+additive snapshot/trace parity harness may be unoccupied after that handoff;
+it is not startable while owner files move. Branch-local construction-mode
+claims are unaccepted ownership evidence, not capability acceptance.
+
+### Existing draft ownership — second-cycle inventory
+
+The coordinator's planning inventory records the following uncommitted
+branch-local work. This note is ownership evidence only: no code audit,
+test result or approval is inferred, and no capability becomes Done.
+
+| Existing worktree | Branch | Handoff constraint |
+| --- | --- | --- |
+| `/Users/peterhemmingsen/poltika-p1-household` | `build/p1-household` | Preserve household/mapping files, tests and pass1/pass2 docs; pinned review intake comes first. |
+| `/Users/peterhemmingsen/poltika-p1-income-tax` | `build/p1-income-tax` | Preserve the implementation draft; reconcile with source draft #148 and source/slice gates before assigning a tax writer. |
+| `/Users/peterhemmingsen/poltika-p1-benefits` | `build/p1-benefits` | Preserve the implementation draft; reconcile with source draft #151 and source/slice gates before assigning a benefit writer. |
+| `/Users/peterhemmingsen/poltika-p1-reporting` | `build/p1-reporting` | Preserve the reporting draft and obtain its owner's pinned handoff before assigning overlapping reporting work. |
+| `/Users/peterhemmingsen/poltika-p1-sim-analysis` | `build/p1-sim-analysis` | Preserve simulation-analysis work, including both existing snapshot test files; obtain a pinned owner handoff before overlapping changes. |
+
+Do not assign new tax/benefit/reporting/simulation writers from older
+Not started rows alone. Future additive household snapshot/trace parity
+must use an unoccupied path after the pinned owner handoff; the existing
+snapshot test files are already owned. #148/#151 retain their separate
+source-only draft state; these implementation observations do not approve
+their policy content, values or construction-mode claims.
+
 The next engineering handoffs are #152 closure,
 baseline PR refresh/acceptance, migration integration and the new PM/source
 review packets. Previous review does not cover this second-cycle PM update.
