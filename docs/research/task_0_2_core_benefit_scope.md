@@ -176,7 +176,7 @@ The source evidence supports retaining the detailed plan's proposed order,
 **JS → SPS → SLP**, subject to Pete D1. Start with JS ordinary older single,
 without dependent children (Schedule 4 Part 1 cl 1(d)), an established ordinary
 grant, verified availability/residence and ordinary earnings attributable to
-the assessment week. This proves the present weekly basis with the fewest
+the assessment week. This would exercise the present weekly basis with the fewest
 partner/care branches. Adding JS children or couples introduces a different
 test or rate and should be a separately approved increment.
 
