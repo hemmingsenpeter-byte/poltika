@@ -5,8 +5,8 @@
 - Base: prepared migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
 - Scope: coordination practice, current tracker and dated first/second/third-cycle verification;
   no new roadmap, doctrine, acceptance delegation or model implementation.
-- Label: author preflight plus separate fresh same-model document checks
-  at the exact first/second-cycle revisions below. Claude acceptance and
+- Label: author preflight plus separate same-model document checks
+  at the exact first/second/third-cycle revisions below. Claude acceptance and
   migration integration remain pending.
 
 The third-cycle addition is a bounded reporting/coordination handoff in the
@@ -26,8 +26,9 @@ claimed.
 
 The third-cycle handoff also records #142's force-free main refresh at
 `7ab7cbb` and published documentation head `94f08fc`. Its bounded verification
-and separate same-model check are recorded with exact limits; latest-head CI
-and ADR-0020 acceptance remain pending. No prior actual Claude approval is
+and separate same-model check are recorded with exact limits; all nine
+applicable latest-head CI jobs pass, with two scheduled/non-PR jobs skipped
+by design. ADR-0020 acceptance remains pending. No prior actual Claude approval is
 represented as fresh review of the new head.
 
 The author knows the operating rationale. Reviewers derive their contract
@@ -175,7 +176,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-ve
 ```
 
 Log: `/private/tmp/poltika-pm-third-preflight-tests-20261003.log`.
-Complete accepted-migration diff whitespace passed; all 58 task rows are
+Complete diff against the prepared migration base passed whitespace checks;
+all 58 task rows are
 unchanged from `40cc0505`, earlier execution/verification records remain
 verbatim prefixes, and all 19 relative Markdown targets resolve.
 
@@ -193,3 +195,14 @@ documentation-delta check and exact-head mechanical preflight remain pending;
 the earlier 15-test result stays identified with `82b18f5`. #149 is still
 stacked on the prepared migration: retargeting/reconciliation, applicable
 latest-head CI and required Claude acceptance remain integration prerequisites.
+
+### Final documentation-delta finding — recorded before correction
+
+Separate same-model check of `82b18f5..bb37fa0d` confirmed final #154 CI
+counts against its exact-job log, the 15-test result at `82b18f5`, and preserved
+task/source/test/authority boundaries. No P1/P2 finding. One P3/proposed
+`SPEC_ERROR`: this packet calls the still-unmerged prepared migration
+“accepted-migration” in its whitespace-check sentence. Replace that phrase
+with “prepared migration base”; no programme adoption or authority change.
+Local record: `/private/tmp/poltika-pm-third-final-delta-check-20261003.md`.
+The following factual correction does not rerun or relabel earlier tests.

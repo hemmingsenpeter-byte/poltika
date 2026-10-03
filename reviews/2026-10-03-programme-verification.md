@@ -342,3 +342,20 @@ No broad-suite, live advisory/link, hosted issue, PostgreSQL, Docker,
 installed-artifact or replay verification was repeated locally. Latest-head
 CI and ADR-0020 acceptance remain pending at publication. Historical Sonnet
 review is not a new review of this head; no new Claude call or merge occurred.
+
+Subsequent #142 observation: all nine applicable jobs at `94f08fc` are
+SUCCESS; the two scheduled/non-PR jobs are SKIPPED by design. The
+[test run](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37094714028)
+finished 03:59:20 UTC. No new Claude acceptance is inferred.
+
+#138 force-free merge `887deee9c949c1e049424fd859f53df1a3dac0fc` preserves
+parents `d8685641` and `3bea73f`; published documentation head is
+`93d31300e5ad59111ccafa4c24984c199a0ac271`. Both skill blobs and all authored/
+incoming-main change payloads are unchanged, with the shared tracker retaining
+both sides. Separate same-model document review found no actionable finding
+and preserved eight classes, seven decisions, deferrals and promotion gates.
+Local records: `/private/tmp/poltika-pr138-base-refresh-20261003.md` and
+`/private/tmp/poltika-pr138-refresh-document-check-20261003.md`. Root's separate
+author checkout at the final documentation head passed whitespace and artifact
+identity checks; no tests were repeated for preserved wording. Latest-head CI
+and ADR-0020 acceptance remain pending at that publication, with no promotion.

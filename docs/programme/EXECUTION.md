@@ -250,8 +250,15 @@ Fresh cached scans returned no zizmor findings and retained Bandit's 35 low,
 four medium and zero high findings; negative controls failed as expected.
 The documentation-only handoff leaves tested workflows/source unchanged.
 
-Latest-head CI and ADR-0020 acceptance remain pending. Prior actual Sonnet
+All nine applicable latest-head CI jobs now pass at `94f08fc`; the test run
+finished at 03:59:20 UTC. The external-link report and issue publisher correctly
+skip on this PR. ADR-0020 acceptance remains pending. Prior actual Sonnet
 review and green CI remain historical to their submitted artifacts/head.
 No actual new Claude review, hosted issue operation, protected-value change,
 source approval or merge occurred. Governance #143 base maintenance is a
 separate owner-preserving handoff; its older checks do not cover a new head.
+
+Evidence-class #138 was also refreshed force-free at `887deee9` and published
+at documentation head `93d31300`. Its skill blobs and both parents' change
+payloads are preserved; a separate same-model document check found no issue.
+Current-head CI and acceptance remain pending; no source promotion occurred.
