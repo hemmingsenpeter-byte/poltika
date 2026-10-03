@@ -3,9 +3,14 @@
 **Date:** 26 September 2026
 **Status:** Approved 26 September 2026, with the recommended decisions
 below. ADR-0014 (accepted) moves static microsimulation into v0.2.
-**Starts:** Phase 1 needs no external data and touches no v0.1 file, so it
-can start now. Everything else follows once v0.1.5 ships. It runs alongside
-v0.1.6 (`BUILD_PLAN_v0_1_6.md`).
+**Role (3 October 2026):** Active supporting release-completion plan under
+[BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), Phase A. Implementation
+and review evidence are retained below; GitHub has no `v0.2.0` tag. Keep this
+file live until Pete completes the release record, then archive an exact copy.
+It does not determine the next modelling task or gate household work on tagging.
+Earlier release sequencing and progress entries below are historical records;
+[PROGRAMME_STATUS.md](PROGRAMME_STATUS.md) is the live execution state.
+
 
 ## What changes
 

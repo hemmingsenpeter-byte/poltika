@@ -1,31 +1,43 @@
 # Poltika
 
+<!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
+
 Poltika is a policy-specification and implementation repository for New Zealand support-related policy logic.
 
 It is a deterministic simulator: every rate, threshold and rule comes from a cited primary source. Every result is `calculated`, `needs_review` or `unsupported`; a missing fact is never treated as zero, and each result carries a provenance report.
 
 ## Where to start
 
-- [docs/ORIENTATION.md](docs/ORIENTATION.md) — read first: what v0.1 does now, on one page, with runnable examples
-- [BUILD_PLAN.md](BUILD_PLAN.md) — what's being built now, in what order, and v0.1 acceptance criteria
-- [ARCHITECTURE.md](ARCHITECTURE.md) — how Poltika works, conceptually and technically
-- [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — where every component belongs and the dependency rules between layers
-- [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) — the programme plan (ADR-0019): Pete's master build order of 33 steps with Phase 0 foundations and eight delivery phases, what already exists against each step, tasks, validation gates, month targets and decisions
-- [ROADMAP.md](ROADMAP.md) — the master technical roadmap: the question Poltika answers, the north star, the foundations, eight delivery phases and their milestones, and the permanent layer
-- [BUILD_PLAN_v0_1_5.md](BUILD_PLAN_v0_1_5.md) — the v0.1.5 plan
-- [BUILD_PLAN_v0_1_6.md](BUILD_PLAN_v0_1_6.md) — the v0.1.6 plan: keep v0.1 current past 1 April 2027
-- [BUILD_PLAN_v0_2.md](BUILD_PLAN_v0_2.md) — the v0.2 plan: static population microsimulation (ADR-0014)
-- [ROADMAP_REALIGNMENT.md](ROADMAP_REALIGNMENT.md) and [BUILD_PLAN_v0_3.md](BUILD_PLAN_v0_3.md) — the roadmap realignment (ADR-0015) and the v0.3 plan
-- `doctrine/` — decisions that are fixed and not to be re-litigated
-- [docs/demo/v0_1/](docs/demo/v0_1/README.md) — one household run end to end through both policies, with its provenance report and limitations
-- [CHANGELOG.md](CHANGELOG.md) — what v0.1 contains
-- [docs/pilot/GUIDE.md](docs/pilot/GUIDE.md) — run Poltika with Docker and use the analyst page
+1. [docs/ORIENTATION.md](docs/ORIENTATION.md) — supported behaviour and runnable examples.
+2. [ARCHITECTURE.md](ARCHITECTURE.md) — release, current and long-term architecture.
+3. [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md) — component locations and dependencies.
+4. [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) — the single current master build order (ADR-0021).
+5. [PROGRAMME_STATUS.md](PROGRAMME_STATUS.md) — live tasks, evidence, owners and blockers.
+6. Relevant active lane: [BUILD_PLAN_v0_3.md](BUILD_PLAN_v0_3.md) for the household economic kernel; [BUILD_PLAN_v0_1_6.md](BUILD_PLAN_v0_1_6.md) for statutory maintenance. [BUILD_PLAN_v0_2.md](BUILD_PLAN_v0_2.md) supports release completion only.
+7. [PETE_QUEUE.md](PETE_QUEUE.md) — decisions and actions reserved to Pete.
+8. `doctrine/` and accepted `adr/` records — governing constraints and decisions.
+
+[ROADMAP.md](ROADMAP.md) summarises direction; it sets no separate backlog.
+[BUILD_PLAN.md](BUILD_PLAN.md) is the frozen v0.1 record, retained for substantive
+doctrine and existing anchors. [docs/archive/](docs/archive/README.md) contains
+historical planning and cannot determine current work.
+
+[CHANGELOG.md](CHANGELOG.md), [docs/releases/](docs/releases/V0_1_BASELINE.md),
+[the demo](docs/demo/v0_1/README.md) and [the pilot guide](docs/pilot/GUIDE.md)
+provide change evidence, measured limitations and runnable workflows.
 
 ## Current status
 
-v0.1.0 is released (tag `v0.1.0`, 25 September 2026). It models Working for Families (2026-27) and the Accommodation Supplement (weekly) inside a scoped domain, plus their interaction for one household. See [CHANGELOG.md](CHANGELOG.md).
+v0.1.0 is released (tag `v0.1.0`; published 26 September 2026). It models Working for Families (2026-27) and the Accommodation Supplement (weekly) inside a scoped domain, plus their interaction for one household. See [CHANGELOG.md](CHANGELOG.md).
 
-v0.2 (static population microsimulation) is built and awaiting independent review before `v0.2.0` is tagged. It runs the same two engines over a synthetic development population derived from Stats NZ tables (`docs/releases/V0_2_POPULATION_METHODOLOGY.md`), compares its baseline with Inland Revenue and MSD figures (`docs/releases/V0_2_CROSS_VALIDATION.md`), and labels every population result as not an estimate for New Zealand (`docs/releases/V0_2_LIMITATIONS.md`).
+As verified on 3 October 2026, evidence/explanation and hosted-pilot capabilities
+are implemented, but v0.1.5 is untagged and its external-user gate is outstanding.
+The Workbench registry, reform checks, result blocks and CSV/Excel exports exist
+as a backend; a complete analyst Workbench interface remains to be built
+(ADR-0018 remains proposed).
+
+v0.2 (static population microsimulation) is built and its independent review is
+recorded in the review queue; Pete’s `v0.2.0` tag is outstanding. It runs the same two engines over a synthetic development population derived from Stats NZ tables (`docs/releases/V0_2_POPULATION_METHODOLOGY.md`), compares its baseline with Inland Revenue and MSD figures (`docs/releases/V0_2_CROSS_VALIDATION.md`), and labels every population result as not an estimate for New Zealand (`docs/releases/V0_2_LIMITATIONS.md`).
 
 Results are conditional simulations built from caller-asserted facts. They are not entitlement determinations.
 
@@ -40,18 +52,18 @@ household. The other three components are unaffected.
 
 Poltika is building a deterministic policy kernel for New Zealand's
 household tax-and-transfer system, then firms and government, one
-reviewed domain at a time (`BUILD_PLAN_PROGRAMME.md` Step 3). What it
+reviewed domain at a time (`BUILD_PLAN_PROGRAMME.md` Phases B and H). What it
 models today:
 
 | Domain | State |
 | --- | --- |
 | Working for Families (2026-27) | Implemented and reviewed (v0.1); in-work tax credit `needs_review` |
 | Accommodation Supplement | Implemented and reviewed (v0.1) |
-| Personal income tax | Planned: v0.3, Tier 1 |
-| Jobseeker Support, Sole Parent Support, Supported Living Payment | Planned: v0.3, Tier 1 |
-| NZ Super, Childcare and OSCAR Subsidies, KiwiSaver interactions, Paid Parental Leave | Planned: Step 3 lane 3C |
-| Student support, ACC levies and earnings compensation, Temporary Additional Support, Disability Allowance, other MSD assistance, Child Support | Planned: Step 3 lane 3D |
-| GST, company tax, other tax regimes, selected regulatory costs, Crown revenue and expenditure classifications | Planned: Step 3 lane 3E |
+| Personal income tax | Not started: household lane, Phase B |
+| Jobseeker Support, Sole Parent Support, Supported Living Payment | Not started: household lane, Phase B |
+| NZ Super, Childcare and OSCAR Subsidies, KiwiSaver interactions, Paid Parental Leave | Deferred: Phase H, order determined by analytical demand |
+| Student support, ACC levies and earnings compensation, Temporary Additional Support, Disability Allowance, other MSD assistance, Child Support | Deferred: Phase H, order determined by analytical demand |
+| GST, company tax, other tax regimes, selected regulatory costs, Crown revenue and expenditure classifications | Deferred: sourced fiscal/domain requirements in Phases F/H/L |
 
 Anything not listed as implemented isn't modelled. A household that
 depends on it gets `unsupported` or `needs_review` for that part, never a

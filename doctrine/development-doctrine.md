@@ -32,10 +32,19 @@ Poltika follows a source-first, review-driven workflow.
 - Squash merge (ADR-0020; a merge commit until 2 October 2026), and tag
   releases on the resulting commit on `main`. Tagging stays Pete's.
 - Review debt is recorded but not capped. The cap of five
-  (`ROADMAP_REALIGNMENT.md` W1.4, decided 26 September 2026) was suspended
+  (historical `ROADMAP_REALIGNMENT.md` W1.4, decided 26 September 2026) was suspended
   by Pete on 29 September 2026 ("Ignore PR cap"; `BUILD_PLAN_PROGRAMME.md`
-  P17). Every merged implementation PR without an independent review is
+  retained decision P17). Every merged implementation PR without an independent review is
   still listed in `review_packets/review_queue.md`, and release gates
   still skip, naming those PRs, until they are reviewed.
 - Branch protection is not enforced on this plan (ADR-0007), so this is
   kept by agreement (v0.1.5 decision D3).
+
+## Current sequencing (ADR-0021)
+
+`BUILD_PLAN_PROGRAMME.md` is the single current build order. The household
+and statutory-maintenance lanes supply detail. The frozen BUILD_PLAN.md
+retains substantive source/IP/data/test/review constraints and historical
+anchors; archived planning never determines the next implementation task.
+ADR-0021 changes execution order, not the five-PR onboarding workflow, review
+rotation, protected-value process, independent-review debt or acceptance tiers.

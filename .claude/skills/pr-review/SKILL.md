@@ -19,6 +19,10 @@ The order below matters. The contract comes before the diff so the
 author's framing can't anchor you. Reproduction comes before writing so
 you never post a guess as a fact.
 
+Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete
+decides Tier C. An author's preflight never substitutes for independent
+review. Current sequencing follows BUILD_PLAN_PROGRAMME.md (ADR-0021).
+
 ## 1. Pin the target and label the pass
 
 From the repo root, run:

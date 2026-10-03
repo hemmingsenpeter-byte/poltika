@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased (programme migration, 3 October 2026)
+
+- ADR-0021 establishes the economist-first, pilot-driven master build order;
+  ADR-0019 sequencing is superseded while compatible principles remain.
+- Exact historical planning snapshots, reconciled live status, agent instructions
+  and household/maintenance lanes establish one active programme. Existing code,
+  policy amounts, protected expectations, source/data snapshots and API semantics
+  are unchanged. Release/pilot evidence remains distinct from implementation.
+
 ## Unreleased (v0.3: tax, benefits and the household graph)
 
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or

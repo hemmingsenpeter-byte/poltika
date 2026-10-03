@@ -10,6 +10,10 @@ independent reviewer. To review a PR you did not write, use `pr-review`. Follow 
 `doctrine/review-doctrine.md`, `doctrine/test-doctrine.md`, and
 `review_packets/README.md` if they impose a stricter gate.
 
+Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete
+decides Tier C. An author's preflight never substitutes for independent
+review. Current sequencing follows BUILD_PLAN_PROGRAMME.md (ADR-0021).
+
 ## 1. Separate the review from implementation
 
 - Finish the proposed change, then review the exact PR head SHA in a separate

@@ -7,10 +7,11 @@ deliberately rather than creating an ad-hoc directory — see
 [CLAUDE.md](CLAUDE.md).
 
 This file distinguishes the **target architecture** (where things will live
-once built) from what is **actually instantiated for v0.1**. Empty
-directories scaffolded for hypothetical future features are their own
-maintenance burden — a directory is created only when a specific
-[BUILD_PLAN.md](BUILD_PLAN.md) task requires it, not in advance.
+once built) from the **current implementation** reconciled against `e52f5d3`
+on 3 October 2026. A production directory is created only when an analytical
+task in [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) requires it.
+The programme migration creates documentation archives, not new production
+modules or empty scaffolding.
 
 ## Instantiated today
 
@@ -18,17 +19,21 @@ maintenance burden — a directory is created only when a specific
 poltika/
 ├── README.md
 ├── CLAUDE.md
-├── BUILD_PLAN.md
-├── BUILD_PLAN_v0_1_5.md  — v0.1.5 evidence and explainability tasks and release gate (approved 25 September 2026)
-├── BUILD_PLAN_v0_1_6.md  — v0.1.6 tasks: the 2027-28 year and source currency (approved 26 September 2026)
-├── BUILD_PLAN_v0_2.md    — v0.2 tasks: static population microsimulation (approved 26 September 2026; ADR-0014)
-├── BUILD_PLAN_v0_3.md    — v0.3 tasks: income tax, main benefits, shared household model, household graph (approved 26 September 2026; ADR-0015); since ADR-0019 also Phase 0 (Steps 1 and 2)
-├── BUILD_PLAN_PROGRAMME.md — the programme plan: Pete's master build order (33 steps with Phase 0 foundations and eight delivery phases), what exists against each step, tasks, validation gates, month targets and decisions (29 September 2026; ADR-0019)
-├── PROGRAMME_STATUS.md   — live status of every programme step and task: status, owner, PR, blocker (ADR-0020); updated by every PR that changes a task's state
-├── ROADMAP_REALIGNMENT.md — cross-release workstreams from the 26 September 2026 roadmap review (approved; ADR-0015); its sequence superseded by ADR-0019, its workstreams carried into the programme plan
+├── BUILD_PLAN_PROGRAMME.md — sole active master build order: capability Phases A–P (ADR-0021)
+├── PROGRAMME_STATUS.md   — live capability/task status, evidence, owner, PR and blocker (ADR-0020)
+├── PETE_QUEUE.md        — unresolved Tier C decisions; reserved authority stays with Pete
+├── BUILD_PLAN_v0_3.md    — detailed household-economic-model lane for Phase B;
+│                          conformance/validation maps to C and survey/secure population work to E
+├── BUILD_PLAN_v0_1_6.md  — active statutory-maintenance lane: source currency and policy years
+├── BUILD_PLAN_v0_2.md    — release closeout for existing static microsimulation;
+│                          retained while v0.2.0 is untagged, not a competing programme order
+├── BUILD_PLAN.md        — historical v0.1 build record; retained frozen doctrine anchors
+├── BUILD_PLAN_v0_1_5.md  — historical redirect to the archived explainability plan;
+│                          external pilot evidence remains a live capability gate
+├── ROADMAP_REALIGNMENT.md — historical redirect to archived W1–W10 planning
 ├── ARCHITECTURE.md
 ├── REPOSITORY_STRUCTURE.md   (this file)
-├── ROADMAP.md
+├── ROADMAP.md          — high-level direction; the master programme sets execution order
 ├── CHANGELOG.md
 ├── RESEARCH.md         — external papers/prior art, structural reference only (never a policy source; see doctrine/ip-doctrine.md)
 ├── pyproject.toml      — dependencies (Pydantic, PyYAML, FastAPI, SQLAlchemy, psycopg, Alembic) and dev tooling (pytest, Hypothesis, Ruff, mypy strict)
@@ -38,14 +43,12 @@ poltika/
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
-├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
-│                         smallest action that clears it (ADR-0020)
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)
 │
-├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
-├── adr/               — architecture decisions with rationale and context
+├── doctrine/          — permanent governing constraints; BUILD_PLAN retains detail not yet extracted
+├── adr/               — permanent decision history, including superseded sequencing decisions
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
@@ -62,13 +65,19 @@ poltika/
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
 ├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map and the v0.2 population methodology
+├── docs/programme/    — repository reconciliation and reference audit for programme migrations
+├── docs/archive/      — superseded planning snapshots, never an implementation authority
+│   ├── programmes/    — ADR-0019 programme and W1–W10 realignment history
+│   ├── roadmaps/      — dated roadmap snapshots
+│   ├── status/        — dated programme-status snapshots
+│   └── build-plans/   — historical bounded release plans, including v0.1.5
 ├── docs/pilot/        — v0.1.5 pilot guide, hosting guide (HOSTING.md), and the pilot findings
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question
 ├── data/              — v0.2 Phase 1 data layer (data/README.md): raw/ (immutable
 │                         snapshots), metadata/datasets/ (one manifest per snapshot),
 │                         metadata/variables/dictionary.yaml, metadata/populations/
-│                         (calibrated population specs); snapshots and manifests
+│                         (synthetic development population specs); snapshots and manifests
 │                         guarded by .github/workflows/data-snapshot-guard.yml
 │
 ├── src/poltika/
@@ -261,17 +270,24 @@ Only `src/poltika/llm` (`api/` is now instantiated, Task 21;
 `data/` by v0.2 Phase 1;
 `scenarios/` by Task 28.4) and `tests/integration` (`tests/fixtures` by Task 30.4),
 plus `data/processed/`, `data/fixtures/`, `config/`, and `scripts/`, remain undone
-from the target tree below — created incrementally as the BUILD_PLAN.md
-tasks that need them are reached, not all at once. `docs/` is partially
+from the target tree below — created incrementally as the master programme's
+analytical tasks need them. `docs/` is partially
 instantiated: `docs/ORIENTATION.md`, `docs/research/` and `docs/demo/v0_1/`
 (above) exist; the
 target tree's `docs/{data_model.md,policy_model.md,provenance.md,
 assurance.md,glossary.md}` specification files do not exist yet.
 `src/poltika/engines/{discovery,hypothesis}` are correctly still empty
-placeholders; see below. `engines/assurance/` was instantiated by Task 31
-and holds provenance only: Task 30's regression and change attribution
-live in `scenarios/record.py` (run identities and manifests) and
-`tests/regression/test_golden_result_snapshot.py`.
+target slots; see below. `engines/assurance/` now holds provenance,
+evidence coverage, deterministic explanations and source-currency reports.
+Run identities and manifests also live in `scenarios/record.py`; golden
+results and traces remain in `tests/regression/` and `tests/fixtures/`.
+
+The existing data and microsimulation modules are development-population
+machinery, not evidence that national representativeness has been achieved.
+`semantics/population.py` contains grouping/person metadata and policy facts;
+it is not yet ADR-0017's shared household economic model. That model grows in
+`semantics/` through Phase B's bounded next coding task, with reviewed WFF/AS
+mappings and byte-identical existing results and IDs.
 
 ## Review and research records (v0.1.5 Task H.1)
 
@@ -329,8 +345,8 @@ poltika/
 │       ├── engines/
 │       │   ├── simulator/   — deterministic policy calculations (v0.1)
 │       │   ├── assurance/   — provenance, regression, change attribution (v0.1)
-│       │   ├── discovery/   — causal-library intake (programme Step 12; AI intake Step 30)
-│       │   └── hypothesis/  — causal-library intake (programme Step 12; AI intake Step 30)
+│       │   ├── discovery/   — later causal-evidence/research capability (Phases J/P)
+│       │   └── hypothesis/  — later hypothesis generation and research (Phase P)
 │       ├── scenarios/       — scenario definitions, runner, results
 │       ├── llm/             — orchestration, prompts, guardrails (never calculates — see doctrine/llm_boundaries.md)
 │       ├── api/             — FastAPI app; HTTP request/response boundary only (Task 21, ADR-0010)
@@ -351,16 +367,19 @@ poltika/
 ```
 
 `engines/discovery/` and `engines/hypothesis/` are placeholders only:
-Discovery and Hypothesis become the intake of the causal evidence library
-(`BUILD_PLAN_PROGRAMME.md` Step 12, ADR-0019), with AI hypothesis discovery
-at Step 30, built when there is data to run them on. Listing them here names the eventual slot; it doesn't
-authorise early work. The programme plan's new components (the model
-registry, the variable registry's extensions, the quantity type, the
-evidence graph, the conformance fixtures and harness, the validation
-framework and prediction ledger, the sector accounts, the state store,
-the baseline and transition engines, the scenario library and the causal
-library) get their locations here from the task that first creates each
-one.
+Their later work supports the causal evidence library and human-gated
+research in Phases J/P. Listing them names eventual slots; it does not
+authorise early implementation. Assurance validates the path from evidence
+through models and simulation to outputs throughout, rather than making
+Discovery or Hypothesis the current product's entry point.
+
+Registry extensions follow variables actual models require. Existing source
+catalogues, policy specifications and traces suffice for current statutory
+evidence links. General evidence/model graphs are earned in Phases J/M;
+`NZState` belongs to Phase K. A future accounting spine, historical store,
+validation extension or model registry receives a deliberate location here
+when its bounded analytical task first requires production code. This
+migration changes none of the package layout or dependency permissions.
 
 ## The dependency boundary
 
@@ -402,8 +421,13 @@ Acquisition Doctrine](BUILD_PLAN.md#data-acquisition-doctrine-frozen) and
 README.md               "What is Poltika? Where do I start?"
     │
     ▼
-BUILD_PLAN.md            "What are we building now?"
+BUILD_PLAN_PROGRAMME.md  "What is the sole active build order?" (ADR-0021)
     │
+    ├── PROGRAMME_STATUS.md      "What is done, in flight or blocked?"
+    ├── PETE_QUEUE.md            "What still needs Pete's decision?"
+    ├── BUILD_PLAN_v0_3.md       "How do we implement the household lane?"
+    ├── BUILD_PLAN_v0_1_6.md     "How do we maintain statutory currency?"
+    ├── BUILD_PLAN_v0_2.md       "What remains before its release tag?"
     ├── ARCHITECTURE.md          "How does it work?"
     └── REPOSITORY_STRUCTURE.md  "Where does it live?"
               │
@@ -411,8 +435,12 @@ BUILD_PLAN.md            "What are we building now?"
           doctrine/      "What decisions are fixed?"
               │
               ▼
-            docs/        "Detailed specifications" (target only — not yet instantiated)
+            docs/        "Orientation, research, pilot and permanent release evidence"
 ```
 
-`ROADMAP.md` answers where Poltika is going, and `BUILD_PLAN_PROGRAMME.md`
-in what order and how, step by step.
+`ROADMAP.md` describes the direction without owning a second backlog.
+`BUILD_PLAN.md` preserves v0.1 history and the frozen doctrine anchors still
+needed by live references. `docs/archive/` and the root historical redirects
+preserve planning provenance and are non-authoritative. `adr/`, `reviews/`,
+`review_packets/`, `docs/releases/` and `docs/decision_log.md` retain decision,
+review and release evidence in their established locations.
