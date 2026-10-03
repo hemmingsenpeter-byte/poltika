@@ -32,6 +32,7 @@ baseline evidence and classification, not independent approval of this work.
 | Status overstates v0.1.5 release and misses #139 merge | SPEC_ERROR / P2 | Remote tags/reviews/pilot evidence reconciled; unfinished gates retained. |
 | Workbench design acceptance and representative calibration could be inferred from implemented backend/tooling | SPEC_ERROR / P2 | Separate proposed ADR, backend/UI, synthetic/representative and pilot evidence throughout. |
 | Partial adoption of the four units produces mixed authority | ARCHITECTURE_ISSUE / P2 | Drafts require integrated review/coordinated activation; no main merge is performed. |
+| Fresh same-model doctrine audit found surviving blanket Pete-acceptance wording in both review skills despite the ADR-0020 clarification | ARCHITECTURE_ISSUE / P2 | Replaced the description, introduction, review table and preflight handoff wording with the existing Tier A/B Claude Code and Tier C Pete boundaries; independent review remains required. Final-head recheck is recorded in the PR descriptions. |
 | Reused shared Python environment lacks declared openpyxl | Environment limitation | Initial orientation/default-suite attempts failed; isolated locked environment installed. Correct-environment results are recorded below and in PR descriptions. |
 
 ## Reproducible verification

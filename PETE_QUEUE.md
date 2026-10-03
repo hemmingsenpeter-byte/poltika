@@ -86,5 +86,5 @@ updated list here; it cannot apply it.
 
 | Item | Date | Record |
 | --- | --- | --- |
-| Q6: obsolete blanket Pete-acceptance wording in reviewer/preflight skills | 3 October 2026 | This migration adds the ADR-0020 acceptance clarification to both skills; author preflight remains distinct from independent review. |
+| Q6: obsolete blanket Pete-acceptance wording in reviewer/preflight skills | 3 October 2026 | This migration replaces the blanket instructions with ADR-0020's Tier A/B Claude Code and Tier C Pete acceptance; author preflight remains distinct from independent review. |
 | P8: strategic first-product surface | 3 October 2026 | Pete's supplied migration directive, recorded in ADR-0021; Analyst Workbench chosen. ADR-0018 acceptance remains Q9. |
