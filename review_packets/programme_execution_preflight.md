@@ -5,7 +5,7 @@
 - Base: prepared migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
 - Scope: coordination practice, current tracker and first-cycle verification;
   no new roadmap, doctrine, acceptance delegation or model implementation.
-- Label: author preflight. A fresh same-model document check follows;
+- Label: author preflight plus a separate fresh same-model document check;
   independent Claude review/acceptance and migration integration remain pending.
 
 The author knows the operating rationale. Reviewers derive their contract
@@ -37,3 +37,12 @@ values, decisions, resources, publication, tags and merge authority remain intac
 No new tests are added for a reversible documentation/tracking increment.
 Main-only CI does not run on the stacked draft base. The final exact head and
 normal checks must be reviewed after retargeting onto integrated main.
+
+## Separate check
+
+A fresh GPT/Codex reviewer independently derived the contract before the
+author narrative and checked `422b055..687ed4d`. No actionable findings.
+Task IDs, local links, exact remote PR heads/CI, draft stack state and the
+unchanged tested source/workflow content were confirmed. The checker did
+not rerun broad suites or audit statutory sources. Subsequent changes only
+record this check and the draft PR number. Claude acceptance remains pending.
