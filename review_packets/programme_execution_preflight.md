@@ -117,3 +117,18 @@ delegated-acceptance runs. The attempted #152 Sonnet pass was rejected by
 automatic approval review because the private payload's external destination
 lacked explicit consent. No #152 Sonnet review/acceptance or landed #128
 closure is claimed. Local authorised writing/checks continue.
+
+## Second-cycle separate check — finding before correction
+
+A separate GPT/Codex reviewer checked the complete `422b055..bdf7d497` PR
+and second-cycle `14476d03..bdf7d497` increment after deriving the contract.
+No P1/P2 findings. All 58 task IDs/names/order, A–P phases, ownership and
+acceptance gates, relative/pinned links and actual Claude evidence hashes
+were checked. This is a same-model document check, not Claude acceptance.
+
+One P3/proposed `SPEC_ERROR`: the ownership inventory collectively says
+uncommitted drafts, but the reporting writer had committed at
+`8a541368cc2dda4a0ef18df3288d28b1934bc701` (02:03:45 UTC) before `bdf7d497`.
+The preservation gates remain valid; the current inventory needs to distinguish
+committed/uncommitted work. Record precedes the narrow factual correction.
+No broad tests or new statutory-source audit were performed by this checker.
