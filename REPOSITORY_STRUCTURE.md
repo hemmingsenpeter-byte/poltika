@@ -53,6 +53,10 @@ poltika/
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
+│                         (Programme Task 8 / v0.3 local 0.2 source-only drafts:
+│                         jobseeker_support/, sole_parent_support/ and
+│                         supported_living_payment/ initially contain sources.yaml only;
+│                         no policy.yaml, approved specification or runtime discovery)
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
 │                         holds the scripts that produced its recorded results (review evidence,
 │                         run by hand from the repository root; not production code, and not
@@ -64,6 +68,8 @@ poltika/
 │                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
+│                         (task_0_2_core_benefit_scope.md: dated primary-source
+│                         scoping and interaction proposals for Programme Task 8)
 ├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map and the v0.2 population methodology
 ├── docs/programme/    — repository reconciliation and reference audit for programme migrations
 ├── docs/archive/      — superseded planning snapshots, never an implementation authority
