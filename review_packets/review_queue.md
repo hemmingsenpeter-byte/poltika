@@ -20,10 +20,11 @@ to `reviewed (reviews/<file>)` once blocking findings are cleared. A finding
 is fixed by a new PR, never by editing history.
 
 **As of 3 October 2026: 1 open implementation assurance row (#128).**
-Independent GPT/Codex review is now recorded in `reviews/2026-10-03-pr128.md`.
-Four P2 code errors have follow-up fixes in draft #150. Tests and independent
-Claude review pass at `948fb24`; the row and release gate stay open until
-latest-head CI, delegated acceptance and integration complete.
+Independent GPT/Codex review is recorded in `reviews/2026-10-03-pr128.md`.
+The four P2 code errors were fixed by merged PR #150 (`3bea73f` on `main`).
+Draft PR #152 now carries the review-queue closeout. Its recorded latest-head
+checks pass, but the row and release gate remain open until #152 completes its
+remaining independent review and delegated acceptance gate and is integrated.
 GPT/Codex reviewed #124-127 in `reviews/2026-09-28-pr122-127.md`; their
 reviewer-authored fixes were accepted under Pete's explicit cross-model
 waiver on 2 October 2026. #132 and #133 are reviewed in
@@ -50,7 +51,7 @@ were independently reviewed by Claude Code with no blocking findings
 | --- | --- | --- | --- | --- | --- |
 | #132 | pilot | Hosted hardening: security headers, body and request limits, cache admission, declined-label validation and CI smoke check | API, CI | Medium | reviewed (reviews/2026-10-02-pr132.md) |
 | #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
-| #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Medium | open: independent review recorded (reviews/2026-10-03-pr128.md); #150 fixes tested and independently Claude-reviewed; latest-head CI, delegated acceptance and integration pending |
+| #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Medium | open: independent review recorded (`reviews/2026-10-03-pr128.md`); #150 fixes merged to `main`; #152 is the draft closeout, pending its remaining independent review, delegated acceptance and integration |
 | #127 | v0.3 | Task 1b.6: `scenarios/microsim/ranges.py` population ranges; `fiscal_ranges` on `/microsim/runs`; Fiscal tab | Microsim, API | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
 | #126 | v0.3 | Tasks 1b.2b, 1b.3b-1b.3d: `FactEntry.monotone`, `resolve(ranges=...)`, `Bounds.kind`; property tests | Scenarios, fact schema, API | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
 | #125 | v0.3 | Task 1b.5: `resolution` on `/household/calculate`, stateless `POST /household/intake`, the analyst page's "Ask me first" | API, analyst page | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
