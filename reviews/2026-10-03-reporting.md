@@ -91,6 +91,23 @@ transmission for a prior review; no bypass or new Claude call is made here.
 
 ## Author response and resolution
 
+### Follow-up security finding, recorded before its fix
+
+At coordinator candidate `8235506ca8fb1b211b847a805e95d57f2956ac7b`, the separate
+same-model security checker found **R12 — P2 CODE_ERROR** at tables.py:153/165
+and charts.py:64: fixed-point serialization expands arbitrary finite Decimal
+exponents before chart range rejection. `Decimal('1e1000000')` expands into
+1,000,001 characters; a guarded probe confirmed that `1e1000000000` requests
+over one billion output characters before hashing/range checks. The guard
+prevented that allocation; no billion-character allocation was attempted.
+
+Expected: compact exact storage and bounded presentation, plus chart numeric
+validation before hashing. Local evidence:
+`/private/tmp/poltika-reporting-candidate-expansion-probe.py`. That check also
+ran 101 reporting tests and 48 additional numeric rejection probes successfully,
+and found the original injection/hang/stale-identity defects resolved. R12 blocks
+clearing this candidate; subsequent fixes need pinned re-verification.
+
 The coordinator's follow-up addresses R1–R11 with literal Markdown text,
 finite/range-checked bounded charts, retained-input/result and export-content
 checks, baseline artifact/date/version/override reconciliation, exact household
