@@ -116,8 +116,23 @@ with 82 focused regressions passed. Genuine baseline/reform/source/date probes,
 the real household half-cent, exact storage/population display, Scenario class
 and synthetic warnings passed. A real mixed-date run retained identical baseline
 and reform signatures; differing future signatures need dated rows or a guard,
-not a speculative schema now. Its final formatting-delta check remains pending.
-No live Vega/browser or external benchmarking is established.
+not a speculative schema now. Final same-model contract/simplification delta
+check at `3a10771` found no actionable findings or remaining blocker, with
+21 resource/precision tests passed (0.65s). Exact compact storage, bounded
+presentation and chart range validation before hashing passed; earlier 82-test
+results were not rerun or represented as final-pin evidence. Local record:
+`/private/tmp/poltika-reporting-contract-review-3a10771.md`.
+No live Vega/browser or external benchmarking is established. The recorded
+findings are resolved within the draft scope; Claude review and ADR-0020
+acceptance remain prerequisites, with no Task 24/Phase F completion claim.
+
+Initial draft #154 at documentation head
+`10e5e122e8fd97b4d896abe390b0c0c164e5fa67` has production and test files
+identical to `3a10771`. All four exact-head checks passed: test, pilot-image,
+immutable snapshots and protected paths. The
+[test run](https://github.com/hemmingsenpeter-byte/poltika/actions/runs/37093544795)
+finished at 03:40:33 UTC on 3 October 2026. This evidence belongs to that head;
+later documentation updates still require their own latest-head checks.
 
 ## Deferred Claude audit
 

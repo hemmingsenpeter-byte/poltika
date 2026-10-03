@@ -131,8 +131,8 @@ exponent expansion; fixed-point display falls back to compact notation at an
 output-size boundary, and chart values are range-checked before hashing. The
 boundary controls presentation size, not statutory input validity. Sixteen
 bounded regressions failed on `8235506` and passed after correction; the focused
-working-fix checks passed 136 tests with no skips. Final pinned review remains
-pending. The separate author preflight's earlier default-suite result (1,380
+working-fix checks passed 136 tests with no skips. Final pinned checks are
+recorded below. The separate author preflight's earlier default-suite result (1,380
 passed/22 skipped/two deselected at `8235506`) is preserved separately, not
 mislabelled as final-delta verification.
 
@@ -148,4 +148,15 @@ Separate same-model contract check at `8235506` found no actionable findings,
 82 focused regressions passed. Its real mixed-date probe retained identical
 baseline/reform amounts; no current numerical loss was demonstrated from the
 override table's undated key. Distinct future signatures require a dated-row
-contract or explicit guard. A final corrected-delta check remains pending.
+contract or explicit guard. Final same-model contract/simplification check at
+`3a10771` found no actionable findings or remaining blocker in the corrected
+Decimal delta. Its 21 targeted resource/precision tests passed (0.65s); it
+confirmed exact compact storage, bounded exact/population display and chart
+range checks before hashing. Earlier 82-test results were not rerun or treated
+as final-pin evidence. Local record:
+`/private/tmp/poltika-reporting-contract-review-3a10771.md`.
+
+These checks resolve the recorded findings within this draft library scope.
+They do not supply the required cross-model Claude review, ADR-0020 acceptance,
+live browser rendering, reporting/workbench integration or missing policy/source
+decisions. No Task 24/Phase F completion is claimed.
