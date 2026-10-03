@@ -89,6 +89,36 @@ reporting-test mypy passed. A final pin and targeted security/simplification
 rechecks follow; the earlier broad result does not cover this formatting delta.
 No acceptance recommendation yet.
 
+### Corrected code pin and targeted author verification
+
+Corrected code head: `3a10771bc3dfdb27002ed03286cb61cd36d93809`.
+The separate author checkout was pinned to that head. Complete accepted-base
+whitespace check, whole src/tests Ruff and strict mypy (85 files) passed.
+Focused reporting/analysis/example/withdrawal/orientation checks exited 0:
+**136 passed, no skips**, two dependency warnings, 40.16s. Log:
+`/private/tmp/poltika-reporting-final-3a10771-tests.log`.
+
+The corrected wheel built and installed offline. From `/private/tmp`, Python
+`-I` imported reporting from the temporary environment's site-packages,
+preserved an invented exact half-cent amount, parsed SVG, retained its synthetic
+warning, stored a billion-exponent Decimal compactly and rejected its chart.
+This is an installed-library smoke check, not the excluded full artifact/API/
+database/code-replay suite.
+
+Separate same-model security delta check at this head found no remaining
+blocker: guarded exponent/hash ordering, compact exclusions/all three exports,
+literal Markdown, stale report identity and explicit population HalfUp under
+ambient ROUND_DOWN passed; 52 targeted tests passed (7.56s). Probe/log:
+`/private/tmp/poltika-reporting-r12-security-probe.{py,log}`.
+
+The separate same-model contract check at `8235506` found no actionable findings,
+with 82 focused regressions passed. Genuine baseline/reform/source/date probes,
+the real household half-cent, exact storage/population display, Scenario class
+and synthetic warnings passed. A real mixed-date run retained identical baseline
+and reform signatures; differing future signatures need dated rows or a guard,
+not a speculative schema now. Its final formatting-delta check remains pending.
+No live Vega/browser or external benchmarking is established.
+
 ## Deferred Claude audit
 
 Inspect the accepted-base-to-final-head diff, original findings and all

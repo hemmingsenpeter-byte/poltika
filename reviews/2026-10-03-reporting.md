@@ -135,3 +135,17 @@ working-fix checks passed 136 tests with no skips. Final pinned review remains
 pending. The separate author preflight's earlier default-suite result (1,380
 passed/22 skipped/two deselected at `8235506`) is preserved separately, not
 mislabelled as final-delta verification.
+
+Corrected code pin `3a10771bc3dfdb27002ed03286cb61cd36d93809`: separate pinned
+author preflight passed 136 focused tests, no skips (40.16s), whole Ruff and
+strict mypy over 85 production files. Corrected offline wheel build/install and
+isolated reporting-library smoke passed. Separate same-model security delta
+check found no remaining blocker, with 52 targeted tests and guarded compact
+exponent/exclusion/all-export probes passed. R12 is resolved in that check;
+it does not establish authenticated origin or cross-model acceptance.
+
+Separate same-model contract check at `8235506` found no actionable findings,
+82 focused regressions passed. Its real mixed-date probe retained identical
+baseline/reform amounts; no current numerical loss was demonstrated from the
+override table's undated key. Distinct future signatures require a dated-row
+contract or explicit guard. A final corrected-delta check remains pending.
