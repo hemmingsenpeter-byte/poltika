@@ -1,0 +1,26 @@
+# ADR-0020 professional baseline: keep locked dependencies and pinned
+# actions current. Minor and patch updates are grouped into one PR per
+# ecosystem; major updates arrive one at a time so they get a real review.
+version: 2
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      uv-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      actions-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"

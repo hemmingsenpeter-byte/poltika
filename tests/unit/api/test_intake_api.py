@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import copy
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -64,6 +65,26 @@ def test_missing_category_gives_branches_but_no_calculated_amount() -> None:
     assert bounds["branches"] == 6 and not bounds["complete"] and bounds["kind"] == "bounds"
     assert res["next_question"]["fact"] == "accommodation_supplement.claimant_category"
     assert res["summary"][0].startswith("Poltika can't give one figure without")
+
+
+def test_conditional_summary_preserves_the_engine_half_cent() -> None:
+    payload = _payload(G1)
+    payload["wff"]["household_eligibility"] = "unknown"
+    payload["wff"]["family_scheme_income"]["claimant_amount"] = "50001"
+    body = _calc(payload)
+    res = body["resolution"]
+    values = [
+        Decimal(branch["components"]["family_tax_credit"]["value"])
+        for branch in res["branches"]
+        if branch["components"]["family_tax_credit"]["outcome"] == "calculated"
+    ]
+    assert values and any(value != value.quantize(Decimal("0.01")) for value in values)
+    text = "\n".join(res["summary"])
+    for value in values:
+        # Compare the text with the actual engine output; no new statutory
+        # expected amount is introduced by this transport regression.
+        assert f"family tax credit ${value:,f} a year" in text
+    assert body["wff"]["family_tax_credit"]["outcome"] == "needs_review"
 
 
 def test_intake_asks_then_is_ready_with_the_full_result() -> None:

@@ -2,7 +2,7 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**Date:** 3 October 2026. **Direction:** approved by Pete's repository
+**Date:** 3 October 2026 (adoption date; live status is in `PROGRAMME_STATUS.md`). **Direction:** approved by Pete's repository
 reconciliation and migration instruction; recorded in [ADR-0021](adr/0021-economist-first-pilot-programme.md).
 **Authority:** this is the single active master build order. It supersedes
 ADR-0019's execution sequence, while preserving its enduring architectural
@@ -175,8 +175,8 @@ required checks/reviews are recorded, ownership is clear and releases are
 truthfully described. v0.1.5's historical external-user obligation maps to
 D where applicable; it must not block source scoping/minimum household work
 or be waived by relabelling the baseline. Pending release tags do not block
-B work once its own source/review gates are met. Ruleset enforcement remains Q1;
-ADR-0020's merge rules apply by agreement meanwhile.
+B work once its own source/review gates are met. The Q1 ruleset is applied (5 October 2026) but its enforcement is not yet verified with a red check;
+ADR-0020's merge rules apply regardless.
 
 ## Phase B — Household economic kernel
 
@@ -625,4 +625,4 @@ tax/core benefits and source-derived interaction/definition proposals for
 Pete's v0.3 D1–D3 decisions. This is research/specification, not a second
 coding task. Use the relevant source-check/spec-draft/clean-room skills and
 normal independent review; introduce no policy values in this migration.
-Existing A governance/CI PRs and #128 review close out with their owners.
+The A governance/CI PRs (#138-#143) and the #128 review closeout (#152) are merged; dev tooling (no PR) remains with its owner.
