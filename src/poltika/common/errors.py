@@ -109,3 +109,21 @@ class PeriodConversionRefusedError(PoltikaError):
     """A value conversion between period types was asked for, but no named
     rule with a cited source exists for it (v0.2 D9: none without a stated
     rule). Nothing is converted and no default factor is used."""
+
+
+class UnknownEntityTypeError(PoltikaError):
+    """An entity type that is not one of the closed set in
+    `semantics/entities.py` (Programme Task 2.4)."""
+
+
+class UnknownIdentifierSchemeError(PoltikaError):
+    """No identifier scheme is registered under the requested id."""
+
+
+class UnassignedIdentifierSchemeError(PoltikaError):
+    """The identifier scheme exists but has no cited rule yet, so a value
+    cannot be validated against it. The error carries the reason."""
+
+
+class InvalidIdentifierError(PoltikaError):
+    """A value does not match the identifier scheme's rule."""

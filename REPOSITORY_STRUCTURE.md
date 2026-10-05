@@ -107,6 +107,9 @@ poltika/
 │   │                        exact rescaling by scale only; named, sourced
 │   │                        conversion rules (registry empty, so nominal to
 │   │                        real is refused)
+│   ├── semantics/entities.py — Programme Task 2.4: entity types, identifier
+│   │                        schemes (unassigned without a cited rule) and
+│   │                        Population definitions
 │   ├── semantics/periods.py — Programme Task 2.3: period types, the frozen
 │   │                        Period, named period relations with sources, and
 │   │                        the D9 refusal of unsourced conversions
@@ -239,7 +242,7 @@ poltika/
     │                          the throwaway PostgreSQL `database_url` fixture (Task 32)
     ├── unit/
     │   ├── policy/         — loader tests (Task 11)
-    │   ├── semantics/      — vocabulary tests (Programme Task 2.3: periods)
+    │   ├── semantics/      — vocabulary tests (Programme Tasks 2.3-2.4: periods, entities)
     │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4) and
     │   │                        interaction spec-case runner (Task 28.5),
     │   │                        golden household runner (Task 29), store
