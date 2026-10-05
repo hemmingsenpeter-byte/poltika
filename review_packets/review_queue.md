@@ -9,6 +9,18 @@ allows. The review-debt cap was suspended on 29 September 2026
 rows no longer stop merges, but every one is still listed here, and
 release gates skip, naming them, until review and required fixes are complete.
 
+**Open pull requests awaiting independent GPT/Codex review (5 October 2026):**
+[#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148) and
+[#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151) (draft source
+scopes touching `policy_specs/`), per ADR-0020 rule 4. Claude review comments on
+them are input only and do not clear a row. Merged on Claude's reviewer pass
+without GPT/Codex review: [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
+(units, `9e67009`) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
+(never-build checks, `5a8c17e`), both low risk, no calculated amount. Drafts
+[#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) and
+[#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) are doctrine for
+Pete and GPT/Codex.
+
 Work the queue in risk order:
 
 - **High:** it changes shared engine, loader or data-boundary code.
