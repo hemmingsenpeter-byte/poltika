@@ -56,7 +56,7 @@ sets, kept apart so it doesn't read as programme progress.
 | v0.1, v0.1.5 | Done | Done | | |
 | v0.2 | 7.1 | Ready to tag | Pete | Pete tags `v0.2.0` (`BUILD_PLAN_v0_2.md` 10.3; GPT/Codex cleared every row on 27 September 2026) |
 | v0.1.6 | Lane 3B | Not started, except the source-currency report (v0.1.6 2.1, #92) | GPT/Codex sources, Claude Code implements | Calendar-bound: the 2027-28 year must be in by 1 April 2027 (M6); needs the 2027-28 values to be published; 2.2 needs Pete's network access |
-| v0.3 | Steps 1, 2, 3A, 5.1 for Tier 1 | In progress (Phase 1b fixes merged; source scoping drafted) | Claude Code, GPT/Codex | #152 closes the remaining #128 assurance row; #148/#151 are draft source scopes; PETE_QUEUE Q5 (D1-D3) gates Phases 2-5 |
+| v0.3 | Steps 1, 2, 3A, 5.1 for Tier 1 | In progress (Phase 1b fixes merged and #128 assurance closed by #152; source scoping drafted) | Claude Code, GPT/Codex | #148/#151 are draft source scopes; PETE_QUEUE Q5 (D1-D3) gates Phases 2-5 |
 | v0.4 | Steps 4, 5, 6, 3C | Not started | | After v0.3 |
 | v0.5 | Steps 7, 8, 9, 3D | Not started | | After v0.4; IDI is PETE_QUEUE Q3 |
 | v0.6 | Steps 10, 11, 3E | Not started | | |
@@ -104,7 +104,7 @@ Lane 3A follows `BUILD_PLAN_v0_3.md`. Its Phase 1 is task 2.7. Its Phase 6
 | 3A, v0.3 0.1-0.3 | Phase 0 scoping: source packs for income tax and the three core main benefits; the stated interactions | In progress | GPT/Codex, Pete deciding ambiguity | #148, #151 (draft) | Source inventories/scope drafts exist; independent cross-model review and Pete's supported-slice decisions remain pending. Both drafts are stacked on the unmerged economist-first migration (#144-#147). |
 | 3A, v0.3 0.4 | Confirm each domain's slice, the disposable-income definition and the income-adequacy measures (D1-D3) | Pete | Pete | None | PETE_QUEUE Q5; waits on 0.1-0.3 |
 | 3A, v0.3 0.5 | Plan each policy's tasks with the onboarding skill | Not started | Claude Code | None | v0.3 0.1-0.2 |
-| 3A, v0.3 1b.1-1b.6 | Delivered fact catalogues, conditional answers, intake planner, API/page, population ranges and release gate; 1b.2b, 1b.2c and 1b.3e remain below | In progress (assurance closeout) | Claude Code original author; GPT/Codex independent review and fixes | #109, #112, #121, #125, #126, #127, #128; #150 merged; #152 draft closeout | #150 merged the four P2 fixes into `main`; #152 now carries the review-queue/status closeout and still requires its remaining independent review/acceptance gate before the #128 assurance row closes |
+| 3A, v0.3 1b.1-1b.6 | Delivered fact catalogues, conditional answers, intake planner, API/page, population ranges and release gate; scoped review fixes integrated; 1b.2b, 1b.2c and 1b.3e remain below | Done (delivered intake scope only) | Claude Code original author/acceptance; GPT/Codex independent review and fixes | #109, #112, #121, #125, #126, #127, #128; #150 merged at 3bea73f | #128 assurance complete. Monotone declarations, candidate values and later v0.3 capabilities remain under their own rows/gates |
 | 3A, v0.3 1b.2b | Monotone declarations in the real catalogues | Not started | GPT/Codex | None | Cited rules; none declared yet |
 | 3A, v0.3 1b.2c, 1b.3e | Candidate values and their checks | Blocked | GPT/Codex, then Claude Code | None | A structured `candidates` list from GPT/Codex |
 | 3A, v0.3 Phase 2 | Income tax | Not started | GPT/Codex sources, Claude Code implements | None | v0.3 0.1; PETE_QUEUE Q5 |
