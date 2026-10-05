@@ -2,8 +2,8 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**As of:** 5 October 2026. **Repository baseline:** `origin/main` after #144
-(`2cdadba`); reconciled against live GitHub state on this date. This migration
+**As of:** 5 October 2026. **Repository baseline:** `origin/main` after #146
+(`a782693`); reconciled against live GitHub state on this date. This migration
 branch is documentation work, not evidence that any new economic model is built.
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), under
 [ADR-0021](adr/0021-economist-first-pilot-programme.md), is the single active
@@ -90,7 +90,7 @@ packets can still say “open” historically and do not override current record
 | 1 | Bounded governance/baseline closeout | In progress | Claude Code; GPT/Codex reviews | #138, #139, #140, #142, #143 merged | Dev tooling (no PR) remains; coordinate existing workers | Professional-baseline rows above; constitution already approved | Step 1; baseline B1–B5 |
 | 2 | PR/review-debt reconciliation | Done | Claude Code coordinates; GPT/Codex reviews | #128 closed by #152 | Keep queue truthful; retain open/draft PR ownership | Live review_queue; most earlier rows cleared | W1; P17 |
 | 3 | Release baseline | Pete | Pete; Claude Code prepares | No new release PR | v0.2 tag; v0.1.5 external pilot/tag; verify baseline/gates | v0.1.0 tagged; retained release evidence | 7.1; v0.1.5 8.2–8.6; v0.2 10.3 |
-| 4 | End abstract Phase 0 expansion | In progress | Claude Code coordinates | This migration, not merged | Merge migration; agree scoped/parked worker dispositions | ADR-0021 direction; snapshots preserve old tasks | Steps 1–2 sequencing |
+| 4 | End abstract Phase 0 expansion | In progress | Claude Code coordinates | #144, #145, #146 merged; #147 (household lane) completes the migration | Merge #147; agree scoped/parked worker dispositions | ADR-0021 direction; snapshots preserve old tasks | Steps 1–2 sequencing |
 
 ## Phase B — Household economic kernel
 
