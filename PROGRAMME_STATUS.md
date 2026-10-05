@@ -71,7 +71,7 @@ and review again before merge; this is the reconciliation snapshot.
 | Item | Status / owner | PR / checked head | Blocker or evidence |
 | --- | --- | --- | --- |
 | Delegated acceptance | Done; Claude Code, Pete's recorded delegation | #139 merged, `dd2650b` | ADR-0020 accepted; #141 added live tracking. |
-| Main ruleset / squash auto-merge | Pete | None | Q1; repository settings action remains Pete's; merge rules hold by agreement. |
+| Main ruleset / squash auto-merge | Done (applied 2026-10-05 by Claude Code under Pete's delegation); enforcement not yet verified with a red check | Ruleset id 24478578 | Squash only, strict up-to-date, nine required checks, no bypass, delete_branch_on_merge. ADR-0007 recorded that the plan could not enforce required checks on a private repo; verify with a deliberately red check. |
 | Evidence-classes skill | Done; Claude Code | #138 merged, `38a3f17` | Legacy 1.7. |
 | Dev tooling | In flight (other session); Claude Code | No PR | Existing uncommitted worker includes tooling and calculation-adjacent `conditional.py`; preserve files and apply relevant independent review. |
 | Security CI | Done; Claude Code, GPT/Codex review and fixes | #142 merged, `b292666` | Required-check names for Q1 are listed in the main-branch tracker. |
@@ -85,7 +85,7 @@ and review again before merge; this is the reconciliation snapshot.
 | --- | --- | --- |
 | v0.1.0 | Done; Pete tagged | Remote tag exists; v0.1 accepted and retained release/demo/review evidence. |
 | v0.1.5 | Pete; Claude Code prepares | Code/reviews retained; external-user field remains blank in `docs/pilot/V0_1_5_PILOT_FINDINGS.md`; external-user gate skips; no remote tag. Historical plan is archived with compatibility pointer. |
-| v0.2.0 | Pete; ready to tag | Detailed plan 10.3 records implementation, release evidence and independent-review clearance; no remote tag. Keep `BUILD_PLAN_v0_2.md` for release closeout. |
+| v0.2.0 | Pete | A lightweight `v0.2.0` tag exists on `2cdadba` (#144 squash merge), pushed by Pete. `adf4058` (GPT/Codex clearance of #111-#120; v0.2 gate and hand-calculated tests re-run there: 14 passed) is the recommended commit; moving the tag is pending Pete (Q8). Detailed plan 10.3 records implementation, release evidence and independent-review clearance. Keep `BUILD_PLAN_v0_2.md` for release closeout. |
 | Statutory maintenance / v0.1.6 | In progress; GPT/Codex sources, Claude Code implements | Source-currency task 2.1 done (#92); other sourced-year work not started. `BUILD_PLAN_v0_1_6.md` remains active; 2027-28 deadline 1 April 2027. |
 | Household model / v0.3 | In progress, existing intake only; GPT/Codex and Claude Code | Phase 1b assets retained; tax, benefits, shared household graph/income work not built. D1–D3 wait for primary-source packs. `BUILD_PLAN_v0_3.md` supports B/C; secure population work maps to E. |
 | Later version labels | Not started | Assigned to evidenced capability gates; old v0.4–v6 schedule is historical, not a second build order. |
@@ -131,10 +131,10 @@ packets can still say “open” historically and do not override current record
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 5 | Minimum household semantics | In progress | Claude Code; GPT/Codex mapping review | #161 (units, old 2.2); periods (2.3) and entities (2.4) follow in order | Merge 2.2, then 2.3, then 2.4 (shared `errors.py`, CHANGELOG, REPOSITORY_STRUCTURE); then reconcile with the registry (2.1). `units.convert` is a stub: no sourced deflator rule exists, so any conversion is refused | CanonicalVariable and population contracts; recovered worktree drafts committed with Pete's approval of 2026-10-05 | 2.1–2.6, 2.10 scoped |
+| 5 | Minimum household semantics | In progress | Claude Code; GPT/Codex mapping review | #161 merged (units, old 2.2, `9e67009`); periods (2.3) and entities (2.4) not yet PRs | Commit 2.3, then 2.4 on main (shared `errors.py`, CHANGELOG, REPOSITORY_STRUCTURE); then reconcile with the registry (2.1). `units.convert` is a stub: no sourced deflator rule exists, so any conversion is refused | CanonicalVariable and population contracts; recovered worktree drafts committed with Pete's approval of 2026-10-05 | 2.1–2.6, 2.10 scoped |
 | 6 | Shared household model | In flight (other session) | Existing `build/p1-household` writer; GPT/Codex mapping review | None yet; existing increment recorded at the 3 Oct handoff (verify before use) | Reconcile/review the existing writer's scope before assigning another household/model/mapping writer; 5 and independent source-derived mapping review | ADR-0017 accepted; existing household/mapping files, roundtrip/semantics tests and pass1/pass2 docs preserved; adapters/golden parity not yet accepted | 2.7; v0.3 Phase 1; W6 |
-| 7 | Personal income tax | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #148 draft `0db2bfaf`, base `main` after #147 merged | Claude source review and Pete D1; enacted 2026–27 annual rates unverified; 5–6 for integration | Source draft and separate same-model check retained; no approved specification, parameters, benchmarks or engine | 3A; v0.3 0.1 / Phase 2 |
-| 8 | Three core main benefits | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #151 draft `50f13f44`, base `main` after #147 merged | Claude source review/Pete D1; payment/rounding and supported-slice gaps; 5–6 for integration | Three sources-only catalogues; JS category corrected at `b238820` and rechecked by separate same-model checker; no approved values/spec/engine | 3A; v0.3 0.2 / Phase 3 |
+| 7 | Personal income tax | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #148 draft `0db2bfaf`, base `main` after #147 merged | Open: awaiting independent GPT/Codex review (ADR-0020 rule 4); Claude review comments are input only. Pete D1; enacted 2026–27 annual rates unverified; 5–6 for integration | Source draft and separate same-model check retained; no approved specification, parameters, benchmarks or engine | 3A; v0.3 0.1 / Phase 2 |
+| 8 | Three core main benefits | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #151 draft `50f13f44`, base `main` after #147 merged | Open: awaiting independent GPT/Codex review (ADR-0020 rule 4); Claude review comments are input only. Pete D1; payment/rounding and supported-slice gaps; 5–6 for integration | Three sources-only catalogues; JS category corrected at `b238820` and rechecked by separate same-model checker; no approved values/spec/engine | 3A; v0.3 0.2 / Phase 3 |
 | 9 | Household dependency graph | Not started | Claude Code; GPT/Codex interaction review | None | Sourced interactions; 6–8 for integrated paths | Existing combined WFF/AS runner reused | 3A; v0.3 Phase 4; W7 |
 | 10 | Disposable income | Blocked | Claude Code; GPT/Codex definition; Pete D2 | None | Sourced definition/D2; connected 7–9 outputs | Existing per-policy results remain separate | v0.3 0.4 / 5.1 |
 | 11 | EMTR/withdrawal/participation measures | Blocked | GPT/Codex definitions; Claude Code; Pete D3 | None | D3 and reviewed income/period paths; v0.2 D9 unresolved | #96 per-policy withdrawal profiles/sweeps reuse | v0.3 Phase 5; v0.2 8.6–8.7 |
@@ -264,10 +264,10 @@ not proof of a live PR or approval of broader scope.
 
 | Legacy work | Disposition / current home |
 | --- | --- |
-| AI gate, `prog/ai-gate` | In flight (other session), old 1.2; coordinate bounded A closeout with its owner. |
-| Model governance, `prog/model-governance` | In flight (other session), old 1.5; finish bounded A work only, retain doctrine constraints. |
-| Never-build checks, `prog/never-build-checks` | Done in #162 (old 1.6); the validation-grade row skips until grades exist (old 7.2). |
-| Units/periods/entities, old 2.2–2.4 | Recovered from local worktrees into PRs on 2026-10-05: units #161; periods and entities follow on the merged units PR. Reconcile with minimum B 5 requirements. |
+| AI gate, `prog/ai-gate` | Old 1.2: parked draft [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163), recovered from the local worktree. It amends the approved constitution, so it awaits GPT/Codex review and Pete's acceptance. |
+| Model governance, `prog/model-governance` | Old 1.5: parked draft [#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164), recovered from the local worktree. New doctrine awaits Pete's approval; retain doctrine constraints. |
+| Never-build checks, `prog/never-build-checks` | Merged in #162 at `5a8c17e` (old 1.6); the validation-grade row skips until grades exist (old 7.2). |
+| Units/periods/entities, old 2.2–2.4 | Units merged in #161 at `9e67009` (its `convert` is a stub: no sourced deflator rule exists). Periods (old 2.3) and entities (old 2.4) remain uncommitted in `/private/tmp/poltika-periods` and `/private/tmp/poltika-entities` (modified 2026-10-02); Pete approved committing them on 2026-10-05, so they are next, on the merged #161. Reconcile with minimum B 5 requirements. |
 | Quantity draft, `claude/step2-quantity` | Parked draft, not for review; no universal schema prerequisite. P3 display obligation remains. |
 | State schema, old 2.8 | Not started; old planned scope retained in archive. K 35 deferred pending real model requirements. |
 | Dataset evidence classes / existing DEC classes | Approved constitution follow-ups retained; immutable manifests and hash-bound DEC files are not silently rewritten. Pete confirms interpretations/classes where required. |
@@ -297,3 +297,7 @@ construction-mode claims remain unaccepted ownership evidence.
 Primary-source tax/benefit scoping and D1–D3 proposals
 are parallel research (#148/#151 drafts); existing A closeout continues with
 its current owners. (3 October handoff; #150 and #152 have since merged and the #128 queue row is closed.)
+
+## Open PRs outside the closeout (live state, 5 October 2026)
+
+[#154](https://github.com/hemmingsenpeter-byte/poltika/pull/154) (draft, reporting evidence) and [#155](https://github.com/hemmingsenpeter-byte/poltika/pull/155) (draft, closeout plan) are open. Dependabot [#156](https://github.com/hemmingsenpeter-byte/poltika/pull/156)-[#160](https://github.com/hemmingsenpeter-byte/poltika/pull/160) are open. None is part of this closeout's merges.
