@@ -1,26 +1,43 @@
 # ADR-0020 reviewer rotation — author preflight
 
-Date: 5 October 2026. Author: GPT/Codex.
-Base: 1e185f7652bebce693a9c709cb716b4a9bcfdf5a.
-First fixed implementation head: 98314e5. Final review must name the published
-head after this evidence packet is added. This author preflight cannot clear
-the independent reviewer gate.
+Updated: 6 October 2026. Author: GPT/Codex. This is an author preflight,
+not independent or fresh-context review. Base:
+`240da13838857ee0b2e1686a2fba6f7c8b0b4adc`.
 
-Expected contract: preserve BUILD_PLAN's other-model rotation, all Tier C
-boundaries, final-head author preflight and fresh-context reviewer passes,
-latest-head green CI, current main and squash merging. Codex authorship needs
-Claude review; Claude authorship needs GPT/Codex review. A same-model pass must
-never clear the cross-model row. Existing review comments predating branch
-updates cannot stand for a new head.
+## Expected contract
 
-No blocking author finding. Entry points, ADR, review doctrine, development
-wording and reviewer skill agree on the rotation and final-head rule.
-Project permission settings remain an uncommitted proposal pending Pete's
-explicit approval of their command and branch scope. This PR changes no tool
-permissions, protected values, policy logic, production module or data snapshot.
+Preserve BUILD_PLAN's other-model rotation, all Tier C boundaries,
+final-head author preflight and fresh-context reviewer passes, latest-head
+green CI, current main and squash merging. GPT/Codex authorship needs Claude
+review; Claude authorship needs GPT/Codex review. Same-model checks never
+clear cross-model rows. Earlier comments cannot cover a changed head.
+This expectation is not blind: the author knows the implementation rationale.
 
-Isolated author preflight: programme-authority and review-queue tests pass
-(12 tests); offline Markdown links/fragments and git diff check pass.
-The amendment is authorised by Pete's supplied item 4 and closeout request.
-A new temporary Tier C waiver is not inferred. Final-head cross-model Claude
-review and required CI are pending separate gates.
+## Findings and fixes
+
+Claude's independent review of `8fbb5519da00e9248f5350aede35f35bfde668fa`
+found R1 tracker contradictions (P1), R2 stale CONTRIBUTING rules (P1/P2),
+R3 stale Q8 records (P2), R4 inaccurate preflight evidence (P3), and
+R5 outdated ADR-0007 enforcement claims and insufficient retained probe
+evidence (P3). All five are addressed in this revision. Their proposed
+classification is CODE_ERROR for stale operational instructions/records;
+no policy interpretation or protected expected value changed.
+
+PETE_QUEUE, PROGRAMME_STATUS, CONTRIBUTING, ADR-0020, both agent entry
+points, BUILD_PLAN, review/development doctrines and reviewer/preflight
+instructions were inspected. Q8 records the named Pete authorisation and
+GitHub tag readback; the ruleset evidence preserves the failed probe's check
+URLs and distinguishes recorded pre-close BLOCKED from current BEHIND.
+Untracked project-permission settings remain an unactivated proposal outside
+this PR. No private-repository export permission is inferred.
+
+## Final-head evidence
+
+After committing this packet, run the preflight in a separate detached
+worktree and publish the complete immutable head SHA and actual command
+results in [PR #170's conversation](https://github.com/hemmingsenpeter-byte/poltika/pull/170).
+That SHA-bearing author-preflight comment is the final-head record; this
+packet does not claim that checks on an earlier commit cover a later one.
+The 5 October packet's unnamed final head and blanket consistency claim were
+inaccurate and are withdrawn. Final Claude review and required CI remain
+separate gates, and a later commit requires both passes again.

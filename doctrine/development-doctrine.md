@@ -101,8 +101,11 @@ externally relied upon, release-critical or evidentially consequential.
   retained decision P17). Every merged implementation PR without an independent review is
   still listed in `review_packets/review_queue.md`, and release gates
   still skip, naming those PRs, until they are reviewed.
-- Branch protection is not enforced on this plan (ADR-0007), so this is
-  kept by agreement (v0.1.5 decision D3).
+- Main now has the active ADR-0020 ruleset: nine required checks, strict
+  up-to-date branches, squash-only PR merges and no bypass actors. The
+  deliberate failing-check probe #168 was blocked (see the dated evidence
+  in `docs/programme/2026-10-05-main-ruleset-probe.md`). ADR-0007 records the
+  earlier platform limitation; independent review remains a substantive gate.
 
 ## Current sequencing (ADR-0021)
 

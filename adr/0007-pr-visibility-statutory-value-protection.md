@@ -1,7 +1,23 @@
 # ADR-0007: PR-visibility statutory-value protection (supersedes ADR-0005)
 
 **Date:** 2026-09-21
-**Status:** accepted (Pete)
+**Status:** accepted (Pete); historical platform limitation superseded by
+ADR-0020's active main ruleset, verified on 5 October 2026. The independent
+review and statutory-value evidence safeguards remain in force.
+
+## Current enforcement — 6 October 2026 record
+
+The main ruleset now requires nine successful checks and an up-to-date PR
+branch, permits squash merges only, and has no bypass actors. Its deliberate
+negative probe (#168, `fb92c17f6d9e90f081e6d3cec778a6bb23030513`) failed `test`
+while the other eight required jobs passed. The session recorded GitHub's
+`mergeStateStatus=BLOCKED` before closing the probe without a merge attempt.
+The retained check URLs and readback are in
+[the ruleset evidence record](../docs/programme/2026-10-05-main-ruleset-probe.md).
+The older claims below about unavailable branch protection and direct pushes
+are the 21 September context, not the current operating rules. The statutory
+value guard still reports changed protected paths; successful completion is a
+required check, not proof that the values or interpretation are approved.
 
 ## Context
 
