@@ -5,8 +5,8 @@ body:
   - type: input
     id: task_id
     attributes:
-      label: Step and task id
-      description: From BUILD_PLAN_PROGRAMME.md, for example "Step 3, Task 3.1".
+      label: Capability phase and task id
+      description: From BUILD_PLAN_PROGRAMME.md, the capability phase (A-P) and task number from the economist-first plan, for example "Phase B, Task 6". Legacy ADR-0019 step ids map through its old-to-new table.
     validations:
       required: true
   - type: textarea
