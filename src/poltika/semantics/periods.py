@@ -116,7 +116,7 @@ _PERIOD_TYPES: tuple[PeriodTypeDefinition, ...] = (
     PeriodTypeDefinition(
         id=PeriodType.QUARTER,
         meaning="A quarterly series period, with explicit dates (MSD recipients table).",
-        source="data/metadata/variables/dictionary.yaml:566",
+        source="variables dictionary (metadata/variables/dictionary.yaml:566)",
     ),
     PeriodTypeDefinition(
         id=PeriodType.CALENDAR_YEAR,
@@ -126,12 +126,12 @@ _PERIOD_TYPES: tuple[PeriodTypeDefinition, ...] = (
     PeriodTypeDefinition(
         id=PeriodType.POINT_IN_TIME,
         meaning="An instant (a lookup date, a census night). Start only.",
-        source="data/metadata/variables/dictionary.yaml:234",
+        source="variables dictionary (metadata/variables/dictionary.yaml:235)",
     ),
     PeriodTypeDefinition(
         id=PeriodType.YEAR_ENDED_JUNE,
         meaning="A Household Economic Survey 'year ended June' annual series period, with explicit dates.",
-        source="data/metadata/variables/dictionary.yaml:9",
+        source="variables dictionary (metadata/variables/dictionary.yaml:9)",
     ),
 )
 
