@@ -20,6 +20,7 @@
 - [ ] Any genuine interpretation ambiguity is reserved for Pete and a decision artifact.
 
 The reviewer records findings before reading the author's rationale. Use
-`review_packets/TEMPLATE.md` for the review record. Pete chooses when to request
-the review and whether to accept the result; opening a PR does not automate
-the next BUILD_PLAN task.
+`review_packets/TEMPLATE.md` for the review record. Acceptance follows
+ADR-0020: Claude Code accepts Tier A and B work on its merge rules, and
+Pete decides every Tier C item (`PETE_QUEUE.md`). Opening a PR does not
+automate the next BUILD_PLAN task.

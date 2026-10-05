@@ -112,6 +112,26 @@ re-review after new commits), use `.claude/skills/pr-review/SKILL.md`.
 
 Interpretation ambiguity must be escalated rather than silently resolved.
 
+## Delegated acceptance (ADR-0020)
+
+Pete delegated acceptance on 2 October 2026 (`adr/0020-delegated-acceptance.md`).
+Claude Code may merge Tier A work (engineering, tooling, CI, structure,
+schemas within the target architecture, tests, docs, refactors that change no
+calculated amount, P10 and P19) and decide Tier B choices (reversible, left
+open by the plans, no doctrine naming Pete), logging each in
+`docs/decision_log.md`. Tier C never is decided here: unsourced statutory
+values or interpretations, protected expected values, P6, P7, P8, P13, P14,
+P18, P20, Māori data governance, IDI access, anything public, licensing, IP,
+paid or external resources, release tags, and deleting data or history.
+Park each in `PETE_QUEUE.md` and route around it.
+
+A PR merges (`gh pr merge --squash --auto`) only when CI is green, the branch
+is up to date, `pr-review-preflight` has run and a `poltika-reviewer` pass
+has no unresolved P1 or P2 finding. A PR touching `policy_specs/`,
+`engines/simulator/` or any calculated amount also waits for its GPT/Codex
+row in `review_packets/review_queue.md` to clear. Never use `--admin` or
+bypass a check. `PROGRAMME_STATUS.md` tracks every step and task.
+
 ## External prior art
 
 Follow doctrine/ip-doctrine.md.
