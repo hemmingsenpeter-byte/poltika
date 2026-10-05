@@ -233,3 +233,24 @@ def test_urllib_http_error_becomes_raw_response(monkeypatch: pytest.MonkeyPatch)
     _patched(monkeypatch, err)
     raw = UrllibTransport().send(FetchRequest(url="https://e.invalid/x"), 1.0)
     assert raw.status == 429 and raw.body == b"slow" and ("Retry-After", "3") in raw.headers
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "follows"),
+    [
+        ("https://api.example.invalid/a", "https://api.example.invalid/b", True),
+        ("https://api.example.invalid/a", "http://api.example.invalid/b", False),  # downgrade
+        ("https://api.example.invalid/a", "https://other.example.invalid/b", False),
+        ("http://api.example.invalid/a", "https://api.example.invalid/b", False),
+    ],
+)
+def test_redirects_only_when_scheme_and_host_unchanged(old: str, new: str, follows: bool) -> None:
+    import urllib.request
+
+    from poltika.data.acquisition.source import _SameHostRedirect
+
+    req = urllib.request.Request(old, headers={"Ocp-Apim-Subscription-Key": SECRET})
+    result = _SameHostRedirect().redirect_request(req, None, 302, "Found", {}, new)
+    assert (result is not None) is follows
+    if result is not None:
+        assert result.full_url == new

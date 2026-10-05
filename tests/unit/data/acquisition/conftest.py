@@ -60,7 +60,7 @@ def make_observation() -> ObservationFactory:
         source_id: str = "synthetic_series",
         started_at: datetime | None = None,
         secret_headers: tuple[tuple[str, str], ...] = (),
-        native: bytes | None = None,
+        native: bytes | None = b"<native/>",  # None: a run without native metadata
         status: int = 200,
     ) -> SourceObservation:
         counter["n"] += 1

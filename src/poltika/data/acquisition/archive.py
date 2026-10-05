@@ -178,6 +178,17 @@ def _header(headers: tuple[tuple[str, str], ...], name: str) -> str | None:
 
 
 class SourceArchive:
+    """Metadata semantics: a canonical `SourceMetadata` snapshot is written, and
+    `metadata_sha256` / `metadata_changed` are set, only for an observation that
+    fetched the source's native metadata. A run without it (`--no-metadata`) has
+    `metadata_sha256=None`, `metadata_raw_sha256=None` and `metadata_changed=None`:
+    its thinner descriptor is not source metadata and is never compared.
+    `metadata_changed` compares with the most recent EARLIER record that has a
+    `metadata_sha256` (`previous_metadata_sha256` names it); `content_changed`
+    compares with the latest record. Non-authoritative secondary references ride
+    on the record (`secondary_references`), outside the hashed metadata.
+    """
+
     def __init__(self, root: Path, blobs: BlobStore | None = None) -> None:
         self.root = root
         self.blobs: BlobStore = blobs if blobs is not None else LocalBlobStore(root)
@@ -243,23 +254,28 @@ class SourceArchive:
             raw_blob, raw_status = self.blobs.put(observation.native_metadata.body)
             raw_sha = raw_blob.sha256
 
-        meta_bytes = canonical_json(metadata)
-        meta_sha = sha256_hex(meta_bytes)
-        meta_path = meta_dir / f"{meta_sha}.json"
-        if _write_exclusive(meta_path, meta_bytes):
-            snapshot_status = BlobStatus.CREATED
-        else:
-            if sha256_hex(meta_path.read_bytes()) != meta_sha:
-                raise CorruptBlobError(f"metadata snapshot {meta_sha} is corrupt")
-            snapshot_status = BlobStatus.EXISTING
+        meta_sha: str | None = None
+        snapshot_status: BlobStatus | None = None
+        if observation.native_metadata is not None:
+            meta_bytes = canonical_json(metadata)
+            meta_sha = sha256_hex(meta_bytes)
+            meta_path = meta_dir / f"{meta_sha}.json"
+            if _write_exclusive(meta_path, meta_bytes):
+                snapshot_status = BlobStatus.CREATED
+            else:
+                if sha256_hex(meta_path.read_bytes()) != meta_sha:
+                    raise CorruptBlobError(f"metadata snapshot {meta_sha} is corrupt")
+                snapshot_status = BlobStatus.EXISTING
 
-        previous = self.latest_record(source_id, source_system)
+        history = self.records(source_id, source_system)
+        previous = history[-1] if history else None
+        previous_with_metadata = next((r for r in reversed(history) if r.metadata_sha256), None)
         content_changed: bool | None = None
         metadata_changed: bool | None = None
         if previous is not None:
             content_changed = previous.content_sha256 != content_blob.sha256
-            if previous.metadata_sha256 is not None:
-                metadata_changed = previous.metadata_sha256 != meta_sha
+        if meta_sha is not None and previous_with_metadata is not None:
+            metadata_changed = previous_with_metadata.metadata_sha256 != meta_sha
 
         request = content.request
         fingerprint = request.fingerprint()
@@ -287,9 +303,12 @@ class SourceArchive:
             metadata_raw_sha256=raw_sha,
             previous_retrieval_id=previous.retrieval_id if previous else None,
             previous_content_sha256=previous.content_sha256 if previous else None,
-            previous_metadata_sha256=previous.metadata_sha256 if previous else None,
+            previous_metadata_sha256=(
+                previous_with_metadata.metadata_sha256 if previous_with_metadata else None
+            ),
             content_changed=content_changed,
             metadata_changed=metadata_changed,
+            secondary_references=observation.secondary_references,
             collector_version=collector_version,
         )
         _check_component(record.retrieval_id, "retrieval_id", retrieval=True)

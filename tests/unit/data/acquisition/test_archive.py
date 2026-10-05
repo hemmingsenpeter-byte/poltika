@@ -18,7 +18,7 @@ from poltika.data.acquisition.archive import (
     UnsafePathError,
     default_archive_root,
 )
-from poltika.data.acquisition.models import BlobStatus, sha256_hex
+from poltika.data.acquisition.models import BlobStatus, Reference, ReferenceKind, sha256_hex
 
 from .conftest import SYNTHETIC_BYTES, ObservationFactory, make_metadata
 
@@ -47,7 +47,9 @@ def test_exact_bytes_in_and_out(tmp_path: Path) -> None:
 def test_five_identical_retrievals_five_records_one_blob(
     archive: SourceArchive, make_observation: ObservationFactory
 ) -> None:
-    results = [archive.preserve(make_observation(), collector_version="t") for _ in range(5)]
+    results = [
+        archive.preserve(make_observation(native=None), collector_version="t") for _ in range(5)
+    ]
     assert len(archive.records("synthetic_series")) == 5
     blobs = [p for p in all_files(archive.root / "blobs")]
     assert len(blobs) == 1
@@ -60,8 +62,10 @@ def test_five_identical_retrievals_five_records_one_blob(
 def test_changed_bytes_new_blob(
     archive: SourceArchive, make_observation: ObservationFactory
 ) -> None:
-    archive.preserve(make_observation(), collector_version="t")
-    archive.preserve(make_observation(body=SYNTHETIC_BYTES + b"2022,3\n"), collector_version="t")
+    archive.preserve(make_observation(native=None), collector_version="t")
+    archive.preserve(
+        make_observation(body=SYNTHETIC_BYTES + b"2022,3\n", native=None), collector_version="t"
+    )
     assert len(all_files(archive.root / "blobs")) == 2
 
 
@@ -331,3 +335,54 @@ def test_default_archive_root_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Pat
     assert default_archive_root(tmp_path) == tmp_path / "elsewhere"
     monkeypatch.setenv(ENV_ARCHIVE_DIR, "")
     assert default_archive_root(tmp_path) == tmp_path / "data" / "source_archive" / "runtime"
+
+
+def test_run_without_native_metadata_is_not_a_metadata_change(
+    archive: SourceArchive, make_observation: ObservationFactory
+) -> None:
+    meta = make_metadata()
+    thin = make_metadata(title=None, publisher_name_at_capture=None)  # what --no-metadata builds
+    runs = [
+        make_observation(metadata=meta),
+        make_observation(metadata=meta),
+        make_observation(metadata=thin, native=None),
+        make_observation(metadata=meta),
+    ]
+    records = [archive.preserve(o, collector_version="t").record for o in runs]
+    assert [(r.metadata_changed, r.content_changed) for r in records] == [
+        (None, None),
+        (False, False),
+        (None, False),
+        (False, False),
+    ]
+    off = records[2]
+    assert off.metadata_sha256 is None and off.metadata_raw_sha256 is None
+    assert off.previous_metadata_sha256 == meta.sha256()  # last record that had metadata
+    assert records[3].previous_metadata_sha256 == meta.sha256()
+    assert len(all_files(archive.root / "metadata")) == 1  # no snapshot for the thin run
+
+
+def test_genuine_title_change_after_an_off_run_is_still_detected(
+    archive: SourceArchive, make_observation: ObservationFactory
+) -> None:
+    archive.preserve(make_observation(metadata=make_metadata()), collector_version="t")
+    archive.preserve(make_observation(native=None), collector_version="t")
+    changed = archive.preserve(
+        make_observation(metadata=make_metadata(title="Retitled")), collector_version="t"
+    ).record
+    assert changed.metadata_changed is True
+
+
+def test_secondary_references_ride_on_the_record_outside_the_metadata_hash(
+    archive: SourceArchive, make_observation: ObservationFactory
+) -> None:
+    ref = Reference(
+        kind=ReferenceKind.SECONDARY_CATALOGUE_RECORD,
+        url="https://x.invalid/p",
+        authoritative=False,
+    )
+    with_ref = make_observation().model_copy(update={"secondary_references": (ref,)})
+    r1 = archive.preserve(with_ref, collector_version="t").record
+    r2 = archive.preserve(make_observation(), collector_version="t").record
+    assert r1.secondary_references == (ref,) and r2.secondary_references == ()
+    assert r2.metadata_changed is False and r1.metadata_sha256 == r2.metadata_sha256

@@ -31,9 +31,9 @@ import xml.etree.ElementTree as ET
 from collections.abc import Callable
 from datetime import UTC, datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
-from poltika.data.acquisition.catalogue import SourceEntry
+from poltika.data.acquisition.catalogue import CatalogueError, SourceEntry, check_base_url
 from poltika.data.acquisition.data_govt_nz import SecondaryLookup
 from poltika.data.acquisition.models import (
     DatasetDescriptor,
@@ -80,6 +80,14 @@ class StatsNzRequest(BaseModel):
     data_format: str = "csvfilewithlabels"
     structure_references: str = "all"
     structure_detail: str = "referencepartial"
+
+    @field_validator("base_url")
+    @classmethod
+    def _allowed_base_url(cls, v: str) -> str:
+        try:
+            return check_base_url(SOURCE_SYSTEM, v)
+        except CatalogueError as exc:
+            raise ValueError(str(exc)) from None
 
     @property
     def dataset_identifier(self) -> str:
@@ -216,12 +224,12 @@ def build_metadata(
     entry: SourceEntry,
     spec: StatsNzRequest,
     parsed: ParsedStructure | None,
-    secondary: Reference | None = None,
 ) -> SourceMetadata:
-    """Combine source-stated values (win) with the reviewer's catalogue values."""
+    """Combine source-stated values (win) with the reviewer's catalogue values.
+
+    The optional data.govt.nz reference is deliberately not here: it is not the
+    source's own statement, and a flaky lookup must not change the metadata hash."""
     references = list(entry.dataset.references)
-    if secondary is not None:
-        references.append(secondary)
     dataset = DatasetDescriptor(
         source_system=SOURCE_SYSTEM,
         source_dataset_identifier=entry.dataset.identifier,
@@ -361,10 +369,12 @@ class StatsNzConnector:
                 now=self._now,
             )
             parsed = parse_structure(native.body, spec)
-        metadata = build_metadata(entry, spec, parsed, self._secondary_reference(entry))
+        metadata = build_metadata(entry, spec, parsed)
+        secondary = self._secondary_reference(entry)
         return SourceObservation(
             poltika_source_id=entry.id,
             metadata=metadata,
             content=content,
             native_metadata=native,
+            secondary_references=(secondary,) if secondary is not None else (),
         )

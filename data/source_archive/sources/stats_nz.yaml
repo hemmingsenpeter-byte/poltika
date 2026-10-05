@@ -23,7 +23,9 @@
 #
 # Not catalogued (no matching dataflow found in the public ADE catalogue of
 # 2026-10-05, 911 dataflows): consumers price index, household labour force
-# survey, gross domestic product. They are left out, not guessed.
+# survey, gross domestic product. They are left out, not guessed. ADE's
+# 911-dataflow listing contains no CPI, HLFS or GDP/national-accounts dataflow,
+# so those are outstanding and need another Stats NZ distribution.
 source_system: stats_nz
 sources:
   - id: stats_nz_ade_popes_sub_004
@@ -36,7 +38,8 @@ sources:
       The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
       The data and dataflow endpoints answer HTTP 401 without a key, so they
       were not exercised. The catalogue annotates every dataflow
-      NonProductionDataflow=true.
+      NonProductionDataflow=true and marks every dataflow isFinal="false"
+      (same listing, 2026-10-05).
     dataset:
       identifier: "STATSNZ:POPES_SUB_004"
       publisher_identifier: STATSNZ
@@ -90,7 +93,8 @@ sources:
       The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
       The data and dataflow endpoints answer HTTP 401 without a key, so they
       were not exercised. The catalogue annotates every dataflow
-      NonProductionDataflow=true.
+      NonProductionDataflow=true and marks every dataflow isFinal="false"
+      (same listing, 2026-10-05).
     dataset:
       identifier: "STATSNZ:INC_INC_011"
       publisher_identifier: STATSNZ
@@ -144,7 +148,8 @@ sources:
       The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
       The data and dataflow endpoints answer HTTP 401 without a key, so they
       were not exercised. The catalogue annotates every dataflow
-      NonProductionDataflow=true.
+      NonProductionDataflow=true and marks every dataflow isFinal="false"
+      (same listing, 2026-10-05).
     dataset:
       identifier: "STATSNZ:HES_HES_003"
       publisher_identifier: STATSNZ
@@ -198,7 +203,8 @@ sources:
       The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
       The data and dataflow endpoints answer HTTP 401 without a key, so they
       were not exercised. The catalogue annotates every dataflow
-      NonProductionDataflow=true.
+      NonProductionDataflow=true and marks every dataflow isFinal="false"
+      (same listing, 2026-10-05).
     dataset:
       identifier: "STATSNZ:INC_INC_001"
       publisher_identifier: STATSNZ

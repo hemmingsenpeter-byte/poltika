@@ -260,6 +260,8 @@ class RetrievalRecord(BaseModel):
     previous_metadata_sha256: str | None
     content_changed: bool | None
     metadata_changed: bool | None
+    # Non-authoritative secondary-catalogue references; outside the hashed metadata.
+    secondary_references: tuple[Reference, ...] = ()
     collector_version: str
 
     @field_validator("request_started_at", "response_received_at")

@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from poltika.data.acquisition.catalogue import SourceEntry, parse_catalogue
+from poltika.data.acquisition.catalogue import CatalogueError, SourceEntry, parse_catalogue
 from poltika.data.acquisition.models import ReferenceKind
 from poltika.data.acquisition.source import (
     FetchRequest,
@@ -201,16 +201,20 @@ def test_secondary_reference_added_only_when_lookup_succeeds_and_failure_is_harm
         authoritative=False,
     )
     ok = StatsNzConnector(KEY, Fake(), FAST, secondary_lookup=lambda name: ref)
-    refs = ok.observe(entry()).metadata.dataset.references
-    assert refs[-1] == ref and refs[-1].authoritative is False
+    observed = ok.observe(entry())
+    assert observed.secondary_references == (ref,) and ref.authoritative is False
+    # outside the hashed metadata: a flaky lookup cannot flip metadata_sha256
+    bare = StatsNzConnector(KEY, Fake(), FAST).observe(entry())
+    assert observed.metadata.sha256() == bare.metadata.sha256()
 
     def boom(name: str) -> Reference | None:
         raise RuntimeError("down")
 
     bad = StatsNzConnector(KEY, Fake(), FAST, secondary_lookup=boom)
+    assert bad.observe(entry()).secondary_references == ()
     assert bad.observe(entry()).metadata.dataset.references == entry().dataset.references
     none = StatsNzConnector(KEY, Fake(), FAST)  # no lookup configured
-    assert none.observe(entry()).metadata.dataset.references == entry().dataset.references
+    assert none.observe(entry()).secondary_references == ()
 
 
 def test_identifier_must_match_request_block() -> None:
@@ -241,3 +245,27 @@ def test_errors_never_contain_the_key() -> None:
     with pytest.raises(Exception) as exc2:
         StatsNzConnector(KEY, Down(), FAST).observe(entry())
     assert KEY not in str(exc2.value)
+
+
+@pytest.mark.parametrize(
+    "base",
+    [
+        "http://api.data.stats.govt.nz/rest",
+        "http://apis.stats.govt.nz",
+        "https://evil.example/rest",
+        "https://api.data.stats.govt.nz.evil.example/rest",
+        "https://user:pw@api.data.stats.govt.nz/rest",
+        "https://api.data.stats.govt.nz:8443/rest",
+    ],
+)
+def test_base_url_must_be_https_on_the_allow_listed_host(base: str) -> None:
+    text = CATALOGUE.replace('version: "1.0"', f'version: "1.0"\n      base_url: {base!r}', 1)
+    assert base in text
+    with pytest.raises(CatalogueError, match="base_url"):
+        parse_catalogue(text)
+
+
+def test_default_and_explicit_allowed_base_url_load() -> None:
+    explicit = "https://api.data.stats.govt.nz/rest"
+    text = CATALOGUE.replace('version: "1.0"', f'version: "1.0"\n      base_url: {explicit}', 1)
+    assert parse_catalogue(text).get("syn_flow").request["base_url"] == explicit

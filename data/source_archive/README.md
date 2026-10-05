@@ -71,8 +71,9 @@ found by scanning one directory (ADR-0022). Every path component is validated;
 
 ## The four change states
 
-Each retrieval compares against the latest earlier record for the same source and
-records both flags. All four combinations are preserved as retrieval events:
+Each retrieval records both flags. `content_changed` compares with the latest earlier
+record for the same source; `metadata_changed` compares with the most recent earlier
+record that has a `metadata_sha256` (`previous_metadata_sha256` names it). All four combinations are preserved as retrieval events:
 
 | `content_changed` | `metadata_changed` | Meaning |
 | --- | --- | --- |
@@ -82,7 +83,13 @@ records both flags. All four combinations are preserved as retrieval events:
 | true | true | both |
 
 The first observation of a source has `null` flags (no previous record).
-`metadata_changed` is `null` when either side has no metadata. Volatile message
+A run that did not fetch the source's native metadata (`--no-metadata`) has
+`metadata_sha256`, `metadata_raw_sha256` and `metadata_changed` all `null`: no canonical
+metadata snapshot is written and its thinner descriptor is never compared, so a
+metadata-off run cannot fake a change in either direction. The optional data.govt.nz
+reference (`authoritative=false`) is stored on the record as `secondary_references`,
+outside the hashed metadata, so a failed or successful secondary lookup cannot flip
+`metadata_changed`. Volatile message
 fields (such as an SDMX `Prepared` timestamp) are left out of the canonical metadata,
 so they cannot fake a change; the raw metadata response is still kept verbatim as a
 blob (`metadata_raw_sha256`).

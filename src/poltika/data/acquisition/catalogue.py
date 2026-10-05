@@ -20,6 +20,7 @@ SOURCE says it publishes.
 from __future__ import annotations
 
 import re
+import urllib.parse
 from pathlib import Path
 from typing import Any
 
@@ -52,8 +53,32 @@ _SECRET_VALUE = re.compile(
 )
 
 
+# Hosts a connector may send its credential to, per source system. Stats NZ: the https
+# base URL in https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/
+# (the guide's http://apis.stats.govt.nz alternative is plain http, so it is not allowed).
+ALLOWED_BASE_HOSTS: dict[str, frozenset[str]] = {
+    "stats_nz": frozenset({"api.data.stats.govt.nz"}),
+}
+
+
 class CatalogueError(PoltikaError):
     """The source catalogue is invalid."""
+
+
+def check_base_url(source_system: str, value: str) -> str:
+    """`value` unchanged if it is https on an allow-listed host for the system."""
+    allowed = ALLOWED_BASE_HOSTS.get(source_system)
+    if allowed is None:
+        return value
+    parts = urllib.parse.urlsplit(value)
+    if parts.scheme != "https" or (parts.hostname or "") not in allowed:
+        raise CatalogueError(
+            f"base_url must be https on one of {sorted(allowed)} for {source_system} "
+            "(the credential is sent to it)"
+        )
+    if parts.username or parts.password or parts.port not in (None, 443):
+        raise CatalogueError("base_url must not carry userinfo or a non-default port")
+    return value
 
 
 def _key_is_secret_like(key: str) -> bool:
@@ -156,6 +181,17 @@ class SourceCatalogue(BaseModel):
             if entry.id in seen:
                 raise ValueError(f"duplicate source id {entry.id!r}")
             seen.add(entry.id)
+        return self
+
+    @model_validator(mode="after")
+    def _allowed_base_urls(self) -> SourceCatalogue:
+        for entry in self.sources:
+            base = entry.request.get("base_url")
+            if base is not None:
+                try:
+                    check_base_url(self.source_system, base)
+                except CatalogueError as exc:
+                    raise ValueError(f"{entry.id}: {exc}") from None
         return self
 
     def get(self, source_id: str) -> SourceEntry:

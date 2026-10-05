@@ -25,6 +25,7 @@ from poltika.common.errors import PoltikaError
 from poltika.data.acquisition.models import (
     SAFE_RESPONSE_HEADERS,
     SECRET_HEADER_NAMES,
+    Reference,
     SourceMetadata,
     canonical_json,
     redact,
@@ -125,12 +126,15 @@ class Transport(Protocol):
 
 
 class _SameHostRedirect(urllib.request.HTTPRedirectHandler):
-    """Never forward headers (which may carry secrets) to another host."""
+    """Follow a redirect only when scheme and host are both unchanged, so secret
+    headers never go to another host or over a downgraded (https to http) hop."""
 
     def redirect_request(  # type: ignore[no-untyped-def]
         self, req, fp, code, msg, headers, newurl
     ):
-        if urllib.parse.urlsplit(newurl).netloc != urllib.parse.urlsplit(req.full_url).netloc:
+        old = urllib.parse.urlsplit(req.full_url)
+        new = urllib.parse.urlsplit(newurl)
+        if (new.scheme.lower(), new.netloc.lower()) != (old.scheme.lower(), old.netloc.lower()):
             return None
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
@@ -280,6 +284,8 @@ class SourceObservation(BaseModel):
     metadata: SourceMetadata
     content: FetchResponse
     native_metadata: FetchResponse | None = None
+    # Non-authoritative references: kept on the record, never hashed into `metadata`.
+    secondary_references: tuple[Reference, ...] = ()
 
 
 class SourceConnector(Protocol):
