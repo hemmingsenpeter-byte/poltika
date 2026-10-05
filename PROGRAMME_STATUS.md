@@ -46,7 +46,7 @@ sets, kept apart so it doesn't read as programme progress.
 | B1 | ADR-0020: delegated acceptance | Done | Claude Code | #139 (merged) | |
 | B2 | Ruleset on `main` and squash-only auto-merge | Pete | Pete | None | PETE_QUEUE Q1 (needs the repository owner's shell) |
 | B3 | Dev tooling: import-linter, pre-commit, Makefile, coverage | In progress | Claude Code | None yet | |
-| B4 | Security CI: Dependabot, pip-audit, CodeQL, lychee | In progress | Claude Code | #142 (open; refresh required) | New jobs join the ruleset's required checks only after Q1 |
+| B4 | Security CI: Dependabot, pip-audit, static analysis, lychee | Done | Claude Code; GPT/Codex review and fixes | #142 (merged) | Bandit retains four medium XML-parser findings for triage. Required-check names for Q1: `test`, `pilot-image`, `check-immutable-snapshots`, `check-protected-paths`, `source-currency`, `pip-audit`, `links`, `Bandit (python)`, `zizmor (actions)`; not `publish-issue` or `external-links (report only)` (skipped on PRs) |
 | B5 | Governance files: CODEOWNERS and the like | In progress | Claude Code | #143 (open; refresh required) | |
 
 ## Releases
@@ -75,7 +75,7 @@ sets, kept apart so it doesn't read as programme progress.
 | 1.4 | Māori data governance, privacy and security | Pete | Pete; GPT/Codex sources | None | PETE_QUEUE Q2. Interim rule P5 holds meanwhile |
 | 1.5 | Model governance and model registry | In flight (other session) | Claude Code drafts, Pete approves | None yet (branch `prog/model-governance`) | |
 | 1.6 | Mechanical never-build checks | In flight (other session) | Claude Code | None yet (branch `prog/never-build-checks`) | |
-| 1.7 | `evidence-classes` skill | In flight (other session) | Claude Code | #138 (open) | |
+| 1.7 | `evidence-classes` skill | In progress (review fixes) | Claude Code authored; GPT/Codex reviewed/fixed | #138 (open) | Promotion exception clarified; final-head review/CI and delegated acceptance pending |
 
 ## Step 2: National Variable Registry and common schemas
 
