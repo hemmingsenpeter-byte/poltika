@@ -2,8 +2,8 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**As of:** 3 October 2026. **Repository baseline:** `origin/main` at
-`e52f5d3` (#141); remote PR/tag reconciliation on this date. This migration
+**As of:** 5 October 2026. **Repository baseline:** `origin/main` after #146
+(`a782693`); reconciled against live GitHub state on this date. This migration
 branch is documentation work, not evidence that any new economic model is built.
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), under
 [ADR-0021](adr/0021-economist-first-pilot-programme.md), is the single active
@@ -37,12 +37,12 @@ and review again before merge; this is the reconciliation snapshot.
 | --- | --- | --- | --- |
 | Delegated acceptance | Done; Claude Code, Pete's recorded delegation | #139 merged, `dd2650b` | ADR-0020 accepted; #141 added live tracking. |
 | Main ruleset / squash auto-merge | Pete | None | Q1; repository settings action remains Pete's; merge rules hold by agreement. |
-| Evidence-classes skill | In flight (other session); Claude Code | #138 open; `e34e681` | Latest checks green; reviewer/merge disposition outstanding. Legacy 1.7. |
+| Evidence-classes skill | Done; Claude Code | #138 merged, `38a3f17` | Legacy 1.7. |
 | Dev tooling | In flight (other session); Claude Code | No PR | Existing uncommitted worker includes tooling and calculation-adjacent `conditional.py`; preserve files and apply relevant independent review. |
-| Security CI | Blocked; Claude Code | #142 open; `f11f692` | CodeQL actions check fails on missing permissions in data-snapshot-guard, statutory-value-guard and tests workflows; fix/review latest head. |
-| Governance files | In flight (other session); Claude Code | #143 open; `75eb7a9` | Latest checks green; reviewer/merge disposition outstanding. |
-| Hosting policy-path documentation | In flight (other session); Claude Code | #140 draft; `ffa05168` | Documents `POLTIKA_POLICY_SPECS_DIR`; no CI evidence on draft. This is not the dev-tooling PR. |
-| Independent review debt | In progress; GPT/Codex, Claude Code coordinates | #128 merged, review open | `review_packets/review_queue.md` is current: one open implementation row. |
+| Security CI | Done; Claude Code, GPT/Codex review and fixes | #142 merged, `b292666` | Required-check names for Q1 are listed in the main-branch tracker. |
+| Governance files | Done; Claude Code | #143 merged, `6a7da14` | |
+| Hosting policy-path documentation | Done; Claude Code | #140 merged, `96900a4` | Documents `POLTIKA_POLICY_SPECS_DIR`. This is not the dev-tooling PR. |
+| Independent review debt | Done; GPT/Codex, Claude Code coordinates | #128, #150, #152 merged (`fe67875`) | `review_packets/review_queue.md` is current: no open implementation assurance rows. |
 
 ## Release and maintenance state
 
@@ -77,7 +77,7 @@ packets can still say “open” historically and do not override current record
 | External aggregate cross-validation | #114, #118, #120; V0_2_CROSS_VALIDATION | Existing untuned IRD/MSD comparisons and explained gaps; not new representative validation. |
 | Population explanations / analyst population API and page | #97, #99 | Existing verified population explanations and `/analyst/microsim`; population operator-set, run store in memory. |
 | Household analyst page / pilot scripts | #85, #87, #89 | Existing `/analyst`, case pack and findings template; external user/session not recorded. |
-| Fact catalogues, conditional branches and intake | #109, #112, #121, #125–#128 | Reviewed questions, finite/ranged branches, intake API/page, population ranges; #128 independent review outstanding; source-based monotone/candidate declarations pending. |
+| Fact catalogues, conditional branches and intake | #109, #112, #121, #125–#128 | Reviewed questions, finite/ranged branches, intake API/page, population ranges; #128 independently reviewed, fixes merged (#150, #152); source-based monotone/candidate declarations pending. |
 | Hosted pilot protection/hardening | #124, #132 | Password-required image, security headers, body/concurrency limits; deployment/resource actions not completed by this migration. |
 | Workbench backend / export | #133; ADR-0018 proposed | Registry, checks, generic blocks, worked examples, CSV/Excel export reviewed; completed workbench UI and ADR acceptance not evidenced. |
 | Epistemic constitution | #136, #137, Pete approval 2 October | Eight classes and seven decisions are approved; preserve them while re-scoping implementation. |
@@ -87,10 +87,10 @@ packets can still say “open” historically and do not override current record
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Bounded governance/baseline closeout | In progress | Claude Code; GPT/Codex reviews | #138, #142, #143 open; #139 merged | PR dispositions; #142 checks fail; coordinate existing workers | Professional-baseline rows above; constitution already approved | Step 1; baseline B1–B5 |
-| 2 | PR/review-debt reconciliation | In progress | Claude Code coordinates; GPT/Codex reviews | #128 review outstanding | Complete independent review; retain open/draft PR ownership | Live review_queue; most earlier rows cleared | W1; P17 |
+| 1 | Bounded governance/baseline closeout | In progress | Claude Code; GPT/Codex reviews | #138, #139, #140, #142, #143 merged | Dev tooling (no PR) remains; coordinate existing workers | Professional-baseline rows above; constitution already approved | Step 1; baseline B1–B5 |
+| 2 | PR/review-debt reconciliation | Done | Claude Code coordinates; GPT/Codex reviews | #128 closed by #152 | Keep queue truthful; retain open/draft PR ownership | Live review_queue; most earlier rows cleared | W1; P17 |
 | 3 | Release baseline | Pete | Pete; Claude Code prepares | No new release PR | v0.2 tag; v0.1.5 external pilot/tag; verify baseline/gates | v0.1.0 tagged; retained release evidence | 7.1; v0.1.5 8.2–8.6; v0.2 10.3 |
-| 4 | End abstract Phase 0 expansion | In progress | Claude Code coordinates | This migration, not merged | Merge migration; agree scoped/parked worker dispositions | ADR-0021 direction; snapshots preserve old tasks | Steps 1–2 sequencing |
+| 4 | End abstract Phase 0 expansion | In progress | Claude Code coordinates | #144, #145, #146 merged; #147 (household lane) completes the migration | Merge #147; agree scoped/parked worker dispositions | ADR-0021 direction; snapshots preserve old tasks | Steps 1–2 sequencing |
 
 ## Phase B — Household economic kernel
 

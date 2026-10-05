@@ -1,13 +1,13 @@
 # Independent review queue
 
 Historical origin: `ROADMAP_REALIGNMENT.md` W1.1 (archived). Current review
-sequencing follows `BUILD_PLAN_PROGRAMME.md` Phase A and ADR-0020. This lists every merged PR that has not had
-an independent (GPT/Codex) review. They merged on Claude Code's author
+sequencing follows `BUILD_PLAN_PROGRAMME.md` Phase A and ADR-0020. This lists every merged PR whose independent
+(GPT/Codex) review or resulting fixes remain outstanding. They merged on Claude Code's author
 preflight under Pete's recorded delegation, which the working agreement
 allows. The review-debt cap was suspended on 29 September 2026
 (`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` retained decision P17): open
 rows no longer stop merges, but every one is still listed here, and
-release gates skip, naming them, until they are reviewed.
+release gates skip, naming them, until review and required fixes are complete.
 
 Work the queue in risk order:
 
@@ -17,15 +17,20 @@ Work the queue in risk order:
 
 Record each review in `reviews/` using `review_packets/TEMPLATE.md`,
 classify findings under the Review Doctrine, and change the row's status
-to `reviewed (reviews/<file>)`. A finding is fixed by a new PR, never by
-editing history.
+to `reviewed (reviews/<file>)` once blocking findings are cleared. A finding
+is fixed by a new PR, never by editing history.
 
-**As of 2 October 2026: 1 open implementation review row (#128).**
+**As of 5 October 2026: no open implementation assurance rows (#128 closed by #152 at `fe67875`).**
+Independent GPT/Codex review of #128 is recorded in `reviews/2026-10-03-pr128.md`.
+Its four P2 fixes were independently Claude-reviewed, tested, accepted by
+Claude/Opus under Tier A and integrated through #150 at `3bea73f`. Latest-head
+CI passed at `ea87240` before merge. The original review and its fixes are
+complete; this is not release approval or completion of deferred capabilities.
 GPT/Codex reviewed #124-127 in `reviews/2026-09-28-pr122-127.md`; their
 reviewer-authored fixes were accepted under Pete's explicit cross-model
 waiver on 2 October 2026. #132 and #133 are reviewed in
 `reviews/2026-10-02-pr132.md` and `reviews/2026-10-02-pr133.md`, with the
-same waiver for their fixes. #128 remains outside this open-PR round.
+same waiver for their fixes. That waiver did not cover the #128 follow-up, which was reviewed and accepted separately (see the #128 row).
 Review packet: `review_packets/v0_3_phase_1b_codex_audit.md`.
 GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code
 checked its two fixes.
@@ -47,7 +52,7 @@ were independently reviewed by Claude Code with no blocking findings
 | --- | --- | --- | --- | --- | --- |
 | #132 | pilot | Hosted hardening: security headers, body and request limits, cache admission, declined-label validation and CI smoke check | API, CI | Medium | reviewed (reviews/2026-10-02-pr132.md) |
 | #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
-| #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Low | open |
+| #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Medium | reviewed (reviews/2026-10-03-pr128.md); #150 fixes independently Claude-reviewed and accepted/merged at 3bea73f |
 | #127 | v0.3 | Task 1b.6: `scenarios/microsim/ranges.py` population ranges; `fiscal_ranges` on `/microsim/runs`; Fiscal tab | Microsim, API | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
 | #126 | v0.3 | Tasks 1b.2b, 1b.3b-1b.3d: `FactEntry.monotone`, `resolve(ranges=...)`, `Bounds.kind`; property tests | Scenarios, fact schema, API | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
 | #125 | v0.3 | Task 1b.5: `resolution` on `/household/calculate`, stateless `POST /household/intake`, the analyst page's "Ask me first" | API, analyst page | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
