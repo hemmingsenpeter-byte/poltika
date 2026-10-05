@@ -408,10 +408,17 @@ least one where the benefit's result changes another policy's input.
 - **3.3 — Supported Living Payment.** The same five steps (`SLP-NN`).
   3.3.1 starts when 3.2.1 is decided. Medical and capacity criteria stay
   asserted facts with catalogue questions; Poltika never assesses them.
-- **3.4 — Claude Code. Cross-benefit checks.** A household can't receive
-  two main benefits at once unless a specification says otherwise: a
-  test over the golden households, and an intake question when the
-  household model leaves it open.
+- **3.4 — Claude Code. Cross-benefit checks.** A person can't receive at
+  the same time, in their own right, more than one main benefit, or a
+  main benefit together with New Zealand superannuation or a veteran's
+  pension ([Social Security Act 2018 s 18](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/)).
+  The restriction is per person. Schedule 4 (Part 1 cl 1(g), Part 3
+  cl 1(d)) sets rates for a beneficiary whose partner is granted a main
+  benefit in the partner's own right. A couple where each partner receives
+  a main benefit is `unsupported` until a specification models those
+  Schedule 4 categories. Checks: a test over the golden households, and
+  an intake question when the household model leaves it open. Pete
+  authorised this source-linked correction in the 5 October closeout.
 
 For each benefit, *done when* is the skill's exit check for each of its
 five PRs, with throughput recorded in the Progress table.

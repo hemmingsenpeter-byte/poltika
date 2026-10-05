@@ -127,3 +127,39 @@ Separate source review, Pete D1, specification, dated values/cases, statutory
 implementation, interactions and release gates remain outstanding. An author
 preflight does not satisfy the GPT/Claude reviewer rotation or the required
 fresh-context `poltika-reviewer` pass. Task 8 remains In progress.
+
+## 5 October 2026 source refresh — author preflight
+
+Refresh base: `main` at `1e185f7652bebce693a9c709cb716b4a9bcfdf5a`.
+The earlier check is historical and does not cover this changed head. The
+author knew the proposal rationale; a new final-head Claude pass is required.
+
+Expected contract: source-only catalogues, current/future-law separation,
+precise amendments, per-person own-right restriction, unsupported
+mixed-benefit couples and no approved monetary result. Recorded findings:
+
+- P3 `SPEC_ERROR`: 2026 No 54 change inventory added to all three catalogues.
+  Part 1's JS/equivalent-emergency-benefit parental-income requirement,
+  review/regulation and Schedule 1–3 changes and Part 2's AS homeowner
+  categories/SLP-linked exception are named. Shared definitions and new
+  Schedule 3 cl 16A's benefit-reduction/cancellation power retain a fresh
+  cross-policy review gate; SPS/SLP implications are not assumed absent.
+- P3 `SPEC_ERROR`: JS cl 1(c) follows the gender-neutral 2013 transfer locator;
+  repealed 1964 Act Schedule 32 remains an unscoped dependency.
+- P3 `SPEC_ERROR`: annual-charging transition now follows Regulations
+  Schedule 1 cl 25(4)'s per-grant 52 weeks under cl 25(1)(b); MAP corroborates.
+- `SPEC_ERROR`: local 3.4 now follows SSA s 18 and Schedule 4 Parts 1/3.
+  Pete's 5 October closeout authorised the correction; preserved Lane 3
+  wording supplied its starting point. Couples stay unsupported pending spec.
+
+Official SSA/Regulations HTML (4 September 2026 versions) and 2026 No 54
+as enacted were retrieved on 5 October with `curl --fail --location
+--user-agent 'Mozilla/5.0'`. Pinpoints are retained in the catalogues and
+scope note. No external policy engine was accessed and no amount was adopted.
+
+Checks completed, exit 0: `git diff --check`; existing `SourceCatalog`
+validation (9/10/10 entries, 29 unique IDs, source-only packs, precise
+future-law locators/limitations); local 3.4 own-right/unsupported checks; and
+`PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q tests/acceptance/test_programme_authority.py`
+(10 passed). Monetary implementation, payment precision, protected values,
+independent final-head review and CI remain separate gates.

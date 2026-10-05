@@ -77,12 +77,27 @@ sources:
   url: https://www.legislation.govt.nz/act/public/2026/54/en/latest/
   version_as_at: '2026-09-03'
   version_label: As enacted; official page says not yet in force on retrieval.
-  locator: s 2(1)-(2); Parts 1-2.
-  finding: 'Enacted future law: commencement is 2 November 2026 except Part 2 (Accommodation Supplement),
-    which commences 1 April 2027.'
-  limitation: Not operative for 3 October 2026. Amendments are a maintenance boundary, not adopted eligibility,
-    amounts or graph edges; detailed post-commencement source work is pending.
-  checked_on: '2026-10-03'
+  locator: >-
+    s 2(1)-(2); Part 1 ss 4-12 and Schedule 1 (SSA s 20(ca), new ss 23A-23I,
+    equivalent emergency benefit, review provisions, new s 422A and Schedules 1-3);
+    Part 2 ss 13-15 and Schedule 2 (SSA Schedule 4 Part 7 cls 4-6B).
+  finding: >-
+    Enacted future law, independently re-read 5 October 2026. From 2 November
+    2026 Part 1 introduces a parental-income requirement for specified young
+    JS applicants/recipients and partners, extends it to equivalent emergency
+    benefit, adds review/regulation and transitional provisions, and amends
+    Schedule 2 definitions and Schedule 3 parental-income calculation/deprivation
+    rules (new cls 14A-14E, 16A and amended cl 17). From 1 April 2027 Part 2
+    replaces AS homeowner threshold categories, retaining separate categories
+    for specified people including SLP recipients and their partners; it also
+    updates the community-spouse cross-reference and adds transitional provisions.
+  limitation: >-
+    Not operative for 3 October 2026. This is a change inventory, not an
+    approved post-commencement rule, amount or graph edge. Shared definitions,
+    the new Schedule 3 cl 16A benefit-reduction/cancellation power and SLP-linked
+    AS categories require a fresh cross-policy review; SPS/SLP implications
+    are not assumed absent. Detailed post-commencement mapping remains pending.
+  checked_on: '2026-10-05'
 - id: sole-parent-support-msd-overview
   kind: agency_guidance
   title: MSD — Sole Parent Support

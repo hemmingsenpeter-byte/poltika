@@ -30,13 +30,23 @@ MSD's published rate categories are dated 1 April 2026 and distinguish net M
 from gross. Neither a displayed cut-out nor a net M column determines a new
 parameter or a universal tax conversion. No legal end date is invented.
 
-The [Jobseeker Support and Accommodation Supplement Amendment Act 2026](https://www.legislation.govt.nz/act/public/2026/54/en/latest/)
+The [Social Security (Jobseeker Support and Accommodation Supplement) Amendment Act 2026](https://www.legislation.govt.nz/act/public/2026/54/en/latest/)
 was retrieved as enacted on 3 September 2026; its page says it is not yet in
 force. Section 2 commences the Act on 2 November 2026, with Part 2 commencing
 on 1 April 2027. These are enacted future changes, not current rules or an
 unpassed proposal. Any assessment spanning those dates needs a new source
-and version review. This pack does not map the future amendment's detailed
-eligibility or interaction logic.
+and version review. Part 1 ss 4–12 add JS's parental-income requirement
+(new s 20(ca), ss 23A–23I), extend it to equivalent emergency benefit, and
+add review, regulatory and transitional provisions. They also amend
+Schedule 2 definitions and Schedule 3 parental-income calculation/deprivation
+rules, including new cls 14A–14E and 16A and amended cl 17. Part 2
+ss 13–15 replace the AS homeowner threshold categories in Schedule 4 Part 7,
+including separate categories for specified people such as SLP recipients
+and their partners, with transitional provisions. These provisions were
+re-read on 5 October 2026. This change inventory adopts no future parameter;
+shared definitions, cl 16A's benefit-reduction/cancellation power and
+SLP-linked AS categories require a fresh cross-policy review. The pack
+does not settle SPS/SLP implications or detailed post-commencement logic.
 
 Legislation was read from official HTML using a browser user agent when the
 web tool could not retrieve it. MSD/IRD pages were retrieved separately.
@@ -61,14 +71,16 @@ can preserve entitlement during a temporary period of income that reduces
 payment to zero. A zero payment must not silently establish no main-benefit
 status for WFF or AS.
 
-**Scope discrepancy for review — proposed `SPEC_ERROR`:** local 3.4 says a
+**Scope discrepancy — `SPEC_ERROR`, corrected at closeout:** local 3.4 said a
 household cannot receive two main benefits unless a specification says
 otherwise. Act s 18 limits simultaneous receipt by a person **in their own
 right**. Schedule 4 Parts 1 and 3 expressly include a partner receiving a
 main benefit in their own right. A household-wide prohibition would reject
 recognised categories, including mixed-benefit couples. The detailed plan is
-left unchanged; reviewer/Pete should clarify the intended contract before
-implementation. This proposal creates no household-wide prohibition.
+corrected in this PR under Pete's 5 October closeout instruction: the
+restriction remains per person, and couples with each partner receiving an
+own-right main benefit are `unsupported` until their Schedule 4 categories
+are specified. This correction adopts no rate or entitlement for a couple.
 
 Schedule 2's general dependent-child definition and each Schedule 4 part's
 specific exclusion need separate facts: JS Part 1 cl 7, SPS Part 2 cl 4 and
@@ -105,7 +117,7 @@ so one universal curve per benefit would lose statutory distinctions.
 
 | Benefit | Schedule 4 category inventory | Abatement and special locators |
 |---|---|---|
-| JS, Part 1 cl 1 | Single under 20 living with a parent, benefit commenced on/after 1 July 1998 (a); other single under 25 without dependent children (b); grandparented woman alone (c); ordinary older single without children (d); sole-parent child-age categories (e), (f); partner own-right main benefit (g); partner NZ Super/veteran pension (h); partner without such own-right entitlement (j) | (a), (b), (d), (j): Test 3; (c), (e), (f): Test 1; (g), (h): Test 4. Clauses 2–8 cover housekeeper, partner sanction/non-entitlement, sole-parent history, childcare disregard, imprisonment, child exclusion and living-with-parent meaning |
+| JS, Part 1 cl 1 | Single under 20 living with a parent, benefit commenced on/after 1 July 1998 (a); other single under 25 without dependent children (b); transferred on 15 July 2013 under Schedule 32 of the Social Security Act 1964 (c); ordinary older single without children (d); sole-parent child-age categories (e), (f); partner own-right main benefit (g); partner NZ Super/veteran pension (h); partner without such own-right entitlement (j) | (a), (b), (d), (j): Test 3; (c), (e), (f): Test 1; (g), (h): Test 4. The repealed 1964 Act's Schedule 32 dependency is unscoped and excluded from the first slice. Clauses 2–8 cover housekeeper, partner sanction/non-entitlement, sole-parent history, childcare disregard, imprisonment, child exclusion and living-with-parent meaning |
 | SPS, Part 2 cl 1 | Beneficiary with qualifying dependent children | Test 1. Clause 2 discretionary childcare earnings disregard; cl 3 discretionary spouse-income attribution for specified s 30 routes; cl 4 policy-specific child exclusion |
 | SLP, Part 3 cl 1 | Single age bands without children (a), (b); single with children (c); partner own-right main benefit (d); partner NZ Super/veteran pension (e); restricted-capacity/blindness claimant with partner without such own-right entitlement (g); carer claimant in that partner category (h) | (a)–(c), (g), (h): Test 1; (d), (e): Test 2. Clause 1's trailing paragraph separately disregards own-effort earnings for s 34 and totally blind claimants; cls 2–4 cover blind earnings subsidy; cls 5–6 residential care; cl 7 carer floor/cap; cl 8 child exclusion |
 
@@ -137,7 +149,7 @@ expressly outside cl 13 and has its own Part 3A timing.
 
 | Benefit | Statutory basis to preserve | Current operational corroboration |
 |---|---|---|
-| JS | Regulation 205/Schedule 6 current ordinary weekly basis; Schedule 1 cl 25 contains the prior grant transition. Historical grant dates require a separate audit | [JS income-test page](https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/income-test-01.html) says the annual-charging transition ended before the as-of date and distinguishes family categories |
+| JS | Regulation 205/Schedule 6 current ordinary weekly basis; Schedule 1 cl 25(4) ends each prior-grant transition at the end of its 52 weeks specified in cl 25(1)(b). Historical grant dates require a separate audit | [JS income-test page](https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/income-test-01.html) describes the transition as ended and distinguishes family categories; the per-grant statutory test governs historical applicability |
 | SPS | Regulation 205(1)/Schedule 6 prescribes the annual assessment basis. Regulation 205(2) permits a weekly agreement; (3) allows termination by either party | [SPS charging page](https://map.workandincome.govt.nz/map/income-support/main-benefits/sole-parent-support/charging-income-01.html) describes both bases, childcare exemptions and separate overseas-pension deductions |
 | SLP | Same regulation 205 annual basis/weekly-agreement distinction; route-specific earnings disregards in Schedule 4 Part 3 remain separate | [SLP charging page](https://map.workandincome.govt.nz/map/income-support/main-benefits/supported-living-payment/charging-income-01.html) corroborates bases and exemptions; carer-couple guidance adds the special cap |
 
@@ -214,9 +226,9 @@ eligibility/payment/basis evidence require review instead of assumed approval.
 | D1 result meaning | Decide whether the first result is pre-tax statutory entitlement, net payment with specified tax treatment, or a clearly limited entitlement conditional on an established grant. Do not label it complete household disposable income |
 | Payment precision and boundary source gap | Benefit-specific rounding, gross/net M reconciliation, tax-code and direct-deduction ordering were not established in this scoped pass. No monetary calculation, cut-out parameter or boundary benchmark is authorised until those sources are mapped and reviewed |
 | Clinical/discretionary facts | Determine acceptable evidence/provenance for an existing MSD finding; do not have the model infer medical capacity, exemption, childcare disregard or discretionary grant |
-| Entity contract | Clarify the local 3.4 per-household prohibition against s 18 and the partner tables; preserve different partner/care/child definitions across benefits, WFF and AS |
+| Entity contract | Local 3.4 is corrected to the sourced per-person restriction, with mixed-benefit couples explicitly unsupported. Preserve different partner/care/child definitions across benefits, WFF and AS; no partner-category implementation is approved |
 | Integration/version coverage | Tax scope, shared household semantics and existing WFF/AS period limits remain dependencies. Protected-month WFF, mixed-benefit couples and zero-payment entitlement status remain explicitly gated |
-| Future maintenance | Review the detailed enacted JS amendments before 2 November and AS amendments before 1 April 2027. This pack identifies commencement only; it cannot approve future graph edges or rates |
+| Future maintenance | Review detailed enacted JS/equivalent-emergency-benefit and shared-definition/income amendments before 2 November, and AS homeowner amendments before 1 April 2027. This pack inventories the changes and commencement; it cannot approve future graph edges or rates |
 
 The rounding/payment gap is proposed `MISSING_SOURCE` for the dependent
 monetary claim, not evidence that no rule exists. Competing or insufficient
