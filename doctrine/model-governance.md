@@ -9,7 +9,7 @@ Phase A work under ADR-0021. The decisions below resolve the draft's
 ## Rule
 
 Every model and engine Poltika runs has a registry entry and a model card.
-Nothing about a model changes silently. Every output carries the validation
+Nothing about a model changes silently. Every output must carry the validation
 status of the least mature model it relies on. Language follows evidence.
 
 This doctrine states process. It states no rate, threshold or policy value.
@@ -168,7 +168,7 @@ These come from "Phases, milestones and validation gates" in
 - **Demotion.** A milestone can be lost when the evidence stops supporting it,
   and outputs are relabelled. A model's level is lowered in the registry with a
   change record that cites the evidence.
-- **Labels.** Every output carries the validation status of the least mature
+- **Labels.** Every output must carry the validation status of the least mature
   model it relies on. `Registry.label()` computes it from `depends_on`. No
   output schema carries the label yet. The merged never-build checks (#162,
   legacy Task 1.6) do not attach it. Runtime label integration remains scoped
@@ -194,10 +194,10 @@ national milestone.
 3. Run `python -m poltika.engines.assurance.model_cards` and commit the card.
 4. Run `pytest -q`. The registry check must pass.
 
-## Hooks for later tasks
+## Hooks for current capabilities
 
-| Task | What it adds |
+| Current capability (historical origin) | What remains |
 | --- | --- |
-| 1.6, mechanical checks | A release-gate row that outputs carry the label, and that no page claims a milestone not reached |
-| 6, validation framework | Validation reports for the cards, and the levels beyond `spec_validated` |
-| 18, continuous state estimation | Diagnosed updates, recorded as change records (the plan, "Model governance" row) |
+| A/C: mechanical checks (legacy 1.6) | #162 is merged; validation-grade assertions skip until grades exist. Runtime output labels remain separate integration work. |
+| C: assurance/validation (legacy Step 6) | Validation reports for the cards and later levels when supported by evidence. No empirical/predictive maturity is claimed here. |
+| M: continuous state estimation (legacy Step 18) | Diagnosed updates with change records, if actual validated-model needs justify this capability. |
