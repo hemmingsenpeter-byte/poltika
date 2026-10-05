@@ -11,7 +11,7 @@ Generated from `model_registry/registry.yaml` by
 
 ## Purpose
 
-Runs one household through both module entry points, each for its own period, and compares the shared facts under the Task 28.3 interaction contract. There is no combined total and no income coupling. A shared-fact contradiction makes every component needs_review.
+Runs one household through both module entry points, each for its own period, and compares the shared facts under the Task 28.3 interaction contract. There is no combined total and no income coupling. A shared-fact contradiction makes each non-unsupported component needs_review; existing unsupported outcomes are preserved.
 
 ## Methods
 

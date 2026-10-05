@@ -264,7 +264,8 @@ models:
       Runs one household through both module entry points, each for its own
       period, and compares the shared facts under the Task 28.3 interaction
       contract. There is no combined total and no income coupling. A shared-fact
-      contradiction makes every component needs_review.
+      contradiction makes each non-unsupported component needs_review; existing
+      unsupported outcomes are preserved.
     entry_points:
       - {module: poltika.scenarios.combined, function: run_combined_household}
     depends_on: [wff_engine, as_engine]
