@@ -1,0 +1,18 @@
+# Code owners for Poltika.
+#
+# The target ruleset requires zero approvals to merge (ADR-0020, "The ruleset
+# on main"); until it is active, merges follow the same rule by agreement.
+# CODEOWNERS therefore routes review requests and marks risk. It does not
+# block a merge.
+
+# Everything.
+*                                   @hemmingsenpeter-byte
+
+# Policy specs, simulator changes and calculated amounts require the
+# independent review in ADR-0020 merge rule 4. Protected statutory expected
+# value changes are Tier C. CI and test infrastructure maintenance is Tier A;
+# these ownership patterns route it for review without changing its tier.
+/policy_specs/                      @hemmingsenpeter-byte
+/src/poltika/engines/simulator/     @hemmingsenpeter-byte
+/tests/fixtures/                    @hemmingsenpeter-byte
+/.github/workflows/                 @hemmingsenpeter-byte

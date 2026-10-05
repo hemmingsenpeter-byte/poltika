@@ -24,6 +24,9 @@ result identity changes.
   report execution, an offline lychee check of markdown links and anchors, and the
   source-currency report now runs on pull requests (report only). CI only; no
   amount changes.
+- **Governance files** (Tier A, docs): `.github/CODEOWNERS`, `SECURITY.md`,
+  `CONTRIBUTING.md`, issue forms under `.github/ISSUE_TEMPLATE/` and
+  `docs/releases/RELEASE_CHECKLIST.md`. No amount changes.
 - **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`
   lists every instrument under `policy_specs/` with its parameters (current
   value, unit, effective dates, review status), sources and decisions, so a
