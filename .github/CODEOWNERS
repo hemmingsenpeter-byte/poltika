@@ -1,6 +1,7 @@
 # Code owners for Poltika.
 #
-# Zero approvals are required to merge (ADR-0020, "The ruleset on main").
+# The target ruleset requires zero approvals to merge (ADR-0020, "The ruleset
+# on main"); until it is active, merges follow the same rule by agreement.
 # CODEOWNERS therefore routes review requests and marks risk. It does not
 # block a merge.
 

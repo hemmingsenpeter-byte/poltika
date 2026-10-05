@@ -50,7 +50,7 @@ anyone else.
 
 ## Automated checks
 
-The baseline (ADR-0020). Each runs in CI; the job names below are what
+The professional baseline (`PROGRAMME_STATUS.md`). Each runs in CI; the job names below are what
 GitHub reports:
 
 - Dependabot: weekly dependency update PRs (`uv` and GitHub Actions).
@@ -61,7 +61,8 @@ GitHub reports:
 - `zizmor (actions)`: static analysis of the workflows under
   `.github/workflows/`. Any finding fails the check.
 - `links`: offline check of relative Markdown links and anchors.
-- `source-currency`: reports sources due for re-check; it never fails a PR.
+- `source-currency`: reports sources due for re-check. It runs weekly and on pull requests,
+  and never fails a PR for something being due.
 
 CodeQL is not used on this private repository. No secrets scanner has been
 added. Do not infer that secret detection is covered by the checks above.
