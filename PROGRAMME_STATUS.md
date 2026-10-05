@@ -50,8 +50,7 @@ Required Claude review/acceptance remains pending.
 Task 24 remains gated by 21–23;
 prototype review changes no task state. The [execution handoff](docs/programme/EXECUTION.md)
 and [dated evidence](reviews/2026-10-03-programme-verification.md) record the
-reporting limits and #153/#152 refresh order; neither draft doctrine nor the
-unmerged migration displaces Pete's authorised working sequence.
+reporting limits and the 3 October refresh order (#153 and #152, since merged, as are #144-#147); none of it displaces Pete's authorised working sequence.
 
 | Status | Meaning |
 | --- | --- |
@@ -297,6 +296,4 @@ household implementation is assigned while those files move. Branch-local
 construction-mode claims remain unaccepted ownership evidence.
 Primary-source tax/benefit scoping and D1–D3 proposals
 are parallel research (#148/#151 drafts); existing A closeout continues with
-its current owners. #150's actual merge is recorded separately from #152's
-pending queue closure. External reviewer permission blocks the affected new
-Claude review/acceptance runs; authorised local writing/checks continue.
+its current owners. (3 October handoff; #150 and #152 have since merged and the #128 queue row is closed.)

@@ -13,6 +13,10 @@ This model runs inside the high-throughput build mode in
 modules are parallelised, one writer per isolated worktree, and the specialist
 reviews gate integration, never statutory correctness, provenance or protected values.
 
+> **Dated record.** Sections below on cycles and handoffs are snapshots as at 3 October 2026,
+> written when #144-#147, #150, #152 and #153 were unmerged. All of them have since merged;
+> read their "unmerged/draft" wording as historical. Live state: `PROGRAMME_STATUS.md` and `gh`.
+
 ## Roles and capacity
 
 There are four concurrent slots including the coordinating agent, so at

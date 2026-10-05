@@ -1,5 +1,7 @@
 # Programme execution — author preflight
 
+> Dated 3 October 2026, before the economist-first migration (#144-#147) merged; its "pending" wording is historical.
+
 - Date: 3 October 2026, Pacific/Auckland.
 - Author: GPT/Codex project manager, appointed by Pete's current goal.
 - Base: prepared migration `422b055cb65570d9dd070eae3e054574aa2858d7`.
