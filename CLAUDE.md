@@ -1,5 +1,7 @@
 # Claude Code Instructions — Poltika
 
+<!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
+
 ## Start here
 
 1. Check the repository state before relying on anything you read. Several
@@ -39,7 +41,7 @@
 | Task | Read |
 | --- | --- |
 | Running scenarios or answering questions about v0.1 | `docs/ORIENTATION.md` and `docs/demo/v0_1/` |
-| Planning, sequencing or starting new work | `BUILD_PLAN_PROGRAMME.md` (ADR-0019: the master build order of 33 steps with Phase 0 foundations and eight delivery phases, and what exists against each step), then the step's own plan |
+| Planning, sequencing or starting new work | `BUILD_PLAN_PROGRAMME.md` (ADR-0021: the single current master build order, capability gates A–P), then `PROGRAMME_STATUS.md` and the relevant active detailed lane |
 | Checking or explaining a result | Also the policy's `specification.md` calculation sequence and `decisions/` |
 | Changing policy logic, statutory values, code or repository structure | Everything under "Before making changes" below |
 | Opening or reviewing a PR | The "Review" section below |
@@ -48,7 +50,8 @@
 
 Read:
 
-- BUILD_PLAN.md
+- BUILD_PLAN_PROGRAMME.md and the relevant active detailed lane
+- BUILD_PLAN.md — historical v0.1 record; retained substantive doctrine and anchors
 - ARCHITECTURE.md
 - REPOSITORY_STRUCTURE.md — before creating any new production file, module, or directory; a proposed component with no obvious location means updating that file deliberately, not creating an ad-hoc directory
 - doctrine/epistemic-constitution.md
@@ -72,7 +75,7 @@ If the source is missing or ambiguous, stop and flag it.
 Every claim carries one of the eight evidence classes in
 `doctrine/epistemic-constitution.md` (approved 2 October 2026). Validation
 expectations retain Decision 1's temporary exception: their classification
-is deferred to Step 6. An AI-authored claim is an AI hypothesis until its
+is deferred to Phase C validation (old Step 6; the accepted exception is unchanged). An AI-authored claim is an AI hypothesis until its
 promotion gate passes. The constitution adds to the ground-truth rules above
 and replaces none of them.
 A caller's assertion stays a Scenario, an explicit Assumption stays an
@@ -81,7 +84,13 @@ treated as an independently verified Fact or Rule.
 
 ## Implementation
 
-Follow the vertical-slice approach defined in BUILD_PLAN.md.
+Follow the vertical-slice approach in doctrine/development-doctrine.md and
+the single current BUILD_PLAN_PROGRAMME.md. Preserve the frozen constraints
+in BUILD_PLAN.md until they are deliberately extracted.
+
+Active lanes are BUILD_PLAN_v0_3.md (household economic kernel) and
+BUILD_PLAN_v0_1_6.md (statutory maintenance). BUILD_PLAN_v0_2.md is release
+closeout support. Archived plans never determine new work.
 
 Do not:
 - introduce speculative abstractions
@@ -105,7 +114,8 @@ Use the discrepancy taxonomy in doctrine/review-doctrine.md.
 
 Before publishing or recommending acceptance of an implementation PR, use
 `.claude/skills/pr-review-preflight/SKILL.md`. An author preflight is not the
-independent reviewer rotation required by BUILD_PLAN.md.
+independent reviewer rotation in doctrine/review-doctrine.md and the
+historical BUILD_PLAN.md Roles. Acceptance follows ADR-0020.
 
 To review a PR you did not write (a Codex PR, a review-queue row, a
 re-review after new commits), use `.claude/skills/pr-review/SKILL.md`.
@@ -130,7 +140,7 @@ is up to date, `pr-review-preflight` has run and a `poltika-reviewer` pass
 has no unresolved P1 or P2 finding. A PR touching `policy_specs/`,
 `engines/simulator/` or any calculated amount also waits for its GPT/Codex
 row in `review_packets/review_queue.md` to clear. Never use `--admin` or
-bypass a check. `PROGRAMME_STATUS.md` tracks every step and task.
+bypass a check. `PROGRAMME_STATUS.md` tracks every current capability task and its evidence.
 
 ## External prior art
 

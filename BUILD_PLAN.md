@@ -1,9 +1,12 @@
 # Poltika v0.1 Build Plan
 
 **Date:** 20 September 2026
-**Status:** FROZEN — workflow and roadmap discussion closed. Each task's
-progress is recorded under it below; README.md's Current status says where
-v0.1 stands.
+**Status:** HISTORICAL / FROZEN v0.1 build record. This file is not the current
+build order. Planning, sequencing and new work begin with
+[BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) under ADR-0021, with live
+progress in [PROGRAMME_STATUS.md](PROGRAMME_STATUS.md). Frozen substantive
+doctrine, task history and anchors remain here until deliberately migrated.
+
 
 ---
 
@@ -147,6 +150,12 @@ what evidence was considered, who/what decided, when.
 ---
 
 ## Roadmap Doctrine (frozen)
+
+**Historical sequencing below:** this section records the ADR-0019 programme
+and its former release mappings. ADR-0021 supersedes that execution order and
+version-based milestone definition. It does not supersede the source, IP,
+data-acquisition, deterministic-core, test or review constraints retained above.
+Use the root BUILD_PLAN_PROGRAMME.md for all current sequencing.
 
 Superseded its original capability-sequence framing per ADR-0008 (2026-09-21),
 and its later release sequences per ADR-0014 and ADR-0015. Since ADR-0019

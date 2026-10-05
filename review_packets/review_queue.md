@@ -1,10 +1,11 @@
 # Independent review queue
 
-`ROADMAP_REALIGNMENT.md` W1.1. This lists every merged PR whose independent
+Historical origin: `ROADMAP_REALIGNMENT.md` W1.1 (archived). Current review
+sequencing follows `BUILD_PLAN_PROGRAMME.md` Phase A and ADR-0020. This lists every merged PR whose independent
 (GPT/Codex) review or resulting fixes remain outstanding. They merged on Claude Code's author
 preflight under Pete's recorded delegation, which the working agreement
 allows. The review-debt cap was suspended on 29 September 2026
-(`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` P17): open
+(`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` retained decision P17): open
 rows no longer stop merges, but every one is still listed here, and
 release gates skip, naming them, until review and required fixes are complete.
 

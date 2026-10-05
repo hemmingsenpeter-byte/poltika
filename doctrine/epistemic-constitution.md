@@ -1,9 +1,19 @@
 # Epistemic constitution
 
-**Status:** approved by Pete on 2 October 2026 (Task 1.1 of
-`BUILD_PLAN_PROGRAMME.md`), with the seven classification decisions under
+**Status:** approved by Pete on 2 October 2026 (historical Task 1.1,
+now permanent doctrine under `BUILD_PLAN_PROGRAMME.md` Phase A), with the seven classification decisions under
 "Decisions" below. Drafted by Claude Code; reviewed by GPT/Codex
 (`reviews/2026-10-02-pr136.md`).
+
+## Sequencing references (ADR-0021)
+
+The approved classifications and seven decisions below remain unchanged.
+Historical task numbers refer to the preserved ADR-0019 programme. Current
+execution follows the sole `BUILD_PLAN_PROGRAMME.md`: bounded governance in A,
+minimum household contracts in B, model/benchmark validation in C, population
+contracts in E, historical/prediction records in I, uncertainty propagation in J,
+national state in K and the validated digital-twin gate in M. They do not impose
+an abstract foundation phase before household modelling.
 
 ## Rule
 
@@ -31,7 +41,7 @@ policy value. Those come from cited primary NZ sources under `policy_specs/`
 ## The eight evidence classes
 
 Every claim has exactly one class, except the validation expectations in
-Decision 1, whose classification is deferred to Step 6. If a claim seems
+Decision 1, whose classification is deferred to Phase C validation (old Step 6). If a claim seems
 to fit two, it is two claims, and each is classed on its own.
 
 | Class | Meaning |
@@ -53,7 +63,7 @@ Four consequences:
 - An unknown is not an Assumption until someone writes down a value for it.
   Until then, Poltika reports it as unknown (a missing fact gives
   `needs_review`) and never uses zero.
-- An AI hypothesis enters a model only through the AI gate (Task 1.2). The
+- An AI hypothesis enters a model only through the AI gate (bounded Phase A work; old Task 1.2). The
   other classes enter labelled with their class, never relabelled.
 - A Transferred estimate is always labelled as borrowed. It is never shown as
   an Estimate for New Zealand.
@@ -78,16 +88,15 @@ evidence E_x for it. Together they carry eleven fields:
 A quantity with a field missing is incomplete. It is never filled with a
 default.
 
-Task 2.6 will define the quantity type, using the National Variable Registry
-(Step 2). Its design accepts intervals and distributions; their propagation
-starts at Step 11. This is a planned type, not a claim that the existing
-output schemas already carry all eleven fields.
-
-Task 2.6 already assigns the fields: x̂ is the value at full stored precision;
-D_x is the uncertainty; E_x carries evidence class, sources, method,
-dependencies and model version. Unit, reference period, geography and
-population come from the registry as the quantity's context. This follows
-the approved plan without adding an allocation decision.
+The historical quantity-type task (2.6) proposed a typed representation of
+these fields. Under ADR-0021, representation grows from actual model contracts
+in B/E; formal uncertainty propagation is in J. The allocation remains: x̂ is
+the value at full stored precision; D_x is uncertainty; E_x carries evidence
+class, sources, method, dependencies and model version. Unit, reference period,
+geography and population provide context. This is not a claim that existing
+output schemas already carry all eleven fields, or a requirement to merge the
+parked generic type before household work. None of the metadata, uncertainty,
+precision or no-default constraints above is waived.
 
 ## The four non-negotiables
 
@@ -96,13 +105,13 @@ the approved plan without adding an allocation decision.
    resolved stops the report. A report with a silent gap is worse than none.
 2. **No false precision.** A single household's Rule output keeps the precision
    the law sets. Estimate-dependent figures show their range (the precision rule,
-   Task 1.3). A point estimate is never shown where the uncertainty is large.
+   old Task 1.3, retained P3). A point estimate is never shown where the uncertainty is large.
 3. **No AI-generated claim enters a model without validation.** An AI
-   hypothesis is promoted only through the AI gate (Task 1.2). The existing
+   hypothesis is promoted only through the AI gate (bounded Phase A work; old Task 1.2). The existing
    boundary stays: the LLM layer never calculates policy outcomes or recalls
    statutory values (`doctrine/llm_boundaries.md`).
 4. **No model expansion without tests.** A new rule, parameter, relationship or
-   engine arrives with its tests and, from Step 6, its validation cases
+   engine arrives with its tests and, in Phase C, its validation cases
    (`doctrine/test-doctrine.md`). Protected expected values keep their
    process.
 
@@ -114,7 +123,7 @@ outcomes by a weighting of its own.
 - It measures consequences: who gains or loses, what it costs, through what
   mechanism, with what confidence, and compared with what.
 - It never scores a party, a plan or a manifesto. It never says a plan wins.
-  Step 26 analyses proposals without scoring them.
+  Phase O analyses proposals without scoring them.
 - Where an objective is needed, a person states it, and the output shows that
   it was stated. Poltika may show trade-offs among objectives people name. It
   never names the objective for them.
@@ -124,18 +133,18 @@ outcomes by a weighting of its own.
 ## What Poltika never builds
 
 This list is the plan's ("What Poltika never builds"). The mechanical checks
-for it are Task 1.6.
+for it are bounded Phase A work (old Task 1.6).
 
 - No LLM pretending to be five million New Zealanders.
 - No score for a party's policy, and no "this plan wins".
 - No secret normative objective function.
 - No black-box AI forecast of GDP, or of anything else.
-- No silently changing models. Every change is a recorded change (Tasks 1.5
-  and Step 18).
+- No silently changing models. Every change is a recorded change (bounded governance work in A
+  and state estimation in M).
 - No point estimate where the uncertainty is large.
 - No synthetic population presented as reality.
 - No policy search before causal relationships are credible.
-- No "digital twin" branding before Phase 5's milestone.
+- No "digital twin" branding before Phase M's validated digital-twin milestone.
 - No AI claim promoted into a model without validation.
 - Never optimise the model instead of the country.
 
@@ -159,7 +168,7 @@ decided it; see "Decisions" below.
 | A run's `scenario_id`, `result_id` and artifact hashes | `src/poltika/scenarios/record.py` | E_x for a Model output (model version, dependencies) |
 | A provenance report | `src/poltika/engines/assurance/provenance.py` | E_x, rendered |
 | A v0.2 data snapshot and its manifest | `data/metadata/datasets/*.yaml`, `data/raw/` | Fact or Estimate, by dataset (decision 2) |
-| A canonical variable definition | `data/metadata/variables/dictionary.yaml`; `src/poltika/semantics/variables.py` | Not a claim. It is the definition behind unit, period, geography, population (Step 2 seed) |
+| A canonical variable definition | `data/metadata/variables/dictionary.yaml`; `src/poltika/semantics/variables.py` | Not a claim. It is the definition behind unit, period, geography, population (existing registry seed; expanded from model contracts in B/E) |
 
 ### Decisions (Pete, 2 October 2026)
 
@@ -169,7 +178,7 @@ decided it; see "Decisions" below.
    (`policy_specs/wff_as_interaction/golden_households.yaml`, independently
    hand-calculated) and golden snapshots
    (`tests/fixtures/golden_results_v0_1.json`, frozen run results) have no
-   evidence class of their own yet. The Step 6 validation framework gives
+   evidence class of their own yet. The validation framework (old Step 6, now Phase C) gives
    them one. Their protected-value process is unchanged.
 2. **Data snapshots are Fact or Estimate, by dataset.** Administrative
    counts and registrations are Fact. Survey-based figures, such as
@@ -177,7 +186,7 @@ decided it; see "Decisions" below.
    (`data/metadata/datasets/stats_nz_household_income_housing_costs.v1.yaml`,
    `data/metadata/datasets/stats_nz_household_net_worth.v1.yaml`), are
    Estimate, because they carry sampling error. Each dataset manifest will
-   record its class (Step 2).
+   record its class as the contracts are extended (B/E; old Step 2).
 3. **Each decision record states its own class.** A `DEC-*.md` is a Rule
    where it chooses between readings of the law's text, with the decider
    and date in E_x. It is an Assumption where the law is silent, and stays
@@ -216,7 +225,7 @@ into zero.
 No `src/poltika/llm/` exists yet. When it does, everything it generates (a
 translation of a question, a draft source, a suggested value, an
 interpretation, an estimate) is an AI hypothesis. The same holds for anything
-Claude Code or GPT/Codex drafts into the repository. The AI gate (Task 1.2)
+Claude Code or GPT/Codex drafts into the repository. The AI gate (bounded Phase A work; old Task 1.2)
 names the gate for each kind of artifact. This doctrine only fixes the rule:
 no AI output is a source.
 
@@ -231,15 +240,16 @@ outputs keep their labels and trace their dependencies; lacking an
 independent statutory source does not itself turn them into AI hypotheses.
 `CLAUDE.md`'s "Ground truth" points here.
 
-## Hooks for later tasks
+## Hooks for current capabilities
 
-| Task | What it adds to this doctrine |
+| Current capability (historical origin) | What it adds to this doctrine |
 | --- | --- |
-| 1.2, the AI gate | The gate for each kind of artifact, each enforced by a check |
-| 1.3, the precision rule (P3) | The display rule for non-negotiable 2 |
-| 1.4, data governance | `doctrine/data-governance.md`. The interim rule (P5): no output disaggregated by ethnicity or iwi |
-| 1.5, model governance | `doctrine/model-governance.md` and the registry. The model-version and change-record parts of E_x |
-| 1.6, mechanical checks | The release-gate rows that enforce the never-build list |
-| 1.7, the `evidence-classes` skill | How every later task applies this doctrine |
-| 2.6, the quantity type | The code form of X |
-| 6, the validation framework | The class and home of test expectations |
+| A: AI gate (1.2) | The promotion gate for each artifact, enforced by checks |
+| A/C: precision (1.3, P3) | Household legal precision; population/baseline/estimate-dependent figures shown to three significant figures with their range; stored values keep full precision |
+| Permanent governance, E/M where applicable (1.4) | Sourced constraints and Pete's agreed governance; interim P5 prohibits ethnicity/iwi disaggregation |
+| A/C: bounded model governance (1.5) | Model versions, validation records and recorded changes |
+| A/C: mechanical checks (1.6) | Checks enforcing permanent constraints without a speculative infrastructure gate |
+| A: evidence-classes skill (1.7, PR #138) | Applying the approved classifications; do not duplicate in-flight work |
+| B/E: model-required quantity contracts (2.6) | Representation of X from actual needs; general wrappers are deferred |
+| C: validation framework (6) | Class and home of validation expectations; Decision 1's temporary deferral stays in force until resolved |
+| J: uncertainty propagation (11) | Formal propagation over supported empirical/behavioural models |
