@@ -96,7 +96,7 @@ packets can still say “open” historically and do not override current record
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 5 | Minimum household semantics | In progress | Claude Code; GPT/Codex mapping review | None yet | Reconcile existing units/periods/entities work with minimum household scope | CanonicalVariable and population contracts; uncommitted workers retained | 2.1–2.6, 2.10 scoped |
+| 5 | Minimum household semantics | In progress | Claude Code; GPT/Codex mapping review | #161 (units, old 2.2); periods (2.3) and entities (2.4) follow in order | Merge 2.2, then 2.3, then 2.4 (shared `errors.py`, CHANGELOG, REPOSITORY_STRUCTURE); then reconcile with the registry (2.1). `units.convert` is a stub: no sourced deflator rule exists, so any conversion is refused | CanonicalVariable and population contracts; recovered worktree drafts committed with Pete's approval of 2026-10-05 | 2.1–2.6, 2.10 scoped |
 | 6 | Shared household model | Planned | Claude Code; GPT/Codex mapping review | None | 5; independently reviewed policy mappings | ADR-0017 accepted; adapters/golden parity required | 2.7; v0.3 Phase 1; W6 |
 | 7 | Personal income tax | Not started | GPT/Codex sources; Claude Code implements; Pete slice | None | Source pack and D1 decision; 5–6 for integration | No personal-income-tax policy pack on reconciled main | 3A; v0.3 0.1 / Phase 2 |
 | 8 | Three core main benefits | Not started | GPT/Codex sources; Claude Code implements; Pete slice | None | Source packs and D1 decisions; 5–6 for integration | No new main-benefit policy packs on reconciled main | 3A; v0.3 0.2 / Phase 3 |
@@ -232,7 +232,7 @@ not proof of a live PR or approval of broader scope.
 | AI gate, `prog/ai-gate` | In flight (other session), old 1.2; coordinate bounded A closeout with its owner. |
 | Model governance, `prog/model-governance` | In flight (other session), old 1.5; finish bounded A work only, retain doctrine constraints. |
 | Never-build checks, `prog/never-build-checks` | In flight (other session), old 1.6; coordinate bounded A checks. |
-| Units/periods/entities, old 2.2–2.4 | In progress local work; preserve and reconcile minimum B 5 requirements. |
+| Units/periods/entities, old 2.2–2.4 | Recovered from local worktrees into PRs on 2026-10-05: units #161; periods and entities follow on the merged units PR. Reconcile with minimum B 5 requirements. |
 | Quantity draft, `claude/step2-quantity` | Parked draft, not for review; no universal schema prerequisite. P3 display obligation remains. |
 | State schema, old 2.8 | Not started; old planned scope retained in archive. K 35 deferred pending real model requirements. |
 | Dataset evidence classes / existing DEC classes | Approved constitution follow-ups retained; immutable manifests and hash-bound DEC files are not silently rewritten. Pete confirms interpretations/classes where required. |
