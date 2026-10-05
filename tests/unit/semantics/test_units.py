@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from pathlib import Path
 
 import pytest
@@ -96,6 +96,18 @@ def test_unit_validation() -> None:
         )
 
 
+@pytest.mark.parametrize("scale", [Decimal("Infinity"), Decimal("-Infinity"), Decimal("NaN")])
+def test_unit_rejects_non_finite_scale(scale: Decimal) -> None:
+    with pytest.raises(ValidationError, match="finite"):
+        Unit(
+            id="persons_invalid",
+            dimension=Dimension.PERSONS,
+            scale=scale,
+            price_basis=PriceBasis.NOT_APPLICABLE,
+            label="invalid",
+        )
+
+
 def test_rescale_round_trip_exact() -> None:
     thousand, one = get_unit("persons_thousand"), get_unit("persons")
     v = Decimal("1234.567")
@@ -103,6 +115,35 @@ def test_rescale_round_trip_exact() -> None:
     assert rescale(rescale(v, thousand, one), one, thousand) == v
     m = rescale(Decimal("2.5"), get_unit("nzd_million"), get_unit("nzd_thousand"))
     assert m == Decimal(2500)
+
+
+@pytest.mark.parametrize("precision", [6, 28])
+def test_rescale_preserves_all_digits_independent_of_context(precision: int) -> None:
+    value = Decimal("12345678901234567890123456789.123")
+    thousand, one = get_unit("persons_thousand"), get_unit("persons")
+    with localcontext() as context:
+        context.prec = precision
+        scaled = rescale(value, thousand, one)
+        assert scaled == Decimal(12345678901234567890123456789123)
+        assert rescale(scaled, one, thousand) == value
+        assert context.prec == precision
+
+
+def test_rescale_refuses_repeating_decimal_without_rounding() -> None:
+    thirds = get_unit("persons").model_copy(update={"id": "persons_triple", "scale": Decimal(3)})
+    with pytest.raises(UnitConversionError, match="exact finite Decimal"):
+        rescale(Decimal(1), get_unit("persons"), thirds)
+
+
+def test_rescale_accepts_non_power_of_ten_terminating_scale() -> None:
+    unit = get_unit("persons").model_copy(update={"id": "persons_1024", "scale": Decimal(1024)})
+    assert rescale(Decimal(1), get_unit("persons"), unit) == Decimal("0.0009765625")
+
+
+@pytest.mark.parametrize("value", [Decimal("Infinity"), Decimal("NaN")])
+def test_rescale_refuses_non_finite_amount(value: Decimal) -> None:
+    with pytest.raises(UnitConversionError, match="non-finite"):
+        rescale(value, get_unit("persons"), get_unit("persons_thousand"))
 
 
 @pytest.mark.parametrize(
