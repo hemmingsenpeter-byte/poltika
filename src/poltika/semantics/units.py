@@ -252,7 +252,7 @@ def convert(
     """Convert across price bases by a named rule. Refuses when no rule
     exists; never implicit."""
     del value
-    rule = (registry or CONVERSIONS).find(from_unit.id, to_unit.id, on)
+    rule = (registry if registry is not None else CONVERSIONS).find(from_unit.id, to_unit.id, on)
     if rule is None:
         raise MissingConversionRuleError(
             f"no sourced conversion rule from '{from_unit.id}' to '{to_unit.id}' "
