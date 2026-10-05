@@ -9,7 +9,10 @@ implicitly, and only between units that share dimension, price basis and
 currency. Any other conversion (nominal to real, for example) exists only as
 a named `UnitConversion` rule with a deflator variable and a cited source.
 No such rule has a source in the repository yet, so the conversion registry
-starts empty and `convert` refuses.
+starts empty and `convert` refuses. `convert` is a deliberate stub: even a
+registered rule raises, because no deflator method is implemented. No
+real-price unit is defined either, since a real basis needs a sourced base
+period.
 """
 
 from __future__ import annotations
@@ -197,7 +200,10 @@ class UnitConversion(BaseModel):
 
 
 class ConversionRegistry:
-    def __init__(self, rules: tuple[UnitConversion, ...] = ()) -> None:
+    def __init__(
+        self, rules: tuple[UnitConversion, ...] = (), units: Mapping[str, Unit] | None = None
+    ) -> None:
+        self._units = UNITS if units is None else units
         self._rules: dict[str, UnitConversion] = {}
         for rule in rules:
             self.register(rule)
@@ -205,8 +211,19 @@ class ConversionRegistry:
     def register(self, rule: UnitConversion) -> None:
         if rule.id in self._rules:
             raise ValueError(f"duplicate conversion rule id '{rule.id}'")
-        get_unit(rule.from_unit)
-        get_unit(rule.to_unit)
+        try:
+            source, target = self._units[rule.from_unit], self._units[rule.to_unit]
+        except KeyError as missing:
+            raise UnknownUnitError(f"unknown unit id {missing}") from None
+        # A conversion changes price basis. A pure change of scale is `rescale`.
+        if (
+            source.dimension is not target.dimension
+            or source.currency != target.currency
+            or source.price_basis is target.price_basis
+        ):
+            raise ValueError(
+                f"rule '{rule.id}' must keep dimension and currency and change price basis"
+            )
         self._rules[rule.id] = rule
 
     def find(self, from_unit: str, to_unit: str, on: date) -> UnitConversion | None:

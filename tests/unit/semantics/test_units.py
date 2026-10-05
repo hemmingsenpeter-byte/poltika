@@ -174,16 +174,40 @@ def test_rule_needs_deflator_and_source() -> None:
         )
 
 
+_REAL = Unit(
+    id="nzd_real",
+    dimension=Dimension.MONEY,
+    scale=Decimal(1),
+    price_basis=PriceBasis.REAL,
+    currency="NZD",
+    label="NZD real",
+)
+_TEST_UNITS = {**units.UNITS, "nzd_real": _REAL}
+
+
 def test_registered_rule_found_but_no_method_implemented() -> None:
-    reg = ConversionRegistry((_rule(),))
-    assert reg.find("nzd", "nzd_thousand", D) is not None
-    assert reg.find("nzd", "nzd_thousand", date(2020, 1, 1)) is None
+    rule = _rule(to_unit="nzd_real", valid_to=date(2030, 1, 1))
+    reg = ConversionRegistry((rule,), _TEST_UNITS)
+    assert reg.find("nzd", "nzd_real", D) is not None
+    assert reg.find("nzd", "nzd_real", date(2020, 1, 1)) is None
+    assert reg.find("nzd", "nzd_real", date(2029, 12, 31)) is not None
+    assert reg.find("nzd", "nzd_real", date(2030, 1, 1)) is None  # valid_to is exclusive
     with pytest.raises(UnitConversionError):
-        convert(Decimal(1), get_unit("nzd"), get_unit("nzd_thousand"), D, reg)
+        convert(Decimal(1), get_unit("nzd"), _REAL, D, reg)
     with pytest.raises(ValueError, match="duplicate"):
-        ConversionRegistry((_rule(), _rule()))
+        ConversionRegistry((rule, rule), _TEST_UNITS)
     with pytest.raises(UnknownUnitError):
         ConversionRegistry((_rule(to_unit="euro"),))
+
+
+def test_a_rule_must_change_price_basis_not_scale() -> None:
+    with pytest.raises(ValueError, match="change price basis"):
+        ConversionRegistry((_rule(),))  # nzd to nzd_thousand is a rescale
+    with pytest.raises(ValueError, match="change price basis"):
+        ConversionRegistry((_rule(from_unit="persons", to_unit="nzd_real"),), _TEST_UNITS)
+    # With the shipped units, no nominal-to-real rule can be registered yet.
+    with pytest.raises(UnknownUnitError):
+        ConversionRegistry((_rule(to_unit="nzd_real"),))
 
 
 def test_price_basis_reexported_from_variables() -> None:
