@@ -54,6 +54,13 @@ poltika/
 │
 ├── doctrine/          — process/workflow rules, one file per BUILD_PLAN frozen doctrine section, plus narrow architectural guardrails
 ├── adr/               — architecture decisions with rationale and context
+├── model_registry/    — Task 1.5 (doctrine/model-governance.md): registry.yaml, one entry per engine or
+│                         runner (version, owner, purpose, validation status linked to its cases, evidence
+│                         classes, limitations, change log), and cards/, one generated card per entry
+│                         (python -m poltika.engines.assurance.model_cards). Its own directory because a
+│                         model is neither a policy source pack, nor process, nor a dataset; it is
+│                         reviewed YAML like those. tests/unit/engines/assurance/test_model_registry.py
+│                         fails CI on an engine with no entry or card
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
@@ -162,6 +169,8 @@ poltika/
 │   │                        report from traced results -- verifies the
 │   │                        run's artifact hashes, resolves source/rule/
 │   │                        decision ids, renders JSON and Markdown);
+│   │                        model_cards.py (Task 1.5: loads the model registry, renders
+│   │                        its cards, `--check` for CI);
 │   │                        explanation.py (v0.1.5 Phase 3: deterministic
 │   │                        explanations rendered only from the recorded
 │   │                        trace, and verify() against the calculation;
