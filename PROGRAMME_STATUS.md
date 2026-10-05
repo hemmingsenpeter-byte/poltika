@@ -17,6 +17,41 @@ alone does not complete a larger new capability. PRs labelled “reuse” prove
 existing assets, not a new task's completion. No A–P capability gate is claimed
 by this migration. Later owners are provisional until their bounded plan starts.
 
+Pete appointed GPT/Codex as coordinating project manager on 3 October 2026 (the handoff text below is dated 3 October; live PR state is in the tables and `gh`).
+[Execution practice](docs/programme/EXECUTION.md) records separate writing,
+security, testing and simplification roles within the four concurrent slots.
+The task tables remain the live backlog; ADR-0020 acceptance and Tier C
+boundaries remain unchanged. The economist-first migration #144–#147 has since merged; new work follows the live task tables.
+
+The second-cycle ownership inventory preserves unmerged drafts on
+`build/p1-household`, `build/p1-income-tax`, `build/p1-benefits`,
+`build/p1-reporting` and `build/p1-sim-analysis` in the corresponding
+`/Users/peterhemmingsen/poltika-p1-*` worktrees. Older Not started rows do
+not establish unowned implementation paths. Reporting is clean and committed
+at `8a541368cc2dda4a0ef18df3288d28b1934bc701`; the other four listed worktrees
+remain uncommitted at the coordinator's 02:14 UTC check on 3 October 2026.
+Obtain pinned owner handoffs
+before assigning overlapping writers. This is unaccepted ownership evidence,
+not a code audit or test/approval result. #148/#151 remain separate source
+drafts. The simulation-analysis owner also owns both existing snapshot tests;
+later additive parity work needs an unoccupied path after the owner handoff.
+
+Third-cycle note: the original reporting owner draft at `8a541368` remains
+preserved. [Draft #154](https://github.com/hemmingsenpeter-byte/poltika/pull/154)
+contains the isolated reporting review/fixes, code pin `3a10771`, docs head
+`9b6413c`. The earlier `8235506` passed 1,380 default-suite tests with 22 skips
+and two opt-in exclusions, but security found R12's Decimal expansion defect.
+The corrected pin passed 136 focused tests/no skips, whole Ruff, strict mypy
+(85 source files) and installed-library smoke; targeted same-model security
+and contract rechecks have no remaining blocker. All four CI checks pass at
+final documentation head `9b6413c`; its default suite passed 1,409 tests with
+nine skips, and both installed-artifact and replay checks passed separately.
+Required Claude review/acceptance remains pending.
+Task 24 remains gated by 21–23;
+prototype review changes no task state. The [execution handoff](docs/programme/EXECUTION.md)
+and [dated evidence](reviews/2026-10-03-programme-verification.md) record the
+reporting limits and the 3 October refresh order (#153 and #152, since merged, as are #144-#147); none of it displaces Pete's authorised working sequence.
+
 | Status | Meaning |
 | --- | --- |
 | Done | Merged and the task's done-when is met. |
@@ -97,9 +132,9 @@ packets can still say “open” historically and do not override current record
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 5 | Minimum household semantics | In progress | Claude Code; GPT/Codex mapping review | None yet | Reconcile existing units/periods/entities work with minimum household scope | CanonicalVariable and population contracts; uncommitted workers retained | 2.1–2.6, 2.10 scoped |
-| 6 | Shared household model | Planned | Claude Code; GPT/Codex mapping review | None | 5; independently reviewed policy mappings | ADR-0017 accepted; adapters/golden parity required | 2.7; v0.3 Phase 1; W6 |
-| 7 | Personal income tax | Not started | GPT/Codex sources; Claude Code implements; Pete slice | None | Source pack and D1 decision; 5–6 for integration | No personal-income-tax policy pack on reconciled main | 3A; v0.3 0.1 / Phase 2 |
-| 8 | Three core main benefits | Not started | GPT/Codex sources; Claude Code implements; Pete slice | None | Source packs and D1 decisions; 5–6 for integration | No new main-benefit policy packs on reconciled main | 3A; v0.3 0.2 / Phase 3 |
+| 6 | Shared household model | In flight (other session) | Existing `build/p1-household` writer; GPT/Codex mapping review | None yet; existing increment recorded at the 3 Oct handoff (verify before use) | Reconcile/review the existing writer's scope before assigning another household/model/mapping writer; 5 and independent source-derived mapping review | ADR-0017 accepted; existing household/mapping files, roundtrip/semantics tests and pass1/pass2 docs preserved; adapters/golden parity not yet accepted | 2.7; v0.3 Phase 1; W6 |
+| 7 | Personal income tax | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #148 draft `0db2bfaf`, base `main` after #147 merged | Claude source review and Pete D1; enacted 2026–27 annual rates unverified; 5–6 for integration | Source draft and separate same-model check retained; no approved specification, parameters, benchmarks or engine | 3A; v0.3 0.1 / Phase 2 |
+| 8 | Three core main benefits | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #151 draft `50f13f44`, base `main` after #147 merged | Claude source review/Pete D1; payment/rounding and supported-slice gaps; 5–6 for integration | Three sources-only catalogues; JS category corrected at `b238820` and rechecked by separate same-model checker; no approved values/spec/engine | 3A; v0.3 0.2 / Phase 3 |
 | 9 | Household dependency graph | Not started | Claude Code; GPT/Codex interaction review | None | Sourced interactions; 6–8 for integrated paths | Existing combined WFF/AS runner reused | 3A; v0.3 Phase 4; W7 |
 | 10 | Disposable income | Blocked | Claude Code; GPT/Codex definition; Pete D2 | None | Sourced definition/D2; connected 7–9 outputs | Existing per-policy results remain separate | v0.3 0.4 / 5.1 |
 | 11 | EMTR/withdrawal/participation measures | Blocked | GPT/Codex definitions; Claude Code; Pete D3 | None | D3 and reviewed income/period paths; v0.2 D9 unresolved | #96 per-policy withdrawal profiles/sweeps reuse | v0.3 Phase 5; v0.2 8.6–8.7 |
@@ -250,7 +285,15 @@ The [pre-migration status snapshot](docs/archive/status/2026-10-03-programme-sta
 retains every old row; the master's 33-row migration table links all
 [old detailed programme steps](docs/archive/programmes/2026-09-29-adr0019-master-programme.md).
 Choose next work from the current master/status, not from those historical rows.
-Next coding task: ADR-0017 shared household model, WFF/AS mappings and
-byte-identical existing results/IDs (v0.3 1.1–1.3), coordinated with minimum
-semantics owners. Primary-source tax/benefit scoping and D1–D3 proposals
-are parallel research; existing A closeout continues with its current owners.
+Next coding handoff: reconcile and review the existing ADR-0017 writer's
+increment in `/Users/peterhemmingsen/poltika-p1-household` on
+`build/p1-household` before assigning another household/model/mapping writer.
+Preserve its uncommitted household/mapping files, tests and pass1/pass2 docs;
+source-derived WFF/AS mapping review and byte-identical golden results/IDs
+(v0.3 1.1–1.3) remain acceptance requirements, coordinated with minimum
+semantics owners. The next intake needs a pinned committed handoff; no unowned
+household implementation is assigned while those files move. Branch-local
+construction-mode claims remain unaccepted ownership evidence.
+Primary-source tax/benefit scoping and D1–D3 proposals
+are parallel research (#148/#151 drafts); existing A closeout continues with
+its current owners. (3 October handoff; #150 and #152 have since merged and the #128 queue row is closed.)
