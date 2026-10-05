@@ -6,9 +6,9 @@ start and no end.
 
 Structure is validated only where the repository states the rule with a
 source. The assessment week is exactly 7 days with an explicit start and
-no weekday convention (BUILD_PLAN.md:1511, Task 28.2;
-`AssessmentWeek.__post_init__` in
-`engines/simulator/accommodation_supplement.py:812`). No anchor date is
+no weekday convention (BUILD_PLAN.md:1526, Task 28.2;
+`AssessmentWeek` in
+`engines/simulator/accommodation_supplement.py:795`). No anchor date is
 enforced for the tax year, quarter, calendar year or year ended June: the
 repository records the 2026-27 WFF year's dates as a choice for that year
 (AS specification.md:463-465), not as a calendar convention, so the type
@@ -16,7 +16,7 @@ carries its dates and nothing is inferred.
 
 A conversion between period types is a named `PeriodRelation` with a
 source. A value conversion between annual and weekly amounts has no
-stated rule (v0.2 D9, BUILD_PLAN_v0_2.md:329-333; BUILD_PLAN.md:1700-1706),
+stated rule (v0.2 D8, BUILD_PLAN_v0_2.md:329-333, which defers annualisation; BUILD_PLAN.md:1719-1722, native periods with no conversion),
 so none is registered and `convert_amount` refuses.
 """
 
@@ -106,12 +106,12 @@ _PERIOD_TYPES: tuple[PeriodTypeDefinition, ...] = (
     PeriodTypeDefinition(
         id=PeriodType.TAX_YEAR,
         meaning="A WFF assessment year, with explicit dates (2026-27 is [2026-04-01, 2027-04-01)).",
-        source="policy_specs/accommodation_supplement/specification.md:463",
+        source="policy_specs/accommodation_supplement/specification.md:461",
     ),
     PeriodTypeDefinition(
         id=PeriodType.ASSESSMENT_WEEK,
         meaning="An AS assessment week: exactly 7 days, [start, end), explicit start, no weekday convention.",
-        source="BUILD_PLAN.md:1511",
+        source="BUILD_PLAN.md:1526",
     ),
     PeriodTypeDefinition(
         id=PeriodType.QUARTER,
@@ -205,7 +205,7 @@ def check_containment(relation_id: str, outer: Period, inner: Period) -> bool:
 def convert_amount(amount: Decimal, from_type: PeriodType, to_type: PeriodType) -> Decimal:
     """Refuse: no value conversion between period types has a stated rule.
 
-    v0.2 D9 (BUILD_PLAN_v0_2.md:329-333) and Task 28.2 (BUILD_PLAN.md:1700-1706)
+    v0.2 D8 (BUILD_PLAN_v0_2.md:329-333) and Task 28.2 (BUILD_PLAN.md:1719-1722)
     record that no annual/weekly conversion exists without one. The registry
     holds none, so this always raises.
     """
