@@ -6,7 +6,12 @@ simplification roles. This file records that operating practice and the
 current handoff; [PROGRAMME_STATUS.md](../../PROGRAMME_STATUS.md) remains the
 task tracker and [BUILD_PLAN_PROGRAMME.md](../../BUILD_PLAN_PROGRAMME.md)
 remains the single build order. It does not add a second roadmap. This
-execution record is proposed in draft [PR #149](https://github.com/hemmingsenpeter-byte/poltika/pull/149).
+execution record is carried by [PR #149](https://github.com/hemmingsenpeter-byte/poltika/pull/149).
+
+This model runs inside the high-throughput build mode in
+[doctrine/development-doctrine.md](../../doctrine/development-doctrine.md): independent bounded
+modules are parallelised, one writer per isolated worktree, and the specialist
+reviews gate integration, never statutory correctness, provenance or protected values.
 
 ## Roles and capacity
 

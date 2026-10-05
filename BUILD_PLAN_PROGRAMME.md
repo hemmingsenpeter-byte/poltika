@@ -2,7 +2,7 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**Date:** 3 October 2026. **Direction:** approved by Pete's repository
+**Date:** 3 October 2026 (adoption date; live status is in `PROGRAMME_STATUS.md`). **Direction:** approved by Pete's repository
 reconciliation and migration instruction; recorded in [ADR-0021](adr/0021-economist-first-pilot-programme.md).
 **Authority:** this is the single active master build order. It supersedes
 ADR-0019's execution sequence, while preserving its enduring architectural
@@ -625,4 +625,4 @@ tax/core benefits and source-derived interaction/definition proposals for
 Pete's v0.3 D1–D3 decisions. This is research/specification, not a second
 coding task. Use the relevant source-check/spec-draft/clean-room skills and
 normal independent review; introduce no policy values in this migration.
-Existing A governance/CI PRs and #128 review close out with their owners.
+The A governance/CI PRs (#138-#143) and the #128 review closeout (#152) are merged; dev tooling (no PR) remains with its owner.

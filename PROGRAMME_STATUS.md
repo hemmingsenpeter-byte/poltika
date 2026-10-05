@@ -2,11 +2,9 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**As of:** 3 October 2026, second-cycle handoff after #150's merge at
-01:38:42 UTC. **Recorded merged main:** `3bea73fba44f9173ecc4ee3d00be3aa22328b993`
-(#150). The retained first-cycle test/reconciliation baseline is `e52f5d3`
-(#141); those checks are not rerun evidence for the newer main. This stacked
-documentation branch is not evidence that any new economic model is built.
+**As of:** 5 October 2026. **Repository baseline:** `origin/main` after #146
+(`a782693`); reconciled against live GitHub state on this date. This migration
+branch is documentation work, not evidence that any new economic model is built.
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), under
 [ADR-0021](adr/0021-economist-first-pilot-programme.md), is the single active
 master build order. [ADR-0020](adr/0020-delegated-acceptance.md) remains the
@@ -19,12 +17,11 @@ alone does not complete a larger new capability. PRs labelled “reuse” prove
 existing assets, not a new task's completion. No A–P capability gate is claimed
 by this migration. Later owners are provisional until their bounded plan starts.
 
-Pete appointed GPT/Codex as coordinating project manager on 3 October 2026.
+Pete appointed GPT/Codex as coordinating project manager on 3 October 2026 (the handoff text below is dated 3 October; live PR state is in the tables and `gh`).
 [Execution practice](docs/programme/EXECUTION.md) records separate writing,
 security, testing and simplification roles within the four concurrent slots.
 The task tables remain the live backlog; ADR-0020 acceptance and Tier C
-boundaries remain unchanged. New work is prepared beside the still-draft
-migration #144–147, not recorded as merged programme adoption.
+boundaries remain unchanged. The economist-first migration #144–#147 has since merged; new work follows the live task tables.
 
 The second-cycle ownership inventory preserves unmerged drafts on
 `build/p1-household`, `build/p1-income-tax`, `build/p1-benefits`,
@@ -70,20 +67,18 @@ unmerged migration displaces Pete's authorised working sequence.
 
 These are engineering closeout, not economic-model progress. Open/draft PRs
 are not Done merely because their checks pass. Inspect latest head checks
-and review again before merge. These rows are the second-cycle handoff;
-the first-cycle snapshots remain in the execution/verification records.
+and review again before merge; this is the reconciliation snapshot.
 
 | Item | Status / owner | PR / checked head | Blocker or evidence |
 | --- | --- | --- | --- |
 | Delegated acceptance | Done; Claude Code, Pete's recorded delegation | #139 merged, `dd2650b` | ADR-0020 accepted; #141 added live tracking. |
 | Main ruleset / squash auto-merge | Pete | None | Q1; repository settings action remains Pete's; merge rules hold by agreement. |
-| Evidence-classes skill | In progress (acceptance handoff); Claude author, GPT/Codex checks/fixes | #138 open; recorded `d868564` | Actual Sonnet review has no blocking findings on submitted artifacts. Behind main after #150: base refresh, latest-head CI and Opus acceptance pending; earlier CI is historical. Legacy 1.7. |
+| Evidence-classes skill | Done; Claude Code | #138 merged, `38a3f17` | Legacy 1.7. |
 | Dev tooling | In flight (other session); Claude Code | No PR | Existing uncommitted worker includes tooling and calculation-adjacent `conditional.py`; preserve files and apply relevant independent review. |
-| Security CI | In progress (acceptance handoff); Claude author, GPT/Codex checks/fixes | #142 open; recorded `f483fb90` | Actual Sonnet review has no blocking findings on submitted artifacts. Behind main after #150: base refresh, latest-head CI and Opus acceptance pending. Bandit medium/low backlog and scanner limits retained. |
-| Governance files | In progress (acceptance handoff); Claude author, GPT/Codex checks/fixes | #143 open; recorded `82990da` | Actual Sonnet review has no blocking findings on submitted artifacts. Behind main after #150: base refresh, latest-head CI and Opus acceptance pending. Private reporting/publication gates retained. |
-| Hosting policy-path documentation | In flight (other session); Claude Code | #140 draft; `ffa05168` | Exact-head installed-wheel probe passes (local database sub-probe unavailable); no actionable doc finding. Draft CI/acceptance pending; this is not the dev-tooling PR. |
-| Conditional-summary review fixes | Done — bounded engineering fix; GPT/Codex author, Sonnet reviewer, Opus acceptance | #150 merged; `3bea73f` | Exact amounts/truthful branch summaries fixed; actual Sonnet review and Opus Tier A acceptance recorded. This does not close #128's queue row or a programme capability gate. |
-| Independent review debt | In progress (closure draft); GPT/Codex, Claude Code coordinates | #128 merged, queue open on main; #152 draft `2404ab47` | #152 targets main; latest-head test, image and both guards SUCCESS (test finished 02:01:40 UTC). Same-model doc check has no findings; local checks 7 passed/7 unbuilt-capability skips. Fresh Sonnet/Opus pending destination consent; no closure landed on main. |
+| Security CI | Done; Claude Code, GPT/Codex review and fixes | #142 merged, `b292666` | Required-check names for Q1 are listed in the main-branch tracker. |
+| Governance files | Done; Claude Code | #143 merged, `6a7da14` | |
+| Hosting policy-path documentation | Done; Claude Code | #140 merged, `96900a4` | Documents `POLTIKA_POLICY_SPECS_DIR`. This is not the dev-tooling PR. |
+| Independent review debt | Done; GPT/Codex, Claude Code coordinates | #128, #150, #152 merged (`fe67875`) | `review_packets/review_queue.md` is current: no open implementation assurance rows. |
 
 ## Release and maintenance state
 
@@ -118,7 +113,7 @@ packets can still say “open” historically and do not override current record
 | External aggregate cross-validation | #114, #118, #120; V0_2_CROSS_VALIDATION | Existing untuned IRD/MSD comparisons and explained gaps; not new representative validation. |
 | Population explanations / analyst population API and page | #97, #99 | Existing verified population explanations and `/analyst/microsim`; population operator-set, run store in memory. |
 | Household analyst page / pilot scripts | #85, #87, #89 | Existing `/analyst`, case pack and findings template; external user/session not recorded. |
-| Fact catalogues, conditional branches and intake | #109, #112, #121, #125–#128 | Reviewed questions, finite/ranged branches, intake API/page, population ranges; #128 independent review outstanding; source-based monotone/candidate declarations pending. |
+| Fact catalogues, conditional branches and intake | #109, #112, #121, #125–#128 | Reviewed questions, finite/ranged branches, intake API/page, population ranges; #128 independently reviewed, fixes merged (#150, #152); source-based monotone/candidate declarations pending. |
 | Hosted pilot protection/hardening | #124, #132 | Password-required image, security headers, body/concurrency limits; deployment/resource actions not completed by this migration. |
 | Workbench backend / export | #133; ADR-0018 proposed | Registry, checks, generic blocks, worked examples, CSV/Excel export reviewed; completed workbench UI and ADR acceptance not evidenced. |
 | Epistemic constitution | #136, #137, Pete approval 2 October | Eight classes and seven decisions are approved; preserve them while re-scoping implementation. |
@@ -128,19 +123,19 @@ packets can still say “open” historically and do not override current record
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Bounded governance/baseline closeout | In progress | GPT/Codex coordinates checks/fixes; Claude Code acceptance | #138, #142, #143 open; #139/#150 merged | Refresh behind-main branches, latest-head CI and Opus acceptance; new reviewer/acceptance runs await external destination permission | Actual Sonnet no-blocking-finding reviews; separate engineering probes; constitution preserved | Step 1; baseline B1–B5 |
-| 2 | PR/review-debt reconciliation | In progress | GPT/Codex coordinates/reviews; Claude Code acceptance | #150 merged; #152 draft closure at `2404ab47`; #149 draft PM record | Fresh #152 Sonnet review/Opus acceptance awaiting destination consent; #128 row stays open on main until closure lands | #150 actual merge; #152 latest-head four CI checks SUCCESS, local 7 passed/7 unbuilt-capability skips and same-model check; dated cycle records | W1; P17 |
+| 1 | Bounded governance/baseline closeout | In progress | Claude Code; GPT/Codex reviews | #138, #139, #140, #142, #143 merged | Dev tooling (no PR) remains; coordinate existing workers | Professional-baseline rows above; constitution already approved | Step 1; baseline B1–B5 |
+| 2 | PR/review-debt reconciliation | Done | Claude Code coordinates; GPT/Codex reviews | #128 closed by #152 | Keep queue truthful; retain open/draft PR ownership | Live review_queue; most earlier rows cleared | W1; P17 |
 | 3 | Release baseline | Pete | Pete; Claude Code prepares | No new release PR | v0.2 tag; v0.1.5 external pilot/tag; verify baseline/gates | v0.1.0 tagged; retained release evidence | 7.1; v0.1.5 8.2–8.6; v0.2 10.3 |
-| 4 | End abstract Phase 0 expansion | In progress | Claude Code acceptance; GPT/Codex coordinates | #144–147 draft migration | Independent migration review/CI and coordinated integration; preserve existing workers | ADR-0021 direction; existing migration stack is not duplicated | Steps 1–2 sequencing |
+| 4 | End abstract Phase 0 expansion | In progress | Claude Code coordinates | #144, #145, #146 merged; #147 (household lane) completes the migration | Merge #147; agree scoped/parked worker dispositions | ADR-0021 direction; snapshots preserve old tasks | Steps 1–2 sequencing |
 
 ## Phase B — Household economic kernel
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 5 | Minimum household semantics | In progress | Claude Code; GPT/Codex mapping review | None yet | Reconcile existing units/periods/entities work with minimum household scope | CanonicalVariable and population contracts; uncommitted workers retained | 2.1–2.6, 2.10 scoped |
-| 6 | Shared household model | In flight (other session) | Existing `build/p1-household` writer; GPT/Codex mapping review | None yet; uncommitted existing increment | Reconcile/review the existing writer's scope before assigning another household/model/mapping writer; 5 and independent source-derived mapping review | ADR-0017 accepted; existing household/mapping files, roundtrip/semantics tests and pass1/pass2 docs preserved; adapters/golden parity not yet accepted | 2.7; v0.3 Phase 1; W6 |
-| 7 | Personal income tax | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #148 draft `0db2bfaf`, stacked on #147 | Migration #144–147 integration; Claude source review and Pete D1; enacted 2026–27 annual rates unverified; 5–6 for integration | Source draft and separate same-model check retained; no approved specification, parameters, benchmarks or engine | 3A; v0.3 0.1 / Phase 2 |
-| 8 | Three core main benefits | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #151 draft `50f13f44`, stacked on #147 | Claude source review/Pete D1; payment/rounding and supported-slice gaps; migration integration and 5–6 for integration | Three sources-only catalogues; JS category corrected at `b238820` and rechecked by separate same-model checker; no approved values/spec/engine | 3A; v0.3 0.2 / Phase 3 |
+| 6 | Shared household model | In flight (other session) | Existing `build/p1-household` writer; GPT/Codex mapping review | None yet; existing increment recorded at the 3 Oct handoff (verify before use) | Reconcile/review the existing writer's scope before assigning another household/model/mapping writer; 5 and independent source-derived mapping review | ADR-0017 accepted; existing household/mapping files, roundtrip/semantics tests and pass1/pass2 docs preserved; adapters/golden parity not yet accepted | 2.7; v0.3 Phase 1; W6 |
+| 7 | Personal income tax | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #148 draft `0db2bfaf`, base `main` after #147 merged | Claude source review and Pete D1; enacted 2026–27 annual rates unverified; 5–6 for integration | Source draft and separate same-model check retained; no approved specification, parameters, benchmarks or engine | 3A; v0.3 0.1 / Phase 2 |
+| 8 | Three core main benefits | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #151 draft `50f13f44`, base `main` after #147 merged | Claude source review/Pete D1; payment/rounding and supported-slice gaps; 5–6 for integration | Three sources-only catalogues; JS category corrected at `b238820` and rechecked by separate same-model checker; no approved values/spec/engine | 3A; v0.3 0.2 / Phase 3 |
 | 9 | Household dependency graph | Not started | Claude Code; GPT/Codex interaction review | None | Sourced interactions; 6–8 for integrated paths | Existing combined WFF/AS runner reused | 3A; v0.3 Phase 4; W7 |
 | 10 | Disposable income | Blocked | Claude Code; GPT/Codex definition; Pete D2 | None | Sourced definition/D2; connected 7–9 outputs | Existing per-policy results remain separate | v0.3 0.4 / 5.1 |
 | 11 | EMTR/withdrawal/participation measures | Blocked | GPT/Codex definitions; Claude Code; Pete D3 | None | D3 and reviewed income/period paths; v0.2 D9 unresolved | #96 per-policy withdrawal profiles/sweeps reuse | v0.3 Phase 5; v0.2 8.6–8.7 |
