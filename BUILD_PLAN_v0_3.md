@@ -45,6 +45,27 @@ of policy logic. Every statutory rule, rate, threshold and interaction
 below is established by a phase's sourcing task. This plan names none of
 them.
 
+## Scope decisions recorded on 5 October 2026
+
+Pete approved D1 salary/wage basic annual tax for 2026–27 first, and single
+existing-grant main-benefit slices as of 5 October 2026, gross weekly
+entitlement. JS is single, 25+, no children; SPS is a single principal caregiver;
+SLP is restricted-capacity, single, no children. These are coverage choices,
+not an approved specification. Annual-rate enactment, precision, source review
+and independently derived cases still gate numerical results.
+
+D2 will adopt a reviewed official disposable-income definition whole, reporting
+unmodelled components as uncovered. D3 starts with EMTR; adequacy follows
+reviewed D2 sources. Q10's income/period mapping remains open.
+
+**0.4a — GPT/Codex sources; Claude cross-model review.** Commission a bounded
+source-scoping task comparing dated Stats NZ and MSD household-income
+definitions: included income, deductions, reference periods, household unit,
+coverage and treatment of unmodelled components. Produce a source pack and
+options for Pete's definition decision before drafting the calculation spec.
+Done when the source pack has independent review and a concrete definition
+choice can be assessed. No definition is selected by this commission.
+
 ## Household capability this lane delivers
 
 v0.2 runs two policies that don't feed each other (AS-10, WFF DEC-003).

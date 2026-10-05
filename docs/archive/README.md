@@ -36,3 +36,11 @@ evidence in `docs/releases/`, and review history in `reviews/` and
 constraints and existing links still depend on its doctrine anchors. Its old
 roadmap section cannot determine current sequencing. `BUILD_PLAN_v0_2.md` stays
 at the root solely for release completion until `v0.2.0` is tagged.
+
+## Supplied programme authority
+
+[Economist-first migration brief](programmes/2026-10-03-economist-first-migration-brief.md)
+is a byte-identical copy of Pete's original supplied text, recovered from the
+3 October attachment and archived on 5 October 2026. Unlike the snapshots above,
+it records the instruction that led to ADR-0021. Pete reconfirmed the Analyst
+Workbench as the first product on 5 October; the detailed design remains Q9.
