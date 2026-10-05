@@ -103,13 +103,13 @@ models:
         source: policy_specs/working_for_families/decisions/DEC-001-evidenced-ineligibility-outcome.md
     change_log:
       - date: "2026-09-21"
-        change: Task 12, the pure calculate_wff() function (commit 5a94acd, PR #14).
+        change: "Task 12, the pure calculate_wff() function (commit 5a94acd, PR #14)."
         why: First implementation of the approved Task 10 scoped contract.
         evidence: policy_specs/working_for_families/spec_cases.yaml
         validation_rerun: unknown (recorded before change records existed)
         approval: unknown (recorded before change records existed)
       - date: "2026-09-22"
-        change: Task 20, the run_wff_module() integration entry point (commit f0566e6, PR #21).
+        change: "Task 20, the run_wff_module() integration entry point (commit f0566e6, PR #21)."
         why: Module entry point over the policy loader and calculator (ARCHITECTURE.md module contract).
         evidence: tests/unit/engines/simulator/test_wff_module.py
         validation_rerun: unknown (recorded before change records existed)
@@ -272,7 +272,12 @@ models:
       level: spec_validated
       basis: >-
         Passes hand-calculated interaction cases and nine hand-calculated golden
-        households, both re-derived by a fresh-context reviewer. Its least mature
+        households. Claude Code hand-calculated both sets (the same model that
+        wrote the runner); Claude fresh-context reviews re-derived all of them
+        and the GPT/Codex Task 34.3 review re-derived all five interaction
+        cases and golden households g2, g5, g6, g7 and g9
+        (review_packets/task_28_5_interaction_cases.md,
+        review_packets/task_29_4_golden_households.md). Its least mature
         dependency is also spec_validated.
       cases:
         - {kind: interaction_spec_cases, path: policy_specs/wff_as_interaction/spec_cases.yaml, count: 5}
