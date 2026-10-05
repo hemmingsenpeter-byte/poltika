@@ -5,11 +5,28 @@
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Conditional-summary corrections** (independent review of #128): preserve
+  exact Decimal amounts, distinguish evidenced exclusions from missing model
+  coverage, describe only evaluated cases and retain branch-limit caveats.
+  Verification checks the complete fixed sentences and figure inventory.
+  Analyst range wording follows the same certainty limit. Review findings
+  remain open until the follow-up is accepted and integrated.
+
 - **Delegated acceptance** (ADR-0020): Claude Code accepts and merges
   engineering work under three tiers; Tier C decisions stay with Pete in
   `PETE_QUEUE.md`, and Tier A and B decisions are logged in
   `docs/decision_log.md`. Merges are squash merges.
 - **Programme status** (ADR-0020): `PROGRAMME_STATUS.md` tracks every programme step and task with status, owner, PR and blocker; `BUILD_PLAN_PROGRAMME.md`'s Progress table points to it.
+- **Supply-chain, security and link checks** (ADR-0020): Dependabot (uv and
+  GitHub Actions, weekly, grouped), `pip-audit` of the locked dependencies,
+  Bandit for Python (high-severity gate, every finding retained) and zizmor
+  for actions (all findings gate), with immutable action pins and read-only
+  report execution, an offline lychee check of markdown links and anchors, and the
+  source-currency report now runs on pull requests (report only). CI only; no
+  amount changes.
+- **Governance files** (Tier A, docs): `.github/CODEOWNERS`, `SECURITY.md`,
+  `CONTRIBUTING.md`, issue forms under `.github/ISSUE_TEMPLATE/` and
+  `docs/releases/RELEASE_CHECKLIST.md`. No amount changes.
 - **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`
   lists every instrument under `policy_specs/` with its parameters (current
   value, unit, effective dates, review status), sources and decisions, so a

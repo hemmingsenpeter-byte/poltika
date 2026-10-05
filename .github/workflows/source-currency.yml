@@ -7,21 +7,29 @@ name: Source Currency
 # opens an issue, or updates the open one.
 
 on:
+  # On a pull request the job only builds and prints the report, so a change
+  # is checked against it. It never fails a PR because something is due.
+  pull_request:
+    branches: [main]
   schedule:
     - cron: "47 19 * * 0"  # Sunday 19:47 UTC, Monday morning in NZ
   workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   report:
+    name: source-currency
     runs-on: ubuntu-latest
+    outputs:
+      due: ${{ steps.currency.outputs.due }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
         with:
           python-version: "3.12"
 
@@ -29,6 +37,7 @@ jobs:
         run: uv sync --locked
 
       - name: Build the report
+        id: currency
         run: |
           set -euo pipefail
           # Every policy with a policy.yaml, so a new policy is covered on
@@ -36,10 +45,35 @@ jobs:
           mapfile -t POLICIES < <(dirname policy_specs/*/policy.yaml | sort)
           uv run python -m poltika.engines.assurance.currency "${POLICIES[@]}" > currency.md
           cat currency.md >> "$GITHUB_STEP_SUMMARY"
+          if grep -q '^### Due ([1-9]' currency.md; then
+            echo "due=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "due=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: currency-report
+          path: currency.md
+          if-no-files-found: error
+
+  publish-issue:
+    # The write token never reaches installation or repository-code execution.
+    needs: report
+    if: github.event_name != 'pull_request' && needs.report.outputs.due == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: currency-report
 
       - name: Open or update the issue when anything is due
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           TITLE: Source currency report
         run: |
           set -euo pipefail
