@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SYNTHETIC fixture: not a real Stats NZ response. -->
+<message:Structure xmlns:message="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message" xmlns:structure="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure" xmlns:common="http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common">
+  <message:Header>
+    <message:ID>IDREF1</message:ID>
+    <message:Test>false</message:Test>
+    <message:Prepared>2026-01-01T00:00:00.0000000+00:00</message:Prepared>
+    <message:Sender id="Unknown" />
+    <message:Receiver id="Unknown" />
+  </message:Header>
+  <message:Structures>
+    <structure:OrganisationSchemes>
+      <structure:AgencyScheme id="AGENCIES" agencyID="SDMX" version="1.0">
+        <common:Name xml:lang="en">Agencies</common:Name>
+        <structure:Agency id="STATSNZ">
+          <common:Name xml:lang="en">Synthetic Agency Name</common:Name>
+        </structure:Agency>
+      </structure:AgencyScheme>
+    </structure:OrganisationSchemes>
+    <structure:Dataflows>
+      <structure:Dataflow id="OTHER_FLOW" agencyID="STATSNZ" version="1.0" isFinal="false">
+        <common:Name xml:lang="en">A different flow</common:Name>
+      </structure:Dataflow>
+      <structure:Dataflow id="TST_TST_001" agencyID="STATSNZ" version="1.0" isFinal="false">
+        <common:Annotations>
+          <common:Annotation>
+            <common:AnnotationType>NonProductionDataflow</common:AnnotationType>
+            <common:AnnotationText xml:lang="en">true</common:AnnotationText>
+          </common:Annotation>
+        </common:Annotations>
+        <common:Name xml:lang="en">Synthetic test table</common:Name>
+        <common:Description xml:lang="en">Invented description.</common:Description>
+      </structure:Dataflow>
+    </structure:Dataflows>
+  </message:Structures>
+</message:Structure>

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased (passive source-preservation archive, 6 October 2026)
+
+- ADR-0022 (proposed) and `src/poltika/data/acquisition/`: a passive,
+  content-addressed archive of what authoritative sources published, starting with
+  Stats NZ (`scripts/ingest/stats_nz.py`, `data/source_archive/`). Exact bytes,
+  canonical source metadata and one record per retrieval, with content and metadata
+  change detected independently; optional advisory OpenRouter enrichment, stored
+  apart and marked non-authoritative. Evidence only: nothing in the governed data
+  path reads it, `DatasetManifest` and `DatasetRegistry` are unchanged, and no
+  calculated amount, protected value or result identity changes. Programme Step 27 is
+  not started or complete.
+
 ## Unreleased (programme migration, 3 October 2026)
 
 - ADR-0021 establishes the economist-first, pilot-driven master build order;

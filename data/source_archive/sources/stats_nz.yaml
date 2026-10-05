@@ -1,0 +1,244 @@
+# Reviewed source catalogue: Stats NZ Aotearoa Data Explorer (ADE) dataflows.
+#
+# SOURCE PRESERVATION ONLY. An entry here means "Poltika preserves what the
+# source exposes". It does not mean the dataset is validated, mapped or
+# approved for modelling (ADR-0022).
+#
+# Rules for this file:
+# - No credentials, ever. The API key comes from POLTIKA_STATS_NZ_API_KEY.
+# - `dataset.identifier` is "<agencyID>:<dataflow id>" exactly as ADE lists it.
+#   Do not guess identifiers. Add an entry only with a citable public source
+#   in `verification`, or set `enabled: false` and say what is missing.
+# - Values below are the reviewer's. The connector prefers what the source
+#   response states (title, version, publisher at capture) and never copies
+#   these into `publisher_name_at_capture`.
+# - `accrual_periodicity` is the SOURCE's publication frequency. null means
+#   not verified. `check_frequency` is Poltika's own retrieval cadence and is
+#   a separate field (unset in v1: there is no scheduler).
+#
+# Licence: https://www.stats.govt.nz/about-us/copyright states that, unless
+# otherwise specified, Stats NZ content is licensed under Creative Commons
+# Attribution 4.0 International. https://portal.apis.stats.govt.nz/terms states
+# that content available through the API Portal is licensed under the same.
+#
+# Not catalogued (no matching dataflow found in the public ADE catalogue of
+# 2026-10-05, 911 dataflows): consumers price index, household labour force
+# survey, gross domestic product. They are left out, not guessed.
+source_system: stats_nz
+sources:
+  - id: stats_nz_ade_popes_sub_004
+    enabled: true
+    note: "Subnational population estimates (RC, SA2), by age and sex, at 30 June 1996-2025 (2025 boundaries)"
+    verification: >-
+      STATSNZ:POPES_SUB_004 version 1.0 is listed in the public ADE catalogue
+      https://api.data.stats.govt.nz/rest/dataflow/STATSNZ/all?detail=allstubs
+      (HTTP 200, last-modified Sun, 04 Oct 2026 09:07:24 GMT, read 2026-10-05).
+      The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
+      The data and dataflow endpoints answer HTTP 401 without a key, so they
+      were not exercised. The catalogue annotates every dataflow
+      NonProductionDataflow=true.
+    dataset:
+      identifier: "STATSNZ:POPES_SUB_004"
+      publisher_identifier: STATSNZ
+      publisher_name: Stats NZ
+      licence: Creative Commons Attribution 4.0 International
+      rights: >-
+        Crown copyright. Unless otherwise specified, content Stats NZ produces
+        is licensed under the Creative Commons Attribution 4.0 International
+        licence (https://www.stats.govt.nz/about-us/copyright).
+      attribution: >-
+        Source: Stats NZ and licensed by Stats NZ for reuse under the Creative
+        Commons Attribution 4.0 International licence.
+      accrual_periodicity: null
+      landing_page: null
+      references:
+        - kind: landing_page
+          url: https://explore.data.stats.govt.nz/
+          title: Aotearoa Data Explorer (service landing page; the dataflow's own page URL is not verified)
+        - kind: technical_notes
+          url: https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/
+          title: Aotearoa Data Explorer API user guide
+        - kind: licence
+          url: https://www.stats.govt.nz/about-us/copyright
+          title: Stats NZ copyright and licence statement
+    distribution:
+      identifier: ade_data_csv
+      access_kind: api
+      title: ADE data API, all data, CSV with codes and labels
+      format: csvfilewithlabels
+      media_type: text/csv
+      access_url: https://api.data.stats.govt.nz/rest/data/STATSNZ,POPES_SUB_004,1.0/all
+    request:
+      base_url: https://api.data.stats.govt.nz/rest
+      agency_id: STATSNZ
+      dataflow_id: POPES_SUB_004
+      version: "1.0"
+      selection: all
+      data_format: csvfilewithlabels
+      structure_references: all
+      structure_detail: referencepartial
+    secondary_catalogue:
+      data_govt_nz_package: null
+    check_frequency: null
+  - id: stats_nz_ade_inc_inc_011
+    enabled: true
+    note: "Household income by region, household type, and source of household income"
+    verification: >-
+      STATSNZ:INC_INC_011 version 1.0 is listed in the public ADE catalogue
+      https://api.data.stats.govt.nz/rest/dataflow/STATSNZ/all?detail=allstubs
+      (HTTP 200, last-modified Sun, 04 Oct 2026 09:07:24 GMT, read 2026-10-05).
+      The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
+      The data and dataflow endpoints answer HTTP 401 without a key, so they
+      were not exercised. The catalogue annotates every dataflow
+      NonProductionDataflow=true.
+    dataset:
+      identifier: "STATSNZ:INC_INC_011"
+      publisher_identifier: STATSNZ
+      publisher_name: Stats NZ
+      licence: Creative Commons Attribution 4.0 International
+      rights: >-
+        Crown copyright. Unless otherwise specified, content Stats NZ produces
+        is licensed under the Creative Commons Attribution 4.0 International
+        licence (https://www.stats.govt.nz/about-us/copyright).
+      attribution: >-
+        Source: Stats NZ and licensed by Stats NZ for reuse under the Creative
+        Commons Attribution 4.0 International licence.
+      accrual_periodicity: null
+      landing_page: null
+      references:
+        - kind: landing_page
+          url: https://explore.data.stats.govt.nz/
+          title: Aotearoa Data Explorer (service landing page; the dataflow's own page URL is not verified)
+        - kind: technical_notes
+          url: https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/
+          title: Aotearoa Data Explorer API user guide
+        - kind: licence
+          url: https://www.stats.govt.nz/about-us/copyright
+          title: Stats NZ copyright and licence statement
+    distribution:
+      identifier: ade_data_csv
+      access_kind: api
+      title: ADE data API, all data, CSV with codes and labels
+      format: csvfilewithlabels
+      media_type: text/csv
+      access_url: https://api.data.stats.govt.nz/rest/data/STATSNZ,INC_INC_011,1.0/all
+    request:
+      base_url: https://api.data.stats.govt.nz/rest
+      agency_id: STATSNZ
+      dataflow_id: INC_INC_011
+      version: "1.0"
+      selection: all
+      data_format: csvfilewithlabels
+      structure_references: all
+      structure_detail: referencepartial
+    secondary_catalogue:
+      data_govt_nz_package: null
+    check_frequency: null
+  - id: stats_nz_ade_hes_hes_003
+    enabled: true
+    note: "Household expenditure for group and subgroup by household income group"
+    verification: >-
+      STATSNZ:HES_HES_003 version 1.0 is listed in the public ADE catalogue
+      https://api.data.stats.govt.nz/rest/dataflow/STATSNZ/all?detail=allstubs
+      (HTTP 200, last-modified Sun, 04 Oct 2026 09:07:24 GMT, read 2026-10-05).
+      The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
+      The data and dataflow endpoints answer HTTP 401 without a key, so they
+      were not exercised. The catalogue annotates every dataflow
+      NonProductionDataflow=true.
+    dataset:
+      identifier: "STATSNZ:HES_HES_003"
+      publisher_identifier: STATSNZ
+      publisher_name: Stats NZ
+      licence: Creative Commons Attribution 4.0 International
+      rights: >-
+        Crown copyright. Unless otherwise specified, content Stats NZ produces
+        is licensed under the Creative Commons Attribution 4.0 International
+        licence (https://www.stats.govt.nz/about-us/copyright).
+      attribution: >-
+        Source: Stats NZ and licensed by Stats NZ for reuse under the Creative
+        Commons Attribution 4.0 International licence.
+      accrual_periodicity: null
+      landing_page: null
+      references:
+        - kind: landing_page
+          url: https://explore.data.stats.govt.nz/
+          title: Aotearoa Data Explorer (service landing page; the dataflow's own page URL is not verified)
+        - kind: technical_notes
+          url: https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/
+          title: Aotearoa Data Explorer API user guide
+        - kind: licence
+          url: https://www.stats.govt.nz/about-us/copyright
+          title: Stats NZ copyright and licence statement
+    distribution:
+      identifier: ade_data_csv
+      access_kind: api
+      title: ADE data API, all data, CSV with codes and labels
+      format: csvfilewithlabels
+      media_type: text/csv
+      access_url: https://api.data.stats.govt.nz/rest/data/STATSNZ,HES_HES_003,1.0/all
+    request:
+      base_url: https://api.data.stats.govt.nz/rest
+      agency_id: STATSNZ
+      dataflow_id: HES_HES_003
+      version: "1.0"
+      selection: all
+      data_format: csvfilewithlabels
+      structure_references: all
+      structure_detail: referencepartial
+    secondary_catalogue:
+      data_govt_nz_package: null
+    check_frequency: null
+  - id: stats_nz_ade_inc_inc_001
+    enabled: true
+    note: "Earnings for people in paid employment by region, sex, age groups and ethnic groups"
+    verification: >-
+      STATSNZ:INC_INC_001 version 1.0 is listed in the public ADE catalogue
+      https://api.data.stats.govt.nz/rest/dataflow/STATSNZ/all?detail=allstubs
+      (HTTP 200, last-modified Sun, 04 Oct 2026 09:07:24 GMT, read 2026-10-05).
+      The request format follows https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/.
+      The data and dataflow endpoints answer HTTP 401 without a key, so they
+      were not exercised. The catalogue annotates every dataflow
+      NonProductionDataflow=true.
+    dataset:
+      identifier: "STATSNZ:INC_INC_001"
+      publisher_identifier: STATSNZ
+      publisher_name: Stats NZ
+      licence: Creative Commons Attribution 4.0 International
+      rights: >-
+        Crown copyright. Unless otherwise specified, content Stats NZ produces
+        is licensed under the Creative Commons Attribution 4.0 International
+        licence (https://www.stats.govt.nz/about-us/copyright).
+      attribution: >-
+        Source: Stats NZ and licensed by Stats NZ for reuse under the Creative
+        Commons Attribution 4.0 International licence.
+      accrual_periodicity: null
+      landing_page: null
+      references:
+        - kind: landing_page
+          url: https://explore.data.stats.govt.nz/
+          title: Aotearoa Data Explorer (service landing page; the dataflow's own page URL is not verified)
+        - kind: technical_notes
+          url: https://www.stats.govt.nz/tools/aotearoa-data-explorer/ade-api-user-guide/
+          title: Aotearoa Data Explorer API user guide
+        - kind: licence
+          url: https://www.stats.govt.nz/about-us/copyright
+          title: Stats NZ copyright and licence statement
+    distribution:
+      identifier: ade_data_csv
+      access_kind: api
+      title: ADE data API, all data, CSV with codes and labels
+      format: csvfilewithlabels
+      media_type: text/csv
+      access_url: https://api.data.stats.govt.nz/rest/data/STATSNZ,INC_INC_001,1.0/all
+    request:
+      base_url: https://api.data.stats.govt.nz/rest
+      agency_id: STATSNZ
+      dataflow_id: INC_INC_001
+      version: "1.0"
+      selection: all
+      data_format: csvfilewithlabels
+      structure_references: all
+      structure_detail: referencepartial
+    secondary_catalogue:
+      data_govt_nz_package: null
+    check_frequency: null
