@@ -109,7 +109,7 @@ poltika/
 │   │                        real is refused)
 │   ├── semantics/periods.py — Programme Task 2.3: period types, the frozen
 │   │                        Period, named period relations with sources, and
-│   │                        the D9 refusal of unsourced conversions
+│   │                        the v0.2 D8 refusal of unsourced conversions
 │   ├── data/              — v0.2 Phase 1: manifest.py (raw-snapshot manifest),
 │   │                        registry.py (checksummed dataset registry),
 │   │                        transform.py (versioned transformation registry;
