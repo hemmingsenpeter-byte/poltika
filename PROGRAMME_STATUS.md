@@ -74,7 +74,7 @@ sets, kept apart so it doesn't read as programme progress.
 | 1.3 | Precision rule (P3) | Planned | Claude Code | None | 2.6 (quantity type) |
 | 1.4 | Māori data governance, privacy and security | Pete | Pete; GPT/Codex sources | None | PETE_QUEUE Q2. Interim rule P5 holds meanwhile |
 | 1.5 | Model governance and model registry | In flight (other session) | Claude Code drafts, Pete approves | None yet (branch `prog/model-governance`) | |
-| 1.6 | Mechanical never-build checks | Done | Claude Code | PR (this branch) | The validation-grade row skips until Task 7.2 builds grades (P4); the label, party/plan-scoring, milestone-claim and P5 ethnicity/iwi rows run in `tests/acceptance/test_v0_3_release_gate.py` |
+| 1.6 | Mechanical never-build checks | Done | Claude Code | #162 | The validation-grade row skips until Task 7.2 builds grades (P4); the label, party/plan-scoring, milestone-claim and P5 ethnicity/iwi rows run in `tests/acceptance/test_v0_3_release_gate.py` |
 | 1.7 | `evidence-classes` skill | In progress (review fixes) | Claude Code authored; GPT/Codex reviewed/fixed | #138 (open) | Promotion exception clarified; final-head review/CI and delegated acceptance pending |
 
 ## Step 2: National Variable Registry and common schemas
