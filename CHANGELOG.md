@@ -1,10 +1,20 @@
 # Changelog
 
+## Unreleased (programme migration, 3 October 2026)
+
+- ADR-0021 establishes the economist-first, pilot-driven master build order;
+  ADR-0019 sequencing is superseded while compatible principles remain.
+- Exact historical planning snapshots, reconciled live status, agent instructions
+  and household/maintenance lanes establish one active programme. Existing code,
+  policy amounts, protected expectations, source/data snapshots and API semantics
+  are unchanged. Release/pilot evidence remains distinct from implementation.
+
 ## Unreleased (v0.3: tax, benefits and the household graph)
 
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Mechanical never-build checks** (Programme Task 1.6, and the test part of the interim rule P5): release-gate tests that every population result carries its label, no output schema scores or ranks a party or plan, no user-facing page claims an unreached milestone, and no output is disaggregated by ethnicity or iwi. The validation-grade row skips until grades exist (Task 7.2). Tests only; no amount changes.
 - **Conditional-summary corrections** (independent review of #128): preserve
   exact Decimal amounts, distinguish evidenced exclusions from missing model
   coverage, describe only evaluated cases and retain branch-limit caveats.
