@@ -15,9 +15,16 @@ Focused test command:
 Result: 7 passed. The artifact checks exist, every row is named, and each
 existing DEC record has the required ownership/evidence shape.
 
-The full default suite, ruff, strict mypy and diff whitespace checks are run on
-the integration tree. Their actual results and exact final-SHA review are
-recorded in the PR; a prior head is never claimed to cover later edits.
+Exact pushed-tree preflight at `9bc378ad4b9d2b9d043eff0b4249b8128be6613d`
+in separate detached checkout `/private/tmp/poltika-pr163-closeout-preflight`:
+7 focused tests passed; ruff passed; strict mypy reported no issues in 81
+source files; base-to-head `git diff --check` passed. Later commits adjust
+programme phase wording only and require final-head CI/review again.
+
+The local default-suite run was deliberately stopped with SIGTERM (exit 143)
+after partial progress, with no failure observed. It is not a completed pass.
+Required GitHub CI supplies the full-suite merge evidence on the final head;
+its actual result and exact final-SHA reviewer pass are recorded in the PR.
 Remaining limits: enforcement paths validate mechanical shape, not primary
 source truth, review independence or an approval flag's provenance. Absent
 future checks are explicitly recorded in the doctrine table.
