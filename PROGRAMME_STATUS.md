@@ -83,19 +83,7 @@ packets can still say “open” historically and do not override current record
 | Epistemic constitution | #136, #137, Pete approval 2 October | Eight classes and seven decisions are approved; preserve them while re-scoping implementation. |
 | Source currency | #92 | Existing report/workflow; statutory new-year parameters still require dated primary sources. |
 
-<<<<<<< HEAD
-| Task | Title | Status | Owner | PR | Blocker |
-| --- | --- | --- | --- | --- | --- |
-| 1.1 | Epistemic constitution | Done | Claude Code drafted, Pete approved | #136, #137 | Follow-ups: a class in each dataset manifest (Step 2); `DEC-*` records classed for Pete's confirmation |
-| 1.2 | The AI gate | In flight (other session) | Claude Code, GPT/Codex reviewing | None yet (branch `prog/ai-gate`) | |
-| 1.3 | Precision rule (P3) | Planned | Claude Code | None | 2.6 (quantity type) |
-| 1.4 | Māori data governance, privacy and security | Pete | Pete; GPT/Codex sources | None | PETE_QUEUE Q2. Interim rule P5 holds meanwhile |
-| 1.5 | Model governance and model registry | Pete | Claude Code drafts, Pete approves | #164 (draft) | Parked: doctrine awaits Pete's approval |
-| 1.6 | Mechanical never-build checks | In flight (other session) | Claude Code | None yet (branch `prog/never-build-checks`) | |
-| 1.7 | `evidence-classes` skill | In progress (review fixes) | Claude Code authored; GPT/Codex reviewed/fixed | #138 (open) | Promotion exception clarified; final-head review/CI and delegated acceptance pending |
-=======
 ## Phase A — Stabilise
->>>>>>> origin/main
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
