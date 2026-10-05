@@ -34,9 +34,10 @@ account and sets the password; the repository holds no credentials.
   `Dockerfile`). To deploy a reviewed copy instead of the image's build-time
   snapshot -- e.g. a platform volume mount, a config-management step, or a
   sidecar that writes the directory before the container starts -- point
-  `POLTIKA_POLICY_SPECS_DIR` at it; the API reads from that path on every
-  request, and startup fails loudly if nothing is there (ADR-0011,
-  `tests/installed_artifact/test_installed_artifact.py`).
+  `POLTIKA_POLICY_SPECS_DIR` at it. The variable is read once, when the
+  process starts; the API then loads the policy files from that path for
+  each calculation, and startup fails loudly if a `policy.yaml` is missing
+  there (ADR-0011, `tests/installed_artifact/test_installed_artifact.py`).
 
 Basic authentication sends the password with every request, so only serve
 it over HTTPS. The platforms below give every service an HTTPS address.
