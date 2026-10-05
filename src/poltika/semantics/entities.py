@@ -1,7 +1,9 @@
 """Programme Task 2.4: entities, identifier schemes and populations.
 
 The entities are person, family, household, firm, sector, the Crown and New
-Zealand (BUILD_PLAN_PROGRAMME.md Task 2.1). Each has an identifier scheme.
+Zealand. This vocabulary comes from historical Task 2.1 in the ADR-0019
+programme (docs/archive/programmes/2026-09-29-adr0019-master-programme.md),
+retained under the current Phase B Task 5. Each has an identifier scheme.
 A scheme is registered with a rule only where this repository already has
 one, quoted from its validator below. Where no cited source exists the
 scheme is registered as unassigned, with the reason, and refuses to
