@@ -71,7 +71,7 @@ and review again before merge; this is the reconciliation snapshot.
 | Item | Status / owner | PR / checked head | Blocker or evidence |
 | --- | --- | --- | --- |
 | Delegated acceptance | Done; Claude Code, Pete's recorded delegation | #139 merged, `dd2650b` | ADR-0020 accepted; #141 added live tracking. |
-| Main ruleset / squash auto-merge | Done (applied 2026-10-05 by Claude Code under Pete's delegation); enforcement not yet verified with a red check | Ruleset id 24478578 | Squash only, strict up-to-date, nine required checks, no bypass, delete_branch_on_merge. ADR-0007 recorded that the plan could not enforce required checks on a private repo; verify with a deliberately red check. |
+| Main ruleset / squash auto-merge | Done (applied 2026-10-05 by Claude Code under Pete's delegation); red-check blocking observed in #168 | Ruleset id 24478578 | Squash only, strict up-to-date, nine required checks, no bypass, delete_branch_on_merge. Negative probe #168 at fb92c17: required test FAILURE, other eight required jobs SUCCESS, GitHub mergeStateStatus BLOCKED; closed without a merge attempt. |
 | Evidence-classes skill | Done; Claude Code | #138 merged, `38a3f17` | Legacy 1.7. |
 | Dev tooling | In flight (other session); Claude Code | No PR | Existing uncommitted worker includes tooling and calculation-adjacent `conditional.py`; preserve files and apply relevant independent review. |
 | Security CI | Done; Claude Code, GPT/Codex review and fixes | #142 merged, `b292666` | Its checks are among the nine required by the applied Q1 ruleset. |
