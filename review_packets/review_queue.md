@@ -15,8 +15,11 @@ release gates skip, naming them, until review and required fixes are complete.
 scopes touching `policy_specs/`), per ADR-0020 rule 4. The earlier Claude comments predate their final reconciliation/fixes; final-head
 Claude review may clear these Codex-authored rows under the amended ADR-0020. Merged on Claude's reviewer pass
 without GPT/Codex review: [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
-(units, `9e67009`) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
-(never-build checks, `5a8c17e`), both low risk, no calculated amount. Drafts
+(units, `9e67009`; the post-merge Codex audit found a P2 precision defect,
+with fix [#169](https://github.com/hemmingsenpeter-byte/poltika/pull/169) awaiting
+final-head cross-model review and CI) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
+(never-build checks, `5a8c17e`). No existing statutory result changed; the
+unused unit helper still needs its exact-rescaling fix. Drafts
 [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) and
 [#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) are doctrine for
 Pete and GPT/Codex.

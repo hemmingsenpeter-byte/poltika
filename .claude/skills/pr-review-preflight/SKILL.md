@@ -20,9 +20,11 @@ review. Current sequencing follows BUILD_PLAN_PROGRAMME.md (ADR-0021).
   worktree. Do not edit a checkout another agent is using, and do not review a
   moving or unpublished diff as though it were a fixed artifact.
 - If you authored the change, label this pass **author preflight**, not
-  independent/fresh-context review. For a stronger check, give a new session or subagent of the author's model only `review_packets/TEMPLATE.md`'s mechanical inputs
+  independent/fresh-context review. For a stronger check, give a new session or subagent of the
+  author's model only `review_packets/TEMPLATE.md`'s mechanical inputs
   (sources, approved spec, base/head diff, tests). Have it record expected
-  behavior and findings before showing it your PR explanation. That remains a same-model check, not the required cross-model rotation.
+  behavior and findings before showing it your PR explanation. That remains a
+  same-model check, not the required cross-model rotation.
   GPT/Codex reviews Claude-authored work; Claude reviews GPT/Codex-authored
   work, as ADR-0020 specifies.
 - Do not read an external policy engine's code, tests, or values to derive
