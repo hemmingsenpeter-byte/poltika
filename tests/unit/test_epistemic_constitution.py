@@ -34,7 +34,7 @@ def _gate_rows() -> list[list[str]]:
     return [c for c in cells if len(c) == 4 and not set(c[0]) <= {"-", " "}][1:]
 
 
-def test_every_kind_of_artifact_has_a_row_with_a_promotion_and_a_check() -> None:
+def test_every_kind_of_artifact_has_a_row_with_nonempty_cells() -> None:
     rows = _gate_rows()
     for kind in REQUIRED_KINDS:
         row = next((r for r in rows if r[0].startswith(kind)), None)
