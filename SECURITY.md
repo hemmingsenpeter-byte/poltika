@@ -50,15 +50,20 @@ anyone else.
 
 ## Automated checks
 
-The baseline (ADR-0020). Each runs in CI from the PR that adds it, listed
-in `PROGRAMME_STATUS.md` under "Professional baseline":
+The baseline (ADR-0020). Each runs in CI; the job names below are what
+GitHub reports:
 
-- Dependabot: dependency update PRs.
-- pip-audit: known vulnerabilities in Python dependencies.
-- Static analysis: the scanners and thresholds actually merged with the
-  security-CI PR, recorded in that PR and `PROGRAMME_STATUS.md`.
+- Dependabot: weekly dependency update PRs (`uv` and GitHub Actions).
+- `pip-audit`: known vulnerabilities in the locked Python dependencies, on
+  pull requests, `main` and weekly.
+- `Bandit (python)`: static analysis of `src/`. High-severity findings fail
+  the check; every finding is retained in the `bandit-report` artifact.
+- `zizmor (actions)`: static analysis of the workflows under
+  `.github/workflows/`. Any finding fails the check.
+- `links`: offline check of relative Markdown links and anchors.
+- `source-currency`: reports sources due for re-check; it never fails a PR.
 
-This PR does not add a secrets scanner. Do not infer that secret detection
-is covered by dependency or static-analysis checks.
+CodeQL is not used on this private repository. No secrets scanner has been
+added. Do not infer that secret detection is covered by the checks above.
 
 These help. They do not replace a private report.

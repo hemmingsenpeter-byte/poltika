@@ -30,7 +30,9 @@ uv run --extra dev python -m poltika.engines.assurance.evidence policy_specs/wor
 ```
 
 CI also runs the snapshot/statutory guards, installed-artifact, PostgreSQL,
-retained-code replay and pilot-image checks. Inspect their results on the
+retained-code replay and pilot-image checks, plus `pip-audit`,
+`Bandit (python)`, `zizmor (actions)`, `links` and `source-currency`
+(see [SECURITY.md](SECURITY.md)). Inspect their results on the
 latest PR commit; the local commands above do not establish all those checks.
 
 Planned Make targets, available only once dev tooling merges:
