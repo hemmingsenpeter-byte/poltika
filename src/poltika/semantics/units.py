@@ -21,7 +21,7 @@ import re
 import types
 from collections.abc import Mapping
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, DecimalException, Inexact, localcontext
 from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -74,8 +74,8 @@ class Unit(BaseModel):
 
     @model_validator(mode="after")
     def _consistent(self) -> Unit:
-        if self.scale <= 0:
-            raise ValueError(f"'{self.id}': scale must be positive")
+        if not self.scale.is_finite() or self.scale <= 0:
+            raise ValueError(f"'{self.id}': scale must be finite and positive")
         if self.dimension is Dimension.MONEY:
             if self.currency is None:
                 raise ValueError(f"'{self.id}': a money unit needs a currency")
@@ -158,7 +158,25 @@ def rescale(value: Decimal, from_unit: Unit, to_unit: Unit) -> Decimal:
             "dimension, price basis or currency; only a named conversion rule "
             "may do that"
         )
-    return value * from_unit.scale / to_unit.scale
+    if not value.is_finite():
+        raise UnitConversionError("cannot rescale a non-finite value")
+    # Decimal arithmetic normally rounds to the caller's context precision.
+    # Keep the product's digits and enough room for a terminating quotient:
+    # the divisor numerator's bit length bounds its factors of two and five.
+    # A repeating quotient refuses rather than silently losing precision.
+    divisor_numerator, _ = to_unit.scale.as_integer_ratio()
+    precision = (
+        len(value.as_tuple().digits)
+        + len(from_unit.scale.as_tuple().digits)
+        + divisor_numerator.bit_length()
+    )
+    try:
+        with localcontext() as context:
+            context.prec = max(context.prec, precision)
+            context.traps[Inexact] = True
+            return value * from_unit.scale / to_unit.scale
+    except DecimalException:
+        raise UnitConversionError("rescale cannot be represented as an exact finite Decimal") from None
 
 
 class UnitConversion(BaseModel):
