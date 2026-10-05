@@ -1,4 +1,4 @@
-"""Programme Task 2.3: periods, named relations and the D9 refusal."""
+"""Programme Task 2.3: periods, named relations and the D8 refusal."""
 
 from __future__ import annotations
 
@@ -118,7 +118,7 @@ def test_registries_are_unique_complete_and_read_only() -> None:
 
 def test_d9_no_value_conversion_registered_and_refused() -> None:
     assert not [r for r in PERIOD_RELATIONS.values() if r.kind is RelationKind.VALUE_CONVERSION]
-    with pytest.raises(PeriodConversionRefusedError, match="D9"):
+    with pytest.raises(PeriodConversionRefusedError, match="D8"):
         convert_amount(Decimal(52), PeriodType.TAX_YEAR, PeriodType.ASSESSMENT_WEEK)
     with pytest.raises(PeriodConversionRefusedError):
         convert_amount(Decimal(1), PeriodType.ASSESSMENT_WEEK, PeriodType.TAX_YEAR)

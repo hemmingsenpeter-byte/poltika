@@ -16,7 +16,7 @@ carries its dates and nothing is inferred.
 
 A conversion between period types is a named `PeriodRelation` with a
 source. A value conversion between annual and weekly amounts has no
-stated rule (v0.2 D8, BUILD_PLAN_v0_2.md:329-333, which defers annualisation; BUILD_PLAN.md:1719-1722, native periods with no conversion),
+stated rule (v0.2 D8, BUILD_PLAN_v0_2.md:334-339, which defers annualisation; BUILD_PLAN.md:1719-1722, native periods with no conversion),
 so none is registered and `convert_amount` refuses.
 """
 
@@ -205,7 +205,7 @@ def check_containment(relation_id: str, outer: Period, inner: Period) -> bool:
 def convert_amount(amount: Decimal, from_type: PeriodType, to_type: PeriodType) -> Decimal:
     """Refuse: no value conversion between period types has a stated rule.
 
-    v0.2 D8 (BUILD_PLAN_v0_2.md:329-333) and Task 28.2 (BUILD_PLAN.md:1719-1722)
+    v0.2 D8 (BUILD_PLAN_v0_2.md:334-339) and Task 28.2 (BUILD_PLAN.md:1719-1722)
     record that no annual/weekly conversion exists without one. The registry
     holds none, so this always raises.
     """
@@ -218,6 +218,6 @@ def convert_amount(amount: Decimal, from_type: PeriodType, to_type: PeriodType) 
     ]
     raise PeriodConversionRefusedError(
         f"no named value-conversion rule from {from_type.value} to {to_type.value} "
-        f"({len(registered)} registered); v0.2 D9 allows none without a stated, sourced rule "
+        f"({len(registered)} registered); v0.2 D8 allows none without a stated, sourced rule "
         f"(amount {amount} not converted)"
     )

@@ -47,7 +47,7 @@ result identity changes.
   (tax year, assessment week, quarter, calendar year, point in time, year ended
   June), a frozen half-open `Period`, and named period relations with sources.
   The AS week inside the WFF year is registered; annual/weekly value conversion
-  is refused (v0.2 D9). No amount changes.
+  is refused (v0.2 D8). No amount changes.
 - **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`
   lists every instrument under `policy_specs/` with its parameters (current
   value, unit, effective dates, review status), sources and decisions, so a
