@@ -1,0 +1,43 @@
+name: Source or interpretation question
+description: A question about a source, or about how a rule should be read.
+labels: ["question", "needs-pete"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Interpretation goes to Pete. It is never resolved silently, and an
+        agent never settles it from memory. Name the source: policy rules
+        come from cited primary NZ sources only.
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: The source id (from the policy's sources.yaml) or its title and URL.
+    validations:
+      required: true
+  - type: input
+    id: locator
+    attributes:
+      label: Locator
+      description: The section, clause, table or page.
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: What is unclear or ambiguous, and which readings are possible.
+    validations:
+      required: true
+  - type: input
+    id: affects
+    attributes:
+      label: What it affects
+      description: The policy, rule or decision id, if you know it.
+  - type: checkboxes
+    id: ack
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: I understand this goes to Pete and I will not treat any answer here as settled until it is recorded in a decision.
+          required: true

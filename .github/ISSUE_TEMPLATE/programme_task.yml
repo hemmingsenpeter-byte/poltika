@@ -1,0 +1,33 @@
+name: Programme task
+description: A step or task from BUILD_PLAN_PROGRAMME.md.
+labels: ["programme"]
+body:
+  - type: input
+    id: task_id
+    attributes:
+      label: Capability phase and task id
+      description: From BUILD_PLAN_PROGRAMME.md, the capability phase (A-P) and task number from the economist-first plan, for example "Phase B, Task 6". Legacy ADR-0019 step ids map through its old-to-new table.
+    validations:
+      required: true
+  - type: textarea
+    id: done_when
+    attributes:
+      label: Done when
+      description: The plan's done-when, in a testable form.
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Tier
+      description: See adr/0020-delegated-acceptance.md. Tier C goes to PETE_QUEUE.md.
+      options:
+        - A (decide and merge)
+        - B (decide, log in docs/decision_log.md)
+        - C (Pete decides)
+    validations:
+      required: true
+  - type: textarea
+    id: reads
+    attributes:
+      label: Files to read first

@@ -1,0 +1,46 @@
+name: Links
+
+# ADR-0020 professional baseline. The required check is offline: relative
+# links and heading anchors only, so it is deterministic and never contacts
+# an external site. The weekly external check only reports.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "37 22 * * 0"  # Sunday 22:37 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    name: links
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --offline --include-fragments --no-progress '**/*.md'
+          fail: true
+
+  external-links:
+    name: external-links (report only)
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --no-progress --max-retries 2 --timeout 30 '**/*.md'
+          fail: false
+          jobSummary: true

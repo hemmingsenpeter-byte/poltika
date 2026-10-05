@@ -42,7 +42,17 @@ poltika/
 │                       — v0.1.5 Task 8.1 pilot container: API + PostgreSQL,
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
+├── .github/dependabot.yml — weekly grouped minor/patch updates for the uv lock and pinned actions (ADR-0020)
+├── .github/workflows/security.yml — pip-audit of the locked dependencies (PR, main, weekly)
+├── .github/workflows/static-analysis.yml — Bandit (Python; high-severity gate, all findings retained) and zizmor (all workflow findings gate); private-CI compatible
+├── .github/workflows/links.yml    — lychee: offline relative-link and anchor check on `**/*.md` (required), weekly external report
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
+├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
+│                         smallest action that clears it (ADR-0020)
+├── CONTRIBUTING.md     — the route into the repository: worktree flow, tests, review, tiers (ADR-0020), Make targets, where files go
+├── SECURITY.md         — what is in scope, how to report privately, supported versions, the automated checks
+├── .github/CODEOWNERS  — the owner, and the high-risk paths (policy_specs/, engines/simulator/, tests/fixtures/, workflows)
+├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task and collaborator-visible security report; no secrets/personal data
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)
@@ -53,9 +63,6 @@ poltika/
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
-│   └── income_tax/    — Phase B Task 7 / v0.3 local 0.1 draft source-scope
-│                       catalogue only; supported-slice approval and executable
-│                       specification/parameters follow their separate gates
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
 │                         holds the scripts that produced its recorded results (review evidence,
 │                         run by hand from the repository root; not production code, and not
@@ -67,8 +74,8 @@ poltika/
 │                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
-├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map and the v0.2 population methodology
-├── docs/programme/    — repository reconciliation and reference audit for programme migrations
+├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map, the v0.2 population methodology and RELEASE_CHECKLIST.md (the gate-based release steps, ending in a PETE_QUEUE.md tagging request)
+├── docs/programme/    — repository reconciliation/reference audits and EXECUTION.md (agent roles, bounded cycles, current handoff; PROGRAMME_STATUS remains the task tracker)
 ├── docs/archive/      — superseded planning snapshots, never an implementation authority
 │   ├── programmes/    — ADR-0019 programme and W1–W10 realignment history
 │   ├── roadmaps/      — dated roadmap snapshots
@@ -96,6 +103,10 @@ poltika/
 │   ├── semantics/population.py — v0.2 Task 2.1: the canonical population
 │   │                        schema (weighted households, persons, grouping
 │   │                        characteristics, facts in scenario-record form)
+│   ├── semantics/units.py — v0.2 Task 2.2: dimensions, units, price bases;
+│   │                        exact rescaling by scale only; named, sourced
+│   │                        conversion rules (registry empty, so nominal to
+│   │                        real is refused)
 │   ├── data/              — v0.2 Phase 1: manifest.py (raw-snapshot manifest),
 │   │                        registry.py (checksummed dataset registry),
 │   │                        transform.py (versioned transformation registry;

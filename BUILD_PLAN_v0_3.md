@@ -512,7 +512,7 @@ It is historical task evidence, not the current queue. Use
 [review_packets/review_queue.md](review_packets/review_queue.md) for live
 status. In particular, the old review cap is suspended; v0.2 implementation
 and reviews are complete while its release tag remains outstanding; and
-#128's conditional-summary review remains open at reconciliation.
+#128's conditional-summary review was completed and closed by #152.
 
 Pete authorised Phase 1b on 26 September 2026 after the queued-PR audit.
 That work reused WFF/AS without waiting for a v0.2 release or new-policy
