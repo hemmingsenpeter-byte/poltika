@@ -28,7 +28,7 @@ Rule: parameters with review_status approved and a cited source (policy_specs/wo
 
 ## Validation
 
-Passes hand-calculated spec cases and published IRD worked examples for its declared supported domain. It has no empirical estimate and no predictive record. The validation framework (Step 6) does not exist yet.
+Passes hand-calculated spec cases and published IRD worked examples for its declared supported domain. It has no empirical estimate and no predictive record. The validation framework (current Phase C; legacy Step 6) does not exist yet.
 
 Validation cases:
 

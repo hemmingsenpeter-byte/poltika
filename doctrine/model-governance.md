@@ -104,7 +104,7 @@ covers its arithmetic only. Its population is synthetic, and its results are
 never an estimate for New Zealand (`docs/releases/V0_2_LIMITATIONS.md`).
 
 Later levels (for example validated against an estimate, then against a
-predictive record) come from the validation framework (Step 6) and the ledger.
+predictive record) come from the validation framework (current Phase C; legacy Step 6) and the ledger.
 They are not defined here.
 
 **Decision, 5 October 2026:** adopt these two levels and the four models'
@@ -152,7 +152,7 @@ modes. It is generated from the registry by
 same test runs it in CI.
 
 Cards use the registry's validation section. When the validation framework
-(Step 6) produces validation reports, the generator reads them too.
+(current Phase C; legacy Step 6) produces validation reports, the generator reads them too.
 
 ## Validation gates, graduation, demotion, labels and language
 
@@ -163,18 +163,19 @@ These come from "Phases, milestones and validation gates" in
   trusted because the code works. A phase's milestone is claimed only when
   validation evidence shows Poltika can reliably answer its question.
 - **Graduation** to a milestone is a decision by Pete, recorded against the
-  validation evidence (Step 6). The tolerances are set when each milestone is
+  validation evidence (current Phase C; legacy Step 6). The tolerances are set when each milestone is
   first reached (P18).
 - **Demotion.** A milestone can be lost when the evidence stops supporting it,
   and outputs are relabelled. A model's level is lowered in the registry with a
   change record that cites the evidence.
 - **Labels.** Every output carries the validation status of the least mature
   model it relies on. `Registry.label()` computes it from `depends_on`. No
-  output schema carries the label yet. That belongs to the mechanical checks
-  (Task 1.6) and the validation framework (Step 6).
+  output schema carries the label yet. The merged never-build checks (#162,
+  legacy Task 1.6) do not attach it. Runtime label integration remains scoped
+  assurance work under current Phase C and the relevant output boundaries.
 - **Language follows evidence.** Nothing is described as predictive before the
   ledger's record supports it. Poltika is not called a digital twin before
-  Phase 5's milestone.
+  current Gate M (legacy Phase 5's milestone).
 
 **Decision, 5 October 2026:** failing a required supported-domain validation
 case, a confirmed wrong result or broken guardrail in that domain, or losing
