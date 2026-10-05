@@ -19,7 +19,7 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)` once blocking findings are cleared. A finding
 is fixed by a new PR, never by editing history.
 
-**As of 3 October 2026: no open implementation assurance rows.**
+**As of 5 October 2026: no open implementation assurance rows (#128 closed by #152 at `fe67875`).**
 Independent GPT/Codex review of #128 is recorded in `reviews/2026-10-03-pr128.md`.
 Its four P2 fixes were independently Claude-reviewed, tested, accepted by
 Claude/Opus under Tier A and integrated through #150 at `3bea73f`. Latest-head

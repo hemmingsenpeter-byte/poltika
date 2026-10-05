@@ -17,6 +17,10 @@ coding capacity to get the major executable skeleton in place quickly, learn
 from integration, and refine what proves important rather than perfecting
 modules in isolation.
 
+This mode relaxes build order and internal polish only. It does not relax the
+protected expected values and `doctrine/test-doctrine.md`, the ADR-0020 Tier C
+items, or the independent review rotation and the GPT/Codex review queue.
+
 The operating rules are:
 
 - **Breadth before elegance.** Where dependencies allow, build working vertical
