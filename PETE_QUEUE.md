@@ -14,7 +14,7 @@ commit that records it.
 | Q2 | Māori data governance, privacy and security (old 1.4/P5). Engage people with standing in Māori data governance. | Ethnicity/iwi-disaggregated outputs and microdata uses where governance is required (E/M); the interim ban holds. It does not block unrelated deterministic household modelling or Pilot 1. | Name who to engage, or direct GPT/Codex to begin dated primary-source research. All applicable privacy/data constraints still apply. |
 | Q3 | IDI access (P12): lodging an application. | IDI-calibrated population claims and applicable microdata work (E/M), not household Pilot 1. | Lodge after a dated, sourced access-route document and project scope are prepared. |
 | Q4 | Reserved programme decisions, explicitly remapped below. | Only their named capabilities. P18 governs claiming each milestone; no migration document declares a gate met. | Decide concrete options with evidence when each capability starts. |
-| Q5 | Household lane D1–D3: income-tax and core-benefit supported slices; disposable-income definition; sourced income-adequacy, replacement and participation measures where supported. | The corresponding tax/benefit/disposable-income/measure implementation in B. Existing WFF/AS household mappings can proceed. | Decide the smallest slices once v0.3 0.1–0.3 primary-source scoping is available; no value or interpretation is assumed here. |
+| Q5 | Household lane D1–D3: income-tax and core-benefit supported slices; disposable-income definition; sourced income-adequacy, replacement and participation measures where supported. Draft evidence: [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148), [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151); Claude source review pending. | D1-dependent tax/benefit implementation and later disposable-income/measures in B; period/payment-precision gaps and the §3.4 household restriction remain unresolved. Preserving current WFF/AS and reviewing the existing mapping increment can proceed. | After source review, decide the smallest evidenced slices and confirm whether §3.4's household restriction is a deliberate supported-slice exclusion or should be corrected; see the dated evidence below. No decision is requested or recorded by this queue update. |
 | Q7 | P11: historical horizon for policy/data states and replays. | Phase I historical scope and historical statutory years. No inherited November deadline or household-kernel dependency. | Choose the earliest year from a sourced coverage proposal when Phase I starts, or explicitly delegate the reversible choice. |
 | Q8 | Tag v0.2 (`BUILD_PLAN_v0_2.md` 10.3). GitHub has no `v0.2.0` tag as verified 3 October. | The release record; it does not block household work or Pilot 1. | Select the reviewed commit and create/push the annotated tag. Tagging remains Tier C. |
 | Q9 | Accept or revise ADR-0018's proposed Workbench design. PR #133 implements its backend; the independent review is in `reviews/2026-10-02-pr133.md`. | Acceptance of that design, not preservation of its existing backend or the strategic choice of Workbench first. | Record “accept ADR-0018” or the specific changes required. Implementation and review alone do not establish acceptance. |
@@ -38,6 +38,32 @@ P10's technical batch-engine decision remains delegated under ADR-0020 and
 moves to E when profiling demonstrates need. P19's technical state-schema
 scope remains delegated but moves to K. The new sequence does not change
 other reserved authority.
+
+### Q5 prepared evidence — 3 October 2026, second cycle
+
+The source drafts are review preparation, not approved specifications:
+
+| Draft | Fixed evidence | Remaining source/slice gate |
+| --- | --- | --- |
+| Income tax [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148), head `0db2bfaf787280a6cda252f6fa7e9287ba107ef7` | [Scope options](https://github.com/hemmingsenpeter-byte/poltika/blob/0db2bfaf787280a6cda252f6fa7e9287ba107ef7/docs/research/task_0_1_income_tax_scope.md); [source catalogue](https://github.com/hemmingsenpeter-byte/poltika/blob/0db2bfaf787280a6cda252f6fa7e9287ba107ef7/policy_specs/income_tax/sources.yaml) | Claude source review and Pete D1 pending; enacted-period coverage and rounding/benchmark evidence not approved. |
+| Core benefits [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151), head `50f13f44533cdab2939dd80e37538c8313ecb774` | [Scope and interactions](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/docs/research/task_0_2_core_benefit_scope.md); [JS sources](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/policy_specs/jobseeker_support/sources.yaml), [SPS sources](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/policy_specs/sole_parent_support/sources.yaml), [SLP sources](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/policy_specs/supported_living_payment/sources.yaml) | Claude source review and Pete D1 pending; benefit payment precision, gross/net reconciliation, assessment basis and period coverage remain explicitly gated. |
+
+**Specific plan discrepancy to decide later:** [the detailed household plan](BUILD_PLAN_v0_3.md)
+§3.4 says one main benefit per household unless a specification says otherwise.
+The independently retrieved [Social Security Act s 18, version as at 4 September 2026](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/)
+restricts simultaneous main-benefit receipt per person in their own right;
+Schedule 4 Parts 1 and 3 recognise partner own-right benefit categories.
+Pete should confirm whether the household wording is an intentional coverage
+exclusion for the first supported slice or should be corrected to the sourced
+per-person boundary. A chosen household exclusion would be a coverage limit,
+not a claim that mixed-benefit couples are legally prohibited.
+
+The plan is unchanged and no interpretation is chosen here. Same-model source
+checks, including #151's resolved JS category correction, do not supply Claude
+review, Pete D1, monetary parameters or complete historical coverage.
+D1-dependent implementation remains gated. Existing WFF/AS preservation and
+the pinned review intake of the current household writer need no new Pete
+slice decision; their source/interpretation and acceptance gates still hold.
 
 ### Q1 commands
 
