@@ -10,14 +10,34 @@ commit that records it.
 
 | # | Item | Blocks | Smallest action |
 | --- | --- | --- | --- |
-| Q1 | Activate the `main` ruleset and squash-only auto-merge (ADR-0020, "The ruleset on main"). Changing repository settings was denied to the session. | Mechanical enforcement of the merge rules; `gh pr merge --auto`. Merges continue by agreement meanwhile. | Run the two commands under "Q1 commands" below from a shell logged in as the repository owner. |
-| Q2 | Task 1.4: Māori data governance, privacy and security. Engaging people with standing in Māori data governance (P5's process). | Step 1's validation gate; any output about Māori; microdata (Steps 7, 19). The interim rule (P5) holds meanwhile. | Name who you will engage, or say to proceed with GPT/Codex's source research first. |
-| Q3 | IDI access (P12): lodging the application. | Step 7's IDI-calibrated grade; Step 19. | Lodge it once W3.1 documents the route. |
-| Q4 | Open programme decisions P6, P7, P8, P13, P14, P18, P20. | Nothing in Phase 0. P7 blocks Step 6.4-6.5; P13 Step 16; P14 Step 23; P18 each milestone; P20 Step 15; P6 Step 5.5; P8 the first product. | None yet. Each is raised again, with options, when its step starts. |
-| Q5 | v0.3 D1-D3: each Tier 1 domain's supported slice, the disposable-income definition and the income-adequacy measures. | v0.3 Phases 2-5 implementation (Step 3A). | Decide once GPT/Codex's Phase 0 sourcing is in. |
-| Q6 | `.claude/skills/pr-review/SKILL.md` (lines 3, 11) and `.claude/skills/pr-review-preflight/SKILL.md` (line 106) still say Pete is the acceptance judge for every PR. Editing Claude Code's own skill files was outside the session's permissions. | Nothing: ADR-0020, CLAUDE.md and the doctrines govern. A session reading only a skill could think every merge waits for Pete. | Add one line to each: "Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete decides Tier C." Or allow a session to make that edit. |
-| Q7 | P11: the historical horizon for the state store and replays, due by M1 (November 2026). ADR-0020 delegates P10 and P19, not P11. | Step 9 and lane 3B's historical years. Nothing in Phase 0. | Name the earliest year, or say "Tier B", and Claude Code proposes one from the data sources' coverage and logs it. |
-| Q8 | Tag v0.2 (`BUILD_PLAN_v0_2.md` 10.3; Task 7.1). Tagging is Tier C. | v0.2's release record. Nothing in Phase 0. | `git tag -a v0.2.0 <commit> -m "v0.2"` on the commit you choose, then `git push origin v0.2.0`. |
+| Q1 | Activate ADR-0020's target `main` ruleset and squash-only auto-merge. On 3 October GitHub reports main protected but no repository rulesets; classic protection could not be read with this integration. | Mechanical enforcement of the agreed merge rules; baseline task 2. | Run the commands below as repository owner, checking existing protection first. No settings changed in this migration. |
+| Q2 | Māori data governance, privacy and security (old 1.4/P5). Engage people with standing in Māori data governance. | Ethnicity/iwi-disaggregated outputs and microdata uses where governance is required (E/M); the interim ban holds. It does not block unrelated deterministic household modelling or Pilot 1. | Name who to engage, or direct GPT/Codex to begin dated primary-source research. All applicable privacy/data constraints still apply. |
+| Q3 | IDI access (P12): lodging an application. | IDI-calibrated population claims and applicable microdata work (E/M), not household Pilot 1. | Lodge after a dated, sourced access-route document and project scope are prepared. |
+| Q4 | Reserved programme decisions, explicitly remapped below. | Only their named capabilities. P18 governs claiming each milestone; no migration document declares a gate met. | Decide concrete options with evidence when each capability starts. |
+| Q5 | Household lane D1–D3: income-tax and core-benefit supported slices; disposable-income definition; sourced income-adequacy, replacement and participation measures where supported. | The corresponding tax/benefit/disposable-income/measure implementation in B. Existing WFF/AS household mappings can proceed. | Decide the smallest slices once v0.3 0.1–0.3 primary-source scoping is available; no value or interpretation is assumed here. |
+| Q7 | P11: historical horizon for policy/data states and replays. | Phase I historical scope and historical statutory years. No inherited November deadline or household-kernel dependency. | Choose the earliest year from a sourced coverage proposal when Phase I starts, or explicitly delegate the reversible choice. |
+| Q8 | Tag v0.2 (`BUILD_PLAN_v0_2.md` 10.3). GitHub has no `v0.2.0` tag as verified 3 October. | The release record; it does not block household work or Pilot 1. | Select the reviewed commit and create/push the annotated tag. Tagging remains Tier C. |
+| Q9 | Accept or revise ADR-0018's proposed Workbench design. PR #133 implements its backend; the independent review is in `reviews/2026-10-02-pr133.md`. | Acceptance of that design, not preservation of its existing backend or the strategic choice of Workbench first. | Record “accept ADR-0018” or the specific changes required. Implementation and review alone do not establish acceptance. |
+| Q10 | Household/fiscal methodology: v0.2 D8/D9 annualising AS and mapping a single income path across tax/benefits/WFF/AS. | Combined disposable-income/EMTR and direct fiscal results where the definition is required (B/F). | Decide the sourced period/income mapping with the relevant household specifications; retain native units until then. |
+| Q11 | External analyst participation and eventual release tags for untagged work. | Pilot evidence in D/G; v0.1.5 release completion and later tags. No external pilot is recorded yet. | Name and authorise an external pilot participant/session when the workflow is ready; tag only against the actual release evidence. No outreach or public deployment is authorised by this migration. |
+
+### Reserved programme decisions (Q4)
+
+| Historical decision | Current capability | Reserved action |
+| --- | --- | --- |
+| P6 | C, conformance-suite publication | Decide publication/IP; internal conformance can proceed. |
+| P7 | I, prediction/model-error ledger | Choose timestamping and the first genuinely predictive targets. Early C validation does not wait on this. |
+| P13 | H/L, demand-driven expansion | Decide domain priorities from concrete analytical/pilot demand. |
+| P14 | N, policy search | Set the causal-credibility gate before search. |
+| P18 | Every phase's evidence gate | Set tolerances and record milestone acceptance against evidence. |
+| P20 | K, national scenario library | Choose its first national scenario set; core counterfactuals in C can proceed. |
+
+P8's strategic first-product choice is now the Analyst Workbench (Pete's
+3 October directive, ADR-0021). This does not accept ADR-0018; see Q9.
+P10's technical batch-engine decision remains delegated under ADR-0020 and
+moves to E when profiling demonstrates need. P19's technical state-schema
+scope remains delegated but moves to K. The new sequence does not change
+other reserved authority.
 
 ### Q1 commands
 
@@ -64,4 +84,7 @@ updated list here; it cannot apply it.
 
 ## Done
 
-None yet.
+| Item | Date | Record |
+| --- | --- | --- |
+| Q6: obsolete blanket Pete-acceptance wording in reviewer/preflight skills | 3 October 2026 | This migration replaces the blanket instructions with ADR-0020's Tier A/B Claude Code and Tier C Pete acceptance; author preflight remains distinct from independent review. |
+| P8: strategic first-product surface | 3 October 2026 | Pete's supplied migration directive, recorded in ADR-0021; Analyst Workbench chosen. ADR-0018 acceptance remains Q9. |

@@ -1,10 +1,23 @@
 # Agent Instructions - Poltika
 
+<!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
+
+## Start here
+
+Read `docs/ORIENTATION.md`, then `BUILD_PLAN_PROGRAMME.md` for planning,
+sequencing and new implementation work (ADR-0021). It is the single active
+master build order. Read `PROGRAMME_STATUS.md` and the relevant active detailed
+lane: `BUILD_PLAN_v0_3.md` for household economic modelling or
+`BUILD_PLAN_v0_1_6.md` for statutory maintenance. `BUILD_PLAN_v0_2.md` supports
+release completion only. Historical plans and `docs/archive/` never determine
+the next task.
+
 ## Before making changes
 
 Read:
 
-- BUILD_PLAN.md
+- BUILD_PLAN_PROGRAMME.md and the relevant active detailed lane
+- BUILD_PLAN.md — historical v0.1 record; retained substantive doctrine and anchors
 - ARCHITECTURE.md
 - REPOSITORY_STRUCTURE.md - before creating any new production file, module, or directory; a proposed component with no obvious location means updating that file deliberately, not creating an ad-hoc directory
 - relevant files under doctrine/
@@ -27,7 +40,9 @@ If the source is missing or ambiguous, stop and flag it.
 
 ## Implementation
 
-Follow the vertical-slice approach defined in BUILD_PLAN.md.
+Follow the vertical-slice approach in doctrine/development-doctrine.md and
+the single current BUILD_PLAN_PROGRAMME.md. Preserve the frozen constraints
+in BUILD_PLAN.md until they are deliberately extracted.
 
 Do not:
 
@@ -52,7 +67,8 @@ Use the discrepancy taxonomy in doctrine/review-doctrine.md.
 
 Before publishing or recommending acceptance of an implementation PR, use
 `.claude/skills/pr-review-preflight/SKILL.md`. An author preflight is not the
-independent reviewer rotation required by BUILD_PLAN.md.
+independent reviewer rotation in doctrine/review-doctrine.md and the
+historical BUILD_PLAN.md Roles. Acceptance follows ADR-0020.
 
 Interpretation ambiguity must be escalated rather than silently resolved.
 
