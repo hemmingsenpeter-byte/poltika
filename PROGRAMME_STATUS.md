@@ -70,7 +70,7 @@ sets, kept apart so it doesn't read as programme progress.
 | Task | Title | Status | Owner | PR | Blocker |
 | --- | --- | --- | --- | --- | --- |
 | 1.1 | Epistemic constitution | Done | Claude Code drafted, Pete approved | #136, #137 | Follow-ups: a class in each dataset manifest (Step 2); `DEC-*` records classed for Pete's confirmation |
-| 1.2 | The AI gate | In flight (other session) | Claude Code, GPT/Codex reviewing | None yet (branch `prog/ai-gate`) | |
+| 1.2 | The AI gate | Pete | Claude Code, GPT/Codex reviewing | #163 (draft) | Parked: the constitution amendment awaits GPT/Codex review and Pete's acceptance |
 | 1.3 | Precision rule (P3) | Planned | Claude Code | None | 2.6 (quantity type) |
 | 1.4 | Māori data governance, privacy and security | Pete | Pete; GPT/Codex sources | None | PETE_QUEUE Q2. Interim rule P5 holds meanwhile |
 | 1.5 | Model governance and model registry | In flight (other session) | Claude Code drafts, Pete approves | None yet (branch `prog/model-governance`) | |
