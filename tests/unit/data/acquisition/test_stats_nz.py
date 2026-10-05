@@ -182,6 +182,44 @@ def test_name_or_annotation_change_changes_metadata_only() -> None:
         assert other.content.body == base.content.body  # bytes unchanged
 
 
+CODELIST = (
+    b"<structure:Codelists>"
+    b'<structure:Codelist id="CL_X" agencyID="STATSNZ" version="1.0">'
+    b'<common:Name xml:lang="en">Codes</common:Name>'
+    b'<structure:Code id="A"><common:Name xml:lang="en">{name}</common:Name></structure:Code>'
+    b"</structure:Codelist></structure:Codelists>"
+)
+
+
+def with_codelist(name: bytes = b"Alpha") -> bytes:
+    xml = STRUCTURE.replace(
+        b"<structure:Dataflows>", CODELIST.replace(b"{name}", name) + b"<structure:Dataflows>", 1
+    )
+    assert xml != STRUCTURE
+    return xml
+
+
+def test_data_dictionary_change_changes_metadata_hash() -> None:
+    base = connector(Fake(structure=with_codelist())).observe(entry())
+    renamed = connector(Fake(structure=with_codelist(b"Beta"))).observe(entry())
+    assert renamed.content.body == base.content.body
+    assert renamed.metadata.sha256() != base.metadata.sha256()
+    # a structural element outside the dataflow (here a whole codelist) counts too
+    assert connector(Fake()).observe(entry()).metadata.sha256() != base.metadata.sha256()
+
+
+def test_header_and_formatting_do_not_change_the_structure_hash() -> None:
+    base = connector(Fake(structure=with_codelist())).observe(entry()).metadata
+    varied = with_codelist().replace(b"IDREF1", b"IDREF2").replace(b"2026-01-01", b"2030-05-05")
+    varied = varied.replace(
+        b'<structure:Dataflow id="OTHER_FLOW" agencyID="STATSNZ"',
+        b'<structure:Dataflow   agencyID="STATSNZ"  id="OTHER_FLOW"',
+    ).replace(b"<structure:Dataflows>", b"<structure:Dataflows>\n\n  ")
+    assert varied != with_codelist()
+    other = connector(Fake(structure=varied)).observe(entry()).metadata
+    assert other.sha256() == base.sha256()
+
+
 def test_no_metadata_mode_makes_only_the_data_request() -> None:
     fake = Fake()
     obs = connector(fake).observe(entry(), include_metadata=False)
@@ -256,6 +294,10 @@ def test_errors_never_contain_the_key() -> None:
         "https://api.data.stats.govt.nz.evil.example/rest",
         "https://user:pw@api.data.stats.govt.nz/rest",
         "https://api.data.stats.govt.nz:8443/rest",
+        "https://api.data.stats.govt.nz/rest?x=1",
+        "https://api.data.stats.govt.nz/rest#frag",
+        "https://api.data.stats.govt.nz/rest?",
+        "https://api.data.stats.govt.nz/rest#",
     ],
 )
 def test_base_url_must_be_https_on_the_allow_listed_host(base: str) -> None:

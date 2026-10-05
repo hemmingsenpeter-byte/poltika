@@ -14,10 +14,13 @@ metadata snapshot, log line or exception message.
 
 Metadata. The structure response is preserved byte for byte as the native
 metadata blob. The canonical `SourceMetadata` is built from source-stated
-values only (dataflow name, description, version, annotations, agency). The
-SDMX message header (`Prepared`, message id, sender, receiver) is volatile, so
-it is excluded: an unchanged dataflow must hash to the same metadata, and a
-changed name or annotation must not. Reviewer values from the catalogue fill
+values (dataflow name, description, version, annotations, agency) plus
+`structure_c14n_sha256`, the hash of the whole structure message in canonical
+XML (C14N 2.0) with `message:Header` removed, so a change to any codelist,
+concept scheme or data structure (the data dictionary) changes it. The SDMX
+message header (`Prepared`, message id, sender, receiver) is volatile, so it is
+excluded: an unchanged dataflow must hash to the same metadata, and a changed
+name, annotation or dictionary entry must not. Reviewer values from the catalogue fill
 publisher name, landing page, licence, rights, attribution, publication
 frequency and references, because ADE does not publish them. `issued`,
 `modified` and temporal coverage stay `None`: this connector does not know
@@ -26,6 +29,7 @@ which annotation means which, and never derives one date from another.
 
 from __future__ import annotations
 
+import hashlib
 import time
 import xml.etree.ElementTree as ET
 from collections.abc import Callable
@@ -60,6 +64,7 @@ USER_AGENT = "Poltika-SourceArchive/1.0 (Language=Python)"
 
 _NS_STRUCTURE = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/structure"
 _NS_COMMON = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/common"
+_NS_MESSAGE = "http://www.sdmx.org/resources/sdmxml/schemas/v2_1/message"
 _XML_LANG = "{http://www.w3.org/XML/1998/namespace}lang"
 
 
@@ -120,6 +125,19 @@ def _text(node: ET.Element | None) -> str | None:
 
 def _lang(node: ET.Element) -> str:
     return node.get(_XML_LANG) or "und"
+
+
+def _structure_c14n_sha256(root: ET.Element) -> str:
+    """Hash of the structure message without its volatile header, in C14N 2.0.
+
+    Attribute order, whitespace between elements and namespace prefixes do not
+    change it; any element, attribute or text under the message body does."""
+    for header in root.findall(_tag(_NS_MESSAGE, "Header")):
+        root.remove(header)
+    canonical = ET.canonicalize(
+        ET.tostring(root, encoding="unicode"), strip_text=True, rewrite_prefixes=True
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 class ParsedStructure(BaseModel):
@@ -208,6 +226,7 @@ def parse_structure(body: bytes, spec: StatsNzRequest) -> ParsedStructure:
             )
             break
 
+    fields["structure_c14n_sha256"] = _structure_c14n_sha256(root)
     languages = tuple(sorted({lang for lang in names if lang != "und"}))
     return ParsedStructure(
         title=title,

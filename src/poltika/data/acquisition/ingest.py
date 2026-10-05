@@ -91,6 +91,10 @@ def _changed(value: bool | None) -> str:
     return "first observation" if value is None else ("yes" if value else "no")
 
 
+def _not_fetched(r: SourceResult) -> bool:
+    return r.metadata_sha256 is None
+
+
 def result_lines(r: SourceResult) -> list[str]:
     if r.skipped:
         return [f"source: {r.source_id}", "  skipped: disabled in the catalogue"]
@@ -103,9 +107,9 @@ def result_lines(r: SourceResult) -> list[str]:
         f"  http: {r.http_status}",
         f"  bytes: {r.size}",
         f"  content sha256: {r.content_sha256}",
-        f"  metadata sha256: {r.metadata_sha256}",
+        f"  metadata sha256: {'not fetched' if _not_fetched(r) else r.metadata_sha256}",
         f"  content changed: {_changed(r.content_changed)}",
-        f"  metadata changed: {_changed(r.metadata_changed)}",
+        f"  metadata changed: {'not fetched' if _not_fetched(r) else _changed(r.metadata_changed)}",
         f"  content blob: {r.content_blob}",
     ]
     if r.metadata_blob is not None:

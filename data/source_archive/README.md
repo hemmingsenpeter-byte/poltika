@@ -89,10 +89,20 @@ metadata snapshot is written and its thinner descriptor is never compared, so a
 metadata-off run cannot fake a change in either direction. The optional data.govt.nz
 reference (`authoritative=false`) is stored on the record as `secondary_references`,
 outside the hashed metadata, so a failed or successful secondary lookup cannot flip
-`metadata_changed`. Volatile message
-fields (such as an SDMX `Prepared` timestamp) are left out of the canonical metadata,
-so they cannot fake a change; the raw metadata response is still kept verbatim as a
-blob (`metadata_raw_sha256`).
+`metadata_changed`.
+
+What `metadata_changed` covers, exactly: (1) the whole non-header structure message
+(for ADE, the dataflow, codelists, concept schemes, data structure definitions,
+annotations and agencies), through `structure_c14n_sha256` in `native_fields` (the
+hash of the message in canonical XML, C14N 2.0, with `message:Header` removed;
+attribute order, inter-element whitespace and namespace prefixes do not matter); and
+(2) the reviewer's catalogue values recorded with the snapshot (publisher name,
+licence, rights, attribution, landing page, publication frequency, references). So
+editing the catalogue YAML for one of those also flips `metadata_changed`: the
+snapshot is evidence of what was recorded at capture, including the reviewer's
+description of it. Volatile header fields (such as an SDMX `Prepared` timestamp or
+message id) are left out, so they cannot fake a change; the raw metadata response is
+still kept verbatim as a blob (`metadata_raw_sha256`).
 
 ## Point-in-time fields
 

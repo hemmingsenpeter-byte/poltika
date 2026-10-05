@@ -62,7 +62,11 @@ labelled place so the gate is neither weakened nor bypassed.
    metadata; a run without it has `metadata_sha256`, `metadata_raw_sha256` and
    `metadata_changed` null. `metadata_changed` compares with the most recent earlier
    record that has a `metadata_sha256`. Non-authoritative secondary references sit on
-   the record (`secondary_references`), outside the hash. A metadata change is preserved even when the bytes did
+   the record (`secondary_references`), outside the hash. The hash covers the whole
+   non-header structure message (canonical XML, C14N 2.0, as `structure_c14n_sha256`,
+   so dictionary changes such as a codelist name are detected) and the reviewer's
+   catalogue values (licence, references and so on) recorded with the snapshot, so a
+   catalogue edit of those also sets `metadata_changed`. A metadata change is preserved even when the bytes did
    not change (`content_changed=false`, `metadata_changed=true`), and the reverse.
 10. **Publisher identity is recorded as the source represented it at that time**
     (`publisher_identifier` and `publisher_name_at_capture`). A later rename, merger

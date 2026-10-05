@@ -78,6 +78,8 @@ def check_base_url(source_system: str, value: str) -> str:
         )
     if parts.username or parts.password or parts.port not in (None, 443):
         raise CatalogueError("base_url must not carry userinfo or a non-default port")
+    if parts.query or parts.fragment or "?" in value or "#" in value:
+        raise CatalogueError("base_url must not carry a query or fragment")
     return value
 
 

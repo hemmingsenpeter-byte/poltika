@@ -189,3 +189,40 @@ def test_key_is_nowhere_in_archive_or_report(tmp_path: Path) -> None:
     for path in files:
         assert KEY.encode() not in path.read_bytes(), path
         assert KEY not in str(path)
+
+
+def test_no_metadata_run_reports_not_fetched(tmp_path: Path) -> None:
+    archive = SourceArchive(tmp_path / "a")
+    report = run_sources(
+        entries(("one", "TST_A", True)),
+        make(Fake()),
+        archive,
+        enrich=False,
+        include_metadata=False,
+    )
+    text = "\n".join(report.lines)
+    assert "metadata sha256: not fetched" in text
+    assert "metadata changed: not fetched" in text
+    assert "metadata sha256: None" not in text
+
+
+def test_codelist_change_flags_metadata_changed_and_header_change_does_not(
+    tmp_path: Path,
+) -> None:
+    codelist = (
+        b'<structure:Codelists><structure:Codelist id="CL_X" agencyID="STATSNZ" version="1.0">'
+        b'<structure:Code id="A"><common:Name xml:lang="en">%s</common:Name></structure:Code>'
+        b"</structure:Codelist></structure:Codelists><structure:Dataflows>"
+    )
+
+    def structure(name: bytes) -> bytes:
+        return STRUCTURE.replace(b"<structure:Dataflows>", codelist % name, 1)
+
+    archive = SourceArchive(tmp_path / "a")
+    one = entries(("one", "TST_A", True))
+    for body in (structure(b"Alpha"), structure(b"Alpha"), structure(b"Beta")):
+        run_sources(one, make(Fake(structure=body)), archive, enrich=False)
+    later_header = structure(b"Beta").replace(b"2026-01-01", b"2031-03-03")
+    run_sources(one, make(Fake(structure=later_header)), archive, enrich=False)
+    flags = [(r.content_changed, r.metadata_changed) for r in archive.records("one")]
+    assert flags == [(None, None), (False, False), (False, True), (False, False)]
