@@ -121,7 +121,7 @@ _PERIOD_TYPES: tuple[PeriodTypeDefinition, ...] = (
     PeriodTypeDefinition(
         id=PeriodType.CALENDAR_YEAR,
         meaning="A calendar year, with explicit dates. Named in Programme Task 2.3; no repository use yet.",
-        source="BUILD_PLAN_PROGRAMME.md (Task 2.3)",
+        source="docs/archive/programmes/2026-09-29-adr0019-master-programme.md:391",
     ),
     PeriodTypeDefinition(
         id=PeriodType.POINT_IN_TIME,
@@ -212,7 +212,9 @@ def convert_amount(amount: Decimal, from_type: PeriodType, to_type: PeriodType) 
     registered = [
         r
         for r in PERIOD_RELATIONS.values()
-        if r.kind is RelationKind.VALUE_CONVERSION and r.from_type is from_type and r.to_type is to_type
+        if r.kind is RelationKind.VALUE_CONVERSION
+        and r.from_type is from_type
+        and r.to_type is to_type
     ]
     raise PeriodConversionRefusedError(
         f"no named value-conversion rule from {from_type.value} to {to_type.value} "

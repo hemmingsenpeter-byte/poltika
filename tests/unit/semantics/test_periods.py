@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import re
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
+from types import MappingProxyType
 
 import pytest
 from pydantic import ValidationError
@@ -14,10 +17,12 @@ from poltika.common.errors import (
     UnknownPeriodRelationError,
     UnknownPeriodTypeError,
 )
+from poltika.semantics import periods
 from poltika.semantics.periods import (
     PERIOD_RELATIONS,
     PERIOD_TYPES,
     Period,
+    PeriodRelation,
     PeriodType,
     RelationKind,
     check_containment,
@@ -117,3 +122,41 @@ def test_d9_no_value_conversion_registered_and_refused() -> None:
         convert_amount(Decimal(52), PeriodType.TAX_YEAR, PeriodType.ASSESSMENT_WEEK)
     with pytest.raises(PeriodConversionRefusedError):
         convert_amount(Decimal(1), PeriodType.ASSESSMENT_WEEK, PeriodType.TAX_YEAR)
+
+
+def test_registered_value_conversion_is_still_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+    rule = PeriodRelation(
+        id="annual_to_week_example",
+        from_type=PeriodType.TAX_YEAR,
+        to_type=PeriodType.ASSESSMENT_WEEK,
+        kind=RelationKind.VALUE_CONVERSION,
+        source="BUILD_PLAN.md:1",
+        statement="test-only rule",
+    )
+    monkeypatch.setattr(periods, "PERIOD_RELATIONS", MappingProxyType({rule.id: rule}))
+    with pytest.raises(PeriodConversionRefusedError, match=r"\(1 registered\)"):
+        convert_amount(Decimal(52), PeriodType.TAX_YEAR, PeriodType.ASSESSMENT_WEEK)
+    # A different direction has no registered rule.
+    with pytest.raises(PeriodConversionRefusedError, match=r"\(0 registered\)"):
+        convert_amount(Decimal(1), PeriodType.ASSESSMENT_WEEK, PeriodType.TAX_YEAR)
+
+
+def test_source_citations_resolve_to_existing_lines() -> None:
+    root = Path(__file__).resolve().parents[3]
+    cited = [d.source for d in PERIOD_TYPES.values()] + [
+        r.source for r in PERIOD_RELATIONS.values()
+    ]
+    pattern = re.compile(r"([\w/.-]+\.(?:md|py|yaml)):(\d+)")
+    resolved = 0
+    for source in cited:
+        match = pattern.search(source)
+        assert match, f"no file:line citation in {source!r}"
+        name, line = match.group(1), int(match.group(2))
+        # The variables dictionary is cited relative to the metadata folder.
+        path = root / name if (root / name).exists() else root / "data" / name
+        assert path.exists(), f"{name} does not exist"
+        assert 1 <= line <= len(path.read_text(encoding="utf-8").splitlines()), (
+            f"{source}: line out of range"
+        )
+        resolved += 1
+    assert resolved == len(cited)
