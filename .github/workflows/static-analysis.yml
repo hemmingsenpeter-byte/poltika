@@ -1,0 +1,73 @@
+name: Static Analysis
+
+# Private-CI compatible scanners. These have different coverage from CodeQL.
+# Bandit retains every finding and gates high-severity findings; medium/low
+# findings remain visible for triage. zizmor gates all reported workflow issues.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "11 21 * * 0"
+
+permissions:
+  contents: read
+
+jobs:
+  bandit:
+    name: Bandit (python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          python-version: "3.12"
+      - name: Scan Python and retain every severity
+        run: uvx --python 3.12 bandit@1.9.4 -r src --exit-zero -f json -o bandit.json
+      - name: Check scanner errors and high-severity findings
+        run: |
+          python3 - <<'PY'
+          import collections
+          import json
+          import sys
+
+          with open("bandit.json", encoding="utf-8") as handle:
+              report = json.load(handle)
+          if report["errors"] or report["metrics"]["_totals"]["loc"] == 0:
+              sys.exit("Bandit did not scan every requested file successfully.")
+          results = report["results"]
+          counts = collections.Counter(item["issue_severity"] for item in results)
+          print(f"All severities retained: {dict(counts)}")
+          for item in results:
+              print(f"{item['issue_severity']} {item['test_id']} "
+                    f"{item['filename']}:{item['line_number']} {item['issue_text']}")
+          sys.exit(1 if counts["HIGH"] else 0)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: bandit-report
+          path: bandit.json
+          if-no-files-found: error
+
+  zizmor:
+    name: zizmor (actions)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          python-version: "3.12"
+      - name: Scan all workflows without a token or network lookups
+        run: uvx --python 3.12 zizmor@1.30.1 --offline --strict-collection --format json .github/workflows > zizmor.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: zizmor-report
+          path: zizmor.json
+          if-no-files-found: error

@@ -1,6 +1,6 @@
 # Programme status
 
-**As of:** 2 October 2026.
+**As of:** 5 October 2026.
 
 This is the live tracking file named by ADR-0020. It maps every step of
 `BUILD_PLAN_PROGRAMME.md` (the master build order, ADR-0019) and each task
@@ -11,6 +11,10 @@ The other tracking files are `docs/decision_log.md` (Tier A and B
 decisions) and `PETE_QUEUE.md` (open Tier C items, cited here as Q1, Q2 and
 so on). The plans stay the source of what each task means and when it is
 done. This file records where it stands.
+
+Open PRs are recorded as work in flight, not as completed programme authority.
+The economist-first programme migration is currently stacked in #144-#147 and
+is not canonical until those PRs are integrated into `main`.
 
 **Who updates it, and when.** Every PR that changes a task's state updates
 that task's row in the same PR: status, PR number and blocker. The author
@@ -39,11 +43,11 @@ sets, kept apart so it doesn't read as programme progress.
 
 | Item | Title | Status | Owner | PR | Blocker |
 | --- | --- | --- | --- | --- | --- |
-| B1 | ADR-0020: delegated acceptance | In progress | Claude Code | #139 (open) | Merge |
+| B1 | ADR-0020: delegated acceptance | Done | Claude Code | #139 (merged) | |
 | B2 | Ruleset on `main` and squash-only auto-merge | Pete | Pete | None | PETE_QUEUE Q1 (needs the repository owner's shell) |
-| B3 | Dev tooling: import-linter, pre-commit, Makefile, coverage | In progress | Claude Code | None yet | B1 |
-| B4 | Security CI: Dependabot, pip-audit, CodeQL, lychee | In progress | Claude Code | None yet | B1; new jobs join the ruleset's required checks only after Q1 |
-| B5 | Governance files: CODEOWNERS and the like | In progress (review fixes) | Claude Code authored; GPT/Codex reviewed/fixed | #143 | Private reporting, release-gate and pending-tooling guidance corrected; final-head review/CI and delegated acceptance pending |
+| B3 | Dev tooling: import-linter, pre-commit, Makefile, coverage | In progress | Claude Code | None yet | |
+| B4 | Security CI: Dependabot, pip-audit, static analysis, lychee | Done | Claude Code; GPT/Codex review and fixes | #142 (merged) | Bandit retains four medium XML-parser findings for triage. Required-check names for Q1: `test`, `pilot-image`, `check-immutable-snapshots`, `check-protected-paths`, `source-currency`, `pip-audit`, `links`, `Bandit (python)`, `zizmor (actions)`; not `publish-issue` or `external-links (report only)` (skipped on PRs) |
+| B5 | Governance files: CODEOWNERS and the like | Done | Claude Code authored; GPT/Codex reviewed/fixed | #143 (merged) | Private reporting, release-gate and pending-tooling guidance corrected |
 
 ## Releases
 
@@ -52,7 +56,7 @@ sets, kept apart so it doesn't read as programme progress.
 | v0.1, v0.1.5 | Done | Done | | |
 | v0.2 | 7.1 | Ready to tag | Pete | Pete tags `v0.2.0` (`BUILD_PLAN_v0_2.md` 10.3; GPT/Codex cleared every row on 27 September 2026) |
 | v0.1.6 | Lane 3B | Not started, except the source-currency report (v0.1.6 2.1, #92) | GPT/Codex sources, Claude Code implements | Calendar-bound: the 2027-28 year must be in by 1 April 2027 (M6); needs the 2027-28 values to be published; 2.2 needs Pete's network access |
-| v0.3 | Steps 1, 2, 3A, 5.1 for Tier 1 | In progress (Phase 1b mostly done) | Claude Code, GPT/Codex | PETE_QUEUE Q5 (D1-D3) gates Phases 2-5 |
+| v0.3 | Steps 1, 2, 3A, 5.1 for Tier 1 | In progress (Phase 1b fixes merged and #128 assurance closed by #152 at fe67875; source scoping drafted) | Claude Code, GPT/Codex | #148/#151 are draft source scopes; PETE_QUEUE Q5 (D1-D3) gates Phases 2-5 |
 | v0.4 | Steps 4, 5, 6, 3C | Not started | | After v0.3 |
 | v0.5 | Steps 7, 8, 9, 3D | Not started | | After v0.4; IDI is PETE_QUEUE Q3 |
 | v0.6 | Steps 10, 11, 3E | Not started | | |
@@ -71,7 +75,7 @@ sets, kept apart so it doesn't read as programme progress.
 | 1.4 | Māori data governance, privacy and security | Pete | Pete; GPT/Codex sources | None | PETE_QUEUE Q2. Interim rule P5 holds meanwhile |
 | 1.5 | Model governance and model registry | In flight (other session) | Claude Code drafts, Pete approves | None yet (branch `prog/model-governance`) | |
 | 1.6 | Mechanical never-build checks | In flight (other session) | Claude Code | None yet (branch `prog/never-build-checks`) | |
-| 1.7 | `evidence-classes` skill | In flight (other session) | Claude Code | #138 (open) | |
+| 1.7 | `evidence-classes` skill | In progress (review fixes) | Claude Code authored; GPT/Codex reviewed/fixed | #138 (open) | Promotion exception clarified; final-head review/CI and delegated acceptance pending |
 
 ## Step 2: National Variable Registry and common schemas
 
@@ -97,10 +101,10 @@ Lane 3A follows `BUILD_PLAN_v0_3.md`. Its Phase 1 is task 2.7. Its Phase 6
 
 | Task | Title | Status | Owner | PR | Blocker |
 | --- | --- | --- | --- | --- | --- |
-| 3A, v0.3 0.1-0.3 | Phase 0 scoping: source packs for income tax and the three core main benefits; the stated interactions | Not started | GPT/Codex, Pete deciding ambiguity | None | No `policy_specs/` pack for either exists yet |
+| 3A, v0.3 0.1-0.3 | Phase 0 scoping: source packs for income tax and the three core main benefits; the stated interactions | In progress | GPT/Codex, Pete deciding ambiguity | #148, #151 (draft) | Source inventories/scope drafts exist; independent cross-model review and Pete's supported-slice decisions remain pending. Both drafts are stacked on the unmerged economist-first migration (#144-#147). |
 | 3A, v0.3 0.4 | Confirm each domain's slice, the disposable-income definition and the income-adequacy measures (D1-D3) | Pete | Pete | None | PETE_QUEUE Q5; waits on 0.1-0.3 |
 | 3A, v0.3 0.5 | Plan each policy's tasks with the onboarding skill | Not started | Claude Code | None | v0.3 0.1-0.2 |
-| 3A, v0.3 1b.1-1b.6 | Delivered fact catalogues, conditional answers, intake planner, API/page, population ranges and release gate; conditional-summary follow-up in progress; 1b.2b, 1b.2c and 1b.3e remain below | In progress (review fixes) | Claude Code original author; GPT/Codex independent review and fixes | #109, #112, #121, #125, #126, #127, #128; #150 draft follow-up | #128 review found four P2 errors; #150 fixes tested and independently Claude-reviewed at948fb24; latest-head CI, delegated acceptance and integration pending; assurance row stays open |
+| 3A, v0.3 1b.1-1b.6 | Delivered fact catalogues, conditional answers, intake planner, API/page, population ranges and release gate; scoped review fixes integrated; 1b.2b, 1b.2c and 1b.3e remain below | Done (delivered intake scope only) | Claude Code original author/acceptance; GPT/Codex independent review and fixes | #109, #112, #121, #125, #126, #127, #128; #150 merged at 3bea73f; #152 merged at fe67875 | #128 assurance complete. Monotone declarations, candidate values and later v0.3 capabilities remain under their own rows/gates |
 | 3A, v0.3 1b.2b | Monotone declarations in the real catalogues | Not started | GPT/Codex | None | Cited rules; none declared yet |
 | 3A, v0.3 1b.2c, 1b.3e | Candidate values and their checks | Blocked | GPT/Codex, then Claude Code | None | A structured `candidates` list from GPT/Codex |
 | 3A, v0.3 Phase 2 | Income tax | Not started | GPT/Codex sources, Claude Code implements | None | v0.3 0.1; PETE_QUEUE Q5 |

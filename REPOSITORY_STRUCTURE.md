@@ -37,6 +37,10 @@ poltika/
 │                       — v0.1.5 Task 8.1 pilot container: API + PostgreSQL,
 │                         migrations on start, policy_specs/ mounted read-only
 ├── uv.lock
+├── .github/dependabot.yml — weekly grouped minor/patch updates for the uv lock and pinned actions (ADR-0020)
+├── .github/workflows/security.yml — pip-audit of the locked dependencies (PR, main, weekly)
+├── .github/workflows/static-analysis.yml — Bandit (Python; high-severity gate, all findings retained) and zizmor (all workflow findings gate); private-CI compatible
+├── .github/workflows/links.yml    — lychee: offline relative-link and anchor check on `**/*.md` (required), weekly external report
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
 ├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
 │                         smallest action that clears it (ADR-0020)
