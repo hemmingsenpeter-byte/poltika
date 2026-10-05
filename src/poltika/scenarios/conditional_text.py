@@ -2,9 +2,9 @@
 
 Rendered from a `Resolution` only, with no LLM, in the v0.1.5 pattern
 (`engines/assurance/explanation.py`, `scenarios/microsim/explain.py`): each
-sentence carries its figures as data, and `verify()` recomputes every figure
-from the resolution's branches and bounds and checks that it appears in the
-sentence text. The wording always says the answer is conditional:
+sentence carries its figures as data, and `verify()` checks their exact values
+against the resolution's branches and bounds, as well as the complete fixed
+sentences and figure inventory. The wording always says the answer is conditional:
 
     Poltika can't give one figure without: <question>.
     If <fact> is <answer>: <component> $X a year; ...
@@ -50,7 +50,10 @@ class Sentence:
 
 
 def fmt(value: Decimal) -> str:
-    return f"${value.quantize(Decimal('0.01')):,}"
+    # Annual entitlements can contain a half-cent. Group digits and remove
+    # insignificant trailing zeros without introducing payment rounding.
+    whole, _, fraction = f"{value:,f}".partition(".")
+    return f"${whole}.{fraction.rstrip('0').ljust(2, '0')}"
 
 
 def _per(name: str) -> str:
@@ -87,12 +90,19 @@ def explain_resolution(res: Resolution) -> tuple[Sentence, ...]:
                 parts.append(f"{LABELS[name]} {fmt(r.value)} {_per(name)}")
                 figures.append(Figure(f"branch:{i}:{name}", r.value))
             else:
-                parts.append(f"{LABELS[name]} {_STATUS[r.outcome]}")
+                status = (
+                    "excluded for this answer"
+                    if r.outcome == "unsupported" and r.category == "evidenced_exclusion"
+                    else _STATUS[r.outcome]
+                )
+                parts.append(f"{LABELS[name]} {status}")
         sentences.append(Sentence(f"If {condition}: " + "; ".join(parts) + ".", tuple(figures)))
     for name in blocked:
         b = res.bounds[name]
         if b.calculated == 0 or b.low is None or b.high is None:
-            sentences.append(Sentence(f"{LABELS[name].capitalize()}: not calculable under any answer."))
+            sentences.append(
+                Sentence(f"{LABELS[name].capitalize()}: no calculated amount in the evaluated branches.")
+            )
             continue
         where = "" if b.complete else " where calculable"
         caveat = "; values at these points, not bounds" if b.kind == "points" else ""
@@ -110,7 +120,7 @@ def explain_resolution(res: Resolution) -> tuple[Sentence, ...]:
         )
     if res.capped:
         sentences.append(
-            Sentence("There are too many combinations to show: only the facts that matter most are branched.")
+            Sentence("Some fact combinations were not evaluated because the branch limit was reached.")
         )
     if res.next_question is not None:
         sentences.append(
@@ -120,8 +130,12 @@ def explain_resolution(res: Resolution) -> tuple[Sentence, ...]:
 
 
 def verify(sentences: tuple[Sentence, ...], res: Resolution) -> list[str]:
-    """Every figure recomputed from the resolution, checked for its value
-    and its presence in the text. Empty when the summary is faithful."""
+    """Check exact keyed values and the complete deterministic rendering.
+
+    Metadata alone cannot establish a sentence's component, period, condition
+    or caveats. The fixed rendering is also checked, including omissions.
+    Empty when the summary is faithful.
+    """
     expected: dict[str, Decimal] = {}
     for i, branch in enumerate(res.branches):
         for name in COMPONENTS:
@@ -140,4 +154,12 @@ def verify(sentences: tuple[Sentence, ...], res: Resolution) -> list[str]:
                 problems.append(f"{figure.key}: says {figure.value}, the resolution gives {expected[figure.key]}")
             if fmt(figure.value) not in sentence.text:
                 problems.append(f"{figure.key}: {fmt(figure.value)} is not in its sentence")
+    canonical = explain_resolution(res)
+    if len(sentences) != len(canonical):
+        problems.append(f"summary: has {len(sentences)} sentences, expected {len(canonical)}")
+    for i, (sentence, required) in enumerate(zip(sentences, canonical, strict=False)):
+        if sentence.text != required.text:
+            problems.append(f"sentence:{i}: text differs from the resolution's fixed rendering")
+        if sentence.figures != required.figures:
+            problems.append(f"sentence:{i}: figure inventory differs from the resolution")
     return problems

@@ -29,6 +29,18 @@ account and sets the password; the repository holds no credentials.
   the calculation routes and both pages don't need one. To enable them, set
   `POLTIKA_DATABASE_URL` to a PostgreSQL database; the entrypoint applies
   the migrations at start.
+- Reads `policy_specs/` from `/policy_specs`, the copy baked into the image
+  at build time (`POLTIKA_POLICY_SPECS_DIR=/policy_specs`, set in the
+  `Dockerfile`). To deploy a reviewed copy instead of the image's build-time
+  snapshot -- e.g. a platform volume mount, a config-management step, or a
+  sidecar that writes the directory before the container starts -- point
+  `POLTIKA_POLICY_SPECS_DIR` at it. The variable is read once, when the
+  process starts; the API then loads the policy files from that path for
+  each calculation, so restart after changing the mount. Startup fails
+  loudly if the WFF or Accommodation Supplement `policy.yaml` is missing
+  there; the household and analyst routes also need `wff_as_interaction/`
+  in the same directory, which startup does not check (ADR-0011,
+  `tests/installed_artifact/test_installed_artifact.py`).
 
 Basic authentication sends the password with every request, so only serve
 it over HTTPS. The platforms below give every service an HTTPS address.
