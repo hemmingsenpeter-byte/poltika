@@ -1,0 +1,52 @@
+name: Bug or wrong result
+description: Poltika failed, or gave a result you think is wrong.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not paste personal data, unit records or microdata.** Describe the
+        household with the statuses the API takes, or a made-up example.
+        For a security problem, use private reporting instead (see SECURITY.md).
+  - type: textarea
+    id: request
+    attributes:
+      label: The request
+      description: The exact request you sent (a made-up household only).
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: run_id
+    attributes:
+      label: Result id or run id
+      description: The result id or run id from the response. Say "none" if there was none.
+    validations:
+      required: true
+  - type: input
+    id: policy_version
+    attributes:
+      label: Policy version
+      description: For example the version shown in the response.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and why
+      description: Cite the source and locator if you can. Interpretation questions go to the source question form.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: This issue contains no personal data, unit records or microdata.
+          required: true
