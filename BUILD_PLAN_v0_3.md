@@ -1,20 +1,42 @@
-# Poltika v0.3 Build Plan: tax, benefits and the household graph
+# Poltika household economic model: detailed v0.3 lane
 
 **Date:** 26 September 2026
-**Status:** Approved 26 September 2026 with ADR-0015 (accepted). Scope
-is Tier 1 of the policy kernel coverage map (`ROADMAP_REALIGNMENT.md` W10,
-decided 26 September 2026): personal income tax, Jobseeker Support, Sole
-Parent Support and Supported Living Payment. Phase 0 sets each one's
-supported slice from sources.
-**Starts:** after v0.2 ships.
-Phase 0 can start as soon as ADR-0015 is accepted.
-**Redirect (ADR-0019, 29 September 2026):** this plan is now lane 3A of
-`BUILD_PLAN_PROGRAMME.md` (the statutory kernel's first lane). v0.3 also
-ships Phase 0: Step 1 (the epistemic constitution and model governance)
-and Step 2 (the National Variable Registry and common schemas; this
-plan's Phase 1 is Step 2.7). It also ships Step 5.1's conformance matrix
-for its domains. Its tasks
-are unchanged. The review-debt cap is suspended (programme plan P17).
+**Status:** Active supporting plan for the household economic model.
+Originally approved 26 September 2026 with ADR-0015. ADR-0021 re-homes its
+tasks under the sole master build order,
+[BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md). Scope remains personal
+income tax, Jobseeker Support, Sole Parent Support and Supported Living
+Payment, with each supported slice established from primary sources.
+
+**Starts:** Phase B's bounded household-model task can proceed on the merged
+WFF/AS baseline after the relevant Phase A review checks. It does not wait
+for a v0.2 tag, national microdata access, a universal registry, `NZState` or
+all old foundations tasks. Each new policy still requires its own sourced
+specification, reviewed mapping and retained Pete decisions before
+implementation. Local "Phase 0" below means policy source scoping, not a
+programme-wide infrastructure prerequisite.
+
+**Programme mapping (3 October 2026, ADR-0021):**
+
+| Existing task group | Active capability phase | Scope |
+| --- | --- | --- |
+| Local 0, 1, 2–5 | B | Source scoping, bounded semantics, shared household model, income tax, three main benefits, household graph, disposable income and incentives |
+| Local 1b | B/C; population extensions E | Reuse delivered intake/conditional-answer work; finish only what the current analytical slice requires |
+| Conformance, benchmark validation and analyst presentation | C | Bring assurance into the household analytical workflow; complete the existing workbench surface |
+| Local 6 | E | Survey adapter and secure-environment population pipeline; 6.4 can support development checks earlier |
+| Local 7 | Release closeout at demonstrated gates | Preserve versioned evidence and Pete's tagging authority; releases do not set the master sequence |
+
+All task identifiers and historical progress below are retained. The old
+ADR-0019 mapping to lanes 3A and universal foundations is historical; its
+execution sequence is superseded. The review-debt cap remains suspended
+under the retained P17 decision, subject to ADR-0020's review requirements.
+
+**Next coding task:** local 1.1–1.3 only: the canonical household model and
+reviewed mappings to the existing WFF and AS inputs. Every existing golden
+household, spec case, golden result and result ID must remain byte-identical.
+Keep today's request formats as adapters and retain meaningful
+contradiction checks. New calculators and the graph follow their own
+source/review gates; this task creates no national state or universal schema.
 
 `BUILD_PLAN.md`'s doctrines apply unchanged: primary sources only, the
 three test classes, protected values changed only through the test
@@ -23,7 +45,7 @@ of policy logic. Every statutory rule, rate, threshold and interaction
 below is established by a phase's sourcing task. This plan names none of
 them.
 
-## What v0.3 delivers
+## Household capability this lane delivers
 
 v0.2 runs two policies that don't feed each other (AS-10, WFF DEC-003).
 v0.3 starts the **deterministic policy kernel**: one engine that turns a
@@ -31,59 +53,59 @@ household's state into its fiscal position under a policy configuration,
 
 `household state → policy dependency graph → household fiscal position`
 
-rather than a set of separate calculators. A scenario then compares the
-same households under two configurations, which gives the change in
-disposable income, and with weights the change in Crown cost
-(`ROADMAP_REALIGNMENT.md` W10).
+with source-derived relationships between calculations. A scenario compares
+the same household under baseline and reform settings. Population and
+fiscal estimates extend this analysis under the later Phase E/F gates;
+they are not prerequisites for Pilot 1.
 
 The target calculation shape is roughly:
 
 `gross earnings → income tax → main benefits → WFF → AS → (Tier 2: childcare and supplementary assistance) → disposable income`
 
 The actual order is whatever the source-derived edges (Phase 0.3) make
-it. That shape is the aim, not an assumed rule. v0.3 delivers:
+it. That shape is the aim, not an assumed rule. Phase B delivers:
 
 1. **Personal income tax** on the income types the v0.2 household types
    have.
 2. **The three core main benefits**: Jobseeker Support, Sole Parent
    Support and Supported Living Payment (Tier 1).
-3. **One household model** that every policy reads, replacing per-policy
-   input types.
+3. **One household model** with named, reviewed mappings to the existing
+   per-policy input types, preserving today's request adapters and results.
 4. **A household-level dependency graph** whose edges come only from the
    specifications, so one policy's output feeds another's input in a
    stated, explained order.
 5. **Disposable income** for supported households, and with it the
    measures v0.2 couldn't offer (R3): effective marginal tax rates, and
    income-adequacy measures on a sourced definition.
-6. **The real-data pipeline.** Poltika runs inside a secure environment
-   and exports only checked aggregates (W3), ready for access when it's
-   granted.
-7. **The epistemic constitution and model governance**
-   (`BUILD_PLAN_PROGRAMME.md` Step 1): evidence classes, the never-build
-   list, a model registry with change control, and validation gates.
-8. **The National Variable Registry and common schemas** (Step 2): every
-   number an engine reads or writes is a registered variable, and every
-   output is a quantity X = (x̂, D_x, E_x), carrying its value, uncertainty
-   and evidence.
-9. **A conformance matrix** for every Tier 1 rule (Step 5.1): golden,
-   boundary, contradiction and regression cases.
 
-**Not in v0.3:**
+Phase C brings conformance and benchmark validation forward: every rule in
+the supported slice has golden, boundary, contradiction and regression
+cases, linked to primary sources. The approved epistemic constitution and
+ADR-0020 apply throughout. Semantic contracts grow only for the units,
+periods, entities and variables current household calculations require;
+an exhaustive registry, universal quantity wrapper or general evidence graph
+does not block this lane.
 
-- multi-year scenarios (programme plan Step 8);
-- uncertainty propagation or Monte Carlo (Step 11; each quantity's
-  uncertainty is represented from Step 2);
-- the historical state store and the baseline (Steps 9-10, per ADR-0019);
-- GST, company tax or other revenue (Step 3, lane 3E);
-- behavioural responses (Step 12);
+The real-data pipeline remains local Phase 6, delivered under programme
+Phase E. It runs inside the relevant approved secure environment and exports
+only checked aggregates. Existing synthetic development machinery is reused
+with its explicit label and limitations.
+
+**Beyond this household lane:**
+
+- dynamic national scenarios and `NZState` (programme Phase K);
+- formal uncertainty propagation, Monte Carlo and behavioural mechanisms
+  (Phase J), while current assumptions and unknowns remain visible;
+- historical policy/data states and `as_of` replay (Phase I);
+- wider revenue and firm domains (Phases H/L as analytical demand requires);
 - the other household domains (Temporary Additional Support, Disability
   Allowance, childcare subsidies, NZ Super, Paid Parental Leave, student
-  support, ACC levies, KiwiSaver and the rest). They follow as Step 3's
-  lanes 3C and 3D.
+  support, ACC levies, KiwiSaver and the rest). Phase H orders them by real
+  analytical demand rather than implementing a coverage list mechanically.
 
 ## Phases
 
-### Phase 0: scoping (before any implementation)
+### Phase 0: policy source scoping (programme Phase B)
 
 - **0.1 — GPT/Codex. Source-scope income tax.** Define the smallest
   supported slice: which income types, which tax year, which
@@ -124,7 +146,7 @@ it. That shape is the aim, not an assumed rule. v0.3 delivers:
 - **0.5 — Claude Code.** Apply the onboarding skill (W2.2) to plan each
   policy's tasks, with the W2.1 cost baseline as the estimate.
 
-### Phase 1: shared household model (W6)
+### Phase 1: shared household model (programme Phase B; ADR-0017)
 
 - **1.1 — Claude Code. Canonical household model** in `semantics/`:
   persons, family and household, holding each fact once (partner status,
@@ -363,7 +385,8 @@ Phase 1 household model and with its Phase 1b fact catalogue.
 - **2.5 — Claude Code. Release (PR 5).** Gate rows, CHANGELOG,
   limitations, the README coverage row, the maintenance line (W5.4) and
   throughput actuals (W2.5) in this plan's Progress table.
-  *Done when:* the gate passes, or skips only for named reasons.
+  *Done when:* the implemented slice's checks pass and any outstanding
+  release rows are named. A release gate with skips remains unmet.
 
 ### Phase 3: the three core main benefits (v0.1 method)
 
@@ -393,7 +416,7 @@ least one where the benefit's result changes another policy's input.
 For each benefit, *done when* is the skill's exit check for each of its
 five PRs, with throughput recorded in the Progress table.
 
-### Phase 4: household dependency graph (W7)
+### Phase 4: household dependency graph (programme Phase B)
 
 - **4.1 — Claude Code.** A graph of policy calculations per household.
   Each edge is one Phase 0.3 interaction, citing its decision record or
@@ -436,7 +459,13 @@ five PRs, with throughput recorded in the Progress table.
 - **5.4 — Claude Code.** Add those measures to the population analysis
   and explanations, with coverage.
 
-### Phase 6: real-data pipeline (W3.3-W3.5)
+### Phase 6: real-data pipeline (programme Phase E)
+
+Tasks 6.1–6.3 serve representative population analysis. They are not Phase B
+or Pilot 1 prerequisites. Their historical W3 references identify the
+archived source of the workstream; current governance and source-derived
+disclosure rules still apply. Task 6.4 may support earlier development
+checks, with every output retaining the synthetic label.
 
 - **6.1 — Claude Code. Secure-environment runner.**
   - 6.1a A runner entry point with no network access (it refuses to
@@ -463,10 +492,12 @@ five PRs, with throughput recorded in the Progress table.
   label until real data runs.
   *Done when:* a population run covers every Tier 1 component.
 
-### Phase 7: release
+### Phase 7: release closeout
 
-- **7.1 — Claude Code. Release-gate test.** One row per exit-gate item
-  below, including W1's review-queue row and 1b.1c's wording row.
+- **7.1 — Claude Code. Release-gate test.** A later bounded alignment PR
+  maps the existing executable rows to the B/C/E capability gates below,
+  including the review-queue and 1b.1c wording rows. Retain the current
+  skips until their capabilities are implemented and verified.
 - **7.2 — Claude Code. Release documents.** CHANGELOG,
   `docs/releases/` limitations, the maintenance line per policy (W5.4),
   throughput actuals (W2.5), and the README coverage table.
@@ -474,10 +505,18 @@ five PRs, with throughput recorded in the Progress table.
 
 ## Progress
 
-Pete said to proceed with this phase on 26 September 2026, after GPT/Codex
-reviewed the 18 queued PRs (#108). Phase 1b builds on WFF and AS alone, so
-it doesn't wait for v0.2's release (which waits on the real population)
-or for Phase 0.
+The following table preserves the Phase 1b implementation record assembled
+from 26 September 2026 onward, including contemporary local/PR states.
+It is historical task evidence, not the current queue. Use
+[PROGRAMME_STATUS.md](PROGRAMME_STATUS.md) and
+[review_packets/review_queue.md](review_packets/review_queue.md) for live
+status. In particular, the old review cap is suspended; v0.2 implementation
+and reviews are complete while its release tag remains outstanding; and
+#128's conditional-summary review was completed and closed by #152.
+
+Pete authorised Phase 1b on 26 September 2026 after the queued-PR audit.
+That work reused WFF/AS without waiting for a v0.2 release or new-policy
+source scoping. Keep its completed work under the new programme.
 
 | Task | State |
 | --- | --- |
@@ -490,16 +529,34 @@ or for Phase 0.
 
 ## Sequence
 
+This is the bounded lane sequence under the master programme, not a second
+programme order. Source research can proceed alongside the initial mapping
+work; each new calculator waits for its own source and decision gates.
+
 | Sprint | Work |
 | --- | --- |
-| 0 | Phase 0 (sourcing and decisions); W4.2 prototype in parallel |
-| 1 | Phase 1; Phase 1b; Phase 2 sources and specification |
+| 0 | Next coding task: 1.1–1.3 canonical household and reviewed WFF/AS mappings, with byte-identical results and IDs; source scoping 0.1–0.4 alongside it |
+| 1 | Complete meaningful 1.4 checks; reuse Phase 1b; Phase 2 sources and specification |
 | 2 | Phase 2 implementation; Phase 3 sources and specification (pipelined, W2.4) |
 | 3 | Phase 3 implementation; Phase 4 |
-| 4 | Phase 5; Phase 6 |
-| 5 | Phase 7 |
+| 4 | Phase 5; Phase C assurance and analyst workflow |
+| 5 | Close demonstrated release gates through Phase 7; external Pilot 1 under programme Phase D |
+| Later E | Phase 6 representative-population pipeline and survey/secure-environment work |
 
-## Exit gate
+## Capability gates and retained release checks
+
+The household gate below maps to programme Phase B; conformance and analyst
+assurance extend it in Phase C. The population and secure-environment rows
+belong to Phase E. A household-level Pilot 1 does not depend on those rows.
+
+**Executable gate status:** `tests/acceptance/test_v0_3_release_gate.py`
+still implements the original release rows: catalogue wording, explicit
+skips for the unbuilt household/population/secure-environment capabilities,
+and the review-queue check. This documentation migration changes none of
+those tests and does not claim the capability gates are executable or met.
+A later bounded PR must align the release checks with the new B/C/E gates,
+retain independently reviewed expected values, and explain every remaining
+skip. A green run containing those skips is not release acceptance.
 
 - **Every modelled component** can say what it is missing: each
   `missing_facts` id has a catalogue question. An unresolved household
@@ -533,18 +590,22 @@ or for Phase 0.
 - **Disposable income and effective marginal tax rates** are produced for
   supported households, with coverage reported. `needs_review` is never
   counted as zero.
-- **A population run** reports disposable-income changes by decile and
+- **Phase E: a population run** reports disposable-income changes by decile and
   household type for a reform, labelled synthetic until real data runs.
-- **The secure-environment runner** exports only checked aggregates, and a
+- **Phase E: the secure-environment runner** exports only checked aggregates, and a
   test proves no household-level record can leave.
 - **No release-scope PR** is left without independent review (W1).
-- **Steps 1 and 2's validation gates** (`BUILD_PLAN_PROGRAMME.md`):
-  every engine is registered with its validation status; every number it
-  reads or writes is a registered variable; every output is a quantity with D_x and E_x; the
-  precision rule, the interim governance rule and the never-build checks
-  are enforced.
-- **Every Tier 1 rule** has golden, boundary, contradiction and
-  regression cases (Step 5.1).
+- **Permanent governing constraints:** the approved epistemic constitution,
+  source/review requirements, unknown/outcome states, interim data-governance
+  limits and applicable precision rules remain in force. Household inputs
+  and outputs declare their needed units, periods, entities and evidence.
+  The old requirement to finish universal registry/quantity infrastructure
+  before this lane ships is superseded by ADR-0021's model-driven scope.
+  The retained P3 decision specifies three significant figures for population,
+  baseline and estimate displays, with ranges and full stored precision; this
+  migration makes no display or stored-value change.
+- **Phase C: every Tier 1 rule** has golden, boundary, contradiction and
+  regression cases with conformance/benchmark evidence.
 
 ## Open decisions for Pete
 
@@ -559,4 +620,6 @@ or for Phase 0.
   today's request formats kept as adapters.
 - **D4 (decided 26 September 2026):** v0.3 ships with all three core
   main benefits (W10 Tier 1). The original v0.3.x placement of Tier 2
-  domains is superseded by the programme plan's lanes 3C and 3D.
+  domains was redirected to ADR-0019's lanes 3C and 3D. ADR-0021 now places
+  further coverage in Phase H, ordered by real analytical demand. The three
+  core main benefits remain this household lane's scope.
