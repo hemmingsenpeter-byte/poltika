@@ -108,15 +108,21 @@ sources:
     url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/
     source_version: 2026-09-04
     retrieved_on: 2026-10-03
-    locator: Schedule 2 definition of main benefit, paragraph (a)(i)-(iv).
-    covers: Named Jobseeker Support, Sole Parent Support and Supported Living Payment categories for the Income Tax Act YA 1 cross-reference.
+    locator: >-
+      Schedule 2 definition of main benefit, paragraph (a)(i)-(vii);
+      Income Tax Act 2007 YA 1 main benefit, paragraphs (a)-(b), and
+      main benefit equivalent assistance.
+    covers: Complete main-benefit definition relevant to the Income Tax Act YA 1 cross-reference, with the proposed supported subset kept separate.
     verification_status: schedule_2_definition_author_checked_independent_review_pending
     scope_check:
       finding: >-
         The general definition includes Jobseeker Support, Sole Parent
-        Support, and both specified Supported Living Payment grounds.
-        This is the definition YA 1 cites; section 326 has its own
-        context-specific definition and is not substituted for it.
+        Support, both specified Supported Living Payment grounds, youth
+        payment, young parent payment and emergency benefit. YA 1 also
+        includes main benefit equivalent assistance. The last four
+        categories are unsupported in the proposed first slice, rather
+        than absent or treated as zero. Section 326 has its own
+        context-specific definition and is not substituted for Schedule 2.
       limitation: >-
         No benefit eligibility, gross-up, rate, net-to-gross reconstruction,
         partner allocation, or weekly-to-annual conversion is established here.
@@ -193,6 +199,16 @@ sources:
     proposed_instrument_url: https://www.legislation.govt.nz/bill/government/2026/344/en/latest/
     proposed_instrument_version: Introduction 10 September 2026; 344-1; HTML checked directly.
     verification_status: agency_page_and_bill_clause_3_author_checked
+    bill_stage_context:
+      checked_on: 2026-10-05
+      locator: Explanatory note, Annual rates of income tax; clause 3; clause 133(1), (3).
+      finding: >-
+        The explanatory note proposes the 2026-27 annual rates at the
+        rates currently specified in Schedule 1 Part A. Clause 133 adds
+        a separate Part A clause 18 for tax-exempt entities' beneficiary
+        income from 2028-29; it does not replace the ordinary clause 1
+        table. This is bill-stage, rank-4 context, not enacted authority
+        or permission to promote an authoritative 2026-27 result.
     limitation: >-
       The Bill is proposed law and is not placed in this catalogue as
       legislation or amending legislation. IRD's dated status page is
@@ -210,4 +226,11 @@ sources:
       Parliament records introduction 9 September 2026; IRD and NZ
       Legislation label introduction 10 September. The difference is
       recorded, not resolved; it does not supply an enacted rates Act.
-    limitation: Recheck enactment immediately before any 2026-27 parameter approval; do not infer future passage or commencement.
+    limitation: >-
+      The initial author recorded a browser retrieval. The separate
+      Claude review could not reproduce its client-rendered content
+      through a plain fetch; browser retrieval remains needed for an
+      independent check of the detailed progress claim. The IRD status
+      page and official Bill text separately leave enactment unverified.
+      Recheck enactment immediately before any 2026-27 parameter approval;
+      do not infer future passage or commencement.

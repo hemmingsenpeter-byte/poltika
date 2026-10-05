@@ -2,7 +2,9 @@
 
 **Programme:** Phase B Task 7; detailed lane `BUILD_PLAN_v0_3.md` local 0.1.
 **Author/check date:** GPT/Codex, 3 October 2026, Pacific/Auckland.
-**Base:** prepared programme migration `422b055`; migration integration pending.
+**Original base:** prepared programme migration `422b055`.
+**Closeout refresh:** reconciled onto `main` at `1e185f7`, 5 October 2026;
+reviewer P3 corrections and explicit evidence limitations added.
 **Status:** draft source research and scope recommendation. Independent
 cross-model review and Pete's supported-slice decision remain outstanding.
 
@@ -48,7 +50,7 @@ listed provisions were reviewed; this is not a whole-Act or full-future-year aud
 | Scope question | Author-checked evidence | What remains outside this pack |
 | --- | --- | --- |
 | Ordinary employment income | CE 1(1)(a); DA 2(4), (7); `it-income-tax-act-core` | Full timing/deduction rules; accommodation, employee shares, reimbursements and unusual pay |
-| Core main benefits | CF 1(1)(c), YA 1; SSA Schedule 2 paragraph (a)(i)–(iv); `it-social-security-act-main-benefit` | Benefit amounts, gross-up, partner allocation and weekly-to-annual reconciliation; local 0.2–0.3 and D8/D9 |
+| Core main benefits | CF 1(1)(c), YA 1 main benefit (a)–(b); SSA Schedule 2 paragraph (a)(i)–(vii); `it-social-security-act-main-benefit` | Youth payment, young parent payment, emergency benefit and main benefit equivalent assistance are `unsupported` in the proposed first slice. Benefit amounts, gross-up, partner allocation and weekly-to-annual reconciliation remain separate gates; local 0.2–0.3 and D8/D9 |
 | Basic rates and applicability | Schedule 1 Part A clause 1/Table 1; 2024 Act ss 2(5), 37(1), (4) | 2026–27 annual-rates enactment and later amendments |
 | Annual basis versus PAYE | BC 6/8; RD 3; IRD annual calculator; IR340 April 2026, printed p3 | Tax-code selection, pay-period withholding, refund/square-up, payroll rounding |
 | Credits and levies | LC 13; IRD IETC page; annual-calculator exclusions | IETC and other credit calculations, ACC levy, KiwiSaver and student loans |
@@ -68,6 +70,19 @@ Assent entry. These observations leave enactment unverified; the Bill is
 not accepted as policy authority. Parliament lists introduction on
 9 September while IRD/NZ Legislation list 10 September; that metadata
 difference is recorded without resolving it.
+
+The separate Claude review could not reproduce Parliament's client-rendered
+progress content through a plain fetch. That detailed progress claim retains
+its initial author-retrieval status; an independent browser retrieval is
+still needed. The dated IRD page and official Bill text provide separate
+bill-stage evidence, without establishing enactment.
+
+The [Bill's explanatory note and clauses 3 and 133(1), (3)](https://www.legislation.govt.nz/bill/government/2026/344/en/latest/)
+were re-read on 5 October 2026. The note proposes retaining the rates currently
+specified in Schedule 1 Part A for 2026–27. Clause 133's separate new Part A
+clause 18 concerns tax-exempt entities' beneficiary income from 2028–29;
+it does not replace the ordinary clause 1 table. This is rank-4 proposed-law
+context; the annual-rates gate below remains `needs_review`.
 
 Keep 2026–27 annual-rate approval `needs_review` until the enacted instrument
 and applicable amendments are verified and independently reviewed. The
@@ -108,6 +123,13 @@ official calculator result or numerical worked example was
 retained: the calculator guidance is scope evidence, not a benchmark. The
 later values/expected-results PR must source these and independently review
 spec boundaries, benchmark cases and regressions before implementation.
+
+The rounding search in this source pass was limited to BC 6, Schedule 1
+Part A clause 1, IRD's yearly-calculator scope page and IR340's cover/printed
+page 3. It did not establish a rounding rule. Tax Administration Act
+assessment provisions, a published IRD calculation method and retained
+official calculator outputs still need a dedicated source check; none is
+claimed to have been searched or verified here.
 
 ## Concrete D1 options for Pete
 

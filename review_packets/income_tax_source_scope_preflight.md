@@ -57,3 +57,36 @@ without treating the author's recommendation as an accepted slice.
 Keep the proposed year gated until enacted authority is independently verified.
 Pete's D1 and the later specification, values/cases, implementation, interaction
 and release PR gates remain outstanding. The programme task is not Done.
+
+## 5 October 2026 source refresh — author preflight
+
+Refresh base: `main` at `1e185f7652bebce693a9c709cb716b4a9bcfdf5a`.
+The earlier check is historical and does not cover this changed head. The
+author knew the proposal rationale; a new final-head Claude pass is required.
+
+Expected contract: source-only catalogue, complete main-benefit inventory,
+explicit unsupported classes, rank-4 Bill context and unresolved annual-rate,
+rounding and implementation gates. Findings recorded before fixing:
+
+- P3 `SPEC_ERROR`: incomplete main-benefit inventory. SSA Schedule 2
+  (a)(i)–(vii) and ITA YA 1 (a)–(b) were re-read; youth payment, young parent
+  payment, emergency benefit and equivalent assistance now stay unsupported.
+- P3 `MISSING_SOURCE`: independently unreproduced Parliament progress content
+  now has an explicit browser-retrieval limitation; enactment remains gated.
+- P3 `SPEC_ERROR`: missing Bill context added from its explanatory note and
+  cls 3, 133(1), (3). The ordinary table is not replaced; this is rank-4
+  proposed-law context and adopts no rate or protected expected value.
+- Rounding question: searched provisions/pages and outstanding TAA/method/
+  calculator research are explicit. Unsearched material is not claimed verified.
+
+NZ Legislation's official dated SSA/ITA HTML (4 September 2026) and Bill
+344-1 latest text were retrieved on 5 October with `curl --fail --location
+--user-agent 'Mozilla/5.0'`; catalogue pinpoints record the source checks.
+No external policy engine was accessed.
+
+Checks completed, exit 0: `git diff --check`; existing `SourceCatalog`
+validation (12 unique entries, source-only pack, Bill rank 4, annual rates
+`needs_review`, unsupported benefit classes explicit); and
+`PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q tests/acceptance/test_programme_authority.py`
+(10 passed). Numerical implementation, protected values, rounding approval,
+independent final-head review and CI remain separate gates.
