@@ -74,7 +74,7 @@ and review again before merge; this is the reconciliation snapshot.
 | Main ruleset / squash auto-merge | Done (applied 2026-10-05 by Claude Code under Pete's delegation); enforcement not yet verified with a red check | Ruleset id 24478578 | Squash only, strict up-to-date, nine required checks, no bypass, delete_branch_on_merge. ADR-0007 recorded that the plan could not enforce required checks on a private repo; verify with a deliberately red check. |
 | Evidence-classes skill | Done; Claude Code | #138 merged, `38a3f17` | Legacy 1.7. |
 | Dev tooling | In flight (other session); Claude Code | No PR | Existing uncommitted worker includes tooling and calculation-adjacent `conditional.py`; preserve files and apply relevant independent review. |
-| Security CI | Done; Claude Code, GPT/Codex review and fixes | #142 merged, `b292666` | Required-check names for Q1 are listed in the main-branch tracker. |
+| Security CI | Done; Claude Code, GPT/Codex review and fixes | #142 merged, `b292666` | Its checks are among the nine required by the applied Q1 ruleset. |
 | Governance files | Done; Claude Code | #143 merged, `6a7da14` | |
 | Hosting policy-path documentation | Done; Claude Code | #140 merged, `96900a4` | Documents `POLTIKA_POLICY_SPECS_DIR`. This is not the dev-tooling PR. |
 | Independent review debt | Done; GPT/Codex, Claude Code coordinates | #128, #150, #152 merged (`fe67875`) | `review_packets/review_queue.md` is current: no open implementation assurance rows. |

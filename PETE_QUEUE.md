@@ -64,7 +64,7 @@ D1-dependent implementation remains gated. Existing WFF/AS preservation and
 the pinned review intake of the current household writer need no new Pete
 slice decision; their source/interpretation and acceptance gates still hold.
 
-### Q1 commands
+### Q1 commands (already applied on 5 October 2026; do not re-run, a second POST would create a duplicate ruleset)
 
 ```sh
 gh api -X PATCH repos/hemmingsenpeter-byte/poltika \
