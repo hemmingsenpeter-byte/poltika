@@ -231,7 +231,7 @@ not proof of a live PR or approval of broader scope.
 | --- | --- |
 | AI gate, `prog/ai-gate` | In flight (other session), old 1.2; coordinate bounded A closeout with its owner. |
 | Model governance, `prog/model-governance` | In flight (other session), old 1.5; finish bounded A work only, retain doctrine constraints. |
-| Never-build checks, `prog/never-build-checks` | Merged in #162 (old 1.6); the validation-grade row skips until grades exist (old 7.2). |
+| Never-build checks, `prog/never-build-checks` | Done in #162 (old 1.6); the validation-grade row skips until grades exist (old 7.2). |
 | Units/periods/entities, old 2.2–2.4 | In progress local work; preserve and reconcile minimum B 5 requirements. |
 | Quantity draft, `claude/step2-quantity` | Parked draft, not for review; no universal schema prerequisite. P3 display obligation remains. |
 | State schema, old 2.8 | Not started; old planned scope retained in archive. K 35 deferred pending real model requirements. |
