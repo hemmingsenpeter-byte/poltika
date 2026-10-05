@@ -9,17 +9,20 @@ allows. The review-debt cap was suspended on 29 September 2026
 rows no longer stop merges, but every one is still listed here, and
 release gates skip, naming them, until review and required fixes are complete.
 
-**Open pull requests awaiting independent cross-model review (5 October 2026):**
+**Open pull requests awaiting independent cross-model review (updated 6 October 2026):**
 [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148) and
 [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151) (draft source
 scopes touching `policy_specs/`), per ADR-0020 rule 4. The earlier Claude comments predate their final reconciliation/fixes; final-head
 Claude review may clear these Codex-authored rows under the amended ADR-0020. Merged on Claude's reviewer pass
 without GPT/Codex review: [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
 (units, `9e67009`; the post-merge Codex audit found a P2 precision defect,
-with fix [#169](https://github.com/hemmingsenpeter-byte/poltika/pull/169) awaiting
-final-head cross-model review and CI) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
+with fix [#169](https://github.com/hemmingsenpeter-byte/poltika/pull/169)
+merged at `240da13838857ee0b2e1686a2fba6f7c8b0b4adc` after
+[Claude's final-head pass](https://github.com/hemmingsenpeter-byte/poltika/pull/169#issuecomment-5990329231)
+on `5d79da7755fd6ac6bb74fca44fe6a0af057d10b7` with no P1/P2 and green CI) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
 (never-build checks, `5a8c17e`). No existing statutory result changed; the
-unused unit helper still needs its exact-rescaling fix. Drafts
+exact-rescaling and finite-scale defects are fixed; #169's non-blocking P3
+limits remain in its linked review. Drafts
 [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) and
 [#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) are doctrine for
 Pete and GPT/Codex.

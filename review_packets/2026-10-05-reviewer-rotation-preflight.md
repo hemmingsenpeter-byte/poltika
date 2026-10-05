@@ -23,6 +23,14 @@ evidence (P3). All five are addressed in this revision. Their proposed
 classification is CODE_ERROR for stale operational instructions/records;
 no policy interpretation or protected expected value changed.
 
+The next Claude pass on `eee9141767e033225440eaf95bebe6fb8f5a4745`
+found a new P2: the queue and handoff still described already-merged #169
+as awaiting review/CI. Both now record its `240da13` squash and link the
+actual final-head Claude pass, preserving its P3 follow-ups. A P3 offline
+verification limit concerned the external preflight record. The final
+reviewer receives readback of the exact SHA-bearing comment as a local
+mechanical artifact after deriving the contract.
+
 PETE_QUEUE, PROGRAMME_STATUS, CONTRIBUTING, ADR-0020, both agent entry
 points, BUILD_PLAN, review/development doctrines and reviewer/preflight
 instructions were inspected. Q8 records the named Pete authorisation and
@@ -35,7 +43,7 @@ this PR. No private-repository export permission is inferred.
 
 After committing this packet, run the preflight in a separate detached
 worktree and publish the complete immutable head SHA and actual command
-results in [PR #170's conversation](https://github.com/hemmingsenpeter-byte/poltika/pull/170).
+results in [the final-head author-preflight comment](https://github.com/hemmingsenpeter-byte/poltika/pull/170#issuecomment-6002434709).
 That SHA-bearing author-preflight comment is the final-head record; this
 packet does not claim that checks on an earlier commit cover a later one.
 The 5 October packet's unnamed final head and blanket consistency claim were

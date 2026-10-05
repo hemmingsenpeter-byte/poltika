@@ -1,6 +1,8 @@
 # Closeout continuation — 5 October 2026
 
-This is a preparation snapshot, not merge or release approval. Root controls
+This is a preparation snapshot, not merge or release approval. The #169 row
+was reconciled on 6 October after its merge; other rows retain the dated
+preparation heads and do not replace live PR metadata. Root controls
 merges sequentially. Existing worktree drafts and the shared checkout's
 untracked `docs/repo_closeout_execution.md` were preserved.
 
@@ -31,7 +33,7 @@ untracked `docs/repo_closeout_execution.md` were preserved.
 | #164 | `a54c875` | Governance choices, honest arithmetic-only cards and async engine discovery fix; final reviewer and current-main integration remain. |
 | #148 | `4e73947` | Tax source scope, unsupported benefit classes and explicit rounding/enactment gaps. Nine required checks passed; final Claude/queue gate pending. |
 | #151 | `7418c99` | Benefit source scope, precise future amendments and sourced per-person §3.4 correction. Nine required checks passed; final Claude/queue gate pending. |
-| #169 | `5d79da7` | Exact rescaling and finite-positive scales; nine required checks passed; final Claude review pending. |
+| #169 | `5d79da7`; merged `240da13` | Exact rescaling and finite-positive scales merged into main after [Claude's final-head pass](https://github.com/hemmingsenpeter-byte/poltika/pull/169#issuecomment-5990329231) (no P1/P2) and green CI. Its non-blocking P3 follow-ups remain in that review. |
 | #166 | `a32f10e` | Periods; nine required checks passed and Codex audit had no P1/P2. Final Claude pass still required. |
 | #171 | `7961862` | Entities recovered in a stacked draft on #166; 67 focused tests, Ruff and strict mypy. Retarget/update after #166 merges, then final integration gates. |
 | #172 | `933a416` | Official disposable-income source-scoping draft; definition undecided, MSD 2019 Word-body extraction gap explicit. Final cross-model source review pending. |
