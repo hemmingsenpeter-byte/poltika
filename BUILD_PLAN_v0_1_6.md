@@ -2,9 +2,13 @@
 
 **Date:** 26 September 2026
 **Status:** Approved 26 September 2026, with the recommended decisions below.
-**Starts:** after `v0.1.5` ships. The pilot, the GPT/Codex audit and the
-release gate come first. Task 2.1 needs nothing from v0.1.5 and can start
-now.
+**Role:** Active statutory-maintenance lane under
+[BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), ADR-0021. It sets source
+currency, policy years and enacted updates; it sets no competing product order.
+**Starts:** Source-currency work can proceed now. Relevant v0.1.5 audit/pilot
+findings are carried into master Phase A/D and must be addressed before their
+release claims. Historical release scheduling below is context, not a blocker
+on unrelated household modelling.
 **Hard deadline:** 1 April 2027.
 
 `BUILD_PLAN.md`'s doctrines apply unchanged: primary sources only, the three
@@ -131,8 +135,10 @@ Claude Code for implementation, and the other model reviews.
 | When 2027-28 values are published (usually February-March) | 4.1, 4.2, then 4.3 and 4.4 |
 | From 1 April 2027 | 3.1-3.3, 4.5, 5.1 |
 
-v0.2 work (`BUILD_PLAN_v0_2.md`) can run in parallel. It touches different
-files.
+Household work (`BUILD_PLAN_v0_3.md`) can run in parallel with this maintenance
+lane. `BUILD_PLAN_v0_2.md` is retained for its outstanding release tag.
+Historical years follow Phase I and PETE_QUEUE Q7; the maintenance deadline
+and the protected-value process remain unchanged.
 
 ## Exit gate
 

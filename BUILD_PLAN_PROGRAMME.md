@@ -175,8 +175,8 @@ required checks/reviews are recorded, ownership is clear and releases are
 truthfully described. v0.1.5's historical external-user obligation maps to
 D where applicable; it must not block source scoping/minimum household work
 or be waived by relabelling the baseline. Pending release tags do not block
-B work once its own source/review gates are met. Ruleset enforcement remains Q1;
-ADR-0020's merge rules apply by agreement meanwhile.
+B work once its own source/review gates are met. The Q1 ruleset is applied (5 October 2026) but its enforcement is not yet verified with a red check;
+ADR-0020's merge rules apply regardless.
 
 ## Phase B — Household economic kernel
 

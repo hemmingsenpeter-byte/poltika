@@ -5,9 +5,9 @@ Generated from `model_registry/registry.yaml` by
 
 - **Id:** `as_engine` (engine)
 - **Version:** 0.1.0. Package version in pyproject.toml. The engine has no version of its own. Each run records the source commit (src/poltika/scenarios/record.py, CodeIdentity). Policy version accommodation_supplement 0.1.1 (policy_specs/accommodation_supplement/policy.yaml).
-- **Owner:** Pete (decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Roles from BUILD_PLAN_PROGRAMME.md "Owners". No individual owner of this engine is named in the repository.
+- **Owner:** Pete (accountable model owner and decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Assigned under Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
 - **Validation status:** `spec_validated`
-- **Label on its outputs:** `spec_validated` (the least mature model it relies on)
+- **Computed dependency label:** `spec_validated` (the least mature model it relies on; not yet attached to runtime outputs)
 
 ## Purpose
 
@@ -82,4 +82,4 @@ Open items:
 | 2026-09-23 | Task 23, the AS calculator, then Task 24.7 run_as_module() (commits 53a4084, 0186766). | First implementation of the approved Task 22 scoped contract and its module entry point. | `policy_specs/accommodation_supplement/spec_cases.yaml` | unknown (recorded before change records existed) | unknown (recorded before change records existed) |
 | 2026-09-24 | Task 26a.2/26a.3, the published AS thresholds and income levels added to policy.yaml (commit 2639676); policy version 0.1.1 (DEC-002). | Replace synthetic entry thresholds with the published values. | `policy_specs/accommodation_supplement/decisions/DEC-002-published-thresholds-and-rate-scope.md` | Task 26a.3 spec cases (policy_specs/accommodation_supplement/spec_cases.yaml) | unknown (recorded before change records existed) |
 | 2026-09-26 | r 15 "must not exceed" boundary, $0-cost exclusion (commit c5d4ea2). | Findings from the v0.1 question-set review (Q71-Q140). | `review_packets/v0_1_question_set` | unknown (recorded before change records existed) | unknown (recorded before change records existed) |
-| 2026-10-02 | Registered in the model registry (Task 1.5). No code change. | BUILD_PLAN_PROGRAMME.md Task 1.5. | `model_registry/registry.yaml` | pytest -q, including tests/unit/engines/assurance/test_model_registry.py | pending (Pete) |
+| 2026-10-05 | Registered in the model registry (Task 1.5). No code change. | BUILD_PLAN_PROGRAMME.md Task 1.5. | `model_registry/registry.yaml` | pytest -q, including tests/unit/engines/assurance/test_model_registry.py | Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md |

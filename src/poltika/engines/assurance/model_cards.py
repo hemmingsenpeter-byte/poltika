@@ -182,7 +182,10 @@ def render_card(registry: Registry, model_id: str) -> str:
         f"- **Version:** {m.version}. {_one_line(m.version_basis)}",
         f"- **Owner:** {_one_line(m.owner)}",
         f"- **Validation status:** `{v.level}`",
-        f"- **Label on its outputs:** `{registry.label(m.id)}` (the least mature model it relies on)",
+        (
+            f"- **Computed dependency label:** `{registry.label(m.id)}` "
+            "(the least mature model it relies on; not yet attached to runtime outputs)"
+        ),
         "",
         "## Purpose",
         "",

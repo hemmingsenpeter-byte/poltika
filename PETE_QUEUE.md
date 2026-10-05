@@ -10,16 +10,61 @@ commit that records it.
 
 | # | Item | Blocks | Smallest action |
 | --- | --- | --- | --- |
-| Q1 | Activate the `main` ruleset and squash-only auto-merge (ADR-0020, "The ruleset on main"). Changing repository settings was denied to the session. | Mechanical enforcement of the merge rules; `gh pr merge --auto`. Merges continue by agreement meanwhile. | Run the two commands under "Q1 commands" below from a shell logged in as the repository owner. |
-| Q2 | Task 1.4: Māori data governance, privacy and security. Engaging people with standing in Māori data governance (P5's process). | Step 1's validation gate; any output about Māori; microdata (Steps 7, 19). The interim rule (P5) holds meanwhile. | Name who you will engage, or say to proceed with GPT/Codex's source research first. |
-| Q3 | IDI access (P12): lodging the application. | Step 7's IDI-calibrated grade; Step 19. | Lodge it once W3.1 documents the route. |
-| Q4 | Open programme decisions P6, P7, P8, P13, P14, P18, P20. | Nothing in Phase 0. P7 blocks Step 6.4-6.5; P13 Step 16; P14 Step 23; P18 each milestone; P20 Step 15; P6 Step 5.5; P8 the first product. | None yet. Each is raised again, with options, when its step starts. |
-| Q5 | v0.3 D1-D3: each Tier 1 domain's supported slice, the disposable-income definition and the income-adequacy measures. | v0.3 Phases 2-5 implementation (Step 3A). | Decide once GPT/Codex's Phase 0 sourcing is in. |
-| Q6 | `.claude/skills/pr-review/SKILL.md` (lines 3, 11) and `.claude/skills/pr-review-preflight/SKILL.md` (line 106) still say Pete is the acceptance judge for every PR. Editing Claude Code's own skill files was outside the session's permissions. | Nothing: ADR-0020, CLAUDE.md and the doctrines govern. A session reading only a skill could think every merge waits for Pete. | Add one line to each: "Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete decides Tier C." Or allow a session to make that edit. |
-| Q7 | P11: the historical horizon for the state store and replays, due by M1 (November 2026). ADR-0020 delegates P10 and P19, not P11. | Step 9 and lane 3B's historical years. Nothing in Phase 0. | Name the earliest year, or say "Tier B", and Claude Code proposes one from the data sources' coverage and logs it. |
-| Q8 | Tag v0.2 (`BUILD_PLAN_v0_2.md` 10.3; Task 7.1). Tagging is Tier C. | v0.2's release record. Nothing in Phase 0. | `git tag -a v0.2.0 <commit> -m "v0.2"` on the commit you choose, then `git push origin v0.2.0`. |
+| Q2 | Māori data governance, privacy and security (old 1.4/P5). Engage people with standing in Māori data governance. | Ethnicity/iwi-disaggregated outputs and microdata uses where governance is required (E/M); the interim ban holds. It does not block unrelated deterministic household modelling or Pilot 1. | Name who to engage, or direct GPT/Codex to begin dated primary-source research. All applicable privacy/data constraints still apply. |
+| Q3 | IDI access (P12): lodging an application. | IDI-calibrated population claims and applicable microdata work (E/M), not household Pilot 1. | Lodge after a dated, sourced access-route document and project scope are prepared. |
+| Q4 | Reserved programme decisions, explicitly remapped below. | Only their named capabilities. P18 governs claiming each milestone; no migration document declares a gate met. | Decide concrete options with evidence when each capability starts. |
+| Q5 | Household lane D1–D3: income-tax and core-benefit supported slices; disposable-income definition; sourced income-adequacy, replacement and participation measures where supported. Draft evidence: [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148), [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151); #148/#151 remain open, awaiting independent GPT/Codex review (ADR-0020 rule 4); Claude review comments are input only. | D1-dependent tax/benefit implementation and later disposable-income/measures in B; period/payment-precision gaps and the §3.4 household restriction remain unresolved. Preserving current WFF/AS and reviewing the existing mapping increment can proceed. | After source review, decide the smallest evidenced slices and confirm whether §3.4's household restriction is a deliberate supported-slice exclusion or should be corrected; see the dated evidence below. No decision is requested or recorded by this queue update. |
+| Q7 | P11: historical horizon for policy/data states and replays. | Phase I historical scope and historical statutory years. No inherited November deadline or household-kernel dependency. | Choose the earliest year from a sourced coverage proposal when Phase I starts, or explicitly delegate the reversible choice. |
+| Q8 | Tag v0.2 (`BUILD_PLAN_v0_2.md` 10.3). Pete pushed a lightweight `v0.2.0` tag on `2cdadba` (#144 squash merge, 5 October). Claude Code recommended annotated `adf4058` (GPT/Codex clearance of #111-#120 recorded; v0.2 gate and hand-calculated tests re-run there: 14 passed). | The release record; it does not block household work or Pilot 1. | Confirm whether to keep `2cdadba` or re-point the tag to `adf4058`. Tagging remains Tier C; nothing was changed. |
+| Q9 | Accept or revise ADR-0018's proposed Workbench design. PR #133 implements its backend; the independent review is in `reviews/2026-10-02-pr133.md`. | Acceptance of that design, not preservation of its existing backend or the strategic choice of Workbench first. | Record “accept ADR-0018” or the specific changes required. Implementation and review alone do not establish acceptance. |
+| Q10 | Household/fiscal methodology: v0.2 D8/D9 annualising AS and mapping a single income path across tax/benefits/WFF/AS. | Combined disposable-income/EMTR and direct fiscal results where the definition is required (B/F). | Decide the sourced period/income mapping with the relevant household specifications; retain native units until then. |
+| Q11 | External analyst participation and eventual release tags for untagged work. | Pilot evidence in D/G; v0.1.5 release completion and later tags. No external pilot is recorded yet. | Name and authorise an external pilot participant/session when the workflow is ready; tag only against the actual release evidence. No outreach or public deployment is authorised by this migration. |
 
-### Q1 commands
+### Reserved programme decisions (Q4)
+
+| Historical decision | Current capability | Reserved action |
+| --- | --- | --- |
+| P6 | C, conformance-suite publication | Decide publication/IP; internal conformance can proceed. |
+| P7 | I, prediction/model-error ledger | Choose timestamping and the first genuinely predictive targets. Early C validation does not wait on this. |
+| P13 | H/L, demand-driven expansion | Decide domain priorities from concrete analytical/pilot demand. |
+| P14 | N, policy search | Set the causal-credibility gate before search. |
+| P18 | Every phase's evidence gate | Set tolerances and record milestone acceptance against evidence. |
+| P20 | K, national scenario library | Choose its first national scenario set; core counterfactuals in C can proceed. |
+
+P8's strategic first-product choice is now the Analyst Workbench (Pete's
+3 October directive, ADR-0021). This does not accept ADR-0018; see Q9.
+P10's technical batch-engine decision remains delegated under ADR-0020 and
+moves to E when profiling demonstrates need. P19's technical state-schema
+scope remains delegated but moves to K. The new sequence does not change
+other reserved authority.
+
+### Q5 prepared evidence — 3 October 2026, second cycle
+
+The source drafts are review preparation, not approved specifications:
+
+| Draft | Fixed evidence | Remaining source/slice gate |
+| --- | --- | --- |
+| Income tax [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148), head `0db2bfaf787280a6cda252f6fa7e9287ba107ef7` | [Scope options](https://github.com/hemmingsenpeter-byte/poltika/blob/0db2bfaf787280a6cda252f6fa7e9287ba107ef7/docs/research/task_0_1_income_tax_scope.md); [source catalogue](https://github.com/hemmingsenpeter-byte/poltika/blob/0db2bfaf787280a6cda252f6fa7e9287ba107ef7/policy_specs/income_tax/sources.yaml) | Claude source review and Pete D1 pending; enacted-period coverage and rounding/benchmark evidence not approved. |
+| Core benefits [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151), head `50f13f44533cdab2939dd80e37538c8313ecb774` | [Scope and interactions](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/docs/research/task_0_2_core_benefit_scope.md); [JS sources](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/policy_specs/jobseeker_support/sources.yaml), [SPS sources](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/policy_specs/sole_parent_support/sources.yaml), [SLP sources](https://github.com/hemmingsenpeter-byte/poltika/blob/50f13f44533cdab2939dd80e37538c8313ecb774/policy_specs/supported_living_payment/sources.yaml) | Claude source review and Pete D1 pending; benefit payment precision, gross/net reconciliation, assessment basis and period coverage remain explicitly gated. |
+
+**Specific plan discrepancy to decide later:** [the detailed household plan](BUILD_PLAN_v0_3.md)
+§3.4 says one main benefit per household unless a specification says otherwise.
+The independently retrieved [Social Security Act s 18, version as at 4 September 2026](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/)
+restricts simultaneous main-benefit receipt per person in their own right;
+Schedule 4 Parts 1 and 3 recognise partner own-right benefit categories.
+Pete should confirm whether the household wording is an intentional coverage
+exclusion for the first supported slice or should be corrected to the sourced
+per-person boundary. A chosen household exclusion would be a coverage limit,
+not a claim that mixed-benefit couples are legally prohibited.
+
+The plan is unchanged and no interpretation is chosen here. Same-model source
+checks, including #151's resolved JS category correction, do not supply Claude
+review, Pete D1, monetary parameters or complete historical coverage.
+D1-dependent implementation remains gated. Existing WFF/AS preservation and
+the pinned review intake of the current household writer need no new Pete
+slice decision; their source/interpretation and acceptance gates still hold.
+
+### Q1 commands (already applied on 5 October 2026; do not re-run, a second POST would create a duplicate ruleset)
 
 ```sh
 gh api -X PATCH repos/hemmingsenpeter-byte/poltika \
@@ -64,4 +109,15 @@ updated list here; it cannot apply it.
 
 ## Done
 
-None yet.
+| Item | Date | Record |
+| --- | --- | --- |
+| Q6: obsolete blanket Pete-acceptance wording in reviewer/preflight skills | 3 October 2026 | This migration replaces the blanket instructions with ADR-0020's Tier A/B Claude Code and Tier C Pete acceptance; author preflight remains distinct from independent review. |
+| P8: strategic first-product surface | 3 October 2026 | Pete's supplied migration directive, recorded in ADR-0021; Analyst Workbench chosen. ADR-0018 acceptance remains Q9. |
+| Q1: main ruleset and squash-only auto-merge | 5 October 2026 | Applied by Claude Code under Pete's delegation: repo settings allow_auto_merge, delete_branch_on_merge, squash only; ruleset id 24478578 "main", active, no bypass actors, no deletion or force-push, PR required, strict up-to-date, required checks test, pilot-image, check-protected-paths, check-immutable-snapshots, source-currency, pip-audit, links, Bandit (python), zizmor (actions). Enforcement has not been verified with a red check (ADR-0007 recorded the plan could not enforce them on a private repo). |
+
+## Decisions made under Pete's delegation, 5 October 2026
+
+Pete's instructions that day: "approve commit and merge where required" (commit the uncommitted worktree work into PRs and merge where gates pass) and "make the best decisions for this" (plan item 3.4, Q8, Q1). Not decided: #148 and #151 are not cleared; they await independent GPT/Codex review.
+
+- **Plan item 3.4 (`BUILD_PLAN_v0_3.md`) reworded.** Social Security Act 2018 s 18 (as at 4 September 2026) bars receiving, at the same time and in one's own right, more than one main benefit, or a main benefit with New Zealand superannuation or a veteran's pension. It is per person, not per household. Schedule 4 Part 1 cl 1(g) and Part 3 cl 1(d) set rates for a beneficiary whose partner is granted a main benefit in the partner's own right. Decision: state the per-person restriction with that citation; a couple where each partner receives a main benefit is `unsupported` until a specification models the Schedule 4 categories. No new entitlement logic is asserted. The quotations were checked in the PM's copy of the source. Whether the BUILD_PLAN_v0_3.md edit has merged is recorded in that file's history, not by this entry.
+- **Q1** applied (see Done). **Q8**: see the Open row.

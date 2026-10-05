@@ -37,7 +37,7 @@ def discover_engine_functions(src: Path) -> set[tuple[str, str]]:
         module = ".".join(path.relative_to(src).with_suffix("").parts)
         module = module.removesuffix(".__init__")
         for node in ast.parse(path.read_text()).body:
-            if isinstance(node, ast.FunctionDef) and node.name.startswith(ENGINE_PREFIXES):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith(ENGINE_PREFIXES):
                 found.add((module, node.name))
     return found
 
@@ -151,4 +151,14 @@ def test_a_missing_or_stale_card_fails(registry: Registry, tmp_path: Path) -> No
         "no card for model 'wff_engine' (expected wff_engine.md)",
         "card for model 'as_engine' is stale; regenerate it",
         "card orphan.md has no registry entry",
+    ]
+
+
+def test_an_async_engine_without_an_entry_fails(registry: Registry, tmp_path: Path) -> None:
+    src = tmp_path / "src"
+    package = src / "poltika"
+    package.mkdir(parents=True)
+    (package / "new_benefit.py").write_text("async def calculate_new_benefit() -> None:\n    pass\n")
+    assert unclassified(registry, src) == [
+        "poltika.new_benefit.calculate_new_benefit is an engine entry point with no registry entry"
     ]

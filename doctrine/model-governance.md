@@ -1,8 +1,10 @@
 # Model governance
 
-**Status:** draft by Claude Code, awaiting Pete's approval (Task 1.5 of
-`BUILD_PLAN_PROGRAMME.md`). Items marked "For Pete:" are left to Pete by the
-plan, or are choices this draft makes and Pete must confirm.
+**Status:** accepted under Pete's 5 October 2026 closeout instruction to
+accept the best options. Drafted by Claude Code; independently checked by
+GPT/Codex (`reviews/2026-10-05-pr164.md`). Legacy Task 1.5 is bounded
+Phase A work under ADR-0021. The decisions below resolve the draft's
+"For Pete:" items without claiming deferred validation or output labels exist.
 
 ## Rule
 
@@ -26,7 +28,7 @@ Those come from cited primary NZ sources under `policy_specs/`.
 ## What counts as a model
 
 A model is an engine (it calculates a policy outcome) or a runner (it runs
-engines over households). Poltika finds them mechanically, so none is missed:
+engines over households). Poltika checks the entry-point convention mechanically:
 
 - A public, module-level function named `run_*` or `calculate_*` anywhere under
   `src/poltika` is an engine entry point.
@@ -38,8 +40,12 @@ engines over households). Poltika finds them mechanically, so none is missed:
 `tests/unit/engines/assurance/test_model_registry.py` checks this in CI. A new
 engine with no entry fails the build.
 
-For Pete: the discovery rule is by function name. A model whose entry point is
-named otherwise would not be found. Confirm the rule, or name another.
+**Decision, 5 October 2026:** retain this convention for existing and new
+models. Public entry points must use `run_*` or `calculate_*` (synchronous or
+asynchronous) or be explicitly registered and accompanied by a discovery-test
+update. Function-name discovery does not prove every arbitrary calculation
+function is a model. A broader classifier is deferred until a real model needs
+it; reviewer inspection remains required.
 
 ## The registry
 
@@ -71,14 +77,17 @@ validation case count is `unknown` when no file records one.
 
 Version today: no model has a version of its own. The registry records the
 package version (`pyproject.toml`) and says so. Each run records the source
-commit (`CodeIdentity`) and the policy versions it ran against. For Pete: decide
-whether each model should carry its own version. The package version is 0.1.0
-although the repository has released later milestones.
+commit (`CodeIdentity`) and the policy versions it ran against. **Decision, 5 October 2026:** retain package version plus recorded code and
+policy identities. A separate model version is deferred until a model has an
+independent release lifecycle. The package version is 0.1.0 although the
+repository has released later milestones; the card says which identity it uses.
 
 Owner today: the repository names roles, not people (`BUILD_PLAN_PROGRAMME.md`,
 "Owners"): GPT/Codex for sources, interpretation and independent review, Claude
 Code for implementation, Pete for decisions. The registry records those roles.
-For Pete: name the owner of each model.
+**Decision, 5 October 2026:** Pete is the accountable owner of all four
+registered models, with implementation and review responsibilities retaining
+the roles above. These assignments do not make Pete or a model a policy source.
 
 ## Validation status
 
@@ -87,8 +96,8 @@ Levels run from least to most mature:
 
 | Level | Meaning |
 | --- | --- |
-| `not_validated` | No validation case passes. |
-| `spec_validated` | It passes hand-calculated spec cases and published worked examples for its declared supported domain. It makes no empirical or predictive claim. |
+| `not_validated` | Required validation for the declared domain is absent, incomplete, failing or no longer supported by traceable evidence. Passing some tests is insufficient. |
+| `spec_validated` | An engine passes supported hand-calculated spec cases and published worked examples. A runner passes independently checked arithmetic/composition cases over those engines. The card states exactly which contract was checked. This level makes no empirical or predictive claim. |
 
 The four existing models are `spec_validated`. The population runner's level
 covers its arithmetic only. Its population is synthetic, and its results are
@@ -98,9 +107,11 @@ Later levels (for example validated against an estimate, then against a
 predictive record) come from the validation framework (Step 6) and the ledger.
 They are not defined here.
 
-For Pete: approve the two level names and their meaning, and the level given
-to each model. Define the later levels at Step 6. The plan sets tolerances
-when each milestone is first reached (P18), so this doctrine sets none.
+**Decision, 5 October 2026:** adopt these two levels and the four models'
+`spec_validated` arithmetic/domain statuses, supported by their linked cases.
+The synthetic population has no empirical national-validation grade. Later
+levels and milestone tolerances remain for the validation framework and Pete's
+retained P18 decision; this closeout sets none.
 
 ## Model-change controls
 
@@ -125,9 +136,12 @@ when it was registered. Where the repository doesn't say what was re-run or
 who approved, the record says `unknown (recorded before change records
 existed)`. They are not backfilled from memory.
 
-The registry check does not yet fail a change to an entry-point file that has no
-change record. For Pete: decide whether CI should require it, and who approves
-a change that touches no protected value.
+**Decision, 5 October 2026:** reviewers require the change record for each
+material model change. CI currently checks registry shape and generated-card
+currency; it does not mechanically match a code diff to a change record. A new
+diff-based change-record gate is deferred rather than claimed complete.
+Engineering-only changes are accepted under ADR-0020; protected values,
+interpretations, sources and other Tier C decisions stay with Pete.
 
 ## Model cards
 
@@ -162,8 +176,15 @@ These come from "Phases, milestones and validation gates" in
   ledger's record supports it. Poltika is not called a digital twin before
   Phase 5's milestone.
 
-For Pete: set the demotion triggers (what evidence stops supporting a level).
-The plan says a milestone can be lost, and not what triggers it.
+**Decision, 5 October 2026:** failing a required supported-domain validation
+case, a confirmed wrong result or broken guardrail in that domain, or losing
+the traceable evidence/review supporting a claim requires demotion to
+`not_validated` and a documented change record until the issue is fixed and
+the required checks/review pass again. A newly requested unsupported domain
+does not itself demote a correctly scoped model. Empirical or predictive
+demotion thresholds remain part of the later validation framework. Pete
+retains milestone graduation and demotion decisions; a model grade is not a
+national milestone.
 
 ## Adding a model
 

@@ -5,9 +5,9 @@ Generated from `model_registry/registry.yaml` by
 
 - **Id:** `wff_engine` (engine)
 - **Version:** 0.1.0. Package version in pyproject.toml. The engine has no version of its own. Each run records the source commit (src/poltika/scenarios/record.py, CodeIdentity). Policy version working_for_families 0.1.0 (policy_specs/working_for_families/policy.yaml).
-- **Owner:** Pete (decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Roles from BUILD_PLAN_PROGRAMME.md "Owners". No individual owner of this engine is named in the repository.
+- **Owner:** Pete (accountable model owner and decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Assigned under Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
 - **Validation status:** `spec_validated`
-- **Label on its outputs:** `spec_validated` (the least mature model it relies on)
+- **Computed dependency label:** `spec_validated` (the least mature model it relies on; not yet attached to runtime outputs)
 
 ## Purpose
 
@@ -79,4 +79,4 @@ Open items:
 | 2026-09-21 | Task 12, the pure calculate_wff() function (commit 5a94acd, PR | First implementation of the approved Task 10 scoped contract. | `policy_specs/working_for_families/spec_cases.yaml` | unknown (recorded before change records existed) | unknown (recorded before change records existed) |
 | 2026-09-22 | Task 20, the run_wff_module() integration entry point (commit f0566e6, PR | Module entry point over the policy loader and calculator (ARCHITECTURE.md module contract). | `tests/unit/engines/simulator/test_wff_module.py` | unknown (recorded before change records existed) | unknown (recorded before change records existed) |
 | 2026-09-25 | Calculation steps in the trace and structured review reasons (commits 0f81e2e, f8b4b3a). No calculated amount changed (CHANGELOG.md). | v0.1.5 explainability and structured needs_review reasons. | `docs/releases/V0_1_5_GATE.md` | tests/acceptance/test_v0_1_5_release_gate.py (gate row "v0.1 results unchanged") | unknown (recorded before change records existed) |
-| 2026-10-02 | Registered in the model registry (Task 1.5). No code change. | BUILD_PLAN_PROGRAMME.md Task 1.5. | `model_registry/registry.yaml` | pytest -q, including tests/unit/engines/assurance/test_model_registry.py | pending (Pete) |
+| 2026-10-05 | Registered in the model registry (Task 1.5). No code change. | BUILD_PLAN_PROGRAMME.md Task 1.5. | `model_registry/registry.yaml` | pytest -q, including tests/unit/engines/assurance/test_model_registry.py | Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md |

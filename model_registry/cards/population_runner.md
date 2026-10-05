@@ -5,9 +5,9 @@ Generated from `model_registry/registry.yaml` by
 
 - **Id:** `population_runner` (runner)
 - **Version:** 0.1.0. Package version in pyproject.toml. The runner has no version of its own. Each run has a run_id that hashes the population, the reform, the code identity and the policy files (src/poltika/scenarios/microsim/runner.py).
-- **Owner:** Pete (decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Roles from BUILD_PLAN_PROGRAMME.md "Owners". No individual owner of this runner is named in the repository.
+- **Owner:** Pete (accountable model owner and decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Assigned under Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
 - **Validation status:** `spec_validated`
-- **Label on its outputs:** `spec_validated` (the least mature model it relies on)
+- **Computed dependency label:** `spec_validated` (the least mature model it relies on; not yet attached to runtime outputs)
 
 ## Purpose
 
@@ -52,7 +52,7 @@ Reviews:
 
 Open items:
 
-- docs/releases/V0_2_LIMITATIONS.md ("Not yet independently checked") lists PRs #111, #113, #114 as awaiting GPT/Codex review. review_packets/review_queue.md marks them reviewed on Pete's confirmation of 27 September 2026. The limitations page looks stale.
+- No empirical national-population validation is claimed. The review queue records #111, #113 and #114 cleared on Pete's 27 September confirmation; V0_2_LIMITATIONS.md's historical pending-review text predates that clearance.
 
 ## Limitations
 
@@ -76,4 +76,4 @@ Open items:
 | --- | --- | --- | --- | --- | --- |
 | 2026-09-26 | v0.2 Phase 7, the population runner, run identity and spec cache (commit b52e909). | BUILD_PLAN_v0_2.md static microsimulation. | `tests/unit/scenarios/microsim/test_runner.py` | unknown (recorded before change records existed) | unknown (recorded before change records existed) |
 | 2026-09-26 | Task 9.1, verified population explanations (commit e6bda2d). | BUILD_PLAN_v0_2.md Task 9.1. | `tests/unit/scenarios/microsim/test_explain.py` | unknown (recorded before change records existed) | unknown (recorded before change records existed) |
-| 2026-10-02 | Registered in the model registry (Task 1.5). No code change. | BUILD_PLAN_PROGRAMME.md Task 1.5. | `model_registry/registry.yaml` | pytest -q, including tests/unit/engines/assurance/test_model_registry.py | pending (Pete) |
+| 2026-10-05 | Registered in the model registry (Task 1.5). No code change. | BUILD_PLAN_PROGRAMME.md Task 1.5. | `model_registry/registry.yaml` | pytest -q, including tests/unit/engines/assurance/test_model_registry.py | Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md |

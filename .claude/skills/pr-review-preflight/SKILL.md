@@ -1,6 +1,6 @@
 ---
 name: pr-review-preflight
-description: Use before opening, self-reviewing, updating, or recommending acceptance of your own Poltika implementation PR, especially while GPT/Codex is unavailable. Run an adversarial code and evidence preflight, record reproducible findings, and prepare a deferred independent-review handoff. Self-review never substitutes for the rotating reviewer or Pete's acceptance. To review a PR someone else wrote, use pr-review.
+description: Use before opening, self-reviewing, updating, or recommending acceptance of your own Poltika implementation PR, especially while GPT/Codex is unavailable. Run an adversarial code and evidence preflight, record reproducible findings, and prepare a deferred independent-review handoff. Self-review never substitutes for the rotating reviewer or acceptance under ADR-0020. To review a PR someone else wrote, use pr-review.
 ---
 
 # PR review preflight
@@ -9,6 +9,10 @@ This skill improves Claude Code's own work. It does **not** make the author an
 independent reviewer. To review a PR you did not write, use `pr-review`. Follow `BUILD_PLAN.md`'s Roles and Review Doctrine,
 `doctrine/review-doctrine.md`, `doctrine/test-doctrine.md`, and
 `review_packets/README.md` if they impose a stricter gate.
+
+Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete
+decides Tier C. An author's preflight never substitutes for independent
+review. Current sequencing follows BUILD_PLAN_PROGRAMME.md (ADR-0021).
 
 ## 1. Separate the review from implementation
 
@@ -103,8 +107,9 @@ Keep one compact, auditable PR packet with:
 - A short **Deferred Codex audit** section listing the exact commits and
   unresolved questions to inspect when Codex returns.
 
-Pete remains the acceptance judge. If a build-plan gate requires the other
-model and that reviewer is unavailable, leave it pending unless Pete
+Claude Code accepts Tier A/B under ADR-0020; Pete decides Tier C. If a
+build-plan gate requires the other model and that reviewer is unavailable,
+leave it pending unless Pete
 explicitly authorizes a temporary exception and records its scope. A
 same-author or same-model pass may support a *provisional* decision, but it
 does not silently close the independent-review gate. Do not change a

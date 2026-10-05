@@ -1,8 +1,8 @@
 # Poltika model registry (BUILD_PLAN_PROGRAMME.md Task 1.5).
 # Rules: doctrine/model-governance.md. Cards in cards/ are generated from this
 # file: python -m poltika.engines.assurance.model_cards
-# Draft by Claude Code, awaiting Pete's approval. Every field comes from the
-# repository file named beside it; "unknown" means the repository does not say.
+# Accepted under Pete's 5 October 2026 closeout instruction after GPT/Codex
+# review. Every claim links repository evidence; "unknown" is not backfilled.
 schema_version: "0.1"
 
 # Validation levels, least mature first. A label on an output is the level of
@@ -22,9 +22,9 @@ models:
       CodeIdentity). Policy version working_for_families 0.1.0
       (policy_specs/working_for_families/policy.yaml).
     owner: >-
-      Pete (decisions); Claude Code (implementation); GPT/Codex (sources,
-      interpretation, independent review). Roles from BUILD_PLAN_PROGRAMME.md
-      "Owners". No individual owner of this engine is named in the repository.
+      Pete (accountable model owner and decisions); Claude Code (implementation);
+      GPT/Codex (sources, interpretation, independent review). Assigned under
+      Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
     purpose: >-
       Calculates one household's Working for Families components (family tax
       credit, in-work tax credit, minimum family tax credit, Best Start) for the
@@ -122,12 +122,12 @@ models:
         evidence: docs/releases/V0_1_5_GATE.md
         validation_rerun: tests/acceptance/test_v0_1_5_release_gate.py (gate row "v0.1 results unchanged")
         approval: unknown (recorded before change records existed)
-      - date: "2026-10-02"
+      - date: "2026-10-05"
         change: Registered in the model registry (Task 1.5). No code change.
         why: BUILD_PLAN_PROGRAMME.md Task 1.5.
         evidence: model_registry/registry.yaml
         validation_rerun: pytest -q, including tests/unit/engines/assurance/test_model_registry.py
-        approval: pending (Pete)
+        approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
 
   - id: as_engine
     name: Accommodation Supplement engine
@@ -139,9 +139,9 @@ models:
       CodeIdentity). Policy version accommodation_supplement 0.1.1
       (policy_specs/accommodation_supplement/policy.yaml).
     owner: >-
-      Pete (decisions); Claude Code (implementation); GPT/Codex (sources,
-      interpretation, independent review). Roles from BUILD_PLAN_PROGRAMME.md
-      "Owners". No individual owner of this engine is named in the repository.
+      Pete (accountable model owner and decisions); Claude Code (implementation);
+      GPT/Codex (sources, interpretation, independent review). Assigned under
+      Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
     purpose: >-
       Calculates one claimant's weekly Accommodation Supplement for an explicit
       assessment week, from the approved parameters and the caller's asserted
@@ -242,12 +242,12 @@ models:
         evidence: review_packets/v0_1_question_set
         validation_rerun: unknown (recorded before change records existed)
         approval: unknown (recorded before change records existed)
-      - date: "2026-10-02"
+      - date: "2026-10-05"
         change: Registered in the model registry (Task 1.5). No code change.
         why: BUILD_PLAN_PROGRAMME.md Task 1.5.
         evidence: model_registry/registry.yaml
         validation_rerun: pytest -q, including tests/unit/engines/assurance/test_model_registry.py
-        approval: pending (Pete)
+        approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
 
   - id: combined_runner
     name: Combined WFF and AS household runner
@@ -257,9 +257,9 @@ models:
       Package version in pyproject.toml. The runner has no version of its own.
       It runs WFF policy 0.1.0 and AS policy 0.1.1 as requested by the caller.
     owner: >-
-      Pete (decisions); Claude Code (implementation); GPT/Codex (sources,
-      interpretation, independent review). Roles from BUILD_PLAN_PROGRAMME.md
-      "Owners". No individual owner of this runner is named in the repository.
+      Pete (accountable model owner and decisions); Claude Code (implementation);
+      GPT/Codex (sources, interpretation, independent review). Assigned under
+      Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
     purpose: >-
       Runs one household through both module entry points, each for its own
       period, and compares the shared facts under the Task 28.3 interaction
@@ -323,12 +323,12 @@ models:
         evidence: docs/releases/V0_1_5_GATE.md
         validation_rerun: tests/acceptance/test_v0_1_5_release_gate.py (gate row "v0.1 results unchanged")
         approval: unknown (recorded before change records existed)
-      - date: "2026-10-02"
+      - date: "2026-10-05"
         change: Registered in the model registry (Task 1.5). No code change.
         why: BUILD_PLAN_PROGRAMME.md Task 1.5.
         evidence: model_registry/registry.yaml
         validation_rerun: pytest -q, including tests/unit/engines/assurance/test_model_registry.py
-        approval: pending (Pete)
+        approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
 
   - id: population_runner
     name: Population runner (static microsimulation)
@@ -339,9 +339,9 @@ models:
       Each run has a run_id that hashes the population, the reform, the code
       identity and the policy files (src/poltika/scenarios/microsim/runner.py).
     owner: >-
-      Pete (decisions); Claude Code (implementation); GPT/Codex (sources,
-      interpretation, independent review). Roles from BUILD_PLAN_PROGRAMME.md
-      "Owners". No individual owner of this runner is named in the repository.
+      Pete (accountable model owner and decisions); Claude Code (implementation);
+      GPT/Codex (sources, interpretation, independent review). Assigned under
+      Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
     purpose: >-
       Runs every household of a population twice through the combined runner,
       under the approved parameters and under a reform's copy, and keeps each
@@ -375,10 +375,10 @@ models:
         - review_packets/review_queue.md
       open_items:
         - >-
-          docs/releases/V0_2_LIMITATIONS.md ("Not yet independently checked")
-          lists PRs #111, #113, #114 as awaiting GPT/Codex review.
-          review_packets/review_queue.md marks them reviewed on Pete's
-          confirmation of 27 September 2026. The limitations page looks stale.
+          No empirical national-population validation is claimed. The review
+          queue records #111, #113 and #114 cleared on Pete's 27 September
+          confirmation; V0_2_LIMITATIONS.md's historical pending-review text
+          predates that clearance.
     evidence_classes_consumed: [Rule, Scenario, Assumption, Fact, Estimate, Model output]
     evidence_note: >-
       Rule and Scenario through the combined runner. Reform overrides marked
@@ -428,12 +428,12 @@ models:
         evidence: tests/unit/scenarios/microsim/test_explain.py
         validation_rerun: unknown (recorded before change records existed)
         approval: unknown (recorded before change records existed)
-      - date: "2026-10-02"
+      - date: "2026-10-05"
         change: Registered in the model registry (Task 1.5). No code change.
         why: BUILD_PLAN_PROGRAMME.md Task 1.5.
         evidence: model_registry/registry.yaml
         validation_rerun: pytest -q, including tests/unit/engines/assurance/test_model_registry.py
-        approval: pending (Pete)
+        approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
 
 # Public run_* and calculate_* functions the discovery test finds that are not
 # a model's entry point. Each is a wrapper over a registered model. A new one
