@@ -339,17 +339,31 @@ GATED_TERMS = {
 # A sentence naming a gated term is allowed when it also says the thing is
 # absent or future. "will" is not here: a claim of a coming twin is still a
 # claim of a twin.
-_NOT_YET = re.compile(
-    r"\b(not|no|never|isn't|aren't|doesn't|don't|cannot|until|before|planned|future|eventual|"
-    r"eventually|aim|aims|aspire|aspires|roadmap|yet)\b|n't\b",
-    re.IGNORECASE,
-)
+# Negation must sit next to the term: within six words before it, or a verb
+# negation within four words after it ("a digital twin is not built"). A "no"
+# or "yet" elsewhere in the sentence does not excuse the claim.
+_NEGATES_BEFORE = frozenset(
+    {
+        "not", "no", "never", "isn't", "aren't", "doesn't", "don't", "cannot", "without",
+        "until", "before", "planned", "future", "eventual", "eventually", "aim", "aims",
+        "aspire", "aspires", "roadmap",
+    }
+)  # fmt: skip
+_NEGATES_AFTER = frozenset({"not", "never", "isn't", "aren't", "cannot", "planned", "future"})
 USER_FACING_DOCS = (
     "README.md",
     "docs/ORIENTATION.md",
-    "docs/pilot/GUIDE.md",
-    "docs/demo/v0_1/README.md",
+    *(
+        str(p.relative_to(ROOT))
+        for p in sorted([*(ROOT / "docs" / "pilot").glob("*.md"), *(ROOT / "docs" / "demo").rglob("*.md")])
+    ),
 )
+
+
+def _negated(words: list[str], start: int, length: int) -> bool:
+    before = words[max(0, start - 6) : start]
+    after = words[start + length : start + length + 4]
+    return any(w in _NEGATES_BEFORE for w in before) or any(w in _NEGATES_AFTER for w in after)
 
 
 def unreached_milestone_claims(text: str) -> list[str]:
@@ -358,10 +372,15 @@ def unreached_milestone_claims(text: str) -> list[str]:
     plain = re.sub(r"[-_\s]+", " ", plain)  # "digital-twin" and a line break read the same
     claims: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+|\n\s*\n", plain):
-        lowered = sentence.lower()
+        words = re.findall(r"[a-z0-9']+", sentence.lower())
         for term in GATED_TERMS:
-            if term in lowered and not _NOT_YET.search(sentence):
-                claims.append(f"{term!r}: {sentence.strip()[:120]}")
+            term_words = term.split()
+            for i in range(len(words) - len(term_words) + 1):
+                if words[i : i + len(term_words)] == term_words and not _negated(
+                    words, i, len(term_words)
+                ):
+                    claims.append(f"{term!r}: {sentence.strip()[:120]}")
+                    break
     return claims
 
 
@@ -437,3 +456,8 @@ def test_the_checks_catch_what_they_are_for() -> None:
     assert unreached_milestone_claims("<p>Poltika is a digital-twin of New Zealand.</p>")
     assert unreached_milestone_claims("Our forecast shows who wins.")
     assert not unreached_milestone_claims("Poltika is not a digital twin and makes no forecast.")
+    assert unreached_milestone_claims("Poltika is a digital twin, with no setup needed.")
+    assert unreached_milestone_claims("Our forecast, as yet unmatched, shows who wins.")
+    assert not unreached_milestone_claims("A digital twin is not built yet.")
+    names = list(_walk_structural_values({"tables": [{"id": "by_ethnicity", "x": "iwi"}]}))
+    assert ethnicity_names(names) == ["by_ethnicity"]
