@@ -1,10 +1,20 @@
 # Changelog
 
+## Unreleased (programme migration, 3 October 2026)
+
+- ADR-0021 establishes the economist-first, pilot-driven master build order;
+  ADR-0019 sequencing is superseded while compatible principles remain.
+- Exact historical planning snapshots, reconciled live status, agent instructions
+  and household/maintenance lanes establish one active programme. Existing code,
+  policy amounts, protected expectations, source/data snapshots and API semantics
+  are unchanged. Release/pilot evidence remains distinct from implementation.
+
 ## Unreleased (v0.3: tax, benefits and the household graph)
 
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Mechanical never-build checks** (Programme Task 1.6, and the test part of the interim rule P5): release-gate tests that every population result carries its label, no output schema scores or ranks a party or plan, no user-facing page claims an unreached milestone, and no output is disaggregated by ethnicity or iwi. The validation-grade row skips until grades exist (Task 7.2). Tests only; no amount changes.
 - **Conditional-summary corrections** (independent review of #128): preserve
   exact Decimal amounts, distinguish evidenced exclusions from missing model
   coverage, describe only evaluated cases and retain branch-limit caveats.
@@ -27,6 +37,10 @@ result identity changes.
 - **Governance files** (Tier A, docs): `.github/CODEOWNERS`, `SECURITY.md`,
   `CONTRIBUTING.md`, issue forms under `.github/ISSUE_TEMPLATE/` and
   `docs/releases/RELEASE_CHECKLIST.md`. No amount changes.
+- **Units and price bases** (Programme Task 2.2): `semantics/units.py` gives
+  every unit a dimension, scale and price basis, rescales by scale only, and
+  refuses any other conversion (nominal to real) without a named, sourced rule.
+  `PriceBasis` moves there and is still importable from `variables.py`.
 - **Analyst workbench backend** (ADR-0018, proposed): `GET /workbench/registry`
   lists every instrument under `policy_specs/` with its parameters (current
   value, unit, effective dates, review status), sources and decisions, so a

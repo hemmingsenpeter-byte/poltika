@@ -1,12 +1,14 @@
 ---
 name: new-policy
-description: Use when starting, planning, splitting into PRs, or reviewing the onboarding of a new NZ policy domain into Poltika (income tax, a main benefit, any domain in ROADMAP_REALIGNMENT.md W10's coverage map), or a policy's annual update. Sets the standard five-PR structure, the file set, the owners and the exit check for each step, and the lessons v0.1 learned the hard way. Supersedes the planned policy-rule-implementation skill.
+description: Use when starting, planning, splitting into PRs, or reviewing the onboarding of a new NZ policy domain into Poltika (income tax, a main benefit, a domain selected by BUILD_PLAN_PROGRAMME.md Phase B or H), or a policy's annual update. Sets the standard five-PR structure, the file set, the owners and the exit check for each step, and the lessons v0.1 learned the hard way. Supersedes the planned policy-rule-implementation skill.
 ---
 
 # New policy onboarding
 
-`ROADMAP_REALIGNMENT.md` W2.2 and W2.6. A new policy joins the deterministic
-policy kernel (W10). It is not a standalone calculator. It reads the shared
+Historical origin: `ROADMAP_REALIGNMENT.md` W2.2 and W2.6 (archived).
+Current scope/order comes from `BUILD_PLAN_PROGRAMME.md` Phases B/H and the
+active detailed lane, never from the archive. A new policy joins the deterministic
+policy kernel. It is not a standalone calculator. It reads the shared
 household model, and its links to other policies are graph edges that cite
 a rule.
 

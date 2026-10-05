@@ -72,3 +72,21 @@ class ImmutableRecordError(StoreError):
 
 class StoredRunNotFoundError(StoreError):
     """No stored run has the requested result id (Task 33.2: 404)."""
+
+
+class UnknownUnitError(PoltikaError):
+    """A unit id is not in the unit registry (Task 2.2)."""
+
+
+class UnitConversionError(PoltikaError):
+    """A unit conversion or rescale is refused (Task 2.2)."""
+
+
+class IncompatibleUnitsError(UnitConversionError):
+    """A rescale between units that differ in more than scale: dimension,
+    price basis or currency."""
+
+
+class MissingConversionRuleError(UnitConversionError):
+    """No named, sourced conversion rule exists for the requested units.
+    A conversion such as nominal to real is never implicit."""
