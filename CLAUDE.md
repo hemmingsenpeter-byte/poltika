@@ -138,8 +138,10 @@ Park each in `PETE_QUEUE.md` and route around it.
 A PR merges (`gh pr merge --squash --auto`) only when CI is green, the branch
 is up to date, `pr-review-preflight` has run and a `poltika-reviewer` pass
 has no unresolved P1 or P2 finding. A PR touching `policy_specs/`,
-`engines/simulator/` or any calculated amount also waits for its GPT/Codex
-row in `review_packets/review_queue.md` to clear. Never use `--admin` or
+`engines/simulator/` or any calculated amount also waits for its independent review
+row in `review_packets/review_queue.md` to clear when Claude authored it;
+Claude supplies cross-model review for GPT/Codex-authored changes. Every
+preflight and reviewer pass names the final head; new commits require re-review. Never use `--admin` or
 bypass a check. `PROGRAMME_STATUS.md` tracks every current capability task and its evidence.
 
 ## External prior art

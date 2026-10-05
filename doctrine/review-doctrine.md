@@ -21,11 +21,14 @@ Pete delegated acceptance of engineering work to Claude Code on 2 October
 
 - The author runs `pr-review-preflight`.
 - A `poltika-reviewer` subagent reviews the diff with a fresh context. It
-  is a same-model check, and a P1 or P2 finding blocks the merge until it
+  names the final head, and a P1 or P2 finding blocks the merge until it
   is fixed or answered in the PR.
 - A PR touching `policy_specs/`, `engines/simulator/` or any calculated
-  amount also needs the independent cross-model (GPT/Codex) review, cleared
-  in `review_packets/review_queue.md`, before it merges.
+  amount also needs the independent cross-model review, cleared
+  in `review_packets/review_queue.md`, before it merges. GPT/Codex reviews Claude-authored work; Claude reviews
+  GPT/Codex-authored work. A Claude reviewer pass can satisfy both gates for
+  Codex-authored work if it meets the independent-review standard. A same-model
+  pass cannot clear this gate. Any later commit requires a final-head re-review.
 
 Interpretation, protected statutory values and anything without a cited
 primary source are never accepted under the delegation. They go to Pete

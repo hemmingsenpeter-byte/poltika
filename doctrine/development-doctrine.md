@@ -19,7 +19,7 @@ modules in isolation.
 
 This mode relaxes build order and internal polish only. It does not relax the
 protected expected values and `doctrine/test-doctrine.md`, the ADR-0020 Tier C
-items, or the independent review rotation and the GPT/Codex review queue.
+items, or the independent cross-model review rotation and the review queue.
 
 The operating rules are:
 

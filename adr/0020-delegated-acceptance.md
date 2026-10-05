@@ -66,11 +66,14 @@ A PR merges, with `gh pr merge --squash --auto`, when all of these hold:
 
 1. CI is green on its latest commit, and the branch is up to date with
    `origin/main`.
-2. The author's `pr-review-preflight` has run.
-3. A `poltika-reviewer` pass has left no unresolved P1 or P2 finding.
+2. The author's `pr-review-preflight` has run on the final head.
+3. A fresh-context `poltika-reviewer` pass on the final head has left no
+   unresolved P1 or P2 finding. A later fix or merge of main requires a new
+   pass; the review records its exact commit.
 4. If it touches `policy_specs/`, `engines/simulator/` or any calculated
-   amount, its independent GPT/Codex review row in
-   `review_packets/review_queue.md` is cleared. The PR is queued and waits;
+   amount, its independent cross-model review row in
+   `review_packets/review_queue.md` is cleared. GPT/Codex reviews Claude-authored
+   work; Claude reviews GPT/Codex-authored work. The PR is queued and waits;
    other work continues.
 
 `--admin`, bypassed checks and rewriting `main` are never used. If `main`
@@ -128,11 +131,35 @@ merged, the decisions made, the open Tier C items and what comes next.
 
 - Engineering work no longer waits on Pete's review. His time goes to Tier
   C: sources, interpretation, governance and anything public.
-- A `poltika-reviewer` pass is a same-model check. It is not the
-  independent cross-model review, and does not clear a review-queue row.
-  For the high-risk paths, merging still waits for GPT/Codex.
+- A reviewer of the author's model is a same-model check and cannot clear
+  a cross-model review row. Claude's fresh-context `poltika-reviewer` can
+  supply both the reviewer pass and the independent cross-model review
+  for GPT/Codex-authored work, when its packet independently derives the
+  contract and records the final head. Claude-authored high-risk work
+  still waits for independent GPT/Codex review.
 - Every Tier B choice is reversible and logged, so Pete can overturn one
   without archaeology.
 - Pete can narrow or withdraw this delegation at any time, by editing this
   ADR or telling a session. A session that finds this ADR superseded falls
   back to `BUILD_PLAN.md`'s Roles.
+
+## Amendment approved by Pete, 5 October 2026
+
+Pete instructed this closeout session to accept the best options in the
+supplied decisions. Item 4 explicitly chooses BUILD_PLAN's reviewer rotation:
+use whichever model did not author the PR. Rule 4's original GPT/Codex naming
+assumed Claude authorship; it never authorised same-model clearance. The
+amendment changes the reviewer identity, not review depth or protected gates.
+
+For this bounded closeout, Pete also explicitly authorised Codex to accept,
+commit, push and merge the prepared work in order once the gates pass. This
+is session authority, not a permanent transfer of all Tier C decisions. It
+includes the named v0.2 tag correction and the supplied scope/governance choices;
+new unsourced interpretations, protected statutory values, public release,
+microdata/governance access and paid resources retain their existing gates.
+
+The project-permission settings are prepared separately for Pete's explicit
+approval of their command and branch scope. Existing per-command permissions
+remain in use meanwhile. Tool capabilities do not waive the merge rules or
+authorise private-repository export to another model provider. Such export
+needs explicit destination and scope authorization from Pete.

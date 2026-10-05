@@ -2,18 +2,18 @@
 
 Historical origin: `ROADMAP_REALIGNMENT.md` W1.1 (archived). Current review
 sequencing follows `BUILD_PLAN_PROGRAMME.md` Phase A and ADR-0020. This lists every merged PR whose independent
-(GPT/Codex) review or resulting fixes remain outstanding. They merged on Claude Code's author
+(cross-model) review or resulting fixes remain outstanding. They merged on Claude Code's author
 preflight under Pete's recorded delegation, which the working agreement
 allows. The review-debt cap was suspended on 29 September 2026
 (`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` retained decision P17): open
 rows no longer stop merges, but every one is still listed here, and
 release gates skip, naming them, until review and required fixes are complete.
 
-**Open pull requests awaiting independent GPT/Codex review (5 October 2026):**
+**Open pull requests awaiting independent cross-model review (5 October 2026):**
 [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148) and
 [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151) (draft source
-scopes touching `policy_specs/`), per ADR-0020 rule 4. Claude review comments on
-them are input only and do not clear a row. Merged on Claude's reviewer pass
+scopes touching `policy_specs/`), per ADR-0020 rule 4. The earlier Claude comments predate their final reconciliation/fixes; final-head
+Claude review may clear these Codex-authored rows under the amended ADR-0020. Merged on Claude's reviewer pass
 without GPT/Codex review: [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
 (units, `9e67009`) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
 (never-build checks, `5a8c17e`), both low risk, no calculated amount. Drafts

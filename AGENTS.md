@@ -77,12 +77,14 @@ Interpretation ambiguity must be escalated rather than silently resolved.
 Since 2 October 2026 Claude Code accepts and merges engineering work under
 three tiers (`adr/0020-delegated-acceptance.md`). Sources, interpretation,
 protected statutory values, Māori data governance and anything public stay
-with Pete (Tier C, listed in `PETE_QUEUE.md`). An independent GPT/Codex
+with Pete (Tier C, listed in `PETE_QUEUE.md`). An independent cross-model
 review is still required before a PR touching `policy_specs/`,
 `engines/simulator/` or any calculated amount merges: its row in
-`review_packets/review_queue.md` must be cleared first. Every PR also needs
+`review_packets/review_queue.md` must be cleared first (GPT/Codex for Claude authorship, Claude for GPT/Codex
+authorship). Every PR also needs
 the author's preflight (`.claude/skills/pr-review-preflight/SKILL.md`) and a
-fresh-context `poltika-reviewer` pass with no unresolved P1 or P2 finding.
+fresh-context `poltika-reviewer` pass on the final head with no unresolved P1 or
+P2 finding. A new commit requires a new pass.
 Merges are squash merges, on green CI and an up-to-date branch.
 
 ## External prior art

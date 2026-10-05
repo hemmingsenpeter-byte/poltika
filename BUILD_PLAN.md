@@ -33,7 +33,8 @@ comparing.
 
 *Status note, 2 October 2026:* acceptance of engineering work is delegated
 to Claude Code under ADR-0020's tiers. The rotation stands: a fresh-context
-`poltika-reviewer` pass on every PR, and the independent GPT/Codex review
+`poltika-reviewer` pass on every PR, and the independent cross-model review
+(GPT/Codex for Claude-authored work; Claude for GPT/Codex-authored work)
 before any PR touching `policy_specs/`, `engines/simulator/` or a
 calculated amount merges. Pete keeps every Tier C decision.
 
