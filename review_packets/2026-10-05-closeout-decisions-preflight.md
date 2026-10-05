@@ -35,3 +35,12 @@ latest-head CI remains a merge gate.
 Cross-model Claude review must inspect the final published diff and record
 its exact head. Q5's commissioned official-definition source pack remains to
 be produced and reviewed; scope approval alone is not numerical authority.
+
+## Current integration and authority, 6 October 2026
+
+Pete explicitly named #167 for an update with main and review, instructing
+Codex to accept, merge and complete using the best decisions. Current main
+`240da13838857ee0b2e1686a2fba6f7c8b0b4adc` is integrated. Historical
+verification above is not reused as current-head evidence; the exact-head
+author preflight and fresh Claude review will be recorded externally in the
+PR after this packet is committed. Q9/Q10 and statutory-source gates remain.

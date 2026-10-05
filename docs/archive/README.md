@@ -34,8 +34,8 @@ evidence in `docs/releases/`, and review history in `reviews/` and
 
 `BUILD_PLAN.md` remains at the root as a frozen v0.1 record because substantive
 constraints and existing links still depend on its doctrine anchors. Its old
-roadmap section cannot determine current sequencing. `BUILD_PLAN_v0_2.md` stays
-at the root solely for release completion until `v0.2.0` is tagged.
+roadmap section cannot determine current sequencing. `BUILD_PLAN_v0_2.md` remains at the root as release evidence after the
+annotated `v0.2.0` tag correction; deliberate archive cleanup is still open.
 
 ## Supplied programme authority
 
