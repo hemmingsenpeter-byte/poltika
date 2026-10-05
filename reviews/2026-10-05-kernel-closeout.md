@@ -19,7 +19,7 @@ remains pending until it actually runs against the stated final commits.
 
 **U1 — P2 / CODE_ERROR, original #161 squash
 `9e670093ad86445ede546b0acbbc2f110b7f7d9f`,
-`src/poltika/semantics/units.py:171`.** `rescale` uses the ambient Decimal context,
+`src/poltika/semantics/units.py:161`.** `rescale` uses the ambient Decimal context,
 so it silently rounds an amount with more significant digits than that context.
 For `Decimal("12345678901234567890123456789.123")`, converting
 `persons_thousand` to `persons` returns
