@@ -5,6 +5,7 @@
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
 
+- **Mechanical never-build checks** (Programme Task 1.6, and the test part of the interim rule P5): release-gate tests that every population result carries its label, no output schema scores or ranks a party or plan, no user-facing page claims an unreached milestone, and no output is disaggregated by ethnicity or iwi. The validation-grade row skips until grades exist (Task 7.2). Tests only; no amount changes.
 - **Conditional-summary corrections** (independent review of #128): preserve
   exact Decimal amounts, distinguish evidenced exclusions from missing model
   coverage, describe only evaluated cases and retain branch-limit caveats.
