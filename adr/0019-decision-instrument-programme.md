@@ -1,7 +1,10 @@
 # ADR-0019: The master build order: 33 steps with Phase 0 foundations and eight delivery phases, with validation gates
 
 **Date:** 29 September 2026
-**Status:** accepted as direction. Pete set it on 29 September 2026 in
+**Status:** superseded for programme sequencing by
+[ADR-0021](0021-economist-first-pilot-programme.md). Architectural principles
+remain unless explicitly superseded. Originally accepted as direction;
+Pete set it on 29 September 2026 in
 three steps the same day:
 
 1. A 20-step sequence, which Pete approved with its plan ("Approve and
