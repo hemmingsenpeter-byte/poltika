@@ -92,6 +92,10 @@ poltika/
 │   ├── semantics/population.py — v0.2 Task 2.1: the canonical population
 │   │                        schema (weighted households, persons, grouping
 │   │                        characteristics, facts in scenario-record form)
+│   ├── semantics/units.py — v0.2 Task 2.2: dimensions, units, price bases;
+│   │                        exact rescaling by scale only; named, sourced
+│   │                        conversion rules (registry empty, so nominal to
+│   │                        real is refused)
 │   ├── data/              — v0.2 Phase 1: manifest.py (raw-snapshot manifest),
 │   │                        registry.py (checksummed dataset registry),
 │   │                        transform.py (versioned transformation registry;

@@ -22,6 +22,19 @@ from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from poltika.semantics.units import PriceBasis
+
+__all__ = [
+    "CanonicalContext",
+    "CanonicalVariable",
+    "DataDictionary",
+    "Frequency",
+    "Lineage",
+    "Measure",
+    "Observation",
+    "PriceBasis",
+]
+
 _VARIABLE_ID = re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+$")
 
 
@@ -29,12 +42,6 @@ class Frequency(str, Enum):
     ANNUAL = "annual"
     QUARTERLY = "quarterly"
     MONTHLY = "monthly"
-
-
-class PriceBasis(str, Enum):
-    NOMINAL = "nominal"
-    REAL = "real"
-    NOT_APPLICABLE = "not_applicable"  # counts, indices, ratios
 
 
 class Measure(str, Enum):
