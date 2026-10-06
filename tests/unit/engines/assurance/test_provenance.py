@@ -366,10 +366,16 @@ def test_structured_checked_on_is_reported_with_its_check_and_free_text_is_not_p
             "task_b_check": {"checked_on": date(2026, 9, 22), "claim": "synthetic test check"},
             "task_c_check": {"checked_on": "sometime in September", "claim": "not a date"},
             "free_text_note": "Checked 2026-09-01 by hand.",
-        }
+        },
+        "wff-budget-measures-2025": {},  # explicitly unchecked synthetic source
     }
     for source in catalogue["sources"]:
-        source.update(cited.get(source["id"], {}))
+        if source["id"] in cited:
+            # Isolate the synthetic checks from real catalogue currency updates.
+            for key in tuple(source):
+                if key.endswith("_check") and isinstance(source[key], dict):
+                    del source[key]
+            source.update(cited[source["id"]])
     catalogue_path.write_text(yaml.safe_dump(catalogue, sort_keys=False))
 
     catalogue_by_id = {s["id"]: s for s in catalogue["sources"]}
