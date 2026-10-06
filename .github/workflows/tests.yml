@@ -2,9 +2,9 @@ name: Tests
 
 # The three test layers (spec, benchmark, regression), lint, strict typing,
 # the PostgreSQL store tests and the installed-artifact check (ADR-0011),
-# on every pull request to main and every push to main. Like the statutory
-# value guard (ADR-0007), this cannot block merge on this repo's plan; the
-# operating rule is not to merge a PR whose Tests run is red.
+# on every pull request to main and every push to main. ADR-0020's active
+# main ruleset requires the test and pilot-image jobs; #168 observed that a
+# failing required test blocks merging. Never bypass these checks.
 
 on:
   pull_request:
