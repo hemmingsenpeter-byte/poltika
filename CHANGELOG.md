@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased (passive source-preservation archive, 6 October 2026)
+
+- ADR-0022 and `src/poltika/data/acquisition/`: a passive,
+  content-addressed archive of what authoritative sources published, starting with
+  Stats NZ (`scripts/ingest/stats_nz.py`, `data/source_archive/`). Exact bytes,
+  canonical source metadata and one record per retrieval, with content and metadata
+  change detected independently; optional advisory OpenRouter enrichment, stored
+  apart and marked non-authoritative. Evidence only: nothing in the governed data
+  path reads it, `DatasetManifest` and `DatasetRegistry` are unchanged, and no
+  calculated amount, protected value or result identity changes. Programme Step 27 is
+  not started or complete.
+
 ## Unreleased (programme migration, 3 October 2026)
 
 - ADR-0021 establishes the economist-first, pilot-driven master build order;
@@ -13,6 +25,8 @@
 
 See `BUILD_PLAN_v0_3.md`. No calculated amount, protected expected value or
 result identity changes.
+
+- **Exact unit rescaling:** retain every Decimal digit regardless of the caller's precision; refuse a repeating or non-finite result instead of rounding.
 
 - **Mechanical never-build checks** (Programme Task 1.6, and the test part of the interim rule P5): release-gate tests that every population result carries its label, no output schema scores or ranks a party or plan, no user-facing page claims an unreached milestone, and no output is disaggregated by ethnicity or iwi. The validation-grade row skips until grades exist (Task 7.2). Tests only; no amount changes.
 - **Conditional-summary corrections** (independent review of #128): preserve
