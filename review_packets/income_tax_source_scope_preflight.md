@@ -90,3 +90,31 @@ validation (12 unique entries, source-only pack, Bill rank 4, annual rates
 `PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q tests/acceptance/test_programme_authority.py`
 (10 passed). Numerical implementation, protected values, rounding approval,
 independent final-head review and CI remain separate gates.
+
+## 6 October 2026 review-record closeout — author preflight
+
+The independent [Claude review of source head `4e739475`](https://github.com/hemmingsenpeter-byte/poltika/pull/148#issuecomment-5990307031)
+and separate fresh reviewer pass are now recorded in the existing review
+file. Its historical (a)(i)–(iv) inventory and hash claim are explicitly
+limited to `cd2f116`; the current catalogue retains (a)(i)–(vii)/YA 1 (a)–(b).
+No catalogue, parameter or expected value is changed by this closeout.
+The note links the review record and later Q5 scope commission.
+
+The author knows the source rationale. Checks actually run on the prepared
+delta, exit 0: `git diff --check`; existing `SourceCatalog.model_validate`
+(12 unique sources, no executable `policy.yaml`); targeted changed-document
+relative-file/anchor checks. This is author preflight, not a fresh independent
+review. Later main integration, the final commit and current CI must be
+checked separately; a final reviewer pass is recorded in the PR without
+editing its already committed review evidence again.
+
+### Current follow-up verification — 6 October 2026
+
+Merged `origin/main` at `f9c69d8e3384f0753be482c5ee4a6564cfa5d8ea`
+without rewriting history. Current checks exited 0: `git diff --check`;
+`SourceCatalog.model_validate` (12 unique source entries; no executable
+policy); targeted relative-file/anchor checks (10 links); and
+`PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q tests/acceptance/test_programme_authority.py`
+(10 passed). These are author checks. Final Claude source re-derivation,
+current CI and latest-main integration remain gates.
+No review-queue row was changed before #170 merged.
