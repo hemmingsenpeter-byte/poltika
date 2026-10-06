@@ -285,6 +285,14 @@ Remove the worktree when you're done: `git worktree remove <dir>/pr-<N>`.
 
 ## 8. Re-review after new commits
 
+- **Mechanical main update (ADR-0020).** If the only new commit merges
+  `main` without a conflict, compare the PR's own diff instead of old head
+  to new head: `git diff <old merge-base>...<reviewed head>` against
+  `git diff <new main>...<new head>`, using `git patch-id --stable` on each.
+  If they match and required CI is green on the new head, record in the PR
+  the reviewed head, the new head and the `main` SHA. That is the whole
+  check. If they differ, or the merge had a conflict, it is a fix: review
+  the change in full under the bullets below.
 - Diff from the SHA you last reviewed to the new head. If the old SHA is
   no longer an ancestor (a force-push or rebase), review the whole PR
   again.

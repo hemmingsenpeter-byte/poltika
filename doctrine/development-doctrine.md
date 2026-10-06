@@ -103,9 +103,10 @@ externally relied upon, release-critical or evidentially consequential.
   still skip, naming those PRs, until they are reviewed.
 - ADR-0020's active main ruleset requires green checks and an up-to-date
   branch. ADR-0007's platform limitation is historical. Independent review
-  is a substantive gate on the final head; any later fix, rebase or main
-  integration requires renewed author preflight and review. A mechanical main
-  update (ADR-0020) needs green CI and a recorded delta check instead.
+  is a substantive gate on the final head; any later commit, fix, rebase or
+  integration of main requires renewed author preflight and review, except a
+  mechanical main update as ADR-0020 defines it (green CI and a recorded
+  delta check).
 
 ## Current sequencing (ADR-0021)
 

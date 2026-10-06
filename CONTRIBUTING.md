@@ -74,8 +74,8 @@ and [doctrine/review-doctrine.md](doctrine/review-doctrine.md).
 1. Author: run `.claude/skills/pr-review-preflight/SKILL.md` before you open
    or update the PR.
 2. `poltika-reviewer`: a fresh-context review of the final head, with no
-   unresolved P1 or P2 finding. Record the exact head; any later fix or non-mechanical main
-   integration requires a new pass (ADR-0020).
+   unresolved P1 or P2 finding. Record the exact head; any later fix or main integration requires a
+   new pass, except a mechanical main update as ADR-0020 defines it.
 3. Independent cross-model review is required for changes to `policy_specs/`,
    `src/poltika/engines/simulator/` or any calculated amount. GPT/Codex reviews
    Claude-authored work; Claude reviews GPT/Codex-authored work. Its row in
