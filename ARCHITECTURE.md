@@ -341,6 +341,11 @@ Poltika variable mapping. v0.1's retrieval method is `manual_download`; a
 later `stats_nz_api` method can replace it without changing the canonical
 variable or simulator interface.
 
+A passive source-preservation archive (ADR-0022, `data/source_archive/`) sits
+upstream of this pipeline. It keeps evidence of what a source published, at a
+point in time, and is never read by the registry, `DataContext` or any model;
+bytes reach `data/raw/` only through the reviewed promotion path above.
+
 This is parameterisation/calibration of a deterministic system using
 versioned data — not "training Poltika" on it. The LLM layer is never relied
 on to memorise or calculate these values.
