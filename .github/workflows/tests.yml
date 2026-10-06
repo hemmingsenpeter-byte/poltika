@@ -82,11 +82,50 @@ jobs:
         if: always()
         run: pkill -f "postgres -D $RUNNER_TEMP/" || true
 
+  image-inputs:
+    # Whether a pull request changes anything the pilot image is built from
+    # (the Dockerfile's COPY lines, plus this workflow's smoke test). Keep
+    # the list in step with the Dockerfile.
+    if: github.event_name == 'pull_request'
+    runs-on: [self-hosted, poltika]
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Compare the image inputs with the merge base
+        id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          # Any git error counts as a change, so the image is still checked.
+          MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA") || MERGE_BASE=""
+          if [ -n "$MERGE_BASE" ] && git diff --quiet "$MERGE_BASE" "$HEAD_SHA" -- \
+              Dockerfile .dockerignore pyproject.toml uv.lock README.md src policy_specs \
+              deploy data/metadata/populations .github/workflows/tests.yml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
   pilot-image:
     # v0.1.5 Task 8.1: the pilot container builds and serves a household
     # calculation and the analyst page. The scenario store is exercised by
-    # the test job above; here the image runs without a database. It stays
-    # on a GitHub-hosted runner: the self-hosted Mac has no Docker (D21).
+    # the test job above; here the image runs without a database. It is the
+    # one job on a GitHub-hosted runner, because the self-hosted Mac has no
+    # Docker (D21). To spend no hosted minutes it is skipped, which a
+    # required check counts as passing, on pushes to main (the up-to-date
+    # pull request already built the same tree) and on pull requests that
+    # change no image input. If image-inputs fails, it runs.
+    needs: image-inputs
+    if: >-
+      !cancelled() && github.event_name == 'pull_request'
+      && needs.image-inputs.outputs.changed != 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

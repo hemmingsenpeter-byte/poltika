@@ -56,14 +56,32 @@ jobs:
   external-links:
     name: external-links (report only)
     if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
+    # Self-hosted like links, with the same pinned lychee (D21).
+    runs-on: [self-hosted, poltika]
+    env:
+      LYCHEE_VERSION: v0.24.2
+      LYCHEE_SHA256: 887503a9cff667d322b8d0892b40bf49976eb9507af8483220a3706cdad55978
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
-        with:
-          args: --no-progress --max-retries 2 --timeout 30 '**/*.md'
-          fail: false
-          jobSummary: true
+      - name: Install lychee
+        run: |
+          set -euo pipefail
+          DIR="$RUNNER_TEMP/lychee"
+          mkdir -p "$DIR"
+          curl -sSfL -o "$DIR/lychee.tar.gz" \
+            "https://github.com/lycheeverse/lychee/releases/download/lychee-${LYCHEE_VERSION}/lychee-x86_64-apple-darwin.tar.gz"
+          echo "$LYCHEE_SHA256  $DIR/lychee.tar.gz" | shasum -a 256 -c -
+          tar -xzf "$DIR/lychee.tar.gz" -C "$DIR"
+          BIN=$(dirname "$(find "$DIR" -type f -name lychee | head -1)")
+          "$BIN/lychee" --version
+          echo "$BIN" >> "$GITHUB_PATH"
+
+      - name: Check external links and report only
+        run: |
+          # Report only: a broken external link never fails the run.
+          lychee --no-progress --max-retries 2 --timeout 30 --format markdown \
+            --output "$RUNNER_TEMP/links.md" '**/*.md' || true
+          cat "$RUNNER_TEMP/links.md" >> "$GITHUB_STEP_SUMMARY"
