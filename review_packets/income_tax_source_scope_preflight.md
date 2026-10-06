@@ -118,3 +118,34 @@ policy); targeted relative-file/anchor checks (10 links); and
 (10 passed). These are author checks. Final Claude source re-derivation,
 current CI and latest-main integration remain gates.
 No review-queue row was changed before #170 merged.
+
+## Current-main author handoff — 6 October 2026
+
+This is **author preflight**, by GPT/Codex, with knowledge of the author's
+rationale. Current main was fetched at
+`c72c409ac15f78f47691211ba343a3d219f51648` and merged normally into original
+PR head `e95ac04f13787981809e43e227272c7a13d5c318`. No source catalogue,
+research claim, historical reviewer record, statutory value or executable
+policy artifact is changed by this preparation. Main's newer programme and
+time-period records are preserved. Historical reviews cover only their stated
+heads or deltas; the exact final published SHA and command results are recorded
+in the PR handoff after checking that committed head in a separate worktree.
+
+The independent Claude review receives these mechanical inputs:
+
+| Input or open gate | Where to inspect |
+| --- | --- |
+| Dated primary sources | The twelve entries in [sources.yaml](../policy_specs/income_tax/sources.yaml), with official URLs, version/retrieval dates and provision locators |
+| Proposed first supported slice | [Scope note](../docs/research/task_0_1_income_tax_scope.md#recommended-bounded-slice) and Pete's Q5 commission in [#167](https://github.com/hemmingsenpeter-byte/poltika/pull/167): ordinary salary/wages first, basic annual tax only |
+| Proposed effective period | 2026–27, `[2026-04-01, 2027-04-01)`; the [annual-rates gate](../docs/research/task_0_1_income_tax_scope.md#the-annual-rates-gate) remains `needs_review` |
+| Unresolved rate authority | Verify enacted annual-rate authority and applicable amendments independently; Bill-stage evidence is not adopted as an enacted rule |
+| Precision and rounding | Fractional dollars, final/intermediate rounding and assessment path remain unsourced; the scope note names the limited search and further TAA/IRD-method research needed |
+| Benchmarks still needed | Retained official annual-calculator outputs or independently published worked examples; sourced boundary cases and rounding expectations before protected expected values are proposed |
+| Exclusions and interactions | Credits, ACC, PAYE and other deductions remain separate; main-benefit allocation/annualisation and broader income classes remain unapproved dependencies |
+
+The final-head checks cover catalogue shape, unchanged source bytes, relative
+links, programme-authority regression tests and whitespace. They do not
+re-verify live statutory content or numerical benchmarks. No remembered
+statutory value enters calculation. No approval flag or review-queue clearance
+is added. Claude must independently re-derive the final-head source claims;
+Pete retains unresolved interpretation and protected-value decisions.
