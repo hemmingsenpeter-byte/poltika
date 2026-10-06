@@ -70,8 +70,11 @@ poltika/
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
-│   └── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
+│   ├── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
 │                       specification, parameters and implementation remain separately gated
+│   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue only
+│   ├── sole_parent_support/ — source catalogue only; separate specification/value gates
+│   └── supported_living_payment/ — source catalogue only; separate specification/value gates
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
 │                         holds the scripts that produced its recorded results (review evidence,
 │                         run by hand from the repository root; not production code, and not
