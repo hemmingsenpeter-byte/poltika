@@ -66,9 +66,11 @@ A PR merges, with `gh pr merge --squash --auto`, when all of these hold:
 
 1. CI is green on its latest commit, and the branch is up to date with
    `origin/main`.
-2. The author's `pr-review-preflight` has run on the final head.
-3. A fresh-context `poltika-reviewer` pass on the final head has left no
-   unresolved P1 or P2 finding.
+2. The author's `pr-review-preflight` has run on the final head, or on the
+   reviewed head when the only later change is a mechanical main update.
+3. A fresh-context `poltika-reviewer` pass on the final head (or on the
+   reviewed head, under a mechanical main update) has left no unresolved P1
+   or P2 finding.
 4. If it touches `policy_specs/`, `engines/simulator/` or any calculated
    amount, its independent cross-model review row in
    `review_packets/review_queue.md` is cleared. GPT/Codex reviews Claude-authored
@@ -79,9 +81,20 @@ Independent review uses the other model from the author where practicable.
 Same-model review is supporting evidence and cannot clear a cross-model gate.
 Author preflight is a separate pass. Every preflight and review records its
 exact base and final head SHA. Any later commit, fix, rebase or integration
-of main invalidates final-head clearance and requires renewed review. For
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as defined below. For
 mixed authorship, record coverage by semantic change and commit; each model's
 changes need the other model's review where cross-model review is required.
+
+**Mechanical main update (Pete, 6 October 2026).** Updating a PR from `main`
+is mechanical when the merge has no conflict and the PR's own diff
+(`git diff <new main>...HEAD`) is identical to the reviewed diff (the same
+`git patch-id --stable`). It needs green required CI on the new head and a
+delta check recorded in the PR naming the reviewed head, the new head and the
+`main` SHA (`pr-review` step 8). It does not renew the author preflight or the
+independent review, and the merge commit is not a semantic change by whoever
+made it. A conflict resolution, or any change to the PR's own diff, is a fix
+and renews every gate.
 
 For GPT/Codex-authored policy/calculation work, a Claude `poltika-reviewer`
 pass may meet both reviewer gates only as a full `pr-review` with independent
@@ -151,3 +164,8 @@ protected statutory-value and interpretation gates unchanged. Claude Code
 owns final independent review and integration of this reconstruction.
 The [author packet](../review_packets/pr170_reconstruction_preflight.md)
 enumerates the old changes and their dispositions.
+
+On 6 October 2026 Pete chose the mechanical-main-update exemption above, after
+the independent review of this reconstruction found that renewing preflight
+and cross-model review on every conflict-free update would stop the merge
+train it governs. Claude Code added that exemption as a labelled commit.

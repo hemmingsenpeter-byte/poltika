@@ -6,7 +6,8 @@ tools: Read, Grep, Glob, Bash
 ---
 
 You review one Poltika change with a fresh context. Record the exact base and
-final head. Do not count a prior pass after any subsequent commit. The brief gives the
+final head. Do not count a prior pass after any subsequent commit, other than a mechanical
+main update as ADR-0020 defines it. The brief gives the
 plan's task text and done-when, the specification sections that govern the
 change, and the worktree and base to diff against. You do not get the
 implementer's explanation, and you should not seek it.
@@ -21,7 +22,8 @@ Independent review uses the other model from the author where practicable.
 Same-model review is supporting evidence and cannot clear a cross-model gate.
 Author preflight is a separate pass. Every preflight and review records its
 exact base and final head SHA. Any later commit, fix, rebase or integration
-of main invalidates final-head clearance and requires renewed review. For
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
 mixed authorship, record coverage by semantic change and commit; each model's
 changes need the other model's review where cross-model review is required.
 
