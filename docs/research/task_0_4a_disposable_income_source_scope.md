@@ -1,8 +1,10 @@
 # Disposable household income — D2 primary-source scope
 
 Date: 5 October 2026, Pacific/Auckland. Author: GPT/Codex.
-Status: source-only draft; independent Claude review and the final D2
-definition/coverage decision remain pending. Commission: Q5, detailed
+Status: source-only draft; [Claude's 5 October source review and the
+6 October P3 response](../../reviews/2026-10-06-disposable-income-source-scope.md)
+are recorded. Final-head review and the D2 definition/coverage decision
+remain pending. Commission: Q5, detailed
 household lane local 0.4a. No formula, parameter, benchmark, statistical
 threshold or executable policy specification is approved by this note.
 
@@ -13,11 +15,12 @@ threshold or executable policy specification is approved by this note.
 | DI-1 | [Stats NZ, HILS concepts and definitions](https://www.stats.govt.nz/methods/measuring-child-poverty-in-the-household-income-and-living-survey-concepts-and-definitions/), published 12 February 2026; retrieved 5 October | “Income definitions”; “Child and household definitions”; “Housing costs”. Applies to year ended June 2025 onwards; candidate complete statistical definition, not a tax-law definition |
 | DI-2 | [Stats NZ, June 2025 technical appendix](https://www.stats.govt.nz/methods/child-poverty-statistics-year-ended-june-2025-technical-appendix/), published 26 February 2026; retrieved 5 October | “Reference and collection period”; “Steps to create household equivalised disposable income”; “Note on determining income-sharing unit”; WFF administrative-data timing. Method and period limits |
 | DI-3 | [Stats NZ, HILS error notification](https://www.stats.govt.nz/reports/error-notification-for-household-income-and-living-survey-hils-data-for-year-ended-june-2025/), published 29 September 2026; retrieved 5 October | “The importance of qualification information”; “Next steps”; “Important information for data users”. Required publication-vintage check before selecting comparators |
-| DI-4 | [MSD, Household Incomes Report 2017](https://www.msd.govt.nz/documents/about-msd-and-our-work/publications-resources/monitoring/household-income-report/2017/2017-incomes-report-wed-19-july-2017.pdf), dated 19 July 2017 | “About this report” (PDF page 5, printed page 1); Section A (PDF page 7, printed page 3). Historical cash-income concept; not assumed identical to HILS |
+| DI-4 | [MSD, Household Incomes Report 2017](https://www.msd.govt.nz/documents/about-msd-and-our-work/publications-resources/monitoring/household-income-report/2017/2017-incomes-report-wed-19-july-2017.pdf), July 2017; PDF page 2 records publication on 25 July 2017; re-read 6 October 2026 | Covers 1982–2016, with latest HES 2015–16. “About this report” (PDF page 5, printed page 1); Section A (PDF page 7, printed page 3, including footnotes 3–4). Historical cash-income concept; not assumed identical to HILS or DI-5's later series |
 | DI-5 | [MSD, 1982–2018 report landing page](https://www.msd.govt.nz/about-msd-and-our-work/publications-resources/monitoring/household-incomes/household-incomes-1982-to-2018.html), retrieved 5 October; links the 2019 report | “The Incomes Report”; “Documents”. Confirms HES 2017–18 and previous-twelve-month interview reference. Body formula not independently extracted in this pass |
 
-All are primary official statistical/research sources. No external policy
-engine implementation was inspected. Retrieval is a dated observation, not
+DI-1–DI-4 are primary official statistical/research sources; DI-5 is metadata
+only, with its linked report body unverified. No external policy engine
+implementation was inspected. Retrieval is a dated observation, not
 an assertion that the live HTML is an immutable publication snapshot.
 
 ## Candidate whole definition and distinct units
@@ -38,8 +41,13 @@ mortgage principal/interest/fees, property rates and building insurance.
 No equivalence scale or after-housing-cost measure is selected here.
 
 DI-4's historical report uses household after-tax cash resources over the
-year preceding interview, then adjusts for household composition. It excludes
-capital gains themselves while including income from capital. This does not
+year preceding interview, then adjusts for household composition. Section A,
+printed page 3, says Statistics NZ estimates individual and benefit-unit tax
+liabilities with Treasury's Taxwell model, then sums personal disposable
+incomes. Footnote 4 identifies predecessor Taxmod for 1982–2004. This records
+the report's method; no external engine code or implementation was inspected.
+Footnote 3 describes income generally as regular or recurring receipts.
+The report excludes capital gains themselves while including income from capital. This does not
 establish how every DI-1 irregular receipt should map: classification and
 vintage differences remain questions for review, not silently harmonised rules.
 No modelled housing service or in-kind transfer is added by this note.
@@ -54,9 +62,13 @@ Household income is assigned to people for income-based poverty analysis;
 person-weighted thresholds differ from household summary medians. Unrelated
 household members can make this statistical unit broader than benefit families.
 
-The v0.3 benefit proposal is an established-grant weekly entitlement at a
-specified pre-November date, while the tax proposal is annual 2026–27 basic
-tax. Neither alone supplies a rolling-year household record. Before combining
+The proposed scopes in [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151)
+and [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148), recorded in
+the [Q5 decision draft #167](https://github.com/hemmingsenpeter-byte/poltika/pull/167),
+are established-grant weekly benefit entitlement at a specified date before
+2 November 2026 and annual 2026–27 basic tax. Income tax is not yet modelled
+in the v0.1 foundation or current household engine. Neither proposal alone
+supplies a rolling-year household record. Before combining
 them, a specification must settle a common reference period and source each
 annualisation/allocation rule. A convenient weekly multiplication is not
 established by these statistical documents.
