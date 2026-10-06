@@ -28,10 +28,10 @@ class UnsafeXmlError(PoltikaError, ValueError):
 def fromstring(data: bytes) -> ElementTree.Element:
     """Parse one XML document, refusing any DTD or entity declaration first.
 
-    Expat reports the declaration before the element tree parser sees the
-    document. A document with a DTD is refused whether or not it is also
-    well-formed. Malformed XML without a DTD still raises
-    `ElementTree.ParseError`, as before."""
+    Expat reads the whole document before the element tree parser sees it.
+    A document with a DTD is refused whether or not it is also well-formed.
+    A document Expat cannot read raises `ElementTree.ParseError`, as before,
+    but ElementTree is never called on it."""
     guard = expat.ParserCreate()
 
     def refuse(*_: object) -> None:
@@ -43,7 +43,14 @@ def fromstring(data: bytes) -> ElementTree.Element:
     guard.EntityDeclHandler = refuse
     try:
         guard.Parse(data, True)
-    except expat.ExpatError:
-        pass  # not well-formed: the element tree parser below reports it
-    # Safe: the guard above rejected every DTD and entity declaration.
+    except expat.ExpatError as exc:
+        # Fail closed: Expat can stop on malformed input before it reaches a
+        # declaration, so bytes it could not validate never go to ElementTree.
+        # Raise ElementTree's own error, with Expat's message, code and position.
+        error = ElementTree.ParseError(str(exc))
+        error.code = exc.code
+        error.position = (exc.lineno, exc.offset)
+        raise error from None
+    # Safe: the guard above parsed the whole document and rejected every DTD
+    # and entity declaration.
     return ElementTree.fromstring(data)  # nosec B314

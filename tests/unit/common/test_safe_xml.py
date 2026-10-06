@@ -81,3 +81,37 @@ def test_only_safe_xml_parses_xml_from_bytes_or_text() -> None:
                 if names & parsers or "expat" in names or node.module.startswith("xml.dom"):
                     offenders.append(f"{path.relative_to(SRC)}:{node.lineno}")
     assert offenders == []
+
+
+# Codex recheck of #174, R1: malformed input that stops Expat before a
+# declaration callback must fail closed, never reaching ElementTree.
+MALFORMED = [
+    b'<!ENTITY a "test"><x/>',
+    b'!<!DOCTYPE x [<!ENTITY a "test">]><x>&a;</x>',
+    b"<!DOCTYPE x SYSTEM><x/>",
+    b"<not xml",
+    b"",
+]
+
+
+@pytest.mark.parametrize("data", MALFORMED)
+def test_malformed_input_never_reaches_element_tree(
+    data: bytes, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def unexpected_parse(*args: object, **kwargs: object) -> None:
+        pytest.fail("ElementTree parsed bytes the guard could not validate")
+
+    monkeypatch.setattr(ElementTree, "fromstring", unexpected_parse)
+    with pytest.raises(ElementTree.ParseError):
+        safe_xml.fromstring(data)
+
+
+@pytest.mark.parametrize("data", [b"<not xml", b"<a><b></a>", b'<!ENTITY a "test"><x/>', b""])
+def test_parse_error_matches_element_tree(data: bytes) -> None:
+    with pytest.raises(ElementTree.ParseError) as ours:
+        safe_xml.fromstring(data)
+    with pytest.raises(ElementTree.ParseError) as theirs:
+        ElementTree.fromstring(data)
+    assert str(ours.value) == str(theirs.value)
+    assert ours.value.code == theirs.value.code
+    assert ours.value.position == theirs.value.position

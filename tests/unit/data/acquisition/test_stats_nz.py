@@ -395,3 +395,16 @@ def test_catalogue_cap_must_be_positive(value: str) -> None:
                 "    secondary_catalogue:", f"    max_response_bytes: {value}\n    secondary_catalogue:"
             )
         )
+
+
+def test_malformed_entity_structure_fails_closed_before_element_tree(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import xml.etree.ElementTree as ET
+
+    def unexpected_parse(*args: object, **kwargs: object) -> None:
+        pytest.fail("ElementTree parsed bytes the guard could not validate")
+
+    monkeypatch.setattr(ET, "fromstring", unexpected_parse)
+    with pytest.raises(StatsNzError, match="not valid XML"):
+        parse_structure(b'<!ENTITY a "test"><x/>', parse_request(entry()))
