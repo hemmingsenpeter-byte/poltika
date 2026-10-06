@@ -59,6 +59,13 @@ poltika/
 │
 ├── doctrine/          — permanent governing constraints; BUILD_PLAN retains detail not yet extracted
 ├── adr/               — permanent decision history, including superseded sequencing decisions
+├── model_registry/    — Task 1.5 (doctrine/model-governance.md): registry.yaml, one entry per engine or
+│                         runner (version, owner, purpose, validation status linked to its cases, evidence
+│                         classes, limitations, change log), and cards/, one generated card per entry
+│                         (python -m poltika.engines.assurance.model_cards). Its own directory because a
+│                         model is neither a policy source pack, nor process, nor a dataset; it is
+│                         reviewed YAML like those. tests/unit/engines/assurance/test_model_registry.py
+│                         fails CI on an engine with no entry or card
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
