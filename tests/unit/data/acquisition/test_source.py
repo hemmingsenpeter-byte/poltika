@@ -5,6 +5,7 @@ from __future__ import annotations
 import urllib.error
 from collections.abc import Callable
 from datetime import UTC, datetime
+from typing import Self
 
 import pytest
 from pydantic import ValidationError
@@ -279,7 +280,7 @@ class _Body:
         self.read_total += n
         return b"x" * n
 
-    def __enter__(self) -> _Body:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *exc: object) -> None:
