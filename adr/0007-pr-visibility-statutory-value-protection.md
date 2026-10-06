@@ -3,6 +3,13 @@
 **Date:** 2026-09-21
 **Status:** accepted (Pete)
 
+## Current enforcement note, 6 October 2026
+
+The platform limitation below is historical: ADR-0020 now records the active
+main ruleset and the observed required-check blocking in #168. The guard
+still reports changes for substantive source/value review; it must run
+successfully and does not itself approve protected values.
+
 ## Context
 
 ADR-0005 decided CODEOWNERS-gated required review, enforced via GitHub
