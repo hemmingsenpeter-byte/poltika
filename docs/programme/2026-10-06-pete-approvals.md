@@ -63,4 +63,3 @@ falls to you.
 - **6 Oct, "agree to both".**
   - The #170 single-pass rule with a condition; see #170 below.
   - The #167 brief hash approach; see #167 below.
-
