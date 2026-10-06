@@ -59,10 +59,22 @@ poltika/
 │
 ├── doctrine/          — permanent governing constraints; BUILD_PLAN retains detail not yet extracted
 ├── adr/               — permanent decision history, including superseded sequencing decisions
+├── model_registry/    — Task 1.5 (doctrine/model-governance.md): registry.yaml, one entry per engine or
+│                         runner (version, owner, purpose, validation status linked to its cases, evidence
+│                         classes, limitations, change log), and cards/, one generated card per entry
+│                         (python -m poltika.engines.assurance.model_cards). Its own directory because a
+│                         model is neither a policy source pack, nor process, nor a dataset; it is
+│                         reviewed YAML like those. tests/unit/engines/assurance/test_model_registry.py
+│                         fails CI on an engine with no entry or card
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
+│   ├── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
+│                       specification, parameters and implementation remain separately gated
+│   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue only
+│   ├── sole_parent_support/ — source catalogue only; separate specification/value gates
+│   └── supported_living_payment/ — source catalogue only; separate specification/value gates
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
 │                         holds the scripts that produced its recorded results (review evidence,
 │                         run by hand from the repository root; not production code, and not
