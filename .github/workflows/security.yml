@@ -15,10 +15,17 @@ on:
 permissions:
   contents: read
 
+# Most jobs run on the self-hosted runner (decision log D21), which works
+# one job at a time, so a newer push to a pull request cancels the older
+# run. Pushes to main and scheduled runs are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   pip-audit:
     name: pip-audit
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, poltika]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
