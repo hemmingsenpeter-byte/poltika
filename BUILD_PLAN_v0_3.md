@@ -45,6 +45,28 @@ of policy logic. Every statutory rule, rate, threshold and interaction
 below is established by a phase's sourcing task. This plan names none of
 them.
 
+## Scope decisions recorded on 5 October 2026
+
+Pete approved D1 salary/wage basic annual tax for 2026–27 first, and single
+existing-grant main-benefit slices as at a stated date before
+2 November 2026, gross weekly entitlement. JS is single, 25+, no children; SPS is a single principal caregiver;
+SLP is restricted-capacity, single, no children (Pete confirmed the
+restricted-work-capacity reading on 6 October 2026). These are coverage choices,
+not an approved specification. Bill 344-1 enactment, precision, source review
+and independently derived cases still gate numerical results.
+
+D2 will adopt a reviewed official disposable-income definition whole, reporting
+unmodelled components as uncovered. D3 starts with EMTR; adequacy follows
+reviewed D2 sources. Q10's income/period mapping remains open.
+
+**0.4a — GPT/Codex sources; Claude cross-model review.** Commission a bounded
+source-scoping task comparing dated Stats NZ and MSD household-income
+definitions: included income, deductions, reference periods, household unit,
+coverage and treatment of unmodelled components. Produce a source pack and
+options for Pete's definition decision before drafting the calculation spec.
+Done when the source pack has independent review and a concrete definition
+choice can be assessed. No definition is selected by this commission.
+
 ## Household capability this lane delivers
 
 v0.2 runs two policies that don't feed each other (AS-10, WFF DEC-003).
@@ -408,10 +430,18 @@ least one where the benefit's result changes another policy's input.
 - **3.3 — Supported Living Payment.** The same five steps (`SLP-NN`).
   3.3.1 starts when 3.2.1 is decided. Medical and capacity criteria stay
   asserted facts with catalogue questions; Poltika never assesses them.
-- **3.4 — Claude Code. Cross-benefit checks.** A household can't receive
-  two main benefits at once unless a specification says otherwise: a
-  test over the golden households, and an intake question when the
-  household model leaves it open.
+- **3.4 — Claude Code. Cross-benefit checks.** A person can't receive at
+  the same time, in their own right, more than one main benefit, or a
+  main benefit together with New Zealand superannuation or a veteran's
+  pension ([Social Security Act 2018 s 18](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-04/)).
+  The restriction is per person. Schedule 4 (Part 1 cl 1(g), Part 3
+  cl 1(d)) sets rates for a beneficiary whose partner is granted a main
+  benefit in the partner's own right. A couple where each partner receives
+  a main benefit is `unsupported` until a specification models those
+  Schedule 4 categories. Checks: a test over the golden households, and
+  an intake question when the household model leaves it open. Pete
+  authorised this source-linked correction in the 5 October closeout
+  ([verbatim approval record](docs/programme/2026-10-06-pete-approvals.md#1-petes-approvals-to-record)).
 
 For each benefit, *done when* is the skill's exit check for each of its
 five PRs, with throughput recorded in the Progress table.
@@ -609,9 +639,15 @@ skip. A green run containing those skips is not release acceptance.
 
 ## Open decisions for Pete
 
-- **D1:** Each Tier 1 domain's supported slice, from Phase 0's sourcing.
-- **D2:** The disposable-income definition (0.4).
-- **D3:** The income-adequacy measures to report (5.3).
+- **D1 (bounded first slices decided 5 October 2026):** Basic annual salary/wage
+  tax and single existing-grant benefit scope are recorded above. Additional
+  supported slices, enacted authority, specifications and precision remain open.
+- **D2 (source scoping commissioned 5 October 2026):** The official
+  disposable-income definition (0.4) is still for Pete to choose after source
+  review; no definition is selected by the commission.
+- **D3 (measure order decided 5 October 2026):** EMTR first, subject to the
+  reviewed income/period path. The income-adequacy measures (5.3) remain open
+  until the D2 sources and definition are reviewed.
 - **D5 (decided 26 September 2026):** ADR-0016 accepted, with the
   32-branch cap and population-range reporting.
 - **D6 (decided 2 October 2026):** ADR-0017 accepted (shared household

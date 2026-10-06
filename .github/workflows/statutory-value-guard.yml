@@ -1,10 +1,9 @@
 name: Statutory Value Guard
 
-# Visibility only, per ADR-0007 (supersedes ADR-0005) — this does not and
-# cannot block merge; branch protection requires GitHub Pro, unavailable on
-# this repo's plan. It exists so a statutory-value file change can't be
-# missed in a larger diff. The operating rule is manual: look at the PR diff
-# and this result before merging.
+# Reports protected changes for human/source review; it does not decide
+# whether a changed value is acceptable. ADR-0020's active main ruleset
+# requires this check to run successfully. #168 observed required-check
+# blocking; ADR-0007's earlier platform limitation is historical.
 
 on:
   pull_request:
@@ -17,7 +16,7 @@ jobs:
   check-protected-paths:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -51,11 +50,11 @@ jobs:
             'policy_specs/*/specification.md' \
             'policy_specs/*/decisions/*')
           if [ -n "$CHANGED" ]; then
-            echo "::warning title=Statutory-value files changed::This PR changes protected statutory-value files (ADR-0007). Review before merging — this check does not block merge."
+            echo "::warning title=Statutory-value files changed::This PR changes protected statutory-value files (ADR-0007). Review before merging; this check reports the change and must complete successfully under ADR-0020."
             {
               echo "## Statutory-value files changed"
               echo
-              echo "Per ADR-0007, review these before merging (this check is visibility only, not a merge block):"
+              echo "Per ADR-0007/0020, review these before merging; a successful guard run reports changes and does not approve their values:"
               echo
               echo "$CHANGED" | sed 's/^/- /'
             } >> "$GITHUB_STEP_SUMMARY"
@@ -63,7 +62,7 @@ jobs:
             echo "No protected statutory-value files changed." >> "$GITHUB_STEP_SUMMARY"
           fi
           if [ -n "$INTERPRETATION" ]; then
-            echo "::warning title=Source, specification or decision files changed::This PR changes the sources, specification or decisions the statutory values are cited from. Review before merging — this check does not block merge."
+            echo "::warning title=Source, specification or decision files changed::This PR changes the sources, specification or decisions the statutory values are cited from. Review before merging; this check reports the change and must complete successfully under ADR-0020."
             {
               echo
               echo "## Source, specification or decision files changed"

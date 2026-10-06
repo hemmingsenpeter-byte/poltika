@@ -2,9 +2,9 @@ name: Tests
 
 # The three test layers (spec, benchmark, regression), lint, strict typing,
 # the PostgreSQL store tests and the installed-artifact check (ADR-0011),
-# on every pull request to main and every push to main. Like the statutory
-# value guard (ADR-0007), this cannot block merge on this repo's plan; the
-# operating rule is not to merge a PR whose Tests run is red.
+# on every pull request to main and every push to main. ADR-0020's active
+# main ruleset requires the test and pilot-image jobs; #168 observed that a
+# failing required test blocks merging. Never bypass these checks.
 
 on:
   pull_request:
@@ -22,11 +22,11 @@ jobs:
       # Fail, rather than skip to green, if the PostgreSQL binaries are missing.
       POLTIKA_REQUIRE_POSTGRES: "1"
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           python-version: "3.12"
 
@@ -66,7 +66,7 @@ jobs:
     # the test job above; here the image runs without a database.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 

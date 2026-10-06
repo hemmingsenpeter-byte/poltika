@@ -59,10 +59,22 @@ poltika/
 │
 ├── doctrine/          — permanent governing constraints; BUILD_PLAN retains detail not yet extracted
 ├── adr/               — permanent decision history, including superseded sequencing decisions
+├── model_registry/    — Task 1.5 (doctrine/model-governance.md): registry.yaml, one entry per engine or
+│                         runner (version, owner, purpose, validation status linked to its cases, evidence
+│                         classes, limitations, change log), and cards/, one generated card per entry
+│                         (python -m poltika.engines.assurance.model_cards). Its own directory because a
+│                         model is neither a policy source pack, nor process, nor a dataset; it is
+│                         reviewed YAML like those. tests/unit/engines/assurance/test_model_registry.py
+│                         fails CI on an engine with no entry or card
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
+│   ├── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
+│                       specification, parameters and implementation remain separately gated
+│   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue only
+│   ├── sole_parent_support/ — source catalogue only; separate specification/value gates
+│   └── supported_living_payment/ — source catalogue only; separate specification/value gates
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
 │                         holds the scripts that produced its recorded results (review evidence,
 │                         run by hand from the repository root; not production code, and not
@@ -89,6 +101,10 @@ poltika/
 │                         metadata/variables/dictionary.yaml, metadata/populations/
 │                         (synthetic development population specs); snapshots and manifests
 │                         guarded by .github/workflows/data-snapshot-guard.yml
+│   └── source_archive/ — ADR-0022 passive source-preservation archive (NOT data/raw/):
+│                         README.md (SOURCE PRESERVATION ONLY), sources/<system>.yaml (reviewed
+│                         retrieval definitions; stats_nz.yaml), runtime/ (gitignored: blobs/sha256/,
+│                         records/, metadata/, advisory/; POLTIKA_SOURCE_ARCHIVE_DIR moves it)
 │
 ├── src/poltika/
 │   ├── common/            — errors.py (exception hierarchy)
@@ -107,6 +123,12 @@ poltika/
 │   │                        exact rescaling by scale only; named, sourced
 │   │                        conversion rules (registry empty, so nominal to
 │   │                        real is refused)
+│   ├── semantics/entities.py — Programme Task 2.4: entity types, identifier
+│   │                        schemes (unassigned without a cited rule) and
+│   │                        Population definitions
+│   ├── semantics/periods.py — Programme Task 2.3: period types, the frozen
+│   │                        Period, named period relations with sources, and
+│   │                        the v0.2 D8 refusal of unsourced conversions
 │   ├── data/              — v0.2 Phase 1: manifest.py (raw-snapshot manifest),
 │   │                        registry.py (checksummed dataset registry),
 │   │                        transform.py (versioned transformation registry;
@@ -114,7 +136,19 @@ poltika/
 │   │                        xlsx.py (standard-library reader for published
 │   │                        Excel workbooks, v0.2 Task 9.4),
 │   │                        context.py (DataContext, the CanonicalContext
-│   │                        implementation)
+│   │                        implementation);
+│   │                        acquisition/ (ADR-0022: passive source preservation,
+│   │                        upstream of the governed path and never read by it):
+│   │                        models.py (descriptors, RetrievalRecord, canonical JSON,
+│   │                        hashing, redaction), source.py (FetchRequest, Transport,
+│   │                        bounded retrying fetch, SourceConnector), archive.py
+│   │                        (BlobStore protocol, LocalBlobStore, SourceArchive, change
+│   │                        detection), catalogue.py (loads reviewed
+│   │                        data/source_archive/sources/*.yaml), stats_nz.py (Stats NZ
+│   │                        Aotearoa Data Explorer connector), data_govt_nz.py (optional
+│   │                        secondary catalogue reference), ingest.py (run one/all
+│   │                        entries and the failure policy), enrichment.py (optional
+│   │                        OpenRouter advisory metadata, never authoritative)
 │   ├── policy/            — loader.py (Task 11 parameter loader); facts.py
 │   │                        (v0.3 Task 1b.1: fact catalogue loader)
 │   ├── engines/simulator/ — outcome.py (the ComponentResult/FactStatus
@@ -231,11 +265,18 @@ poltika/
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
 │                            time, ADR-0011)
 │
+├── scripts/ingest/        — stats_nz.py: CLI for the source-preservation archive
+│                            (--list, --dataset, --all, --dry-run; cron-friendly)
+│
 └── tests/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/;
     │                          the throwaway PostgreSQL `database_url` fixture (Task 32)
     ├── unit/
+    │   ├── data/acquisition/ — ADR-0022 archive tests (synthetic fixtures, no live
+    │   │                        network) and test_archive_boundary.py, which adds to
+    │   │                        data/test_boundary.py
     │   ├── policy/         — loader tests (Task 11)
+    │   ├── semantics/      — vocabulary tests (Programme Tasks 2.3-2.4: periods, entities)
     │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4) and
     │   │                        interaction spec-case runner (Task 28.5),
     │   │                        golden household runner (Task 29), store
@@ -283,7 +324,7 @@ poltika/
 Only `src/poltika/llm` (`api/` is now instantiated, Task 21;
 `data/` by v0.2 Phase 1;
 `scenarios/` by Task 28.4) and `tests/integration` (`tests/fixtures` by Task 30.4),
-plus `data/processed/`, `data/fixtures/`, `config/`, and `scripts/`, remain undone
+plus `data/processed/`, `data/fixtures/`, `config/`, and `scripts/{validate,development}/`, remain undone
 from the target tree below — created incrementally as the master programme's
 analytical tasks need them. `docs/` is partially
 instantiated: `docs/ORIENTATION.md`, `docs/research/` and `docs/demo/v0_1/`
@@ -406,6 +447,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | Directory | May depend on | Must not depend on |
 | --- | --- | --- |
 | `src/poltika/data/` | `common/`; `semantics/variables.py` (the canonical types it produces) | `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`, other `semantics/` internals. Nothing outside `data/` imports it (`tests/unit/data/test_boundary.py`) |
+| `src/poltika/data/acquisition/` (ADR-0022) | `common/`; standard library | `data/registry`, `data/context`, `data/transform`, `data/transforms/`, `data/manifest`'s `DatasetManifest`, `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`. It never writes under `data/raw/` or `data/metadata/`. Inside `data/` but not on the governed path: nothing in the governed path (registry, context, transform, transforms/) reads the archive, and nothing outside `data/acquisition/` may name `data/source_archive` or `POLTIKA_SOURCE_ARCHIVE_DIR` (`tests/unit/data/acquisition/test_archive_boundary.py`) |
 | `src/poltika/semantics/` | `common/` | source-specific formats/APIs, `engines/` |
 | `src/poltika/policy/` | `semantics/`, `common/` | `data/` (raw or processed), source-specific formats |
 | `src/poltika/engines/simulator/` | `semantics/`, `policy/`, `scenarios/`, `common/` | Stats NZ (or any) API, source CSV structures, LLM output |

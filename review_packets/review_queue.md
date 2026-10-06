@@ -2,24 +2,32 @@
 
 Historical origin: `ROADMAP_REALIGNMENT.md` W1.1 (archived). Current review
 sequencing follows `BUILD_PLAN_PROGRAMME.md` Phase A and ADR-0020. This lists every merged PR whose independent
-(GPT/Codex) review or resulting fixes remain outstanding. They merged on Claude Code's author
+(cross-model) review or resulting fixes remain outstanding. They merged on Claude Code's author
 preflight under Pete's recorded delegation, which the working agreement
 allows. The review-debt cap was suspended on 29 September 2026
 (`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` retained decision P17): open
 rows no longer stop merges, but every one is still listed here, and
 release gates skip, naming them, until review and required fixes are complete.
 
-**Open pull requests awaiting independent GPT/Codex review (5 October 2026):**
-[#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148) and
-[#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151) (draft source
-scopes touching `policy_specs/`), per ADR-0020 rule 4. Claude review comments on
-them are input only and do not clear a row. Merged on Claude's reviewer pass
-without GPT/Codex review: [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
-(units, `9e67009`) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
-(never-build checks, `5a8c17e`), both low risk, no calculated amount. Drafts
-[#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) and
-[#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) are doctrine for
-Pete and GPT/Codex.
+**Final-head cross-model reviews completed 6 October 2026:** the Codex-authored
+source scopes [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148),
+[#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151),
+[#172](https://github.com/hemmingsenpeter-byte/poltika/pull/172) and
+[#175](https://github.com/hemmingsenpeter-byte/poltika/pull/175) were reviewed by Claude with
+primary-source re-derivation and merged (`reviews/2026-10-06-pr148.md`, `pr151.md`,
+`pr172.md`, `pr175.md`; train coverage in `reviews/2026-10-06-integration-train.md`).
+[#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) merged at `f9c69d8` and
+[#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) at `94df1a0`.
+
+**Merged with Claude-authored changes that had same-model review only (no rule-4 path; a
+GPT/Codex re-check is the follow-up):** [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
+(units, `9e67009`), [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
+(never-build checks, `5a8c17e`), [#171](https://github.com/hemmingsenpeter-byte/poltika/pull/171)
+(entities, `b176ddc`), [#174](https://github.com/hemmingsenpeter-byte/poltika/pull/174)
+(XLSX parser commits `427e6b6`/`ad4ca88`, `0d115b4`), [#176](https://github.com/hemmingsenpeter-byte/poltika/pull/176)
+(review-rule commits `be7ca4e`/`0df6008`, `7c0f67e`), [#167](https://github.com/hemmingsenpeter-byte/poltika/pull/167)
+(integration commits, `1b64d0e`) and the #151 `REPOSITORY_STRUCTURE.md` conflict resolution
+(`38e5629`). All are low risk with no calculated amount.
 
 Work the queue in risk order:
 
