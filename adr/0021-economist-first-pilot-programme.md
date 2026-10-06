@@ -4,6 +4,11 @@
 **Status:** accepted strategic direction. Pete supplied the approved migration
 brief and instructed Codex to run it on 3 October 2026. This records that explicit
 authority; it does not infer acceptance of other proposed decisions.
+The [original supplied brief](../docs/archive/programmes/2026-10-03-economist-first-migration-brief.md)
+is preserved byte-identical to the brief as supplied to Codex on
+3 October 2026, sha256 `3d0ae319bdc8167fd914ae977bd8f5fb7da340825f529ab23f098ddb7c9aa041`
+(preserved body; metadata header excluded). Pete reconfirmed the Analyst Workbench first-product
+choice on 5 October 2026; ADR-0018 remains proposed.
 **Supersedes:** ADR-0019 for programme sequencing only.
 
 ## Context

@@ -59,6 +59,13 @@ poltika/
 │
 ├── doctrine/          — permanent governing constraints; BUILD_PLAN retains detail not yet extracted
 ├── adr/               — permanent decision history, including superseded sequencing decisions
+├── model_registry/    — Task 1.5 (doctrine/model-governance.md): registry.yaml, one entry per engine or
+│                         runner (version, owner, purpose, validation status linked to its cases, evidence
+│                         classes, limitations, change log), and cards/, one generated card per entry
+│                         (python -m poltika.engines.assurance.model_cards). Its own directory because a
+│                         model is neither a policy source pack, nor process, nor a dataset; it is
+│                         reviewed YAML like those. tests/unit/engines/assurance/test_model_registry.py
+│                         fails CI on an engine with no entry or card
 ├── policy_specs/      — per-policy source packs, specification maps, benchmarks, decisions
 │                         (from v0.3 Phase 1b, facts.yaml: the fact catalogue, ADR-0016)
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
@@ -113,6 +120,9 @@ poltika/
 │   │                        exact rescaling by scale only; named, sourced
 │   │                        conversion rules (registry empty, so nominal to
 │   │                        real is refused)
+│   ├── semantics/entities.py — Programme Task 2.4: entity types, identifier
+│   │                        schemes (unassigned without a cited rule) and
+│   │                        Population definitions
 │   ├── semantics/periods.py — Programme Task 2.3: period types, the frozen
 │   │                        Period, named period relations with sources, and
 │   │                        the v0.2 D8 refusal of unsourced conversions
@@ -263,7 +273,7 @@ poltika/
     │   │                        network) and test_archive_boundary.py, which adds to
     │   │                        data/test_boundary.py
     │   ├── policy/         — loader tests (Task 11)
-    │   ├── semantics/      — vocabulary tests (Programme Task 2.3: periods)
+    │   ├── semantics/      — vocabulary tests (Programme Tasks 2.3-2.4: periods, entities)
     │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4) and
     │   │                        interaction spec-case runner (Task 28.5),
     │   │                        golden household runner (Task 29), store
