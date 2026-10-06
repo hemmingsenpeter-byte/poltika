@@ -1,0 +1,39 @@
+name: Security
+
+# ADR-0020 professional baseline. Audits the locked third-party dependencies
+# (not the project itself) against the PyPI advisory database. It also runs
+# weekly, because a new advisory can land without any change here.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 20 * * 0"  # Sunday 20:23 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  pip-audit:
+    name: pip-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Export the locked dependencies
+        run: |
+          uv export --locked --all-extras --no-hashes --no-emit-project -o requirements-audit.txt
+
+      - name: Audit them
+        # --no-deps: the lock already pins the full tree, so nothing is
+        # resolved again. --strict fails if a package cannot be audited.
+        run: |
+          uvx pip-audit@2.9.0 -r requirements-audit.txt --no-deps --disable-pip --strict

@@ -15,19 +15,22 @@ rate and threshold taken from a cited primary source:
 - **Accommodation Supplement (AS)**: one weekly amount.
 - **Both together for one household**, each in its own period.
 
-v0.1.0 is released. v0.1.5 (`BUILD_PLAN_v0_1_5.md`) adds evidence and
+v0.1.0 is released. The implemented v0.1.5 work (historical plan in
+`docs/archive/build-plans/2026-09-25-v0-1-5-build-plan.md`) adds evidence and
 explanations on top without changing any amount: calculation steps with
 intermediate values, reason codes, deterministic explanations, and an
-analyst web page.
+analyst web page. Its external-pilot gate and release tag remain outstanding
+as of 3 October 2026.
 
-On top of that core, later versions add, still without changing any
-household amount:
+On top of that core, main already contains the following capabilities, still
+without changing any household amount. Their implementation does not imply
+that their releases or the new programme gates are complete:
 
 - **v0.2 (`BUILD_PLAN_v0_2.md`):** a `data/` layer of manifest-tracked raw
   snapshots and canonical variables (`src/poltika/data/`), population
   microsimulation over many households (`scenarios/population.py`,
   `scenarios/microsim/`: synthetic populations, validation, weighting,
-  reforms, runs, analysis), and `/microsim` routes and page. The real
+  reforms, runs, analysis), and `/microsim` routes and page. The synthetic development
   population spec, `data/metadata/populations/nz_synthetic_development.v1.yaml`,
   is derived from Stats NZ snapshots by `scenarios/microsim/calibration.py`
   and never hand-edited; `docs/releases/V0_2_POPULATION_METHODOLOGY.md` states
@@ -188,9 +191,9 @@ uv run --extra dev uvicorn poltika.api.main:app    # routes at /docs; analyst pa
 
 Routes: `POST /wff/calculate`, `POST /accommodation-supplement/calculate`,
 `POST /household/calculate`, `/analyst` (page, examples, pilot cases,
-evidence), `/microsim` (population, parameters, runs, and a page), `/workbench` (the analyst workbench:
-instruments and parameters read from `policy_specs/`, reform checks, tabbed results for up to two
-options, and Excel/CSV export; ADR-0018), and `/scenarios` (stored runs; these need
+evidence), `/microsim/*` (population, parameters and runs), `/analyst/microsim`
+(page), `/workbench/*` (backend registry, reform checks, result blocks for up to
+two options and Excel/CSV exports; ADR-0018 is proposed), and `/scenarios` (stored runs; these need
 `POLTIKA_DATABASE_URL` and return 503 without it). `docs/pilot/GUIDE.md` runs it in Docker.
 
 The demo household through the API, with no server needed:
@@ -268,8 +271,8 @@ lookup_date, scenario, requested_policy_version=..., assessment_week=...)`.
 | --- | --- |
 | Running scenarios or answering questions | This page and `docs/demo/v0_1/` |
 | Checking or explaining a result | Also the calculation sequence in the policy's `specification.md`, and its `decisions/` |
-| Changing policy logic or statutory values | CLAUDE.md's full list: `BUILD_PLAN.md`, `ARCHITECTURE.md`, `REPOSITORY_STRUCTURE.md`, `doctrine/` and the policy's specification. Protected expected values follow `doctrine/test-doctrine.md` |
-| Current work | The latest `BUILD_PLAN_v*.md` (v0.1.5, v0.1.6, v0.2, v0.3) and its status table |
+| Changing policy logic or statutory values | CLAUDE.md's full list: the master and relevant active lane, the historical doctrine anchors in `BUILD_PLAN.md`, `ARCHITECTURE.md`, `REPOSITORY_STRUCTURE.md`, `doctrine/` and the policy's specification. Protected expected values follow `doctrine/test-doctrine.md` |
+| Planning, sequencing or new work | `BUILD_PLAN_PROGRAMME.md` (single current master, ADR-0021), `PROGRAMME_STATUS.md`, then `BUILD_PLAN_v0_3.md` (household lane) or `BUILD_PLAN_v0_1_6.md` (maintenance). v0.2 supports release completion; historical plans never determine the next task. |
 | Opening or reviewing a PR | `.claude/skills/pr-review-preflight/SKILL.md` for your own PR, `.claude/skills/pr-review/SKILL.md` for one you didn't write, and `doctrine/review-doctrine.md` |
 
 ## Keeping this page current

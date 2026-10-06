@@ -1,12 +1,33 @@
 # Independent review queue
 
-`ROADMAP_REALIGNMENT.md` W1.1. This lists every merged PR whose independent
-(GPT/Codex) review or resulting fixes remain outstanding. They merged on Claude Code's author
+Historical origin: `ROADMAP_REALIGNMENT.md` W1.1 (archived). Current review
+sequencing follows `BUILD_PLAN_PROGRAMME.md` Phase A and ADR-0020. This lists every merged PR whose independent
+(cross-model) review or resulting fixes remain outstanding. They merged on Claude Code's author
 preflight under Pete's recorded delegation, which the working agreement
 allows. The review-debt cap was suspended on 29 September 2026
-(`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` P17): open
+(`doctrine/development-doctrine.md`, `BUILD_PLAN_PROGRAMME.md` retained decision P17): open
 rows no longer stop merges, but every one is still listed here, and
 release gates skip, naming them, until review and required fixes are complete.
+
+**Final-head cross-model reviews completed 6 October 2026:** the Codex-authored
+source scopes [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148),
+[#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151),
+[#172](https://github.com/hemmingsenpeter-byte/poltika/pull/172) and
+[#175](https://github.com/hemmingsenpeter-byte/poltika/pull/175) were reviewed by Claude with
+primary-source re-derivation and merged (`reviews/2026-10-06-pr148.md`, `pr151.md`,
+`pr172.md`, `pr175.md`; train coverage in `reviews/2026-10-06-integration-train.md`).
+[#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) merged at `f9c69d8` and
+[#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) at `94df1a0`.
+
+**Merged with Claude-authored changes that had same-model review only (no rule-4 path; a
+GPT/Codex re-check is the follow-up):** [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
+(units, `9e67009`), [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
+(never-build checks, `5a8c17e`), [#171](https://github.com/hemmingsenpeter-byte/poltika/pull/171)
+(entities, `b176ddc`), [#174](https://github.com/hemmingsenpeter-byte/poltika/pull/174)
+(XLSX parser commits `427e6b6`/`ad4ca88`, `0d115b4`), [#176](https://github.com/hemmingsenpeter-byte/poltika/pull/176)
+(review-rule commits `be7ca4e`/`0df6008`, `7c0f67e`), [#167](https://github.com/hemmingsenpeter-byte/poltika/pull/167)
+(integration commits, `1b64d0e`) and the #151 `REPOSITORY_STRUCTURE.md` conflict resolution
+(`38e5629`). All are low risk with no calculated amount.
 
 Work the queue in risk order:
 
@@ -19,16 +40,17 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)` once blocking findings are cleared. A finding
 is fixed by a new PR, never by editing history.
 
-**As of 3 October 2026: 1 open implementation assurance row (#128).**
-Independent GPT/Codex review is now recorded in `reviews/2026-10-03-pr128.md`.
-Four P2 code errors have follow-up fixes in draft #150. Tests and independent
-Claude review pass at `948fb24`; the row and release gate stay open until
-latest-head CI, delegated acceptance and integration complete.
+**As of 5 October 2026: no open implementation assurance rows (#128 closed by #152 at `fe67875`).**
+Independent GPT/Codex review of #128 is recorded in `reviews/2026-10-03-pr128.md`.
+Its four P2 fixes were independently Claude-reviewed, tested, accepted by
+Claude/Opus under Tier A and integrated through #150 at `3bea73f`. Latest-head
+CI passed at `ea87240` before merge. The original review and its fixes are
+complete; this is not release approval or completion of deferred capabilities.
 GPT/Codex reviewed #124-127 in `reviews/2026-09-28-pr122-127.md`; their
 reviewer-authored fixes were accepted under Pete's explicit cross-model
 waiver on 2 October 2026. #132 and #133 are reviewed in
 `reviews/2026-10-02-pr132.md` and `reviews/2026-10-02-pr133.md`, with the
-same waiver for their fixes. That waiver does not cover #128's new follow-up.
+same waiver for their fixes. That waiver did not cover the #128 follow-up, which was reviewed and accepted separately (see the #128 row).
 Review packet: `review_packets/v0_3_phase_1b_codex_audit.md`.
 GPT/Codex reviewed #121 (`reviews/2026-09-27-pr121.md`); Claude Code
 checked its two fixes.
@@ -50,7 +72,7 @@ were independently reviewed by Claude Code with no blocking findings
 | --- | --- | --- | --- | --- | --- |
 | #132 | pilot | Hosted hardening: security headers, body and request limits, cache admission, declined-label validation and CI smoke check | API, CI | Medium | reviewed (reviews/2026-10-02-pr132.md) |
 | #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
-| #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Medium | open: independent review recorded (reviews/2026-10-03-pr128.md); #150 fixes tested and independently Claude-reviewed; latest-head CI, delegated acceptance and integration pending |
+| #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Medium | reviewed (reviews/2026-10-03-pr128.md); #150 fixes independently Claude-reviewed and accepted/merged at 3bea73f |
 | #127 | v0.3 | Task 1b.6: `scenarios/microsim/ranges.py` population ranges; `fiscal_ranges` on `/microsim/runs`; Fiscal tab | Microsim, API | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
 | #126 | v0.3 | Tasks 1b.2b, 1b.3b-1b.3d: `FactEntry.monotone`, `resolve(ranges=...)`, `Bounds.kind`; property tests | Scenarios, fact schema, API | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |
 | #125 | v0.3 | Task 1b.5: `resolution` on `/household/calculate`, stateless `POST /household/intake`, the analyst page's "Ask me first" | API, analyst page | Medium | reviewed (reviews/2026-09-28-pr122-127.md) |

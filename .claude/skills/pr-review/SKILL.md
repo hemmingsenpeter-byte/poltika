@@ -1,14 +1,15 @@
 ---
 name: pr-review
-description: Use whenever asked to review, check, look over, give feedback on, re-review or clear a Poltika pull request you did not write in this session. That includes a PR number or URL, a Codex/GPT-authored PR, a row in review_packets/review_queue.md, new commits pushed after an earlier review, and whether a PR is ready to merge. Runs a professional reviewer's pass. It pins the exact head SHA and triages CI, scope and risk. It derives expected behaviour before reading the author's rationale, reads the whole diff and reproduces every suspected defect before reporting it. Findings are graded (P1-P3, nit, question, escalation) and classified under the Review Doctrine. The output is inline comments and one summary with a clear verdict, posted as a comment and never as an approval or merge, because Pete accepts. To check your own change before opening or updating it, use pr-review-preflight instead.
+description: Use whenever asked to review, check, look over, give feedback on, re-review or clear a Poltika pull request you did not write in this session. That includes a PR number or URL, a Codex/GPT-authored PR, a row in review_packets/review_queue.md, new commits pushed after an earlier review, and whether a PR is ready to merge. Runs a professional reviewer's pass. It pins the exact head SHA and triages CI, scope and risk. It derives expected behaviour before reading the author's rationale, reads the whole diff and reproduces every suspected defect before reporting it. Findings are graded (P1-P3, nit, question, escalation) and classified under the Review Doctrine. The output is inline comments and one summary with a clear verdict, posted as a comment and never as an approval or merge; acceptance follows ADR-0020. To check your own change before opening or updating it, use pr-review-preflight instead.
 ---
 
 # PR review
 
 You are the reviewer in `BUILD_PLAN.md`'s rotation. A review finds the
-defects that matter before they merge, proves each one, and gives Pete
-what's needed to decide without redoing your work. It is not acceptance.
-Pete is the acceptance judge and decides interpretation ambiguity.
+defects that matter before they merge, proves each one, and gives the
+accepting party what's needed to decide without redoing your work. Review
+is distinct from acceptance: Claude Code accepts Tier A/B under ADR-0020;
+Pete decides Tier C, including interpretation ambiguity.
 
 Review the way a careful senior engineer reviews a colleague's PR.
 Understand what the change is for before judging how it does it. Read all
@@ -18,6 +19,10 @@ what could, and what you didn't check.
 The order below matters. The contract comes before the diff so the
 author's framing can't anchor you. Reproduction comes before writing so
 you never post a guess as a fact.
+
+Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete
+decides Tier C. An author's preflight never substitutes for independent
+review. Current sequencing follows BUILD_PLAN_PROGRAMME.md (ADR-0021).
 
 ## 1. Pin the target and label the pass
 
@@ -50,7 +55,7 @@ it to know which gate a review can close.
 
 | Who wrote the PR | Your pass is | Closes the independent-review gate |
 | --- | --- | --- |
-| GPT/Codex | Independent cross-model review (Claude Code) | Yes, once Pete accepts it |
+| GPT/Codex | Independent cross-model review (Claude Code) | Yes for that author's work; acceptance separately follows ADR-0020 |
 | Claude Code, another session | Fresh same-model check | No. Say so, as `reviews/2026-09-27-v0-2-fresh-same-model-check.md` does |
 | Claude Code, this session | Author preflight: stop and use `pr-review-preflight` | No |
 | Mixed (e.g. Codex fixes on a Claude PR) | Split by commit: cross-model for the other model's commits, same-model for the rest | Only for the other model's commits |
@@ -65,6 +70,15 @@ Record whether you saw the author's rationale (PR body, commit messages)
 before deriving expectations. If you did, the review is "not blind"; say
 so, as `reviews/2026-09-27-pr117.md` does. Being honest about it is worth
 more than looking blind.
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
 
 ## 2. Triage before reading code
 
@@ -249,7 +263,8 @@ Choose one verdict for the SHA:
 Always use `COMMENT`, never `APPROVE` or `REQUEST_CHANGES`. The tools act
 as Pete's account, which opened the PR, so GitHub refuses the other two
 events. An approval from that account would also read as Pete's
-acceptance. End every post with the Claude Code attribution footer.
+acceptance. Review comments remain distinct from acceptance under
+ADR-0020. End every post with the Claude Code attribution footer.
 
 Posting is outward-facing. Post straight away if the user asked you to
 review *and post*, or if the review was triggered by a PR event.
@@ -270,6 +285,14 @@ Remove the worktree when you're done: `git worktree remove <dir>/pr-<N>`.
 
 ## 8. Re-review after new commits
 
+- **Mechanical main update (ADR-0020).** If the only new commit merges
+  `main` without a conflict, compare the PR's own diff instead of old head
+  to new head: `git diff <old merge-base>...<reviewed head>` against
+  `git diff <new main>...<new head>`, using `git patch-id --stable` on each.
+  If they match and required CI is green on the new head, record in the PR
+  the reviewed head, the new head and the `main` SHA. That is the whole
+  check. If they differ, or the merge had a conflict, it is a fix: review
+  the change in full under the bullets below.
 - Diff from the SHA you last reviewed to the new head. If the old SHA is
   no longer an ancestor (a force-push or rebase), review the whole PR
   again.
@@ -296,4 +319,4 @@ Remove the worktree when you're done: `git worktree remove <dir>/pr-<N>`.
 - Settling an interpretation question yourself, or accepting a protected
   expected value changed to match the code.
 - Calling a same-model check independent, or wording a review so it
-  implies Pete's acceptance.
+  implies acceptance by Claude Code or Pete.

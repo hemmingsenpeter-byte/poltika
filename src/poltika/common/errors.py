@@ -72,3 +72,59 @@ class ImmutableRecordError(StoreError):
 
 class StoredRunNotFoundError(StoreError):
     """No stored run has the requested result id (Task 33.2: 404)."""
+
+
+class UnknownUnitError(PoltikaError):
+    """A unit id is not in the unit registry (Task 2.2)."""
+
+
+class UnitConversionError(PoltikaError):
+    """A unit conversion or rescale is refused (Task 2.2)."""
+
+
+class IncompatibleUnitsError(UnitConversionError):
+    """A rescale between units that differ in more than scale: dimension,
+    price basis or currency."""
+
+
+class MissingConversionRuleError(UnitConversionError):
+    """No named, sourced conversion rule exists for the requested units.
+    A conversion such as nominal to real is never implicit."""
+
+
+class UnknownPeriodTypeError(PoltikaError):
+    """A period type id is not in the closed period-type vocabulary
+    (`semantics/periods.py`, Programme Task 2.3)."""
+
+
+class UnknownPeriodRelationError(PoltikaError):
+    """A period relation id is not in the registered set of named rules."""
+
+
+class PeriodRelationMismatchError(PoltikaError):
+    """A registered period relation was applied to periods of other types."""
+
+
+class PeriodConversionRefusedError(PoltikaError):
+    """A value conversion between period types was asked for, but no named
+    rule with a cited source exists for it (v0.2 D8: none without a stated
+    rule). Nothing is converted and no default factor is used."""
+
+
+
+class UnknownEntityTypeError(PoltikaError):
+    """An entity type that is not one of the closed set in
+    `semantics/entities.py` (Programme Task 2.4)."""
+
+
+class UnknownIdentifierSchemeError(PoltikaError):
+    """No identifier scheme is registered under the requested id."""
+
+
+class UnassignedIdentifierSchemeError(PoltikaError):
+    """The identifier scheme exists but has no cited rule yet, so a value
+    cannot be validated against it. The error carries the reason."""
+
+
+class InvalidIdentifierError(PoltikaError):
+    """A value does not match the identifier scheme's rule."""

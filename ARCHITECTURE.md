@@ -19,6 +19,25 @@ between layers (data → semantics → policy → engines → scenarios).
 
 Poltika does not treat model memory or external implementations as authoritative policy sources. Evidence and source packaging come first.
 
+The primary computational path is:
+
+```text
+Authoritative sources and versioned data
+    → semantic contracts required by the model
+    → source-grounded models
+    → scenarios and deterministic simulation
+    → analytical outputs and analyst interfaces
+
+Assurance validates sources, models, runs and outputs throughout.
+```
+
+The active execution order is [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md)
+(ADR-0021). Complete analytical vertical slices earn shared infrastructure.
+Current source catalogues, policy specifications, calculation traces and
+benchmarks support the household work without a general evidence graph.
+Discovery, Hypothesis and AI are later capabilities above the modelling
+system; the Simulator and reviewed models remain the numerical authority.
+
 For the long-term shape of the whole system (NZState, the variable registry,
 evidence graph, accounting spine, orchestrator and decision layers), see
 [Long-term target architecture](#long-term-target-architecture-one-layered-system)
@@ -28,10 +47,12 @@ at the end of this file. It is a destination, not a build authorisation.
 
 ## Technology stack
 
-### v0.1, as actually implemented
+### Released v0.1 foundation
 
-This is what exists in the repo today: the lean subset of the long-term
-stack below that v0.1's tasks have needed, not the full target.
+This is the foundation at tag `v0.1.0` (release published 26 September 2026). It is a
+historical baseline, rather than a description of every capability now on
+`main`. [BUILD_PLAN.md](BUILD_PLAN.md) retains its build record and frozen
+doctrine anchors.
 
 | Layer | Stack |
 | --- | --- |
@@ -45,20 +66,41 @@ stack below that v0.1's tasks have needed, not the full target.
 | Build | setuptools, `src/` layout |
 | CI/CD | GitHub Actions: `tests.yml` (lint, strict mypy, full suite with PostgreSQL, installed artifact, code replay) and `statutory-value-guard.yml`; both visibility only, neither can block merge (ADR-0007) |
 
-There is no frontend, LLM layer, `data/` pipeline or container setup yet;
-those rows of the target stack below are built when a BUILD_PLAN.md or
-ROADMAP.md task needs them, not before.
+### Current implementation on main
+
+Reconciled against `e52f5d3` on 3 October 2026. The release foundation is
+reused by the following merged capabilities; their existence does not imply
+that each release or external-user gate has passed.
+
+| Capability | Current implementation and limits |
+| --- | --- |
+| Household policy calculations | Scoped WFF and AS engines, combined runner and conservative shared-fact checks; no income tax, main-benefit calculators, shared household economic model or combined disposable income yet |
+| Assurance | Source ranks and evidence checks; parameter provenance, calculation steps, reason codes, deterministic explanations and verification; source-currency reporting |
+| Scenario identity and replay | Hash-bound scenario records and retained-code replay; append-only PostgreSQL scenario persistence |
+| Data | Manifest-tracked immutable snapshots, checksummed dataset registry, versioned transformations and canonical variable dictionary |
+| Population simulation | Canonical `PopulationDataset`, synthetic generator, weighting statistics, baseline/reform runner, grouped analysis, per-policy withdrawal paths and published-aggregate comparisons |
+| Population limits | Synthetic development population explicitly labelled as not an estimate for New Zealand; independent marginals and equal weights do not establish representativeness or robust calibration |
+| Analyst interfaces | HTML analyst and microsimulation pages served by FastAPI; intake questions and conditional answers |
+| Analyst Workbench | Spec-derived instrument registry, reform checks, tabular results and CSV/XLSX export backend; complete workbench UI remains to be delivered; ADR-0018 acceptance remains a recorded decision gate |
+| Pilot deployment | Docker/Compose, password protection, security headers, request limits and CI image smoke test; deployment readiness is separate from evidence of an external pilot |
+| Quality | Ruff, strict mypy, pytest/Hypothesis, evidence coverage, PostgreSQL, installed-artifact and retained-code replay checks; statutory-value visibility and immutable-snapshot guards |
+
+The Python runtime remains 3.12. Population runs are kept in process memory;
+the existing PostgreSQL store persists household scenarios. There is no
+Next.js application or LLM implementation. Phase B reuses the household
+engines and their identities; Phase C completes the analyst workflow;
+Phase E hardens existing population machinery.
 
 ### Long-term target stack
 
 Recorded 2026-09-22 (Pete, relaying GPT's stack recommendation) as the
-architecture to build *toward* across v0.1's remaining tasks and beyond —
-this supersedes the previous "v0.1 frontend: Streamlit" line below; the
-decision is to go straight to Next.js rather than build and later replace
-a Streamlit UI. Optimises for four things: **determinism, auditability,
+architecture to build *toward*. The recorded frontend destination is
+Next.js rather than Streamlit. Existing HTML analyst pages and the workbench
+backend are reused; a frontend rewrite is not a prerequisite for Pilot 1.
+Optimises for four things: **determinism, auditability,
 developer speed, and an architecture that can expand into the
-multi-engine system (`BUILD_PLAN_PROGRAMME.md`'s state transition engine
-and federated model graph, Steps 14 and 17) without a rewrite.**
+multi-engine system (`BUILD_PLAN_PROGRAMME.md`'s dynamic model in Phase K
+and model composition in Phase M) without a rewrite.**
 
 | Layer | Choice | Why |
 | --- | --- | --- |
@@ -68,11 +110,11 @@ and federated model graph, Steps 14 and 17) without a rewrite.**
 | Database | PostgreSQL | Scenarios, parameters, provenance, datasets, model versions |
 | ORM | SQLAlchemy 2 + Alembic | Explicit DB models + migrations |
 | Data processing | Polars + PyArrow | Fast tabular processing without prematurely introducing Spark |
-| Numerical | NumPy + SciPy | Simulation, distributions, sensitivity calculations — **v0.2+ per Scope Doctrine, not v0.1** |
-| Statistical | statsmodels | Transparent statistical modelling where required — **v0.2+**, same reason |
+| Numerical | NumPy + SciPy | Adopt only when an analytical slice requires them; formal uncertainty belongs to Phase J |
+| Statistical | statsmodels | Transparent statistical modelling where a reviewed model requires it |
 | Schemas | Pydantic | Canonical variables and engine boundaries |
 | Policy rules | Pure Python functions + declarative YAML/JSON metadata | Rules stay deterministic, testable and inspectable |
-| Graph | NetworkX | Policy interaction graph (ROADMAP.md's v0.3) — don't deploy a graph database |
+| Graph | NetworkX | Household dependency graph when Phase B requires it; broader evidence/model graphs follow real needs in Phases J/M |
 | Front end | Next.js + TypeScript | A proper UI, not coupled to Python |
 | UI | Tailwind + shadcn/ui | Fast interface development |
 | Charts | Plotly | Scenario distributions, sensitivities and comparisons |
@@ -89,7 +131,7 @@ defers past v0.1 ("Deterministic correctness before probabilistic
 sophistication. No Monte Carlo, no sensitivity analysis in v0.1"). Their
 presence in this table records the long-term destination; it is not
 authorization to add them to `pyproject.toml` now. Each is adopted only
-when the BUILD_PLAN.md task that actually needs it is reached, per the
+when the master programme's analytical task needs it, per the
 Architecture Doctrine's "minimum abstraction demanded by two real
 policies" and REPOSITORY_STRUCTURE.md's "create on demand, per task"
 discipline — the same discipline `engines/discovery/` and
@@ -121,18 +163,19 @@ Agent → Agent → Agent → Agent        (NOT this, for v0.1)
 It is a modular Python monolith whose internal module boundaries are
 drawn so that Discovery, Hypothesis, Simulator, and Assurance *can* later
 become independent services or agents without a rewrite — paying that
-distributed-systems tax only when a real capability (the federated
-domain engines, `BUILD_PLAN_PROGRAMME.md` Step 17) actually needs it, not
+distributed-systems tax only when a real capability (model federation,
+`BUILD_PLAN_PROGRAMME.md` Phase M) actually needs it, not
 up front. Those module boundaries already exist in REPOSITORY_STRUCTURE.md's canonical
 tree (`src/poltika/{data,semantics,policy,engines/{simulator,assurance,
 discovery,hypothesis},scenarios,llm,common}`) — this principle names why
 that tree is shaped the way it is; it does not introduce a second,
-competing tree. The one gap it surfaces: v0.3's policy interaction graph
+competing tree. The one gap it surfaces: Phase B's household dependency graph
 (NetworkX, table above) has no named slot yet in REPOSITORY_STRUCTURE.md,
 consistent with that file's "create on demand" discipline — add a `graph/`
-entry there when v0.3 actually needs it, not now.
+entry there when the household calculation actually needs it, not now.
 
-The layered request path this modular monolith serves:
+The eventual layered request path is below. Existing HTML clients call
+FastAPI directly; the LLM path belongs to Phase P.
 
 ```text
 Next.js UI
@@ -196,19 +239,20 @@ Deterministic result + provenance
 Next.js UI
 ```
 
-Natural language → structured Pydantic `ScenarioRequest` → deterministic Python engines → calculated result → LLM explanation. All policy calculation happens in deterministic, testable Python engines; the AI layer never produces a number.
+The eventual Phase P path is natural language → structured Pydantic
+`ScenarioRequest` → deterministic Python engines → calculated result → LLM
+explanation. Current explanations are deterministic templates without an
+LLM. All policy calculation happens in deterministic, testable Python
+engines; AI does not become a numerical source.
 
 ### Simulation module contract
 
-The stack table names a "common `DomainEngine` interface" for domain
-engines. This section is that interface's minimal field list — written down
-before Task 12 builds `calculate_wff()`, so WFF becomes the first instance
-of a general contract rather than something the Simulator quietly becomes
-synonymous with. It is documentation, not code: no base class, ABC, or
-`Protocol` is introduced by this section, and none should be until a second
-module (Accommodation Supplement, Task 23) actually exercises the contract
-— consistent with Architecture Doctrine's "minimum abstraction demanded by
-two real policies."
+This section records the minimal policy-module contract originally written
+before Task 12 built `calculate_wff()`. WFF and Accommodation Supplement now
+exercise its pure-function, parameter and outcome pattern. The contract is
+documentation: it does not introduce a `DomainEngine` base class, ABC or
+`Protocol`. A shared interface is added only when multiple actual models
+require it, under the Architecture Doctrine.
 
 It does not introduce new fields. Every module-contract concept below maps
 onto a field `policy.yaml` (`policy_specs/SCHEMA.md`) already has, or onto
@@ -224,18 +268,17 @@ schema:
 | `required_inputs` | `policy.yaml`'s `inputs` | named facts: owner, type, unit, period, `missing_outcome` |
 | `parameters` | `policy.yaml`'s `parameters` | effective-dated, source-linked |
 | `produced_outputs` | `policy.yaml`'s `outputs` | components plus outcome state: `calculated` / `unsupported` / `needs_review` — never a silent zero |
-| `assumptions` | `specification.md`'s cited source-rule IDs and "review gates and source checks" | no separate assumptions ledger yet; one may be needed once modules with genuinely competing assumptions coexist (post-v0.1) |
+| `assumptions` | `specification.md`'s cited source-rule IDs and "review gates and source checks" | Caller assertions are recorded in traces and reform overrides in run records; a broader assumption registry is introduced only when actual models require it |
 | `data_dependencies` | canonical variable IDs referenced by `inputs`, per the Data Acquisition Doctrine | e.g. the Stats NZ Statistical Area Unit lookup AS's Task 22a needs; WFF has none identified so far |
-| `dependencies` | **new concept** — other `module_id`s this module's inputs or outputs connect to | empty for WFF v0.1 (Task 20 is single-module simulator integration, not cross-module); becomes real content at v0.3's policy interaction graph, not before |
+| `dependencies` | Other `module_id`s this module's inputs or outputs connect to | WFF/AS currently have shared-fact checks and no income coupling; add source-derived dependency content when Phase B's connected household calculations require it |
 | `calculate()` / `run()` | the pure function itself (e.g. `calculate_wff()`) | deterministic, canonical inputs + versioned parameters in, output + outcome state out; no I/O, no network, no LLM — the existing "LLM never calculates" rule applies at the module boundary, not just the top-level architecture |
 | `validation_checks` | **new concept** — the schema-version and `status == "approved"` gates already specified in SCHEMA.md's Task 7 review response, plus any module-specific invariant a module chooses to add | not a new mechanism; naming the existing gates as a module-contract field |
 | `provenance` | `source_catalog` plus the Data Acquisition Doctrine's 11-field raw-snapshot manifest | resolved per-input, not accumulated per-module — a module doesn't carry its own separate provenance store |
 
-`dependencies` is the one field with no content yet, correctly — WFF is the
-only module being built, so there is nothing for it to depend on. That's
-expected, not a gap: cross-module dependencies are v0.3's job
-(`ROADMAP.md`), not something to simulate now with an empty list that means
-nothing yet.
+The existing WFF and AS slices have no modelled income-coupling edges;
+the combined runner checks their shared asserted facts. Phase B's household
+dependency graph adds only the edges its independently sourced
+specifications establish.
 
 ### OpenFisca Aotearoa / BetterRules
 
@@ -249,7 +292,7 @@ replaceable; the canonical data contract is stable. See the [Data Acquisition
 Doctrine](BUILD_PLAN.md#data-acquisition-doctrine-frozen) for the frozen
 rule; this section is the conceptual picture.
 
-**v0.1:**
+**Released acquisition contract, reused by the current data layer:**
 
 ```text
 Authoritative source
@@ -267,7 +310,7 @@ Simulator
 Assurance
 ```
 
-**Later (same downstream layers, different acquisition mechanism):**
+**Later automated acquisition (same downstream layers):**
 
 ```text
 Authoritative source API
@@ -297,6 +340,11 @@ retrieval method, raw snapshot/version, transformation/version, and canonical
 Poltika variable mapping. v0.1's retrieval method is `manual_download`; a
 later `stats_nz_api` method can replace it without changing the canonical
 variable or simulator interface.
+
+A passive source-preservation archive (ADR-0022, `data/source_archive/`) sits
+upstream of this pipeline. It keeps evidence of what a source published, at a
+point in time, and is never read by the registry, `DataContext` or any model;
+bytes reach `data/raw/` only through the reviewed promotion path above.
 
 This is parameterisation/calibration of a deterministic system using
 versioned data — not "training Poltika" on it. The LLM layer is never relied
@@ -329,18 +377,22 @@ This is not scoped or decided for v0.1 — it's a noted possibility for later ca
 
 ## Long-term target architecture: one layered system
 
-Recorded 2026-09-30 (Pete). This is the long-term shape of Poltika. It
+Recorded 2026-09-30 (Pete), retained under ADR-0021. This is the long-term
+shape of Poltika. It
 describes where the roadmap leads, not what exists today. It does not
 authorise building any layer, store, registry or model it names. Each piece
-is built only when a BUILD_PLAN.md or ROADMAP.md task needs it, under the
+is built only when a task in the active master programme needs it, under the
 same "create on demand" discipline and Scope Doctrine that govern the
 long-term stack table above. The hard invariant and the "LLM never
 calculates" rule above apply unchanged at every layer. Figures in the
 examples below (debt ratios, dollar amounts, variance shares, model
 versions) are illustrative. They are not Poltika outputs or sourced values.
 
-The roadmap makes more sense if Poltika is not treated as 33 separate
-features but as one layered computational system:
+The destination is one layered computational system. The following diagram
+describes its eventual layers, not the order in which they must be built.
+Its inputs remain authoritative evidence and data; models and the Simulator
+produce numerical outcomes; Assurance validates the whole path. The
+capability gates in the master programme determine when a layer is earned:
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
@@ -407,11 +459,16 @@ features but as one layered computational system:
               CUT THROUGH EVERY LAYER
 ```
 
-The critical architectural idea: models do not talk directly to each other
-however they want. They communicate through a common representation of New
-Zealand.
+At national scale, connected models communicate through a common
+representation of New Zealand. Near-term household calculations use the
+bounded household contract and source-derived dependencies. They do not
+require a national state schema or federation before serving analysts.
 
 ### 1. The centre of Poltika: NZState
+
+This is Phase K's dynamic national-model contract, introduced only when
+real state-transition requirements justify it. It is not a Phase B
+household-model prerequisite.
 
 At time `t`, `S_t` is Poltika's best representation of New Zealand at time
 `t`. Conceptually:
@@ -431,6 +488,11 @@ NZState is not one enormous database table. It is a contract defining the
 variables different models can read and write.
 
 ### 2. Underneath NZState: the National Variable Registry
+
+The existing canonical variable dictionary is the seed. Phase B extends
+only the units, periods, entities and variables its household models use.
+Broader registry coverage grows from actual models rather than an exhaustive
+national catalogue built before the first product.
 
 Every variable in NZState has exactly one canonical definition. For example:
 
@@ -467,6 +529,11 @@ Poltika variables the Data Acquisition Doctrine already requires (see
 "External statistical data acquisition" above); it does not replace them.
 
 ### 3. Beneath that: the Evidence Graph
+
+Current statutory source maps, decisions, parameters and calculation traces
+provide the needed household evidence links. General causal/evidence graph
+infrastructure is earned by behavioural mechanisms in Phase J and broader
+model composition in Phase M, rather than blocking Phases B–D.
 
 The Variable Registry says what things mean. The Evidence Graph says why
 Poltika believes them:
@@ -821,10 +888,12 @@ blurred:
   assumptions.
 
 Every number Poltika produces should know which category it belongs to.
-That single principle prevents an enormous amount of future epistemic
-debt. v0.1's outputs are all deterministic, and its `calculated` /
-`unsupported` / `needs_review` outcome states are the first instance of a
-number carrying its own epistemic status.
+The approved [epistemic constitution](doctrine/epistemic-constitution.md)
+provides the operational eight-class taxonomy. Caller assertions are
+Scenarios, explicit assumptions are Assumptions, and calculated results are
+Model outputs. The `calculated` / `unsupported` / `needs_review` states are
+calculation gates, distinct from those evidence classes. The four categories
+above remain a conceptual description of the long-term system.
 
 ### The architecture in one sentence
 
@@ -840,7 +909,7 @@ machinery without becoming the machinery itself.
 The fundamental concepts of the eventual technical architecture are:
 `NationalVariable`, `Evidence`, `PolicyRule`, `NZState`, `Model`,
 `Parameter`, `Flow`, `Scenario`, `SimulationRun` and `ValidationRecord`.
-Everything on the 33-step roadmap ([ROADMAP.md](ROADMAP.md)) ultimately
-plugs into those objects. As with the rest of
+The long-term capabilities in [ROADMAP.md](ROADMAP.md) can ultimately
+use those concepts. As with the rest of
 this section, none of them is introduced as code until a task needs it,
 and a second real use justifies the abstraction.

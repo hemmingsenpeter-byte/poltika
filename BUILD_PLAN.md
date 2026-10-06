@@ -1,9 +1,12 @@
 # Poltika v0.1 Build Plan
 
 **Date:** 20 September 2026
-**Status:** FROZEN — workflow and roadmap discussion closed. Each task's
-progress is recorded under it below; README.md's Current status says where
-v0.1 stands.
+**Status:** HISTORICAL / FROZEN v0.1 build record. This file is not the current
+build order. Planning, sequencing and new work begin with
+[BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) under ADR-0021, with live
+progress in [PROGRAMME_STATUS.md](PROGRAMME_STATUS.md). Frozen substantive
+doctrine, task history and anchors remain here until deliberately migrated.
+
 
 ---
 
@@ -30,9 +33,19 @@ comparing.
 
 *Status note, 2 October 2026:* acceptance of engineering work is delegated
 to Claude Code under ADR-0020's tiers. The rotation stands: a fresh-context
-`poltika-reviewer` pass on every PR, and the independent GPT/Codex review
+`poltika-reviewer` pass on every PR, and the independent cross-model review
+(GPT/Codex for Claude-authored work; Claude for GPT/Codex-authored work)
 before any PR touching `policy_specs/`, `engines/simulator/` or a
 calculated amount merges. Pete keeps every Tier C decision.
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
 
 **Primary sources** (Acts, IRD/MSD/Treasury, published worked examples) — the only
 ground truth. Neither model is authoritative on policy correctness.
@@ -147,6 +160,12 @@ what evidence was considered, who/what decided, when.
 ---
 
 ## Roadmap Doctrine (frozen)
+
+**Historical sequencing below:** this section records the ADR-0019 programme
+and its former release mappings. ADR-0021 supersedes that execution order and
+version-based milestone definition. It does not supersede the source, IP,
+data-acquisition, deterministic-core, test or review constraints retained above.
+Use the root BUILD_PLAN_PROGRAMME.md for all current sequencing.
 
 Superseded its original capability-sequence framing per ADR-0008 (2026-09-21),
 and its later release sequences per ADR-0014 and ADR-0015. Since ADR-0019

@@ -1,6 +1,6 @@
 ---
 name: pr-review-preflight
-description: Use before opening, self-reviewing, updating, or recommending acceptance of your own Poltika implementation PR, especially while GPT/Codex is unavailable. Run an adversarial code and evidence preflight, record reproducible findings, and prepare a deferred independent-review handoff. Self-review never substitutes for the rotating reviewer or Pete's acceptance. To review a PR someone else wrote, use pr-review.
+description: Use before opening, self-reviewing, updating, or recommending acceptance of your own Poltika implementation PR, especially while GPT/Codex is unavailable. Run an adversarial code and evidence preflight, record reproducible findings, and prepare a deferred independent-review handoff. Self-review never substitutes for the rotating reviewer or acceptance under ADR-0020. To review a PR someone else wrote, use pr-review.
 ---
 
 # PR review preflight
@@ -10,20 +10,41 @@ independent reviewer. To review a PR you did not write, use `pr-review`. Follow 
 `doctrine/review-doctrine.md`, `doctrine/test-doctrine.md`, and
 `review_packets/README.md` if they impose a stricter gate.
 
+Acceptance follows ADR-0020: Claude Code accepts Tier A and B work; Pete
+decides Tier C. An author's preflight never substitutes for independent
+review. Current sequencing follows BUILD_PLAN_PROGRAMME.md (ADR-0021).
+
 ## 1. Separate the review from implementation
 
 - Finish the proposed change, then review the exact PR head SHA in a separate
   worktree. Do not edit a checkout another agent is using, and do not review a
   moving or unpublished diff as though it were a fixed artifact.
 - If you authored the change, label this pass **author preflight**, not
-  independent/fresh-context review. For a stronger check, give a new Claude
-  session or subagent only `review_packets/TEMPLATE.md`'s mechanical inputs
+  independent/fresh-context review. For a stronger check, give a new session or subagent of the
+  author's model only `review_packets/TEMPLATE.md`'s mechanical inputs
   (sources, approved spec, base/head diff, tests). Have it record expected
-  behavior and findings before showing it your PR explanation. Even that is
-  a same-model check, not the required cross-model rotation.
+  behavior and findings before showing it your PR explanation. That remains a
+  same-model check, not the required cross-model rotation.
+  GPT/Codex reviews Claude-authored work; Claude reviews GPT/Codex-authored
+  work, as ADR-0020 specifies.
 - Do not read an external policy engine's code, tests, or values to derive
   expected behavior. Apply `doctrine/ip-doctrine.md` and the clean-room skill
   before any specifically authorized comparison.
+
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Reconstruction authority: `review_packets/pr170_reconstruction_preflight.md`.
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
 
 ## 2. Derive the contract before judging the diff
 
@@ -103,8 +124,9 @@ Keep one compact, auditable PR packet with:
 - A short **Deferred Codex audit** section listing the exact commits and
   unresolved questions to inspect when Codex returns.
 
-Pete remains the acceptance judge. If a build-plan gate requires the other
-model and that reviewer is unavailable, leave it pending unless Pete
+Claude Code accepts Tier A/B under ADR-0020; Pete decides Tier C. If a
+build-plan gate requires the other model and that reviewer is unavailable,
+leave it pending unless Pete
 explicitly authorizes a temporary exception and records its scope. A
 same-author or same-model pass may support a *provisional* decision, but it
 does not silently close the independent-review gate. Do not change a

@@ -1,6 +1,6 @@
 ---
 name: poltika-skill-roadmap
-description: Use when deciding whether a Poltika-specific skill already exists for the task at hand, whether a new one should be built before proceeding, or when starting a BUILD_PLAN.md task and checking what governs it. Also use when asked what skills this project has, needs, or should build next.
+description: Use when deciding whether a Poltika-specific skill already exists for the task at hand, whether a new one should be built before proceeding, or when starting a current BUILD_PLAN_PROGRAMME.md task and checking what governs it. Also use when asked what skills this project has, needs, or should build next.
 ---
 
 # Poltika skill roadmap
@@ -12,8 +12,11 @@ or its scope changes — it's the thing a fresh session should read to avoid
 either re-deriving a skill that already exists, or building one for a task
 that isn't reached yet.
 
+Current sequencing is governed solely by BUILD_PLAN_PROGRAMME.md (ADR-0021);
+old v0.1 task references below explain a skill’s origin, not new work priority.
+
 Do not build a skill speculatively just because it's listed here as
-"planned" — build it when the task column's BUILD_PLAN item is actually
+"planned" — build it when the task column's current master capability is actually
 about to start, per the reactive-build approach this list follows.
 
 | Skill | Status | Governs | Build when |
@@ -23,8 +26,8 @@ about to start, per the reactive-build approach this list follows.
 | `new-policy` | Built (26 September 2026) | Onboarding a policy domain into the kernel: the standard five-PR structure (sources and specification, values and expected results, implementation, interactions, release), file set, owners, exit checks, review depth, annual updates and v0.1's lessons. Supersedes the planned `policy-rule-implementation` skill, whose pipeline (source → provenance → parameter → rule → test → validation → Assurance) it contains. | Built for `ROADMAP_REALIGNMENT.md` W2.2 and W2.6, ahead of v0.3 Tier 1. |
 | `pr-review-preflight` | Built (24 September 2026, PR #52) | The author's own adversarial check before opening, updating or recommending acceptance of an implementation PR. Labels the pass `author preflight` and prepares the deferred independent-review handoff. Never a substitute for the rotation. | Built while GPT/Codex was unavailable. |
 | `pr-review` | Built (27 September 2026) | The reviewer's pass on a PR someone else wrote: pin the head SHA, triage risk and CI (`scripts/pr_triage.sh`), derive expectations before the author's rationale, reproduce every finding, grade it and propose a Review Doctrine class, post one `COMMENT` review with a verdict, write the `reviews/` record, and re-review later rounds. | Built once Claude Code was regularly the independent reviewer of Codex PRs (#108, #112) and the review queue (W1.1) needed working. |
-| `evidence-classes` | Not built | Applying the epistemic constitution (`doctrine/epistemic-constitution.md`, once written): which of the eight evidence classes a value belongs to, the eleven fields every number carries, the precision rule, and the AI-hypothesis gate. | Build with `BUILD_PLAN_PROGRAMME.md` Step 1.7, alongside the constitution. |
-| `prediction-ledger` | Not built | Registering a forecast: target definition, resolution source named in advance, interval not point, naive baselines, model version and data cutoff, append-only, never revised. | Build with `BUILD_PLAN_PROGRAMME.md` Step 6.4, before the first entry is registered. |
+| `evidence-classes` | Built (2 October 2026) | Applying the epistemic constitution (`doctrine/epistemic-constitution.md`) to any number, source, parameter, dataset, assumption, scenario, decision record, explanation or test expectation: name the evidence class from the mapping table, record the eleven fields where the artifact supports them, apply Pete's seven decisions by number, never turn an unknown into zero, and keep AI-drafted content an AI hypothesis until the AI gate passes. | Built with `BUILD_PLAN_PROGRAMME.md` Step 1.7, alongside the constitution. |
+| `prediction-ledger` | Not built | Registering a forecast: target definition, resolution source named in advance, interval not point, naive baselines, model version and data cutoff, append-only, never revised. | Build in Phase I before registering genuinely predictive outputs; it does not gate Phase C benchmark validation. |
 | `deterministic-simulation` | Not built | Rules for `src/poltika/engines/simulator/`: pure functions, no I/O, no source-specific formats, the `DomainEngine` interface shape, the "LLM never calculates" boundary from `doctrine/llm_boundaries.md` at the simulator's edge. | Build alongside or just after `policy-rule-implementation`, once Task 12/20 (simulator integration) is close. |
 | `canonical-data-model` | Not built | Conventions for `src/poltika/semantics/`: what makes a variable "canonical," how entities (person vs. assessment unit — see the G1 gap in `docs/research/nz_policy_engines_review.md`) and periods are represented, independent of any source format. | Build when Task 4's schema work starts turning into actual `semantics/` code — likely early Weeks 1-2. |
 | `assurance` | Not built | Regression-fixture registration, change attribution (source data vs. transformation vs. parameter vs. policy-rule vs. code), and the provenance report shape — `src/poltika/engines/assurance/`. | Build when Task 15 (regression tests) or Task 31 (full calculation provenance report) is close. |
