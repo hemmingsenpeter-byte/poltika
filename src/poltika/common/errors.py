@@ -107,8 +107,9 @@ class PeriodRelationMismatchError(PoltikaError):
 
 class PeriodConversionRefusedError(PoltikaError):
     """A value conversion between period types was asked for, but no named
-    rule with a cited source exists for it (v0.2 D9: none without a stated
+    rule with a cited source exists for it (v0.2 D8: none without a stated
     rule). Nothing is converted and no default factor is used."""
+
 
 
 class UnknownEntityTypeError(PoltikaError):

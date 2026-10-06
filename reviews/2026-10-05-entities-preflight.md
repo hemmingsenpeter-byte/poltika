@@ -5,8 +5,9 @@ not an independent cross-model review of the final change.
 
 The original uncommitted Claude-authored work is retained untouched in
 `/private/tmp/poltika-entities` at base `ab56f4c`. The candidate is recovered into
-its own worktree on periods head `a32f10ed0e9f2704cbe251fb2e451779129579f3`.
-It must be updated onto the merged #166 and latest main before acceptance.
+its own worktree. Restacked on 6 October 2026 onto main `c72c409` (which contains
+the merged #166, periods); the earlier base `a32f10e` is superseded. `periods.py` and
+`test_periods.py` are main's, and `git diff origin/main` on both is empty.
 I knew the recovered implementation's rationale when conducting this preflight.
 
 ## Expected contract
@@ -34,7 +35,7 @@ including the established regex behavior, to preserve that current contract.
 With `PYTHONPATH=src` and the existing development virtual environment:
 
 - `python -m pytest -q tests/unit/semantics tests/unit/data/test_boundary.py`:
-  67 passed.
+  78 passed on the restacked head (the earlier 67 predates the #166 fixes).
 - `ruff check src tests`: passed.
 - `mypy --strict src`: 83 source files, passed.
 - `git diff --check`: passed.
