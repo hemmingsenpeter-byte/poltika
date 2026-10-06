@@ -2,7 +2,7 @@
 
 Updated: 6 October 2026. Author: GPT/Codex. This is an author preflight,
 not independent or fresh-context review. Base:
-`d501dfaa3488eb0d278f914c1237f0af8cfb58f3`.
+`f9c69d8e3384f0753be482c5ee4a6564cfa5d8ea`.
 
 ## Expected contract
 
@@ -60,3 +60,13 @@ The active ruleset/current required checks replace obsolete target prose;
 workflow comments and v0.2 review records match observed live evidence.
 Claude Code alone merges this train. The older linked preflight comment
 covers only its stated SHA; the next exact-head comment must supersede it.
+
+## Integration after #163 merged
+
+The #163 merge changed the legacy tracker row. This revision preserves its
+accepted constitution and records the actual `f9c69d8` merge and exact-head
+Claude review. Source fixes remain open and require new final-head reviews.
+The statutory guard's runtime notices now distinguish reporting changed
+values from mandatory successful completion. The queue distinguishes
+cleared merged-implementation debt from still-open source/semantic PRs.
+No historical review is promoted into clearance of later source heads.

@@ -10,8 +10,9 @@ rows no longer stop merges, but every one is still listed here, and
 release gates skip, naming them, until review and required fixes are complete.
 
 **Open pull requests awaiting independent cross-model review (updated 6 October 2026):**
-[#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148) and
-[#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151) (draft source
+[#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148),
+[#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151) and
+[#172](https://github.com/hemmingsenpeter-byte/poltika/pull/172) (draft source
 scopes touching `policy_specs/`), per ADR-0020 rule 4. The earlier Claude comments predate their final reconciliation/fixes; final-head
 Claude review may clear these Codex-authored rows under the amended ADR-0020. Merged on Claude's reviewer pass
 without GPT/Codex review: [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
@@ -22,10 +23,11 @@ merged at `240da13838857ee0b2e1686a2fba6f7c8b0b4adc` after
 on `5d79da7755fd6ac6bb74fca44fe6a0af057d10b7` with no P1/P2 and green CI) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
 (never-build checks, `5a8c17e`). No existing statutory result changed; the
 exact-rescaling and finite-scale defects are fixed; #169's non-blocking P3
-limits remain in its linked review. Drafts
-[#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) and
-[#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) are doctrine for
-Pete and GPT/Codex.
+limits remain in its linked review. [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) merged at
+`f9c69d8e3384f0753be482c5ee4a6564cfa5d8ea` after
+[Claude's final-head review](https://github.com/hemmingsenpeter-byte/poltika/pull/163#issuecomment-6007761105)
+and green CI. #164 is accepted by Pete but still awaits final-head review/CI
+and Claude's merge; it is not a merged capability.
 
 Work the queue in risk order:
 
@@ -38,7 +40,9 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)` once blocking findings are cleared. A finding
 is fixed by a new PR, never by editing history.
 
-**As of 5 October 2026: no open implementation assurance rows (#128 closed by #152 at `fe67875`).**
+**Merged implementation assurance at 5 October 2026: #128 closed by #152 at `fe67875`; no unresolved rows in the merged-implementation table below.**
+This excludes open source, governance and semantic PRs, which retain their
+final-head review gates. It does not clear #148, #151 or #172.
 Independent GPT/Codex review of #128 is recorded in `reviews/2026-10-03-pr128.md`.
 Its four P2 fixes were independently Claude-reviewed, tested, accepted by
 Claude/Opus under Tier A and integrated through #150 at `3bea73f`. Latest-head
