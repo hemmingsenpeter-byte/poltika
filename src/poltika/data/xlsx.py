@@ -2,7 +2,7 @@
 
 Agencies publish some tables only as Excel workbooks. An `.xlsx` file is a
 zip of XML parts, so the standard library is enough to read cell values
-without a new dependency (D6). This returns each cell's stored text exactly:
+without a new dependency (D19). This returns each cell's stored text exactly:
 shared and inline strings as text, numbers as their stored digits. Styles,
 formulas and formatting are ignored, and dates stay as Excel serial numbers
 (`excel_date()` converts them). Transformations use it on raw snapshot bytes.

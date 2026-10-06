@@ -18,7 +18,7 @@ from xml.etree import ElementTree
 
 import pytest
 
-from poltika.data.xlsx import XlsxError, read_sheet
+from poltika.data.xlsx import XlsxError, _fromstring, read_sheet
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -232,3 +232,37 @@ def test_every_part_read_refuses_a_dtd(part: str) -> None:
             z.writestr(part, b'<!DOCTYPE x [<!ENTITY a "b">]><sst xmlns="' + MAIN + b'"/>')
     with pytest.raises(XlsxError, match="DTD"):
         read_sheet(buffer.getvalue(), "S")
+
+
+@pytest.mark.parametrize("encoding", ["utf-8", "utf-16", "iso-8859-1"])
+@pytest.mark.parametrize(
+    "doctype",
+    [
+        '<!DOCTYPE x SYSTEM "https://example.invalid/external.dtd">',
+        '<!DOCTYPE x [<!ENTITY a SYSTEM "file:///never-read">]>',
+        '<!DOCTYPE x [<!ENTITY % a SYSTEM "https://example.invalid/entity">%a;]>',
+        '<!DOCTYPE x [<!ENTITY a "aaaa"><!ENTITY b "&a;&a;&a;&a;">]>',
+    ],
+)
+def test_dtd_is_refused_before_element_tree_parsing(
+    encoding: str, doctype: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def unexpected_parse(*args: object, **kwargs: object) -> None:
+        pytest.fail("ElementTree parsed a DTD-bearing part before it was refused")
+
+    monkeypatch.setattr(ElementTree, "fromstring", unexpected_parse)
+    xml = f'<?xml version="1.0" encoding="{encoding}"?>{doctype}<x/>'
+    with pytest.raises(XlsxError, match="DTD"):
+        _fromstring(xml.encode(encoding))
+
+
+@pytest.mark.parametrize("encoding", ["utf-8", "utf-16", "iso-8859-1"])
+def test_supported_xml_encodings_keep_cell_text(encoding: str) -> None:
+    declaration = f'<?xml version="1.0" encoding="{encoding}"?>'
+    xml = (declaration + SHEET.decode()).encode(encoding)
+    assert read_sheet(_workbook(xml), "S") == {1: {0: "1.50", 2: "x"}}
+
+
+def test_malformed_xml_keeps_the_original_parse_error() -> None:
+    with pytest.raises(ElementTree.ParseError):
+        read_sheet(_workbook(b"<worksheet>"), "S")
