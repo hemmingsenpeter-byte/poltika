@@ -19,15 +19,21 @@ primary-source re-derivation and merged (`reviews/2026-10-06-pr148.md`, `pr151.m
 [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) merged at `f9c69d8` and
 [#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) at `94df1a0`.
 
-**Merged with Claude-authored changes that had same-model review only (no rule-4 path; a
-GPT/Codex re-check is the follow-up):** [#161](https://github.com/hemmingsenpeter-byte/poltika/pull/161)
-(units, `9e67009`), [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
-(never-build checks, `5a8c17e`), [#171](https://github.com/hemmingsenpeter-byte/poltika/pull/171)
-(entities, `b176ddc`), [#174](https://github.com/hemmingsenpeter-byte/poltika/pull/174)
-(XLSX parser commits `427e6b6`/`ad4ca88`, `0d115b4`), [#176](https://github.com/hemmingsenpeter-byte/poltika/pull/176)
-(review-rule commits `be7ca4e`/`0df6008`, `7c0f67e`), [#167](https://github.com/hemmingsenpeter-byte/poltika/pull/167)
-(integration commits, `1b64d0e`) and the #151 `REPOSITORY_STRUCTURE.md` conflict resolution
-(`38e5629`). All are low risk with no calculated amount.
+**Current merged review debt, 7 October 2026: 2 open scopes out of 8.**
+The single table below retains #177's seven Claude-only scopes and adds
+#177's own Claude-authored records commit. Independent Codex re-checks of
+the merged snapshot `a8b214f` clear six bounded scopes. #174 and #162 retain
+reproduced P2 findings; Claude fixes them in follow-up work and Codex reviews
+the fix's exact final head. Same-model checks, author preflight and CI remain
+supporting evidence. This is review clearance, not acceptance of a release
+or independent review of the new Codex-authored documentation PR.
+
+Reconciliation of `codex/review-debt-end-train-20261006` (`da50926`) against
+current main: its #171/#174/#176 scopes were already in #177's list, so no
+duplicate rows or stale #164 state are carried forward. The old branch is
+retained; its queue-correction purpose is superseded by this one list.
+These programme rows do not reopen historical release tags or imply
+release acceptance.
 
 Work the queue in risk order:
 
@@ -40,7 +46,8 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)` once blocking findings are cleared. A finding
 is fixed by a new PR, never by editing history.
 
-**As of 5 October 2026: no open implementation assurance rows (#128 closed by #152 at `fe67875`).**
+Historical snapshot at 5 October 2026: no open implementation assurance rows
+(#128 closed by #152 at `fe67875`). This does not clear later programme debt.
 Independent GPT/Codex review of #128 is recorded in `reviews/2026-10-03-pr128.md`.
 Its four P2 fixes were independently Claude-reviewed, tested, accepted by
 Claude/Opus under Tier A and integrated through #150 at `3bea73f`. Latest-head
@@ -70,6 +77,14 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #176 | programme | Mechanical main-update exemption; squash `7c0f67e`, final head `0df6008`; Claude commits `be7ca4e`/`0df6008` | Governance, review skills | Low | reviewed ([reviews/2026-10-07-codex-recheck-review-rule.md](../reviews/2026-10-07-codex-recheck-review-rule.md)); bounded Claude-authored scope |
+| #174 | programme | XLSX DTD/entity guard; squash `0d115b4`, final head `3f43c0b`; Claude commits `427e6b6`/`ad4ca88` | Data reader | High | open — R1 P2 CODE_ERROR: malformed declarations reach ElementTree; [finding](../reviews/2026-10-07-codex-recheck-xlsx.md) |
+| #171 | programme | Entity vocabulary and identifier schemes; squash `b176ddc`, final head `486f376` | Semantics, errors, tests | Medium | reviewed ([reviews/2026-10-07-codex-recheck-entities.md](../reviews/2026-10-07-codex-recheck-entities.md)); bounded Claude-authored scope |
+| #167 | programme | Approval records and conflicted integrations; squash `1b64d0e`; Claude commits `cb32c81`/`ecb9f13`/`912f8e9`/`02e84a4`/`52cf02e` | Decisions, programme records | Low | reviewed ([reviews/2026-10-07-codex-recheck-records.md](../reviews/2026-10-07-codex-recheck-records.md)); bounded Claude-authored scope |
+| #151 | programme | Repository-map conflict resolution; squash `38e5629`, final head `c4c4b2a` | Repository map | Low | reviewed ([reviews/2026-10-07-codex-recheck-records.md](../reviews/2026-10-07-codex-recheck-records.md)); bounded Claude-authored scope |
+| #177 | programme | Integration-train records; squash `0046be0`, Claude head `40b3386` | Reviews, research records, entity citation | Low | reviewed ([reviews/2026-10-07-codex-recheck-records.md](../reviews/2026-10-07-codex-recheck-records.md)); bounded Claude-authored scope; nonblocking R1 P3 conflict-count correction remains |
+| #161 | programme | Units registry; squash `9e67009`, final head `f4465d6`; later exact-rescale correction #169 retained | Semantics, tests | Medium | reviewed ([reviews/2026-10-07-codex-recheck-units.md](../reviews/2026-10-07-codex-recheck-units.md)); bounded Claude-authored scope |
+| #162 | programme | Mechanical never-build checks; squash `5a8c17e`, final head `e637daa` | Acceptance tests | Low | open — R1 P2 TEST_ERROR: unrelated negation masks a prohibited milestone claim; [finding](../reviews/2026-10-07-codex-recheck-never-build.md) |
 | #132 | pilot | Hosted hardening: security headers, body and request limits, cache admission, declined-label validation and CI smoke check | API, CI | Medium | reviewed (reviews/2026-10-02-pr132.md) |
 | #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
 | #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Medium | reviewed (reviews/2026-10-03-pr128.md); #150 fixes independently Claude-reviewed and accepted/merged at 3bea73f |
