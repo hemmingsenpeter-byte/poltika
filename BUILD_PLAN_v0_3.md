@@ -50,7 +50,8 @@ them.
 Pete approved D1 salary/wage basic annual tax for 2026–27 first, and single
 existing-grant main-benefit slices as at a stated date before
 2 November 2026, gross weekly entitlement. JS is single, 25+, no children; SPS is a single principal caregiver;
-SLP is restricted-capacity, single, no children. These are coverage choices,
+SLP is restricted-capacity, single, no children (Pete confirmed the
+restricted-work-capacity reading on 6 October 2026). These are coverage choices,
 not an approved specification. Bill 344-1 enactment, precision, source review
 and independently derived cases still gate numerical results.
 
