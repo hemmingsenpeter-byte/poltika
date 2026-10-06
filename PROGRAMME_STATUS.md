@@ -264,7 +264,7 @@ not proof of a live PR or approval of broader scope.
 
 | Legacy work | Disposition / current home |
 | --- | --- |
-| AI gate, `prog/ai-gate` | Old 1.2: parked draft [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163), recovered from the local worktree. It amends the approved constitution, so it awaits GPT/Codex review and Pete's acceptance. |
+| AI gate, `prog/ai-gate` | Old 1.2: [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) accepted under Pete's 5 October closeout instruction after GPT/Codex review. Artifact gates and known gaps are explicit; future enforcement and Gate C precision implementation remain open. |
 | Model governance, `prog/model-governance` | Old 1.5: [#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) accepted under Pete's 5 October closeout instruction. Registry/card checks cover the four existing models; arithmetic validation is not national-population validation, and output labels remain pending. |
 | Never-build checks, `prog/never-build-checks` | Merged in #162 at `5a8c17e` (old 1.6); the validation-grade row skips until grades exist (old 7.2). |
 | Units/periods/entities, old 2.2–2.4 | Units merged in #161 at `9e67009` (its `convert` is a stub: no sourced deflator rule exists). Periods (old 2.3) and entities (old 2.4) remain uncommitted in `/private/tmp/poltika-periods` and `/private/tmp/poltika-entities` (modified 2026-10-02); Pete approved committing them on 2026-10-05, so they are next, on the merged #161. Reconcile with minimum B 5 requirements. |
