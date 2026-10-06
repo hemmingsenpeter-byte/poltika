@@ -73,12 +73,31 @@ and [doctrine/review-doctrine.md](doctrine/review-doctrine.md).
 
 1. Author: run `.claude/skills/pr-review-preflight/SKILL.md` before you open
    or update the PR.
-2. `poltika-reviewer`: a fresh-context Sonnet review. It is a same-model
-   check and does not clear a review-queue row.
-3. GPT/Codex: an independent review is required for changes to
-   `policy_specs/`, `src/poltika/engines/simulator/` or any calculated
-   amount. Its row in `review_packets/review_queue.md` must be cleared
-   before the PR merges.
+2. `poltika-reviewer`: a fresh-context review of the final head, with no
+   unresolved P1 or P2 finding. Record the exact head; any later fix or main integration requires a
+   new pass, except a mechanical main update as ADR-0020 defines it.
+3. Independent cross-model review is required for changes to `policy_specs/`,
+   `src/poltika/engines/simulator/` or any calculated amount. GPT/Codex reviews
+   Claude-authored work; Claude reviews GPT/Codex-authored work. Its row in
+   `review_packets/review_queue.md` must be cleared before the PR merges.
+   Claude's final-head `poltika-reviewer` pass may meet both gates for
+   GPT/Codex-authored work if it independently derives the contract. A same-model
+   check cannot clear the cross-model row.
+
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Reconstruction authority: [6 October reconstruction authority](review_packets/pr170_reconstruction_preflight.md).
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
 
 ## Merging and the tiers
 
@@ -95,8 +114,8 @@ and [doctrine/review-doctrine.md](doctrine/review-doctrine.md).
 
 A PR merges with `gh pr merge --squash --auto` when CI is green on its
 latest commit, the branch is up to date, the preflight has run, the
-`poltika-reviewer` pass has no open P1 or P2, and any required GPT/Codex
-row is cleared. Never use `--admin`, bypass a check or rewrite `main`.
+final-head `poltika-reviewer` pass has no open P1 or P2, and any required
+independent cross-model row is cleared. Never use `--admin`, bypass a check or rewrite `main`.
 
 ## Releases
 
