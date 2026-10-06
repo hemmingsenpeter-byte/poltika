@@ -48,6 +48,7 @@ Tests:
 
 Reviews:
 
+- `reviews/2026-10-05-pr164.md`
 - `reviews/2026-09-25-task34-3-codex.md`
 - `review_packets/wff_task17.md`
 - `review_packets/review_queue.md`

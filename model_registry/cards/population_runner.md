@@ -46,6 +46,7 @@ Tests:
 
 Reviews:
 
+- `reviews/2026-10-05-pr164.md`
 - `reviews/2026-09-27-pr117.md`
 - `reviews/2026-09-27-v0-2-fresh-same-model-check.md`
 - `review_packets/review_queue.md`

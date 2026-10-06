@@ -27,7 +27,7 @@ Rule and Scenario through the two engines. Model output: it consumes each engine
 
 ## Validation
 
-Passes hand-calculated interaction cases and nine hand-calculated golden households. Claude Code hand-calculated both sets (the same model that wrote the runner); Claude fresh-context reviews re-derived all of them and the GPT/Codex Task 34.3 review re-derived all five interaction cases and golden households g2, g5, g6, g7 and g9 (review_packets/task_28_5_interaction_cases.md, review_packets/task_29_4_golden_households.md). Its least mature dependency is also spec_validated.
+Passes hand-calculated interaction cases and nine hand-calculated golden households. Claude Code hand-calculated both sets (the same model that wrote the runner). The Claude Task 34.3 review documents the sole_parent_support_beneficiary_consistent interaction case and re-derived all nine golden households; it does not document a re-derivation of all five interaction cases. The GPT/Codex Task 34.3 review re-derived all five interaction cases and golden households g2, g5, g6, g7 and g9 (review_packets/task_28_5_interaction_cases.md, review_packets/task_29_4_golden_households.md). Its least mature dependency is also spec_validated.
 
 Validation cases:
 
@@ -45,6 +45,8 @@ Tests:
 
 Reviews:
 
+- `reviews/2026-10-05-pr164.md`
+- `reviews/2026-09-25-task34-3-claude-fresh-context.md`
 - `reviews/2026-09-25-task34-3-codex.md`
 - `review_packets/task_28_3_interaction_contract.md`
 - `review_packets/task_28_5_interaction_cases.md`

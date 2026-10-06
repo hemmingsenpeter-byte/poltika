@@ -16,6 +16,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+import yaml
 
 from poltika.engines.assurance.model_cards import (
     CARDS_DIR,
@@ -98,6 +99,34 @@ def test_linked_paths_exist(registry: Registry) -> None:
         paths += [s.source for s in (*m.limitations, *m.model_risks)]
         missing += [f"{m.id}: {p}" for p in paths if not (REPO_ROOT / p).exists()]
     assert missing == []
+
+
+@pytest.mark.parametrize(
+    ("path", "collection"),
+    [
+        ("policy_specs/working_for_families/spec_cases.yaml", "spec_cases"),
+        ("policy_specs/working_for_families/benchmarks.yaml", "benchmarks"),
+        ("policy_specs/accommodation_supplement/spec_cases.yaml", "spec_cases"),
+        ("policy_specs/accommodation_supplement/benchmarks.yaml", "benchmarks"),
+        ("policy_specs/wff_as_interaction/spec_cases.yaml", "interaction_cases"),
+        ("policy_specs/wff_as_interaction/golden_households.yaml", "households"),
+    ],
+)
+def test_numeric_case_counts_match_yaml_evidence(
+    registry: Registry, path: str, collection: str
+) -> None:
+    cases = yaml.safe_load((REPO_ROOT / path).read_text())[collection]
+    registered_counts = [
+        case.count
+        for model in registry.models
+        for case in model.validation.cases
+        if case.path == path
+    ]
+    assert registered_counts, f"no registered validation evidence for {path}"
+    assert all(isinstance(count, int) for count in registered_counts), (
+        f"{path}: the case count is available in YAML and must be numeric"
+    )
+    assert set(registered_counts) == {len(cases)}, f"{path}: registry case counts do not match YAML"
 
 
 def test_labels_take_the_least_mature_dependency(registry: Registry) -> None:
