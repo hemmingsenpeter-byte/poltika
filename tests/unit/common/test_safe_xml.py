@@ -106,7 +106,18 @@ def test_malformed_input_never_reaches_element_tree(
         safe_xml.fromstring(data)
 
 
-@pytest.mark.parametrize("data", [b"<not xml", b"<a><b></a>", b'<!ENTITY a "test"><x/>', b""])
+@pytest.mark.parametrize(
+    "data",
+    [
+        b"<not xml",
+        b"<a><b></a>",
+        b'<!ENTITY a "test"><x/>',
+        b"",
+        b"<a:x>",
+        b"<:a >",
+        b'<a xmlns:xmlns="u">',
+    ],
+)
 def test_parse_error_matches_element_tree(data: bytes) -> None:
     with pytest.raises(ElementTree.ParseError) as ours:
         safe_xml.fromstring(data)

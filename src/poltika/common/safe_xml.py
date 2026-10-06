@@ -32,7 +32,9 @@ def fromstring(data: bytes) -> ElementTree.Element:
     A document with a DTD is refused whether or not it is also well-formed.
     A document Expat cannot read raises `ElementTree.ParseError`, as before,
     but ElementTree is never called on it."""
-    guard = expat.ParserCreate()
+    # Namespace-aware, as ElementTree's own parser is, so a malformed document
+    # fails here with the error ElementTree would report.
+    guard = expat.ParserCreate(None, "}")
 
     def refuse(*_: object) -> None:
         raise UnsafeXmlError("XML document declares a DTD or entity")
