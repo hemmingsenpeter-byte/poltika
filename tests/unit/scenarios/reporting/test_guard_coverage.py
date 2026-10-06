@@ -110,6 +110,16 @@ TAMPERS = {
         lambda h: _with_component(h, baseline=replace(h.components[FTC[0]].baseline, value=None)),
         "delta is inconsistent",
     ),
+    "reform not calculated": (
+        lambda h: _with_component(
+            h, reform=replace(h.components[FTC[0]].reform, outcome="needs_review")
+        ),
+        "delta is inconsistent",
+    ),
+    "reform value missing": (
+        lambda h: _with_component(h, reform=replace(h.components[FTC[0]].reform, value=None)),
+        "delta is inconsistent",
+    ),
     "unresolved with a delta": (
         lambda h: _with_component(h, outcome="needs_review"),
         "must not carry a delta",
@@ -160,7 +170,7 @@ def test_a_needs_review_household_is_reported_and_never_zero(
     report = rp.build_report(population, run, FTC)
     winners = report.tables()["winners_losers"]
     row = winners.row_index("needs review")
-    assert winners.cell(row, "weight") == flagged[0].weight
+    assert winners.cell(row, "weight") == flagged[0].weight > 0
     assert winners.cell(row, "mean_change") is None
 
 
