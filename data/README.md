@@ -27,3 +27,14 @@ verified, stop and flag it (`.claude/skills/provenance/SKILL.md`).
 
 Nothing outside `src/poltika/data/` reads these files. Everything else asks
 `poltika.data.context.DataContext` for canonical variables.
+
+## `source_archive/` is not `raw/`
+
+`source_archive/` (ADR-0022) passively preserves what authoritative sources
+published, with exact bytes, metadata and one record per retrieval. It is evidence
+only: presence there does not mean a dataset is validated, mapped or approved,
+and no model, `DatasetRegistry` or `DataContext` reads it. It is separate from
+`raw/`. The minimum-necessary rule for `raw/` above is unchanged: a dataset
+enters `raw/` only by the reviewed promotion path in
+[source_archive/README.md](source_archive/README.md), with its manifest and
+canonical mapping. Its `runtime/` tree is gitignored and never committed.

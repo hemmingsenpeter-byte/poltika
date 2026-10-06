@@ -92,6 +92,10 @@ poltika/
 │                         metadata/variables/dictionary.yaml, metadata/populations/
 │                         (synthetic development population specs); snapshots and manifests
 │                         guarded by .github/workflows/data-snapshot-guard.yml
+│   └── source_archive/ — ADR-0022 passive source-preservation archive (NOT data/raw/):
+│                         README.md (SOURCE PRESERVATION ONLY), sources/<system>.yaml (reviewed
+│                         retrieval definitions; stats_nz.yaml), runtime/ (gitignored: blobs/sha256/,
+│                         records/, metadata/, advisory/; POLTIKA_SOURCE_ARCHIVE_DIR moves it)
 │
 ├── src/poltika/
 │   ├── common/            — errors.py (exception hierarchy)
@@ -117,7 +121,19 @@ poltika/
 │   │                        xlsx.py (standard-library reader for published
 │   │                        Excel workbooks, v0.2 Task 9.4),
 │   │                        context.py (DataContext, the CanonicalContext
-│   │                        implementation)
+│   │                        implementation);
+│   │                        acquisition/ (ADR-0022: passive source preservation,
+│   │                        upstream of the governed path and never read by it):
+│   │                        models.py (descriptors, RetrievalRecord, canonical JSON,
+│   │                        hashing, redaction), source.py (FetchRequest, Transport,
+│   │                        bounded retrying fetch, SourceConnector), archive.py
+│   │                        (BlobStore protocol, LocalBlobStore, SourceArchive, change
+│   │                        detection), catalogue.py (loads reviewed
+│   │                        data/source_archive/sources/*.yaml), stats_nz.py (Stats NZ
+│   │                        Aotearoa Data Explorer connector), data_govt_nz.py (optional
+│   │                        secondary catalogue reference), ingest.py (run one/all
+│   │                        entries and the failure policy), enrichment.py (optional
+│   │                        OpenRouter advisory metadata, never authoritative)
 │   ├── policy/            — loader.py (Task 11 parameter loader); facts.py
 │   │                        (v0.3 Task 1b.1: fact catalogue loader)
 │   ├── engines/simulator/ — outcome.py (the ComponentResult/FactStatus
@@ -234,10 +250,16 @@ poltika/
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
 │                            time, ADR-0011)
 │
+├── scripts/ingest/        — stats_nz.py: CLI for the source-preservation archive
+│                            (--list, --dataset, --all, --dry-run; cron-friendly)
+│
 └── tests/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/;
     │                          the throwaway PostgreSQL `database_url` fixture (Task 32)
     ├── unit/
+    │   ├── data/acquisition/ — ADR-0022 archive tests (synthetic fixtures, no live
+    │   │                        network) and test_archive_boundary.py, which adds to
+    │   │                        data/test_boundary.py
     │   ├── policy/         — loader tests (Task 11)
     │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4) and
     │   │                        interaction spec-case runner (Task 28.5),
@@ -286,7 +308,7 @@ poltika/
 Only `src/poltika/llm` (`api/` is now instantiated, Task 21;
 `data/` by v0.2 Phase 1;
 `scenarios/` by Task 28.4) and `tests/integration` (`tests/fixtures` by Task 30.4),
-plus `data/processed/`, `data/fixtures/`, `config/`, and `scripts/`, remain undone
+plus `data/processed/`, `data/fixtures/`, `config/`, and `scripts/{validate,development}/`, remain undone
 from the target tree below — created incrementally as the master programme's
 analytical tasks need them. `docs/` is partially
 instantiated: `docs/ORIENTATION.md`, `docs/research/` and `docs/demo/v0_1/`
@@ -409,6 +431,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | Directory | May depend on | Must not depend on |
 | --- | --- | --- |
 | `src/poltika/data/` | `common/`; `semantics/variables.py` (the canonical types it produces) | `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`, other `semantics/` internals. Nothing outside `data/` imports it (`tests/unit/data/test_boundary.py`) |
+| `src/poltika/data/acquisition/` (ADR-0022) | `common/`; standard library | `data/registry`, `data/context`, `data/transform`, `data/transforms/`, `data/manifest`'s `DatasetManifest`, `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`. It never writes under `data/raw/` or `data/metadata/`. Inside `data/` but not on the governed path: nothing in the governed path (registry, context, transform, transforms/) reads the archive, and nothing outside `data/acquisition/` may name `data/source_archive` or `POLTIKA_SOURCE_ARCHIVE_DIR` (`tests/unit/data/acquisition/test_archive_boundary.py`) |
 | `src/poltika/semantics/` | `common/` | source-specific formats/APIs, `engines/` |
 | `src/poltika/policy/` | `semantics/`, `common/` | `data/` (raw or processed), source-specific formats |
 | `src/poltika/engines/simulator/` | `semantics/`, `policy/`, `scenarios/`, `common/` | Stats NZ (or any) API, source CSV structures, LLM output |
