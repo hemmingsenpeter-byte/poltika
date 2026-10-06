@@ -7,9 +7,11 @@
 reviewer P3 corrections and explicit evidence limitations added.
 **Status:** draft source research and scope recommendation. The later
 [independent Claude source review](../../reviews/2026-10-03-income-tax-source-scope.md#author-transcription-of-claude-review-6-october-2026)
-is recorded; final integrated-head review and a reviewed supported-slice
-specification remain outstanding. The [Q5 decision draft #167](https://github.com/hemmingsenpeter-byte/poltika/pull/167)
-records the later scope commission; it approves no tax parameter or rule.
+is recorded, and the final-head cross-model review is in
+[reviews/2026-10-06-pr148.md](../../reviews/2026-10-06-pr148.md) (merged as #148).
+A reviewed supported-slice specification remains outstanding. The
+[Q5 decisions recorded in #167](https://github.com/hemmingsenpeter-byte/poltika/pull/167)
+record the later scope commission; they approve no tax parameter or rule.
 
 The [draft catalogue](../../policy_specs/income_tax/sources.yaml) uses the
 existing `SourceCatalog` shape. This note prepares the sourcing part of

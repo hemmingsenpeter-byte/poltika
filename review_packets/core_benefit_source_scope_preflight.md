@@ -224,7 +224,7 @@ Independent Claude source review must assess each benefit separately:
 | --- | --- | --- |
 | Jobseeker Support | [JS catalogue](../policy_specs/jobseeker_support/sources.yaml): Act ss 20–28, Schedule 4 Part 1, Regulations/Schedule 6 and separately dated MSD guidance | Single, 25+, no children, ordinary existing grant; gross weekly entitlement first |
 | Sole Parent Support | [SPS catalogue](../policy_specs/sole_parent_support/sources.yaml): Act ss 29–33, Schedule 4 Part 2, regulation 205/Schedule 6 and separate SPS charging guidance | Single principal-caregiver existing-grant slice; gross weekly entitlement first; annual basis versus evidenced weekly agreement remains explicit |
-| Supported Living Payment | [SLP catalogue](../policy_specs/supported_living_payment/sources.yaml): Act ss 34–40, Schedule 4 Part 3, regulation 205/Schedule 6 and separate SLP charging guidance | Single adult, no children, restricted-capacity existing-grant slice; gross weekly entitlement first; route-specific earnings disregard and assessment evidence remain explicit |
+| Supported Living Payment | [SLP catalogue](../policy_specs/supported_living_payment/sources.yaml): Act ss 34–42 (restricted-capacity route ss 34–39), Schedule 4 Part 3, regulation 205/Schedule 6 and separate SLP charging guidance | Single adult, no children, restricted-capacity existing-grant slice; gross weekly entitlement first; route-specific earnings disregard and assessment evidence remain explicit |
 
 The [research note](../docs/research/task_0_2_core_benefit_scope.md) separates
 law operative at the dated as-of assessment from enacted future commencement.
