@@ -22,5 +22,5 @@ by #176).
 
 The mechanical-update exemption (ADR-0020, Pete, 6 October 2026) was applied
 to #164, #175, #172 and #148, with a patch-id delta check recorded on each PR.
-Every conflict resolution (#167 twice, #151) was treated as a fix and
+Every conflict resolution (#167 three times: `cb32c81`, `912f8e9`, `52cf02e`; #151) was treated as a fix and
 re-reviewed.
