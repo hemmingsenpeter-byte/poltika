@@ -19,7 +19,7 @@ modules in isolation.
 
 This mode relaxes build order and internal polish only. It does not relax the
 protected expected values and `doctrine/test-doctrine.md`, the ADR-0020 Tier C
-items, or the independent review rotation and the GPT/Codex review queue.
+items, or the independent cross-model review rotation and the review queue.
 
 The operating rules are:
 
@@ -101,8 +101,10 @@ externally relied upon, release-critical or evidentially consequential.
   retained decision P17). Every merged implementation PR without an independent review is
   still listed in `review_packets/review_queue.md`, and release gates
   still skip, naming those PRs, until they are reviewed.
-- Branch protection is not enforced on this plan (ADR-0007), so this is
-  kept by agreement (v0.1.5 decision D3).
+- ADR-0020's active main ruleset requires green checks and an up-to-date
+  branch. ADR-0007's platform limitation is historical. Independent review
+  is a substantive gate on the final head; any later fix, rebase or main
+  integration requires renewed author preflight and review.
 
 ## Current sequencing (ADR-0021)
 

@@ -71,6 +71,14 @@ before deriving expectations. If you did, the review is "not blind"; say
 so, as `reviews/2026-09-27-pr117.md` does. Being honest about it is worth
 more than looking blind.
 
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
+
 ## 2. Triage before reading code
 
 Take a few minutes to decide how deep the review goes and whether it can

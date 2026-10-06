@@ -66,42 +66,46 @@ A PR merges, with `gh pr merge --squash --auto`, when all of these hold:
 
 1. CI is green on its latest commit, and the branch is up to date with
    `origin/main`.
-2. The author's `pr-review-preflight` has run.
-3. A `poltika-reviewer` pass has left no unresolved P1 or P2 finding.
+2. The author's `pr-review-preflight` has run on the final head.
+3. A fresh-context `poltika-reviewer` pass on the final head has left no
+   unresolved P1 or P2 finding.
 4. If it touches `policy_specs/`, `engines/simulator/` or any calculated
-   amount, its independent GPT/Codex review row in
-   `review_packets/review_queue.md` is cleared. The PR is queued and waits;
-   other work continues.
+   amount, its independent cross-model review row in
+   `review_packets/review_queue.md` is cleared. GPT/Codex reviews Claude-authored
+   changes; Claude reviews GPT/Codex-authored changes. The PR is queued and
+   waits; other work continues.
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
+
+For GPT/Codex-authored policy/calculation work, a Claude `poltika-reviewer`
+pass may meet both reviewer gates only as a full `pr-review` with independent
+primary-source re-derivation. Mixed authorship retains commit-specific
+coverage; a same-model pass does not clear that model's semantic changes.
 
 `--admin`, bypassed checks and rewriting `main` are never used. If `main`
 regresses, a revert PR is opened at once.
 
-### The ruleset on `main` (the target)
+### The ruleset on `main` (active since 5 October 2026)
 
-- Required status checks: every existing CI workflow (tests, the
-  statutory-value guard, the data-snapshot guard, source currency) and
-  every CI job added later.
-- Branches up to date before merging.
-- Squash merges only; auto-merge on; branches deleted on merge.
-- Zero required approvals; no force pushes and no deletions.
+Ruleset id 24478578 requires up-to-date branches, squash PR merges and nine
+checks: `test`, `pilot-image`, `check-protected-paths`,
+`check-immutable-snapshots`, `source-currency`, `pip-audit`, `links`,
+`Bandit (python)` and `zizmor (actions)`. There are no bypass actors,
+required GitHub approvals, force pushes or deletions on main.
 
-Changing repository settings was outside what this session could do, so
-the ruleset is in `PETE_QUEUE.md` as a one-command action. Until it is
-active, the merge rules above are kept by agreement, as the working
-agreement already is (`doctrine/development-doctrine.md`).
-
-ADR-0007 found that required checks needed GitHub Pro on this private
-repository, and made the statutory-value guard visibility only. On 2
-October 2026 the API returned a branch-protection object for `main`, so
-the plan now appears to allow it. If GitHub still refuses the ruleset,
-ADR-0007 stands, Q1 closes as not possible, and the merge rules stay by
-agreement. Once the ruleset is active, it supersedes ADR-0007's
-"visibility only" for the checks it requires: the guard still warns rather
-than fails, but it must run.
-
-Source currency runs weekly, not on pull requests, so it cannot yet be a
-required check. It becomes one when a pull-request trigger is added (a
-report only; its issue step stays on the schedule).
+The [negative probe #168](https://github.com/hemmingsenpeter-byte/poltika/pull/168)
+observed GitHub's BLOCKED state with the required test failing and the other
+eight required checks passing. This was no merge or bypass attempt.
+ADR-0007's earlier platform limitation is historical. The statutory-value
+guard reports changed protected files and must complete successfully;
+it does not approve values. Source currency now runs on PRs; its issue
+publication remains scheduled only.
 
 ### What changes elsewhere
 
@@ -128,11 +132,22 @@ merged, the decisions made, the open Tier C items and what comes next.
 
 - Engineering work no longer waits on Pete's review. His time goes to Tier
   C: sources, interpretation, governance and anything public.
-- A `poltika-reviewer` pass is a same-model check. It is not the
-  independent cross-model review, and does not clear a review-queue row.
-  For the high-risk paths, merging still waits for GPT/Codex.
+- Same-model review supports assurance but cannot clear cross-model review.
+  Reviewer identity follows semantic authorship, and clearance covers only
+  the recorded final head. Author preflight never substitutes for it.
 - Every Tier B choice is reversible and logged, so Pete can overturn one
   without archaeology.
 - Pete can narrow or withdraw this delegation at any time, by editing this
   ADR or telling a session. A session that finds this ADR superseded falls
   back to `BUILD_PLAN.md`'s Roles.
+
+## Review amendment reconstructed, 6 October 2026
+
+Pete's Codex-lane instruction commissions a clean reconstruction of #170's
+remaining semantic delta on current main. It requires other-model review,
+separate author preflight and final-head clearance after any later change.
+This amendment leaves all Tier A/B/C authorities, primary-source rules,
+protected statutory-value and interpretation gates unchanged. Claude Code
+owns final independent review and integration of this reconstruction.
+The [author packet](../review_packets/pr170_reconstruction_preflight.md)
+enumerates the old changes and their dispositions.

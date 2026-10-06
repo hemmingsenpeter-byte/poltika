@@ -138,9 +138,25 @@ Park each in `PETE_QUEUE.md` and route around it.
 A PR merges (`gh pr merge --squash --auto`) only when CI is green, the branch
 is up to date, `pr-review-preflight` has run and a `poltika-reviewer` pass
 has no unresolved P1 or P2 finding. A PR touching `policy_specs/`,
-`engines/simulator/` or any calculated amount also waits for its GPT/Codex
-row in `review_packets/review_queue.md` to clear. Never use `--admin` or
+`engines/simulator/` or any calculated amount also waits for its independent review
+row in `review_packets/review_queue.md` to clear: GPT/Codex reviews Claude
+authorship, and Claude reviews GPT/Codex authorship. Every
+preflight and reviewer pass names the final head; new commits require re-review. Never use `--admin` or
 bypass a check. `PROGRAMME_STATUS.md` tracks every current capability task and its evidence.
+
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Reconstruction authority: [6 October reconstruction authority](review_packets/pr170_reconstruction_preflight.md).
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
 
 ## External prior art
 
