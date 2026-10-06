@@ -163,3 +163,45 @@ future-law locators/limitations); local 3.4 own-right/unsupported checks; and
 `PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q tests/acceptance/test_programme_authority.py`
 (10 passed). Monetary implementation, payment precision, protected values,
 independent final-head review and CI remain separate gates.
+
+## 6 October 2026 review-record closeout — author preflight
+
+The independent [Claude review of source head `7418c99`](https://github.com/hemmingsenpeter-byte/poltika/pull/151#issuecomment-5990307455)
+and its separate fresh reviewer pass are now recorded in the existing review
+file, including the SPS/SLP field-by-field limitation. The historical
+same-model review above is not presented as that independent review.
+Local 3.4 links the verbatim Pete approval record. Each catalogue now carries
+a structured coverage limit for both partners receiving own-right main benefits:
+`unsupported` / `not_modelled`, before `needs_review`. Its statutory locator
+distinguishes the per-person law from the approved coverage exclusion. Source
+entries and monetary values remain unchanged; no runtime gate is added.
+
+The author knows the source rationale. Checks actually run on the prepared
+delta, exit 0: `git diff --check`; existing `SourceCatalog.model_validate`
+(9/10/10 sources, 29 globally unique IDs, no executable `policy.yaml`);
+targeted changed-document relative-file/anchor checks. This is author
+preflight. Later main integration, the final commit and current CI must be
+checked separately; the final reviewer pass is recorded in the PR without
+editing the already committed evidence again. Monetary specification and
+protected-value gates remain separate.
+
+### Current follow-up and verification — 6 October 2026
+
+Merged current `origin/main` (`f9c69d8e3384f0753be482c5ee4a6564cfa5d8ea`)
+without rewriting history. Copied the identical approval record from #170
+head `ac6366f47b52a184b168a748e85a25ab8db7cd89` so the approval citation
+resolves before that PR lands; the merge train must integrate main again.
+The three source catalogues now expose the approved coupled-benefit coverage
+limit, with a regression guard over outcome, category, status precedence,
+source identity and the approval-record link. This does not implement any
+benefit calculation or claim that mixed-benefit couples cannot qualify legally.
+
+The new changes are outside the recorded historical/source-delta reviews.
+Claude's final-head primary-source review and current CI remain outstanding.
+No review-queue row was changed before #170 merged.
+
+Current checks exited 0: `git diff --check`; `SourceCatalog.model_validate`
+(9/10/10 sources, 29 globally unique IDs); targeted relative-file/anchor
+checks (11 links); `ruff check tests/unit/policy/test_core_benefit_source_scope.py`;
+and `PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q tests/unit/policy/test_core_benefit_source_scope.py tests/acceptance/test_programme_authority.py`
+(13 passed). Monetary spec/benchmark/protected-value gates remain open.

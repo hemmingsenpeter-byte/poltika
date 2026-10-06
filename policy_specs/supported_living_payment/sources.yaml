@@ -10,6 +10,20 @@ assessment_period_note: Claims scoped to law operative on 3 October 2026; no ful
 retrieval_note: Dated legislation read directly via official HTML with a browser user agent after web
   retrieval failed; MSD/IRD current pages retrieved independently. Live pages do not prove historical
   applicability.
+coverage_limits:
+  - id: both_partners_main_benefits_in_own_right
+    when: Claimant and spouse or partner each receive a main benefit in their own right.
+    outcome: unsupported
+    category: not_modelled
+    precedence: before_needs_review
+    source_id: supported-living-payment-social-security-act
+    locator: s 18; Schedule 4 Part 1 cl 1(g) and Part 3 cl 1(d).
+    approval_record: ../../docs/programme/2026-10-06-pete-approvals.md
+    limitation: >-
+      This is Pete's approved first-slice coverage limit, not a legal prohibition
+      on partners receiving different main benefits. It must remain unsupported
+      until a reviewed specification models the applicable Schedule 4 categories.
+      This catalogue statement adds no runtime gate, rate or entitlement calculation.
 sources:
 - id: supported-living-payment-social-security-act
   kind: legislation

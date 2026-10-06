@@ -418,7 +418,8 @@ least one where the benefit's result changes another policy's input.
   a main benefit is `unsupported` until a specification models those
   Schedule 4 categories. Checks: a test over the golden households, and
   an intake question when the household model leaves it open. Pete
-  authorised this source-linked correction in the 5 October closeout.
+  authorised this source-linked correction in the 5 October closeout
+  ([verbatim approval record](docs/programme/2026-10-06-pete-approvals.md#1-petes-approvals-to-record)).
 
 For each benefit, *done when* is the skill's exit check for each of its
 five PRs, with throughput recorded in the Progress table.
