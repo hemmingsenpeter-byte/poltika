@@ -19,8 +19,8 @@ without GPT/Codex review: [#161](https://github.com/hemmingsenpeter-byte/poltika
 (units, `9e67009`) and [#162](https://github.com/hemmingsenpeter-byte/poltika/pull/162)
 (never-build checks, `5a8c17e`), both low risk, no calculated amount. [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) merged at
 `f9c69d8` on 6 October. [#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164)
-remains open with mixed Claude/Codex authorship and requires explicit
-commit-specific final-head review coverage.
+merged at `94df1a0`; its review records retain commit-specific coverage of
+mixed Claude/Codex authorship.
 
 Work the queue in risk order:
 
@@ -33,7 +33,19 @@ classify findings under the Review Doctrine, and change the row's status
 to `reviewed (reviews/<file>)` once blocking findings are cleared. A finding
 is fixed by a new PR, never by editing history.
 
-**As of 5 October 2026: no open implementation assurance rows (#128 closed by #152 at `fe67875`).**
+**Current merged review debt, 6 October 2026:** #171's original Claude-authored
+entities, #174's Claude-authored parser commits, and #176's two Claude-authored
+mechanical-exemption commits still await GPT/Codex review. Their rows below
+record the exact uncovered scope. Claude's cross-model review of Codex changes,
+same-model reviewer passes, author preflight and green CI do not independently
+clear the Claude-authored portions. None changes a policy-path amount, so these
+are recorded follow-up debt under ADR-0020, not a retroactive rule-4 merge block.
+The `programme` labels do not reassign these later changes to an already-tagged
+historical release; their debt remains visible for applicable future gates.
+
+Historical snapshot at 5 October 2026: #128 was closed by #152 at `fe67875`;
+there were no open implementation assurance rows then. That snapshot does not
+clear the later merged rows above.
 Independent GPT/Codex review of #128 is recorded in `reviews/2026-10-03-pr128.md`.
 Its four P2 fixes were independently Claude-reviewed, tested, accepted by
 Claude/Opus under Tier A and integrated through #150 at `3bea73f`. Latest-head
@@ -63,6 +75,9 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
+| #171 | programme | Entity and identifier contracts, merged at `b176ddc72eefd1811a0b8317d812dd389e6f3ae7`, final head `486f37658f7fa99832d6f0a924680b214925986b` | Semantics, errors, tests | Medium | open — original Claude-authored entity draft awaits GPT/Codex review; Codex recovery/singleton correction received Claude cross-model review. [Coverage record](https://github.com/hemmingsenpeter-byte/poltika/pull/171#issuecomment-6008351681); Codex's recovery pass was author preflight. |
+| #174 | programme | XLSX XML hardening, merged at `0d115b4e2c63b5d6f2d6517d92f74d9d9ffdc934`, final head `3f43c0b4966c960cf1878bdc8459de3ac8c706d2` | Data reader, pinned-reader tests | High | open — Claude parser commits `427e6b6` and `ad4ca88` await GPT/Codex review; Codex D19/docstring/test correction `bf51ce2` received Claude cross-model review. Codex author-chain probing is supporting evidence, not independent clearance. [Coverage record](https://github.com/hemmingsenpeter-byte/poltika/pull/174#issuecomment-6008736250). |
+| #176 | programme | Mechanical main-update exemption, merged at `7c0f67e7e847e5e57f66269bf007c9fe88d1e5e7`, final head `0df6008504bb4a920463c64bb18956d5c952a249` | Governance, doctrine, review skills | Low | open — Claude exemption commits `be7ca4e` and `0df6008` await GPT/Codex review; Codex reconstruction `9b939ce` received Claude cross-model review. Main integration commits are mechanical, not semantic review debt. [Coverage and Pete-decision record](https://github.com/hemmingsenpeter-byte/poltika/pull/176#issuecomment-6008838974). |
 | #132 | pilot | Hosted hardening: security headers, body and request limits, cache admission, declined-label validation and CI smoke check | API, CI | Medium | reviewed (reviews/2026-10-02-pr132.md) |
 | #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
 | #128 | v0.3 | Tasks 1b.2d, 1b.1c: `scenarios/conditional_text.py` verified summary, `resolution.summary`, v0.3 release-gate test | Scenarios, API, tests | Medium | reviewed (reviews/2026-10-03-pr128.md); #150 fixes independently Claude-reviewed and accepted/merged at 3bea73f |
