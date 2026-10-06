@@ -77,13 +77,30 @@ Interpretation ambiguity must be escalated rather than silently resolved.
 Since 2 October 2026 Claude Code accepts and merges engineering work under
 three tiers (`adr/0020-delegated-acceptance.md`). Sources, interpretation,
 protected statutory values, Māori data governance and anything public stay
-with Pete (Tier C, listed in `PETE_QUEUE.md`). An independent GPT/Codex
+with Pete (Tier C, listed in `PETE_QUEUE.md`). An independent cross-model
 review is still required before a PR touching `policy_specs/`,
 `engines/simulator/` or any calculated amount merges: its row in
-`review_packets/review_queue.md` must be cleared first. Every PR also needs
+`review_packets/review_queue.md` must be cleared first (GPT/Codex for Claude
+authorship, Claude for GPT/Codex authorship). Every PR also needs
 the author's preflight (`.claude/skills/pr-review-preflight/SKILL.md`) and a
-fresh-context `poltika-reviewer` pass with no unresolved P1 or P2 finding.
+fresh-context `poltika-reviewer` pass on the final head with no unresolved P1 or
+P2 finding. A new commit requires a new pass.
 Merges are squash merges, on green CI and an up-to-date branch.
+
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Reconstruction authority: [6 October reconstruction authority](review_packets/pr170_reconstruction_preflight.md).
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
 
 ## External prior art
 
