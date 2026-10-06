@@ -15,7 +15,8 @@ import posixpath
 import re
 import zipfile
 from datetime import date, timedelta
-from xml.etree import ElementTree
+from xml.etree import ElementTree  # nosec B405
+from xml.parsers import expat  # nosec B407
 
 _NS = {
     "m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
@@ -32,6 +33,29 @@ class XlsxError(ValueError):
     pass
 
 
+def _fromstring(data: bytes) -> ElementTree.Element:
+    """Parse one XML part, refusing any DTD or entity declaration first.
+
+    A workbook part never needs a DTD, and a DTD is the only way for XML to
+    ask a parser for entity expansion or an external resource. Expat reports
+    one before the element tree parser sees the part, whatever its encoding.
+    The input is a retained, hash-checked snapshot, so this is defence in
+    depth: it adds no dependency and changes no parsed value."""
+    guard = expat.ParserCreate()
+
+    def refuse(*_: object) -> None:
+        raise XlsxError("workbook part declares a DTD or entity")
+
+    guard.StartDoctypeDeclHandler = refuse
+    guard.EntityDeclHandler = refuse
+    try:
+        guard.Parse(data, True)
+    except expat.ExpatError:
+        pass  # not well-formed: the element tree parser below reports it as before
+    # Safe: the guard above rejected every DTD and entity declaration.
+    return ElementTree.fromstring(data)  # nosec B314
+
+
 def _column(letters: str) -> int:
     n = 0
     for ch in letters:
@@ -45,8 +69,8 @@ def _text(element: ElementTree.Element) -> str:
 
 def read_sheet(raw: bytes, sheet_name: str) -> Sheet:
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-        workbook = ElementTree.fromstring(archive.read("xl/workbook.xml"))
-        rels = ElementTree.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
+        workbook = _fromstring(archive.read("xl/workbook.xml"))
+        rels = _fromstring(archive.read("xl/_rels/workbook.xml.rels"))
         targets = {r.get("Id"): r.get("Target") for r in rels.findall("rel:Relationship", _NS)}
         rel_id = next(
             (
@@ -62,9 +86,9 @@ def read_sheet(raw: bytes, sheet_name: str) -> Sheet:
         path = target.lstrip("/") if target.startswith("/") else posixpath.join("xl", target)
         shared: list[str] = []
         if "xl/sharedStrings.xml" in archive.namelist():
-            strings = ElementTree.fromstring(archive.read("xl/sharedStrings.xml"))
+            strings = _fromstring(archive.read("xl/sharedStrings.xml"))
             shared = [_text(si) for si in strings.findall("m:si", _NS)]
-        sheet = ElementTree.fromstring(archive.read(path))
+        sheet = _fromstring(archive.read(path))
 
     cells: Sheet = {}
     for c in sheet.iterfind("m:sheetData/m:row/m:c", _NS):
