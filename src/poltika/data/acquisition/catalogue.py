@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from poltika.common.errors import PoltikaError
 from poltika.data.acquisition.models import AccessKind, Reference
@@ -154,6 +154,9 @@ class SourceEntry(BaseModel):
     request: dict[str, str]  # connector-specific; no credentials
     secondary_catalogue: SecondaryCatalogue = SecondaryCatalogue()
     check_frequency: str | None = None  # Poltika's retrieval cadence, not the source's
+    # Overrides the default response cap (D20) for a source whose responses are
+    # legitimately larger. Unset means the default.
+    max_response_bytes: int | None = Field(default=None, gt=0)
 
     @field_validator("id")
     @classmethod

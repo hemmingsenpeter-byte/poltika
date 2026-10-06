@@ -311,3 +311,87 @@ def test_default_and_explicit_allowed_base_url_load() -> None:
     explicit = "https://api.data.stats.govt.nz/rest"
     text = CATALOGUE.replace('version: "1.0"', f'version: "1.0"\n      base_url: {explicit}', 1)
     assert parse_catalogue(text).get("syn_flow").request["base_url"] == explicit
+
+
+# --- DTD refusal (PR B): the structure response never reaches ElementTree with a DTD.
+
+# Pinned before the shared guard was introduced (main a8b214f): the parsed
+# fixture, as SHA-256 of its sorted JSON dump, and its C14N hash.
+STRUCTURE_DUMP_SHA256 = "caefaa927c76f3290771a0e56d64caa28ebf750235748ac03459dd6060556fbe"
+STRUCTURE_C14N_SHA256 = "3fef544ef71cf1a1b0021fb46460e9496e2e394ccb335bb2d2c71ee3dd04518e"
+
+DTD_PAYLOADS = [
+    '<!DOCTYPE x SYSTEM "https://example.invalid/external.dtd">',
+    '<!DOCTYPE x [<!ENTITY a SYSTEM "file:///never-read">]>',
+    '<!DOCTYPE x [<!ENTITY % a SYSTEM "https://example.invalid/entity">%a;]>',
+    '<!DOCTYPE x [<!ENTITY a "aaaa"><!ENTITY b "&a;&a;&a;&a;"><!ENTITY c "&b;&b;&b;&b;">]>',
+]
+
+
+def test_structure_parse_is_byte_identical_to_the_pre_guard_baseline() -> None:
+    import hashlib
+    import json
+
+    parsed = parse_structure(STRUCTURE, parse_request(entry()))
+    dump = json.dumps(parsed.model_dump(mode="json"), sort_keys=True).encode()
+    assert hashlib.sha256(dump).hexdigest() == STRUCTURE_DUMP_SHA256
+    assert parsed.native_fields["structure_c14n_sha256"] == STRUCTURE_C14N_SHA256
+
+
+@pytest.mark.parametrize("encoding", ["utf-8", "utf-16"])
+@pytest.mark.parametrize("doctype", DTD_PAYLOADS)
+def test_structure_with_a_dtd_is_refused_before_element_tree(
+    encoding: str, doctype: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import xml.etree.ElementTree as ET
+
+    def unexpected_parse(*args: object, **kwargs: object) -> None:
+        pytest.fail("ElementTree parsed a DTD-bearing structure response")
+
+    monkeypatch.setattr(ET, "fromstring", unexpected_parse)
+    text = STRUCTURE.decode("utf-8").replace(
+        '<?xml version="1.0" encoding="utf-8"?>',
+        f'<?xml version="1.0" encoding="{encoding}"?>{doctype}',
+        1,
+    )
+    with pytest.raises(StatsNzError, match="declares a DTD or entity"):
+        parse_structure(text.encode(encoding), parse_request(entry()))
+
+
+def test_observe_refuses_a_dtd_bearing_structure_response() -> None:
+    bomb = STRUCTURE.replace(
+        b"?>", b'?><!DOCTYPE x [<!ENTITY a "aaaa"><!ENTITY b "&a;&a;&a;&a;">]>', 1
+    )
+
+    class Fixed:
+        def send(self, request: FetchRequest, timeout: float) -> RawResponse:
+            body = bomb if "/dataflow/" in request.url else DATA
+            return RawResponse(200, (), body)
+
+    connector = StatsNzConnector(api_key=KEY, transport=Fixed(), sleep=lambda _: None)
+    with pytest.raises(StatsNzError, match="declares a DTD or entity"):
+        connector.observe(entry())
+
+
+def test_requests_carry_the_default_cap_or_the_catalogue_override() -> None:
+    from poltika.data.acquisition.source import DEFAULT_MAX_RESPONSE_BYTES
+
+    connector = StatsNzConnector(api_key=KEY)
+    assert connector.data_request(entry()).max_response_bytes == DEFAULT_MAX_RESPONSE_BYTES
+    larger = parse_catalogue(
+        CATALOGUE.replace("    secondary_catalogue:", "    max_response_bytes: 200000000\n    secondary_catalogue:")
+    ).get("syn_flow")
+    assert connector.data_request(larger).max_response_bytes == 200_000_000
+    assert connector.structure_request(larger).max_response_bytes == 200_000_000
+    # The cap is a transport limit: it never changes the request fingerprint.
+    assert connector.data_request(larger).fingerprint() == connector.data_request(entry()).fingerprint()
+
+
+@pytest.mark.parametrize("value", ["0", "-1"])
+def test_catalogue_cap_must_be_positive(value: str) -> None:
+    with pytest.raises(CatalogueError):
+        parse_catalogue(
+            CATALOGUE.replace(
+                "    secondary_catalogue:", f"    max_response_bytes: {value}\n    secondary_catalogue:"
+            )
+        )

@@ -16,7 +16,8 @@ import re
 import zipfile
 from datetime import date, timedelta
 from xml.etree import ElementTree  # nosec B405
-from xml.parsers import expat  # nosec B407
+
+from poltika.common import safe_xml
 
 _NS = {
     "m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
@@ -34,27 +35,16 @@ class XlsxError(ValueError):
 
 
 def _fromstring(data: bytes) -> ElementTree.Element:
-    """Parse one XML part, refusing any DTD or entity declaration first.
+    """Parse one XML part through the shared guard (`poltika.common.safe_xml`).
 
-    A workbook part never needs a DTD, and a DTD is the only way for XML to
-    ask a parser for entity expansion or an external resource. Expat reports
-    one before the element tree parser sees the part, whatever its encoding.
-    The input is a retained, hash-checked snapshot, so this is defence in
-    depth: it adds no dependency and changes no parsed value. A part with a
-    DTD is refused whether or not it is also well-formed."""
-    guard = expat.ParserCreate()
-
-    def refuse(*_: object) -> None:
-        raise XlsxError("workbook part declares a DTD or entity")
-
-    guard.StartDoctypeDeclHandler = refuse
-    guard.EntityDeclHandler = refuse
+    A workbook part never needs a DTD, so one that declares a DTD or entity is
+    refused as `XlsxError`. The input is a retained, hash-checked snapshot, so
+    this is defence in depth: it adds no dependency and changes no parsed
+    value."""
     try:
-        guard.Parse(data, True)
-    except expat.ExpatError:
-        pass  # not well-formed: the element tree parser below reports it
-    # Safe: the guard above rejected every DTD and entity declaration.
-    return ElementTree.fromstring(data)  # nosec B314
+        return safe_xml.fromstring(data)
+    except safe_xml.UnsafeXmlError:
+        raise XlsxError("workbook part declares a DTD or entity") from None
 
 
 def _column(letters: str) -> int:

@@ -37,6 +37,7 @@ from datetime import UTC, datetime
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
+from poltika.common import safe_xml
 from poltika.data.acquisition.catalogue import CatalogueError, SourceEntry, check_base_url
 from poltika.data.acquisition.data_govt_nz import SecondaryLookup
 from poltika.data.acquisition.models import (
@@ -46,6 +47,7 @@ from poltika.data.acquisition.models import (
     SourceMetadata,
 )
 from poltika.data.acquisition.source import (
+    DEFAULT_MAX_RESPONSE_BYTES,
     DEFAULT_RETRY_POLICY,
     AcquisitionError,
     FetchRequest,
@@ -134,6 +136,8 @@ def _structure_c14n_sha256(root: ET.Element) -> str:
     change it; any element, attribute or text under the message body does."""
     for header in root.findall(_tag(_NS_MESSAGE, "Header")):
         root.remove(header)
+    # Safe: this re-parses ElementTree's own serialization of a tree that
+    # `safe_xml.fromstring` already parsed, so the input carries no DTD.
     canonical = ET.canonicalize(
         ET.tostring(root, encoding="unicode"), strip_text=True, rewrite_prefixes=True
     )
@@ -157,7 +161,11 @@ def parse_structure(body: bytes, spec: StatsNzRequest) -> ParsedStructure:
 
     Nothing under `message:Header` is read."""
     try:
-        root = ET.fromstring(body)
+        root = safe_xml.fromstring(body)
+    except safe_xml.UnsafeXmlError:
+        raise StatsNzError(
+            f"structure response for {spec.dataset_identifier} declares a DTD or entity"
+        ) from None
     except ET.ParseError:
         raise StatsNzError(
             f"structure response for {spec.dataset_identifier} is not valid XML"
@@ -335,6 +343,7 @@ class StatsNzConnector:
             query=(("format", spec.data_format),),
             headers=self._headers("*/*"),
             secret_headers=self._secret_headers(),
+            max_response_bytes=entry.max_response_bytes or DEFAULT_MAX_RESPONSE_BYTES,
         )
 
     def structure_request(self, entry: SourceEntry) -> FetchRequest:
@@ -348,6 +357,7 @@ class StatsNzConnector:
             ),
             headers=self._headers("application/xml"),
             secret_headers=self._secret_headers(),
+            max_response_bytes=entry.max_response_bytes or DEFAULT_MAX_RESPONSE_BYTES,
         )
 
     def plan(
