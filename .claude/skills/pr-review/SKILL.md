@@ -71,6 +71,15 @@ before deriving expectations. If you did, the review is "not blind"; say
 so, as `reviews/2026-09-27-pr117.md` does. Being honest about it is worth
 more than looking blind.
 
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
+
 ## 2. Triage before reading code
 
 Take a few minutes to decide how deep the review goes and whether it can
@@ -276,6 +285,14 @@ Remove the worktree when you're done: `git worktree remove <dir>/pr-<N>`.
 
 ## 8. Re-review after new commits
 
+- **Mechanical main update (ADR-0020).** If the only new commit merges
+  `main` without a conflict, compare the PR's own diff instead of old head
+  to new head: `git diff <old merge-base>...<reviewed head>` against
+  `git diff <new main>...<new head>`, using `git patch-id --stable` on each.
+  If they match and required CI is green on the new head, record in the PR
+  the reviewed head, the new head and the `main` SHA. That is the whole
+  check. If they differ, or the merge had a conflict, it is a fix: review
+  the change in full under the bullets below.
 - Diff from the SHA you last reviewed to the new head. If the old SHA is
   no longer an ancestor (a force-push or rebase), review the whole PR
   again.

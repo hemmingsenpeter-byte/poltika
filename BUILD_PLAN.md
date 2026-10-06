@@ -33,9 +33,19 @@ comparing.
 
 *Status note, 2 October 2026:* acceptance of engineering work is delegated
 to Claude Code under ADR-0020's tiers. The rotation stands: a fresh-context
-`poltika-reviewer` pass on every PR, and the independent GPT/Codex review
+`poltika-reviewer` pass on every PR, and the independent cross-model review
+(GPT/Codex for Claude-authored work; Claude for GPT/Codex-authored work)
 before any PR touching `policy_specs/`, `engines/simulator/` or a
 calculated amount merges. Pete keeps every Tier C decision.
+
+Independent review uses the other model from the author where practicable.
+Same-model review is supporting evidence and cannot clear a cross-model gate.
+Author preflight is a separate pass. Every preflight and review records its
+exact base and final head SHA. Any later commit, fix, rebase or integration
+of main invalidates final-head clearance and requires renewed review, except a
+mechanical main update as ADR-0020 defines it. For
+mixed authorship, record coverage by semantic change and commit; each model's
+changes need the other model's review where cross-model review is required.
 
 **Primary sources** (Acts, IRD/MSD/Treasury, published worked examples) — the only
 ground truth. Neither model is authoritative on policy correctness.
