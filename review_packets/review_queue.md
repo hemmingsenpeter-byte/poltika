@@ -23,8 +23,9 @@ primary-source re-derivation and merged (`reviews/2026-10-06-pr148.md`, `pr151.m
 The single table below retains #177's seven Claude-only scopes and adds
 #177's own Claude-authored records commit. Independent Codex re-checks of
 the merged snapshot `a8b214f` clear six bounded scopes. #174 and #162 retain
-reproduced P2 findings; Claude fixes them in follow-up work and Codex reviews
-the fix's exact final head. Same-model checks, author preflight and CI remain
+reproduced P2 findings; their Claude fixes are in #179 and #181, and each row
+stays open until Codex reviews the fix's exact final head. #179 and #181 are
+Claude-authored rows awaiting the same Codex recheck. Same-model checks, author preflight and CI remain
 supporting evidence. This is review clearance, not acceptance of a release
 or independent review of the new Codex-authored documentation PR.
 

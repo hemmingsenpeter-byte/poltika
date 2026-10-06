@@ -342,8 +342,11 @@ GATED_TERMS = {
 # Negation must sit next to the term: within six words before it, or a verb
 # negation within four words after it ("a digital twin is not built"). A "no"
 # or "yet" elsewhere in the sentence does not excuse the claim, and nor does
-# one in another clause: a colon, semicolon or dash ends the negation's reach
-# ("No setup required; Poltika is a digital twin" is a claim).
+# one in another clause: a colon, semicolon, dash (spaced hyphen, en or em
+# dash) or parenthesis ends the negation's reach ("No setup required; Poltika
+# is a digital twin" is a claim). A comma does not, so "Poltika is not, today,
+# a digital twin" stays negated; within one comma-joined clause the six-word
+# window above is the only limit.
 _NEGATES_BEFORE = frozenset(
     {
         "not", "no", "never", "isn't", "aren't", "doesn't", "don't", "cannot", "without",
@@ -371,10 +374,11 @@ def _negated(words: list[str], start: int, length: int) -> bool:
 def unreached_milestone_claims(text: str) -> list[str]:
     plain = re.sub(r"<style.*?</style>", " ", text, flags=re.DOTALL | re.IGNORECASE)
     plain = re.sub(r"<[^>]+>", " ", plain)
+    plain = re.sub(r"\s+-+\s+", " ; ", plain)  # a spaced hyphen is a dash: it ends a clause
     plain = re.sub(r"[-_\s]+", " ", plain)  # "digital-twin" and a line break read the same
     claims: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+|\n\s*\n", plain):
-        clauses = [re.findall(r"[a-z0-9']+", c) for c in re.split(r"[;:\u2013\u2014]", sentence.lower())]
+        clauses = [re.findall(r"[a-z0-9']+", c) for c in re.split(r"[;:()\u2013\u2014]", sentence.lower())]
         for term in GATED_TERMS:
             term_words = term.split()
             if any(
@@ -466,5 +470,9 @@ def test_the_checks_catch_what_they_are_for() -> None:
     assert unreached_milestone_claims("No login required: Poltika is a digital twin.")
     assert unreached_milestone_claims("No setup required \u2014 Poltika is a digital twin.")
     assert not unreached_milestone_claims("Setup is quick; Poltika is not a digital twin.")
+    assert unreached_milestone_claims("No setup required - Poltika is a digital twin.")
+    assert unreached_milestone_claims("No setup required (Poltika is a digital twin).")
+    assert not unreached_milestone_claims("Poltika is not, today, a digital twin.")
+    assert unreached_milestone_claims("<p>Poltika is a digital-twin of New Zealand.</p>")
     names = list(_walk_structural_values({"tables": [{"id": "by_ethnicity", "x": "iwi"}]}))
     assert ethnicity_names(names) == ["by_ethnicity"]
