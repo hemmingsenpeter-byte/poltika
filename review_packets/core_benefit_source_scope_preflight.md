@@ -205,3 +205,44 @@ Current checks exited 0: `git diff --check`; `SourceCatalog.model_validate`
 checks (11 links); `ruff check tests/unit/policy/test_core_benefit_source_scope.py`;
 and `PYTHONPATH=src /private/tmp/poltika-testing-e52f5d3-venv/bin/python -m pytest -q tests/unit/policy/test_core_benefit_source_scope.py tests/acceptance/test_programme_authority.py`
 (13 passed). Monetary spec/benchmark/protected-value gates remain open.
+
+## Current-main author handoff — 6 October 2026
+
+This is **author preflight**, by GPT/Codex, with knowledge of the author's
+rationale. Current main was fetched at
+`c72c409ac15f78f47691211ba343a3d219f51648` and merged normally into original
+PR head `d4af18cfd9a22655bd37a2461b7c45d2dc87f947`. All three source
+catalogues, the research note, approval record and historical review evidence
+are preserved byte for byte. Main's newer programme and time-period records
+are retained. Historical reviews cover only their named heads or deltas; the
+exact final published SHA and results are recorded in the PR after a separate
+worktree checks that committed head.
+
+Independent Claude source review must assess each benefit separately:
+
+| Benefit | Mechanical evidence inputs | Bounded commission to verify |
+| --- | --- | --- |
+| Jobseeker Support | [JS catalogue](../policy_specs/jobseeker_support/sources.yaml): Act ss 20–28, Schedule 4 Part 1, Regulations/Schedule 6 and separately dated MSD guidance | Single, 25+, no children, ordinary existing grant; gross weekly entitlement first |
+| Sole Parent Support | [SPS catalogue](../policy_specs/sole_parent_support/sources.yaml): Act ss 29–33, Schedule 4 Part 2, regulation 205/Schedule 6 and separate SPS charging guidance | Single principal-caregiver existing-grant slice; gross weekly entitlement first; annual basis versus evidenced weekly agreement remains explicit |
+| Supported Living Payment | [SLP catalogue](../policy_specs/supported_living_payment/sources.yaml): Act ss 34–40, Schedule 4 Part 3, regulation 205/Schedule 6 and separate SLP charging guidance | Single adult, no children, restricted-capacity existing-grant slice; gross weekly entitlement first; route-specific earnings disregard and assessment evidence remain explicit |
+
+The [research note](../docs/research/task_0_2_core_benefit_scope.md) separates
+law operative at the dated as-of assessment from enacted future commencement.
+Its payment precision, gross/net reconciliation, assessment basis, partner
+interactions, income timing, November commencement and broader supported-slice
+exclusions remain unresolved. This preparation approves no rate, rounding rule,
+medical finding, full-year coverage or numerical benchmark.
+
+Preserve the legal point already mapped to Act s 18: the main-benefit
+restriction is **per person, not per household**. The catalogues' exclusion
+for both partners receiving own-right main benefits is the recorded first-slice
+coverage limit, not household-wide legal ineligibility. Independent review must
+verify it against s 18 and the Schedule 4 partner-category locators, keeping
+unsupported coverage distinct from missing facts and `needs_review`.
+
+Final checks cover 9/10/10 catalogue entries and globally unique IDs, unchanged
+source/research bytes, relative links, the existing coupled-benefit regression,
+programme-authority tests, Ruff on that unchanged regression and whitespace.
+These checks do not settle policy interpretation or monetary correctness.
+Claude's exact-final-head source review, fresh reviewer pass, current CI and
+all protected-source/value gates remain required; no queue row is cleared here.
