@@ -266,3 +266,31 @@ def test_supported_xml_encodings_keep_cell_text(encoding: str) -> None:
 def test_malformed_xml_keeps_the_original_parse_error() -> None:
     with pytest.raises(ElementTree.ParseError):
         read_sheet(_workbook(b"<worksheet>"), "S")
+
+
+@pytest.mark.parametrize(
+    "part",
+    ["xl/workbook.xml", "xl/_rels/workbook.xml.rels", "xl/sharedStrings.xml", "xl/worksheets/s1.xml"],
+)
+def test_a_malformed_entity_part_never_reaches_element_tree(
+    part: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Codex recheck of #174, R1: Expat stops on a standalone ENTITY before any
+    # declaration callback; the part must fail closed without an ElementTree parse.
+    source = zipfile.ZipFile(io.BytesIO(_workbook(SHEET)))
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as z:
+        for name in source.namelist():
+            if name != part:
+                z.writestr(name, source.read(name))
+        z.writestr(part, b'<!ENTITY a "test"><x/>')
+    real = ElementTree.fromstring
+
+    def trapped(data: bytes, *args: object, **kwargs: object) -> ElementTree.Element:
+        if b"<!ENTITY" in data:
+            pytest.fail("ElementTree parsed a part the guard could not validate")
+        return real(data, *args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(ElementTree, "fromstring", trapped)
+    with pytest.raises(ElementTree.ParseError):
+        read_sheet(buffer.getvalue(), "S")

@@ -107,7 +107,10 @@ poltika/
 │                         records/, metadata/, advisory/; POLTIKA_SOURCE_ARCHIVE_DIR moves it)
 │
 ├── src/poltika/
-│   ├── common/            — errors.py (exception hierarchy)
+│   ├── common/            — errors.py (exception hierarchy); safe_xml.py (the
+│   │                        shared standard-library XML guard: refuses any DTD
+│   │                        before parsing; used by data/xlsx.py and
+│   │                        data/acquisition/stats_nz.py)
 │   ├── semantics/schemas/ — policy_spec.py (Pydantic models mirroring policy.yaml);
 │   │                        fact_catalog.py (v0.3 Task 1b.1, ADR-0016: the
 │   │                        facts.yaml model);
@@ -141,7 +144,8 @@ poltika/
 │   │                        upstream of the governed path and never read by it):
 │   │                        models.py (descriptors, RetrievalRecord, canonical JSON,
 │   │                        hashing, redaction), source.py (FetchRequest, Transport,
-│   │                        bounded retrying fetch, SourceConnector), archive.py
+│   │                        bounded retrying fetch with a response-size cap (D20),
+│   │                        SourceConnector), archive.py
 │   │                        (BlobStore protocol, LocalBlobStore, SourceArchive, change
 │   │                        detection), catalogue.py (loads reviewed
 │   │                        data/source_archive/sources/*.yaml), stats_nz.py (Stats NZ
@@ -272,6 +276,7 @@ poltika/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/;
     │                          the throwaway PostgreSQL `database_url` fixture (Task 32)
     ├── unit/
+    │   ├── common/         — shared guard tests (safe_xml.py; only it parses XML)
     │   ├── data/acquisition/ — ADR-0022 archive tests (synthetic fixtures, no live
     │   │                        network) and test_archive_boundary.py, which adds to
     │   │                        data/test_boundary.py
