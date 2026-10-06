@@ -1,3 +1,5 @@
+<!-- Preservation metadata: received 3 October 2026; SHA-256 3d0ae319bdc8167fd914ae977bd8f5fb7da340825f529ab23f098ddb7c9aa041.
+The preserved brief body immediately after this header is byte-identical to the brief as supplied to Codex on 3 October 2026, sha256 3d0ae319bdc8167fd914ae977bd8f5fb7da340825f529ab23f098ddb7c9aa041. This metadata header is excluded from that hash. -->
 # Poltika — Repository Reconciliation, Archival, and Master Build-Plan Migration
 
 You are working inside the **Poltika** repository.

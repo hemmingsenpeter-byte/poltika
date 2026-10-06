@@ -48,10 +48,10 @@ them.
 ## Scope decisions recorded on 5 October 2026
 
 Pete approved D1 salary/wage basic annual tax for 2026–27 first, and single
-existing-grant main-benefit slices as of 5 October 2026, gross weekly
-entitlement. JS is single, 25+, no children; SPS is a single principal caregiver;
+existing-grant main-benefit slices as at a stated date before
+2 November 2026, gross weekly entitlement. JS is single, 25+, no children; SPS is a single principal caregiver;
 SLP is restricted-capacity, single, no children. These are coverage choices,
-not an approved specification. Annual-rate enactment, precision, source review
+not an approved specification. Bill 344-1 enactment, precision, source review
 and independently derived cases still gate numerical results.
 
 D2 will adopt a reviewed official disposable-income definition whole, reporting
@@ -630,9 +630,15 @@ skip. A green run containing those skips is not release acceptance.
 
 ## Open decisions for Pete
 
-- **D1:** Each Tier 1 domain's supported slice, from Phase 0's sourcing.
-- **D2:** The disposable-income definition (0.4).
-- **D3:** The income-adequacy measures to report (5.3).
+- **D1 (bounded first slices decided 5 October 2026):** Basic annual salary/wage
+  tax and single existing-grant benefit scope are recorded above. Additional
+  supported slices, enacted authority, specifications and precision remain open.
+- **D2 (source scoping commissioned 5 October 2026):** The official
+  disposable-income definition (0.4) is still for Pete to choose after source
+  review; no definition is selected by the commission.
+- **D3 (measure order decided 5 October 2026):** EMTR first, subject to the
+  reviewed income/period path. The income-adequacy measures (5.3) remain open
+  until the D2 sources and definition are reviewed.
 - **D5 (decided 26 September 2026):** ADR-0016 accepted, with the
   32-branch cap and population-range reporting.
 - **D6 (decided 2 October 2026):** ADR-0017 accepted (shared household

@@ -1,7 +1,8 @@
 # Closeout decisions — author preflight, 5 October 2026
 
 Author: GPT/Codex. This is an author preflight, not cross-model clearance.
-Base: `1e185f7652bebce693a9c709cb716b4a9bcfdf5a`.
+Historical preflight base: `1e185f7652bebce693a9c709cb716b4a9bcfdf5a`.
+Current integration base: `d501dfaa3488eb0d278f914c1237f0af8cfb58f3`.
 Decision and archive change first pinned at `e049d63`; later changes only fix
 Markdown table continuity and add this packet. Final review must name the
 published final head in the PR before merge.
@@ -12,14 +13,13 @@ Pete's supplied choices authorise Workbench first, a corrected annotated v0.2
 release record, and bounded Q5 slices/measure order. Preserve Q9, Q10 and all
 source, specification, precision and independent-review gates. Do not select
 an unsourced disposable-income definition or claim calculators exist.
-Archive the original migration instruction byte-for-byte; no historical
+Preserve the original migration body byte-identical to the brief as supplied to Codex on 3 October 2026, sha256 `3d0ae319bdc8167fd914ae977bd8f5fb7da340825f529ab23f098ddb7c9aa041` (metadata header excluded); no historical
 snapshot, production code, protected statutory value or data file changes.
 
 ## Findings and verification
 
 No blocking author finding. A Markdown table break was corrected before
-publication. The original attachment and archived migration brief are
-byte-identical. The remote annotated tag object `63f5f0d` was read back and
+publication. The preserved body is byte-identical to the brief as supplied to Codex on 3 October 2026, sha256 `3d0ae319bdc8167fd914ae977bd8f5fb7da340825f529ab23f098ddb7c9aa041`. The preservation header is editorial metadata excluded from that hash. The remote annotated tag object `63f5f0d` was read back and
 points to `adf40588eb471b824542d3dc13fdaed3239ec0b9`; the update used a lease
 against the previous `2cdadba` target under Pete's explicit item 2 approval.
 
@@ -44,3 +44,16 @@ Codex to accept, merge and complete using the best decisions. Current main
 verification above is not reused as current-head evidence; the exact-head
 author preflight and fresh Claude review will be recorded externally in the
 PR after this packet is committed. Q9/Q10 and statutory-source gates remain.
+
+## 6 October collision and provenance fixes
+
+Main `d501dfaa3488eb0d278f914c1237f0af8cfb58f3` is integrated; its
+D5–D8 archive decisions remain byte-for-byte intact. The closeout records
+are D9–D18, including dated Pete quotations and their explicit scope.
+Plan item 3.4's wording is pending in #151; this PR records its approval.
+Bill 344-1 is named; benefit slices use a stated date before 2 November 2026.
+The original attachment is locally available and the archive body's bytes
+and SHA-256 were compared directly. Its metadata header is excluded.
+Historical command results above cover their stated heads only; the next
+exact-head detached author preflight and fresh Claude review are required
+before Claude Code's sole merge train accepts this head.

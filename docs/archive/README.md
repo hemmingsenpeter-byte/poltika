@@ -40,7 +40,9 @@ annotated `v0.2.0` tag correction; deliberate archive cleanup is still open.
 ## Supplied programme authority
 
 [Economist-first migration brief](programmes/2026-10-03-economist-first-migration-brief.md)
-is a byte-identical copy of Pete's original supplied text, recovered from the
-3 October attachment and archived on 5 October 2026. Unlike the snapshots above,
+is a preserved body byte-identical to the brief as supplied to Codex on
+3 October 2026, sha256 `3d0ae319bdc8167fd914ae977bd8f5fb7da340825f529ab23f098ddb7c9aa041`. The archive header
+records the receipt date and is excluded from that hash; the original body
+was archived on 5 October 2026. Unlike the snapshots above,
 it records the instruction that led to ADR-0021. Pete reconfirmed the Analyst
 Workbench as the first product on 5 October; the detailed design remains Q9.
