@@ -5,6 +5,7 @@ from __future__ import annotations
 import urllib.error
 from collections.abc import Callable
 from datetime import UTC, datetime
+from typing import Self
 
 import pytest
 from pydantic import ValidationError
@@ -254,3 +255,133 @@ def test_redirects_only_when_scheme_and_host_unchanged(old: str, new: str, follo
     assert (result is not None) is follows
     if result is not None:
         assert result.full_url == new
+
+
+# --- Response cap (PR B, D20): oversize bodies are refused, never truncated.
+
+
+class _Body:
+    """A urllib response stand-in that serves `size` bytes in small reads."""
+
+    def __init__(self, size: int, content_length: str | None = None) -> None:
+        from email.message import Message
+
+        self.remaining = size
+        self.read_total = 0
+        self.status = 200
+        self.headers = Message()
+        if content_length is not None:
+            self.headers["Content-Length"] = content_length
+
+    def read(self, amt: int | None = None) -> bytes:
+        assert amt is not None, "an unbounded read() must never happen"
+        n = min(amt, self.remaining, 7)
+        self.remaining -= n
+        self.read_total += n
+        return b"x" * n
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
+
+
+class _BodyOpener:
+    def __init__(self, body: _Body) -> None:
+        self.body = body
+
+    def open(self, req: object, timeout: float) -> _Body:
+        return self.body
+
+
+def _serve(monkeypatch: pytest.MonkeyPatch, body: _Body) -> None:
+    monkeypatch.setattr(
+        "poltika.data.acquisition.source.urllib.request.build_opener",
+        lambda *a, **k: _BodyOpener(body),
+    )
+
+
+def test_default_cap_is_50_mib() -> None:
+    from poltika.data.acquisition.source import DEFAULT_MAX_RESPONSE_BYTES
+
+    assert DEFAULT_MAX_RESPONSE_BYTES == 50 * 1024 * 1024
+    assert FetchRequest(url="https://e.invalid/x").max_response_bytes == DEFAULT_MAX_RESPONSE_BYTES
+
+
+@pytest.mark.parametrize("size", [0, 1, 99, 100])
+def test_urllib_body_at_or_under_the_cap_is_read_whole(
+    monkeypatch: pytest.MonkeyPatch, size: int
+) -> None:
+    _serve(monkeypatch, _Body(size))
+    raw = UrllibTransport().send(FetchRequest(url="https://e.invalid/x", max_response_bytes=100), 1.0)
+    assert raw.body == b"x" * size
+
+
+def test_urllib_body_over_the_cap_is_refused_without_reading_it_all(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from poltika.data.acquisition.source import ResponseTooLargeError
+
+    body = _Body(10_000)
+    _serve(monkeypatch, body)
+    req = FetchRequest(
+        url="https://e.invalid/x",
+        secret_headers=(("Ocp-Apim-Subscription-Key", SECRET),),
+        max_response_bytes=100,
+    )
+    with pytest.raises(ResponseTooLargeError) as e:
+        UrllibTransport().send(req, 1.0)
+    assert e.value.limit == 100 and "100 bytes" in str(e.value) and SECRET not in str(e.value)
+    assert body.read_total == 101
+
+
+def test_urllib_declared_oversize_is_refused_before_reading(monkeypatch: pytest.MonkeyPatch) -> None:
+    from poltika.data.acquisition.source import ResponseTooLargeError
+
+    body = _Body(10, content_length="101")
+    _serve(monkeypatch, body)
+    with pytest.raises(ResponseTooLargeError):
+        UrllibTransport().send(FetchRequest(url="https://e.invalid/x", max_response_bytes=100), 1.0)
+    assert body.read_total == 0
+
+
+def test_urllib_http_error_body_is_capped(monkeypatch: pytest.MonkeyPatch) -> None:
+    import io
+    from email.message import Message
+
+    from poltika.data.acquisition.source import ResponseTooLargeError
+
+    err = urllib.error.HTTPError("https://e.invalid/x", 503, "Busy", Message(), io.BytesIO(b"y" * 101))
+    _patched(monkeypatch, err)
+    with pytest.raises(ResponseTooLargeError):
+        UrllibTransport().send(FetchRequest(url="https://e.invalid/x", max_response_bytes=100), 1.0)
+
+
+@pytest.mark.parametrize("code", [200, 503])
+def test_fetch_refuses_oversize_from_any_transport_and_does_not_retry(code: int) -> None:
+    from poltika.data.acquisition.source import ResponseTooLargeError
+
+    t = ScriptedTransport(RawResponse(code, (), b"z" * 101), ok())
+    _, go = run(t, request=FetchRequest(url="https://e.invalid/x", max_response_bytes=100))
+    with pytest.raises(ResponseTooLargeError):
+        go()
+    assert t.calls == 1
+
+
+def test_fetch_keeps_a_body_exactly_at_the_cap() -> None:
+    t = ScriptedTransport(ok(b"z" * 100))
+    _, go = run(t, request=FetchRequest(url="https://e.invalid/x", max_response_bytes=100))
+    assert go().body == b"z" * 100  # type: ignore[attr-defined]
+
+
+def test_cap_is_never_serialised() -> None:
+    req = FetchRequest(url="https://e.invalid/x", max_response_bytes=100)
+    assert "max_response_bytes" not in req.model_dump()
+    assert req.fingerprint() == FetchRequest(url="https://e.invalid/x").fingerprint()
+
+
+@pytest.mark.parametrize("value", [0, -1])
+def test_cap_must_be_positive(value: int) -> None:
+    with pytest.raises(ValidationError):
+        FetchRequest(url="https://e.invalid/x", max_response_bytes=value)

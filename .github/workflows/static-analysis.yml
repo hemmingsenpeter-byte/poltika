@@ -1,8 +1,8 @@
 name: Static Analysis
 
 # Private-CI compatible scanners. These have different coverage from CodeQL.
-# Bandit retains every finding and gates high-severity findings; medium/low
-# findings remain visible for triage. zizmor gates all reported workflow issues.
+# Bandit retains every finding and gates medium- and high-severity findings
+# (D20); low findings remain visible for triage. zizmor gates all reported workflow issues.
 on:
   pull_request:
     branches: [main]
@@ -27,7 +27,7 @@ jobs:
           python-version: "3.12"
       - name: Scan Python and retain every severity
         run: uvx --python 3.12 bandit@1.9.4 -r src --exit-zero -f json -o bandit.json
-      - name: Check scanner errors and high-severity findings
+      - name: Check scanner errors and medium- or high-severity findings
         run: |
           python3 - <<'PY'
           import collections
@@ -44,7 +44,7 @@ jobs:
           for item in results:
               print(f"{item['issue_severity']} {item['test_id']} "
                     f"{item['filename']}:{item['line_number']} {item['issue_text']}")
-          sys.exit(1 if counts["HIGH"] else 0)
+          sys.exit(1 if counts["HIGH"] or counts["MEDIUM"] else 0)
           PY
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()

@@ -15,6 +15,9 @@
 # - `accrual_periodicity` is the SOURCE's publication frequency. null means
 #   not verified. `check_frequency` is Poltika's own retrieval cadence and is
 #   a separate field (unset in v1: there is no scheduler).
+# - `max_response_bytes` (optional) raises the default 50 MiB response cap for
+#   a source whose responses are legitimately larger (D20). An oversize
+#   response is refused, never truncated. Unset means the default.
 #
 # Licence: https://www.stats.govt.nz/about-us/copyright states that, unless
 # otherwise specified, Stats NZ content is licensed under Creative Commons

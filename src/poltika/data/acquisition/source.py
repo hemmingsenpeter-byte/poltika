@@ -34,6 +34,10 @@ from poltika.data.acquisition.models import (
 
 RETRYABLE_STATUSES = frozenset({429, 500, 502, 503, 504})
 
+# Default cap on one response body (D20): 50 MiB. A source whose responses are
+# legitimately larger sets `max_response_bytes` in its catalogue entry.
+DEFAULT_MAX_RESPONSE_BYTES = 50 * 1024 * 1024
+
 
 class AcquisitionError(PoltikaError):
     """Base class for acquisition failures."""
@@ -59,6 +63,15 @@ class RetriesExhaustedError(AcquisitionError):
     """Every bounded attempt failed with a transient error."""
 
 
+class ResponseTooLargeError(AcquisitionError):
+    """The response body is larger than the request's cap. It is refused, never
+    truncated, and not retried."""
+
+    def __init__(self, message: str, limit: int) -> None:
+        super().__init__(message)
+        self.limit = limit
+
+
 class FetchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -68,6 +81,8 @@ class FetchRequest(BaseModel):
     body: bytes | None = None
     headers: tuple[tuple[str, str], ...] = ()
     secret_headers: tuple[tuple[str, str], ...] = Field(default=(), exclude=True, repr=False)
+    # A transport limit, not part of the request: never serialised or fingerprinted.
+    max_response_bytes: int = Field(default=DEFAULT_MAX_RESPONSE_BYTES, gt=0, exclude=True)
 
     @field_validator("url")
     @classmethod
@@ -139,6 +154,31 @@ class _SameHostRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
+def _too_large(request: FetchRequest) -> ResponseTooLargeError:
+    label = redact(f"{request.method.upper()} {request.full_url()}", request.secret_values())
+    limit = request.max_response_bytes
+    return ResponseTooLargeError(f"{label} -> response exceeds {limit} bytes (refused)", limit)
+
+
+def _read_capped(stream: Any, request: FetchRequest) -> bytes:
+    """Read at most the cap plus one byte, so an oversize body is detected
+    without being held in memory in full."""
+    limit = request.max_response_bytes
+    headers = getattr(stream, "headers", None)
+    declared = headers.get("Content-Length") if headers is not None else None
+    if declared is not None and declared.strip().isdigit() and int(declared) > limit:
+        raise _too_large(request)
+    chunks: list[bytes] = []
+    total = 0
+    while total <= limit:
+        chunk: bytes = stream.read(limit + 1 - total)
+        if not chunk:
+            return b"".join(chunks)
+        chunks.append(chunk)
+        total += len(chunk)
+    raise _too_large(request)
+
+
 class UrllibTransport:
     def send(self, request: FetchRequest, timeout: float) -> RawResponse:
         secrets = request.secret_values()
@@ -156,11 +196,11 @@ class UrllibTransport:
                 return RawResponse(
                     status=int(resp.status),
                     headers=tuple((k, v) for k, v in resp.headers.items()),
-                    body=resp.read(),
+                    body=_read_capped(resp, request),
                 )
         except urllib.error.HTTPError as exc:
             try:
-                body = exc.read()
+                body = _read_capped(exc, request)
             finally:
                 exc.close()
             return RawResponse(
@@ -254,6 +294,8 @@ def fetch(
         except TransportError as exc:  # includes timeouts
             last = redact(f"{type(exc).__name__}: {exc}", secrets)
         else:
+            if len(raw.body) > request.max_response_bytes:
+                raise _too_large(request)
             if 200 <= raw.status < 300:
                 return FetchResponse(
                     request=request,
