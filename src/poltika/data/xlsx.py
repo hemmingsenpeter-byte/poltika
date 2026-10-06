@@ -40,7 +40,8 @@ def _fromstring(data: bytes) -> ElementTree.Element:
     ask a parser for entity expansion or an external resource. Expat reports
     one before the element tree parser sees the part, whatever its encoding.
     The input is a retained, hash-checked snapshot, so this is defence in
-    depth: it adds no dependency and changes no parsed value."""
+    depth: it adds no dependency and changes no parsed value. A part with a
+    DTD is refused whether or not it is also well-formed."""
     guard = expat.ParserCreate()
 
     def refuse(*_: object) -> None:
@@ -51,7 +52,7 @@ def _fromstring(data: bytes) -> ElementTree.Element:
     try:
         guard.Parse(data, True)
     except expat.ExpatError:
-        pass  # not well-formed: the element tree parser below reports it as before
+        pass  # not well-formed: the element tree parser below reports it
     # Safe: the guard above rejected every DTD and entity declaration.
     return ElementTree.fromstring(data)  # nosec B314
 

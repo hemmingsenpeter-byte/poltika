@@ -217,3 +217,18 @@ def test_a_workbook_with_a_dtd_or_entity_is_refused(part: str) -> None:
     raw = _workbook(bomb + SHEET) if part == "sheet" else _workbook(SHEET, workbook_prefix=bomb)
     with pytest.raises(XlsxError, match="DTD"):
         read_sheet(raw, "S")
+
+
+@pytest.mark.parametrize("part", ["xl/_rels/workbook.xml.rels", "xl/sharedStrings.xml"])
+def test_every_part_read_refuses_a_dtd(part: str) -> None:
+    source = zipfile.ZipFile(io.BytesIO(_workbook(SHEET)))
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as z:
+        for name in source.namelist():
+            z.writestr(name, source.read(name))
+        if part in source.namelist():
+            z.writestr(part, b'<!DOCTYPE x [<!ENTITY a "b">]>' + source.read(part))
+        else:
+            z.writestr(part, b'<!DOCTYPE x [<!ENTITY a "b">]><sst xmlns="' + MAIN + b'"/>')
+    with pytest.raises(XlsxError, match="DTD"):
+        read_sheet(buffer.getvalue(), "S")
