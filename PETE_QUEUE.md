@@ -118,7 +118,7 @@ updated list here; it cannot apply it.
 | Q1/Q8 and plan item 3.4 wording authority | 5 October 2026 | "make the best decisions for this"; [dated record](docs/programme/2026-10-06-pete-approvals.md), D14. Item 3.4's edit is in pending #151. |
 | P8, Q5 scope/order, #163/#164 and other-model rotation | 5 October 2026 | "accept, approve, proceed"; [dated record](docs/programme/2026-10-06-pete-approvals.md), D9–D12 and D15–D17. ADR-0018 remains proposed; D2's actual definition and Q10 remain open. |
 | #163 constitution and #164 resolved governance/card choices | 5 October 2026 | "accept merge and commit all"; [dated record](docs/programme/2026-10-06-pete-approvals.md), D15–D16. This records acceptance, not final review/CI or merge. |
-| Conditioned #170 single pass and #167 brief hash | 6 October 2026 | "agree to both"; [dated record](docs/programme/2026-10-06-pete-approvals.md), D17. |
+| Conditioned #170 single pass and #167 brief hash | 6 October 2026 | "agree to both"; [dated record](docs/programme/2026-10-06-pete-approvals.md) names both by reference only; detail is in Pete's supplied brief (sha256 c6e67946…). Adopted as ADR-0020 via #176 (replaced #170) and D9; D17. |
 | Sole merger for this closeout | 6 October 2026 | "yes this session owns all merges into main"; [dated record](docs/programme/2026-10-06-pete-approvals.md), D18: Claude alone merges, Codex pushes PR fixes. |
 
 ## Decisions made under Pete's delegation, 5 October 2026
