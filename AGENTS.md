@@ -113,3 +113,33 @@ OpenFisca or other external implementations must not be used as the source for P
 The repository remote is `https://github.com/hemmingsenpeter-byte/poltika.git` on branch `main`.
 
 Use the Render MCP server for Render workspace, service, deploy, log, metric, and database operations. Confirm the target Render workspace before creating or changing resources.
+
+## Efficient execution
+
+- Keep [the Codex lane ledger](docs/programme/codex_lane_state.md) compact:
+  objective, ownership, observed main and relevant heads, completed checks,
+  evidence links, remaining gates and next action. Replace stale state instead
+  of appending a transcript. The ledger is session memory; GitHub and committed
+  review evidence remain authoritative.
+- After required initial reads, reuse guidance already read in the session
+  while its revision is unchanged. Read changed guidance and newly relevant
+  sections when scope changes.
+- Use targeted `rg` searches, selected GitHub fields and bounded file excerpts.
+  Batch independent reads. Cover the complete review diff in manageable parts;
+  keep dependent actions and mutations sequential.
+- Bundle nonblocking wording corrections into the existing scoped handoff.
+  Create another branch or packet only when it adds review or integration value.
+  Before branch modifications, fetch main and check live PR heads and new merges.
+  Preserve concurrent ownership and never overwrite another agent's work.
+- Run focused verification and every required preflight/CI check. Repeat or
+  broaden checks for new changes, failures or unresolved concerns. Simple
+  wording fixes need whitespace and relevant link checks, not new tests.
+- Delegate bounded independent tasks with explicit scope and file ownership.
+  Request concise findings, evidence, exact SHAs and remaining gates; retain
+  author versus independent-review provenance.
+- Keep progress updates and final handoffs concise: decisions, meaningful
+  evidence, blockers and next action. Link durable evidence instead of
+  repeating it.
+
+These rules preserve primary-source derivation, protected statutory values,
+ambiguity escalation, acceptance authority and required final-head review.
