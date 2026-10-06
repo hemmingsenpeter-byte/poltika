@@ -32,3 +32,7 @@ data/processed/
 
 # Node (for the later Next.js frontend)
 node_modules/
+
+# Source-preservation archive runtime evidence (ADR-0022): blobs, records, metadata
+# and advisory output are local, never committed. Definitions and docs are.
+data/source_archive/runtime/
