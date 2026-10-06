@@ -63,6 +63,25 @@ sources:
     covers: Family tax credit, minimum family tax credit, and Best Start rates from 2026-04-01.
     locator: Clause 2 commencement and clauses 4-6, including their 2026-27-and-later application subclauses.
     verification_status: relevant_clauses_checked_2026-09-21
+    currency_check:
+      checked_on: 2026-10-06
+      url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2025/260/en/2025-11-17/
+      version_as_at: 2025-11-17
+      source_version: Official SL 2025/260; the latest publication is labelled in force, as made on 17 November 2025.
+      locator: Clauses 2, 4(1)-(3), 5(1)-(2), and 6(1)-(2).
+      effective_period: Commencement on 1 April 2026; the amended amounts apply for the 2026-27 tax year and later tax years.
+      finding: Clauses 4-6 substitute annual amounts of $7,921 for the eldest child and $6,454 for each additional child, a minimum-family prescribed amount of $36,604, and a Best Start annual amount of $4,041. The checked clauses agree with the existing source map; no parameter or expected value is changed.
+      guidance_check:
+        checked_on: 2026-10-06
+        urls:
+          - https://www.ird.govt.nz/working-for-families/types/family-tax-credit
+          - https://www.ird.govt.nz/working-for-families/types/minimum-family-tax-credit
+          - https://www.ird.govt.nz/best-start
+        source_version: Live IRD guidance; the family-tax-credit and minimum-family pages are labelled Last updated 25 Feb 2026.
+        locator: Family tax credit annual-rate table; Minimum family tax credit Income limit; Best Start Summary of Best Start payments.
+        finding: The guidance separately corroborates the annual amounts. Its weekly instalment figures do not replace the statutory annual amounts or authorise an AS-to-WFF period conversion.
+      limitation: Recheck of this amending instrument only; not a complete audit of later amendments or future tax years. It does not verify the temporary in-work rate or change its needs_review status.
+      method: GPT/Codex primary-text check of official HTML using curl with a browser user agent after web retrieval returned 403; the dated URL and latest-version label were checked. IRD guidance was retrieved separately with the web tool.
   - id: wff-budget-measures-2025
     kind: amending_legislation
     title: Taxation (Budget Measures) Act 2025
@@ -70,6 +89,24 @@ sources:
     covers: Family tax credit abatement threshold and rate from 2026-04-01.
     locator: Sections 2(5), 7(1)-(3) amending Income Tax Act s MD 13(3)(a)(i)-(ii), and 8 for the Best Start cohort rule.
     verification_status: relevant_clauses_checked_2026-09-21
+    currency_check:
+      checked_on: 2026-10-06
+      url: https://www.legislation.govt.nz/act/public/2025/26/en/2026-03-31/
+      version_as_at: 2026-03-31
+      source_version: Official 2025 No 26 consolidation; the latest publication is labelled in force, as at 31 March 2026.
+      locator: Sections 2(5), 7(1)-(3), and 8.
+      effective_period: Sections 7 and 8 commence on 1 April 2026; section 7(3) applies the threshold and rate changes for the 2026-27 and later tax years.
+      finding: Section 7 substitutes $44,900 and 27.5 cents in both MD 13(3)(a)(i) and (ii). Section 8 retains the under-one-year Best Start abatement exception for a child born before 1 April 2026. The checked provisions agree with the existing source map; no parameter, cohort scope or expected value is changed.
+      guidance_check:
+        checked_on: 2026-10-06
+        urls:
+          - https://www.ird.govt.nz/working-for-families/types/family-tax-credit
+          - https://www.ird.govt.nz/best-start
+        source_version: Live IRD guidance; the family-tax-credit page is labelled Last updated 25 Feb 2026, and the Best Start page distinguishes births before and from 1 April 2026.
+        locator: Family tax credit How the family tax credit works; Best Start How Best Start works.
+        finding: The guidance separately corroborates the threshold, abatement rate and birth-date distinction. It does not expand the approved Best Start supported cohort.
+      limitation: Recheck of these provisions in this amending Act only; not a complete audit of later amendments or future tax years. It does not verify the temporary in-work rate or change its needs_review status.
+      method: GPT/Codex primary-text check of official HTML using curl with a browser user agent after web retrieval returned 403; the dated URL and latest-version label were checked. IRD guidance was retrieved separately with the web tool.
   - id: wff-tax-administration-act
     kind: legislation
     title: Tax Administration Act 1994
