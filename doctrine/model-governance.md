@@ -33,7 +33,9 @@ engines over households). Poltika checks the entry-point convention mechanically
 - A public, module-level function named `run_*` or `calculate_*` anywhere under
   `src/poltika` is an engine entry point.
 - Each one found must be an entry point of a registered model, or be listed in
-  the registry's `not_engines` with a reason and the model it wraps.
+  the registry's `not_engines` with a reason. A model wrapper names the model it
+  wraps; infrastructure that runs no model explicitly uses `wraps: null` and
+  records the boundary that keeps it outside policy calculation.
 - Each subpackage of `poltika.engines` must hold a registered entry point, or be
   listed in `not_model_packages` with a reason.
 
@@ -46,6 +48,12 @@ asynchronous) or be explicitly registered and accompanied by a discovery-test
 update. Function-name discovery does not prove every arbitrary calculation
 function is a model. A broader classifier is deferred until a real model needs
 it; reviewer inspection remains required.
+
+The ADR-0022 acquisition coordinator `poltika.data.acquisition.ingest.run_sources`
+is explicitly classified as non-model infrastructure. It preserves source
+evidence and runs no household model; its archive-boundary tests enforce that
+separation. This exception does not exclude the data layer from discovery or
+change the registration rule for new engines.
 
 ## The registry
 

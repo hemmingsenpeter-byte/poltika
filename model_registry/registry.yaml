@@ -450,9 +450,18 @@ models:
         approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
 
 # Public run_* and calculate_* functions the discovery test finds that are not
-# a model's entry point. Each is a wrapper over a registered model. A new one
-# must be registered above or listed here with a reason.
+# a model's entry point. Model wrappers name the registered model they wrap;
+# non-model infrastructure explicitly uses wraps: null and records its boundary.
+# A new public entry point must be registered above or listed here with a reason.
 not_engines:
+  - module: poltika.data.acquisition.ingest
+    function: run_sources
+    reason: >-
+      Passive source-preservation coordinator (ADR-0022); retrieves and preserves
+      evidence without calculating policy outcomes or running household models.
+      tests/unit/data/acquisition/test_archive_boundary.py enforces its separation
+      from the governed modelling path. It wraps no registered model.
+    wraps: null
   - module: poltika.scenarios.record
     function: run_scenario
     reason: Runs one ScenarioRecord through run_combined_household and adds run identity. No second calculation path.

@@ -106,7 +106,13 @@ class NotEngine(_Strict):
     module: str
     function: str
     reason: str
-    wraps: str
+    wraps: str | None
+
+    @model_validator(mode="after")
+    def _documented(self) -> NotEngine:
+        if not self.reason.strip():
+            raise ValueError(f"{self.module}.{self.function} needs a nonempty exclusion reason")
+        return self
 
 
 class NotModelPackage(_Strict):
@@ -134,7 +140,7 @@ class Registry(_Strict):
                 if dep not in known:
                     raise ValueError(f"model '{m.id}' depends on unknown model '{dep}'")
         for n in self.not_engines:
-            if n.wraps not in known:
+            if n.wraps is not None and n.wraps not in known:
                 raise ValueError(f"{n.module}.{n.function} wraps unknown model '{n.wraps}'")
         return self
 

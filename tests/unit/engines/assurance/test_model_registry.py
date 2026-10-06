@@ -87,6 +87,33 @@ def test_every_registered_entry_point_exists(registry: Registry) -> None:
     assert stale == [], "registry names a function that does not exist"
 
 
+def test_acquisition_coordinator_is_explicitly_classified_as_non_model(
+    registry: Registry,
+) -> None:
+    coordinator = next(
+        entry
+        for entry in registry.not_engines
+        if entry.module == "poltika.data.acquisition.ingest" and entry.function == "run_sources"
+    )
+    assert coordinator.wraps is None
+    assert coordinator.reason
+
+
+def test_model_wrappers_still_reject_unknown_models(registry: Registry) -> None:
+    data = registry.model_dump(mode="json")
+    data["not_engines"][0]["wraps"] = "unregistered_model"
+    with pytest.raises(ValueError, match="wraps unknown model 'unregistered_model'"):
+        Registry.model_validate(data)
+
+
+@pytest.mark.parametrize("reason", ["", " \n "])
+def test_non_models_require_a_documented_reason(registry: Registry, reason: str) -> None:
+    data = registry.model_dump(mode="json")
+    data["not_engines"][0]["reason"] = reason
+    with pytest.raises(ValueError, match="needs a nonempty exclusion reason"):
+        Registry.model_validate(data)
+
+
 def test_every_model_has_a_current_card(registry: Registry) -> None:
     assert card_problems(registry) == []
 
