@@ -90,3 +90,22 @@ class IncompatibleUnitsError(UnitConversionError):
 class MissingConversionRuleError(UnitConversionError):
     """No named, sourced conversion rule exists for the requested units.
     A conversion such as nominal to real is never implicit."""
+
+
+class UnknownPeriodTypeError(PoltikaError):
+    """A period type id is not in the closed period-type vocabulary
+    (`semantics/periods.py`, Programme Task 2.3)."""
+
+
+class UnknownPeriodRelationError(PoltikaError):
+    """A period relation id is not in the registered set of named rules."""
+
+
+class PeriodRelationMismatchError(PoltikaError):
+    """A registered period relation was applied to periods of other types."""
+
+
+class PeriodConversionRefusedError(PoltikaError):
+    """A value conversion between period types was asked for, but no named
+    rule with a cited source exists for it (v0.2 D8: none without a stated
+    rule). Nothing is converted and no default factor is used."""
