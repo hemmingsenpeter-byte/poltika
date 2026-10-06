@@ -98,7 +98,7 @@ _SCHEMES: tuple[IdentifierScheme, ...] = (
         issuer="PersonRecord in a PopulationHousehold (semantics/population.py)",
         unassigned_reason=(
             "PersonRecord.person_id is an unvalidated str, only required to be unique "
-            "within its household (population.py:52, :84-89); the synthetic generator's "
+            "within its household (population.py:50, :84-89); the synthetic generator's "
             "form s{n:07d}p{i} (scenarios/microsim/synthetic.py:277) is its own "
             "convention, not a rule"
         ),

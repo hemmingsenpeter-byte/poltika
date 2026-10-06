@@ -3,8 +3,9 @@
 Date: 5 October 2026, Pacific/Auckland. Author: GPT/Codex.
 Status: source-only draft; [Claude's 5 October source review and the
 6 October P3 response](../../reviews/2026-10-06-disposable-income-source-scope.md)
-are recorded. Final-head review and the D2 definition/coverage decision
-remain pending. Commission: Q5, detailed
+are recorded; the final-head cross-model review is in
+[reviews/2026-10-06-pr172.md](../../reviews/2026-10-06-pr172.md) (merged as #172).
+The D2 definition/coverage decision remains pending. Commission: Q5, detailed
 household lane local 0.4a. No formula, parameter, benchmark, statistical
 threshold or executable policy specification is approved by this note.
 
@@ -64,7 +65,7 @@ household members can make this statistical unit broader than benefit families.
 
 The proposed scopes in [#151](https://github.com/hemmingsenpeter-byte/poltika/pull/151)
 and [#148](https://github.com/hemmingsenpeter-byte/poltika/pull/148), recorded in
-the [Q5 decision draft #167](https://github.com/hemmingsenpeter-byte/poltika/pull/167),
+the [Q5 decisions recorded in #167](https://github.com/hemmingsenpeter-byte/poltika/pull/167),
 are established-grant weekly benefit entitlement at a specified date before
 2 November 2026 and annual 2026–27 basic tax. Income tax is not yet modelled
 in the v0.1 foundation or current household engine. Neither proposal alone
