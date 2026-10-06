@@ -65,13 +65,14 @@ fifth of Accommodation Supplement recipients and an eighth of Best Start
 families. Each gap is explained by scope (A6, one Best Start cohort, a
 synthetic population, a different year) and none is tuned away.
 
-## Not yet independently checked
+## Independent review and release baseline
 
-- The Stats NZ snapshots and canonical variables (#111), the population
-  derivation (#113) and the cross-validation with its IRD and MSD snapshots
-  (#114) await GPT/Codex review (`review_packets/v0_2_codex_audit.md`). They
-  are open rows in `review_packets/review_queue.md`, so the v0.2 release
-  gate's review row skips.
-- Task 2.3 (the population adapter's mapping), Task 9.3 (hand-calculated
-  population cases) and the GPT/Codex half of Task 9.4 are GPT/Codex's and
-  still open.
+Pete confirmed GPT/Codex clearance through #120 on 27 September 2026,
+including #111, #113 and #114. The [live review queue](../../review_packets/review_queue.md)
+records that clearance; the earlier audit packet is historical preparation.
+Task 2.3's mapping check, Task 9.3's hand-calculated cases and the
+GPT/Codex part of Task 9.4 are recorded in the
+[v0.2 build record](../../BUILD_PLAN_v0_2.md). The annotated `v0.2.0` tag
+peels to `adf40588eb471b824542d3dc13fdaed3239ec0b9`, under Pete's
+[recorded approval](../programme/2026-10-06-pete-approvals.md). This does not
+turn the synthetic development population into a representative estimate.

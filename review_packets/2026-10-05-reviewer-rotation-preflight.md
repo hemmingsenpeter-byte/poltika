@@ -2,7 +2,7 @@
 
 Updated: 6 October 2026. Author: GPT/Codex. This is an author preflight,
 not independent or fresh-context review. Base:
-`240da13838857ee0b2e1686a2fba6f7c8b0b4adc`.
+`d501dfaa3488eb0d278f914c1237f0af8cfb58f3`.
 
 ## Expected contract
 
@@ -49,3 +49,14 @@ packet does not claim that checks on an earlier commit cover a later one.
 The 5 October packet's unnamed final head and blanket consistency claim were
 inaccurate and are withdrawn. Final Claude review and required CI remain
 separate gates, and a later commit requires both passes again.
+
+## 6 October follow-ups
+
+Pete's dated approval quotations and scopes are now in
+`docs/programme/2026-10-06-pete-approvals.md`. The conditional single-pass
+rule requires full primary-source re-derivation for Codex-authored policy
+and calculation PRs. Mixed authorship retains commit-specific coverage.
+The active ruleset/current required checks replace obsolete target prose;
+workflow comments and v0.2 review records match observed live evidence.
+Claude Code alone merges this train. The older linked preflight comment
+covers only its stated SHA; the next exact-head comment must supersede it.

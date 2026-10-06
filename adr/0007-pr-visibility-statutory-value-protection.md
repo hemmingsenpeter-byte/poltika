@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-21
 **Status:** accepted (Pete); historical platform limitation superseded by
-ADR-0020's active main ruleset, verified on 5 October 2026. The independent
+ADR-0020's active main ruleset, with red-check blocking observed on 5 October 2026. The independent
 review and statutory-value evidence safeguards remain in force.
 
 ## Current enforcement — 6 October 2026 record

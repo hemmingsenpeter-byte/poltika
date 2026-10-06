@@ -30,6 +30,12 @@ Pete delegated acceptance of engineering work to Claude Code on 2 October
   Codex-authored work if it meets the independent-review standard. A same-model
   pass cannot clear this gate. Any later commit requires a final-head re-review.
 
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Approval authority: `docs/programme/2026-10-06-pete-approvals.md`.
+
 Interpretation, protected statutory values and anything without a cited
 primary source are never accepted under the delegation. They go to Pete
 through `PETE_QUEUE.md`.

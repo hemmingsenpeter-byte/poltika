@@ -144,6 +144,12 @@ authorship, and Claude reviews GPT/Codex authorship. Every
 preflight and reviewer pass names the final head; new commits require re-review. Never use `--admin` or
 bypass a check. `PROGRAMME_STATUS.md` tracks every current capability task and its evidence.
 
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Approval authority: [Pete's 6 October record](docs/programme/2026-10-06-pete-approvals.md).
+
 ## External prior art
 
 Follow doctrine/ip-doctrine.md.

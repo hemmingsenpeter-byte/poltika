@@ -11,6 +11,12 @@ plan's task text and done-when, the specification sections that govern the
 change, and the worktree and base to diff against. You do not get the
 implementer's explanation, and you should not seek it.
 
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Approval authority: `docs/programme/2026-10-06-pete-approvals.md`.
+
 ## Method
 
 1. Read the task text and the specification sections first. Work out what

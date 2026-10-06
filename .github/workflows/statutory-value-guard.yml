@@ -1,10 +1,9 @@
 name: Statutory Value Guard
 
-# Visibility only, per ADR-0007 (supersedes ADR-0005) — this does not and
-# cannot block merge; branch protection requires GitHub Pro, unavailable on
-# this repo's plan. It exists so a statutory-value file change can't be
-# missed in a larger diff. The operating rule is manual: look at the PR diff
-# and this result before merging.
+# Reports protected changes for human/source review; it does not decide
+# whether a changed value is acceptable. ADR-0020's active main ruleset
+# requires this check to run successfully. #168 observed required-check
+# blocking; ADR-0007's earlier platform limitation is historical.
 
 on:
   pull_request:

@@ -87,6 +87,12 @@ fresh-context `poltika-reviewer` pass on the final head with no unresolved P1 or
 P2 finding. A new commit requires a new pass.
 Merges are squash merges, on green CI and an up-to-date branch.
 
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Approval authority: [Pete's 6 October record](docs/programme/2026-10-06-pete-approvals.md).
+
 ## External prior art
 
 Follow doctrine/ip-doctrine.md.

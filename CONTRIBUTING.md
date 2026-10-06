@@ -84,6 +84,12 @@ and [doctrine/review-doctrine.md](doctrine/review-doctrine.md).
    GPT/Codex-authored work if it independently derives the contract. A same-model
    check cannot clear the cross-model row.
 
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Approval authority: [Pete's 6 October record](docs/programme/2026-10-06-pete-approvals.md).
+
 ## Merging and the tiers
 
 [ADR-0020](adr/0020-delegated-acceptance.md) sets who decides what.

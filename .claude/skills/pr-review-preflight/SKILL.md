@@ -31,6 +31,12 @@ review. Current sequencing follows BUILD_PLAN_PROGRAMME.md (ADR-0021).
   expected behavior. Apply `doctrine/ip-doctrine.md` and the clean-room skill
   before any specifically authorized comparison.
 
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes. Approval authority: `docs/programme/2026-10-06-pete-approvals.md`.
+
 ## 2. Derive the contract before judging the diff
 
 Read the relevant accepted spec, `policy.yaml`, source map, architecture and

@@ -79,7 +79,7 @@ A PR merges, with `gh pr merge --squash --auto`, when all of these hold:
 `--admin`, bypassed checks and rewriting `main` are never used. If `main`
 regresses, a revert PR is opened at once.
 
-### The ruleset on `main` (the target)
+### The ruleset on `main` (active since 5 October 2026)
 
 - Required status checks: every existing CI workflow (tests, the
   statutory-value guard, the data-snapshot guard, source currency) and
@@ -88,23 +88,19 @@ regresses, a revert PR is opened at once.
 - Squash merges only; auto-merge on; branches deleted on merge.
 - Zero required approvals; no force pushes and no deletions.
 
-Changing repository settings was outside what this session could do, so
-the ruleset is in `PETE_QUEUE.md` as a one-command action. Until it is
-active, the merge rules above are kept by agreement, as the working
-agreement already is (`doctrine/development-doctrine.md`).
+Ruleset id 24478578 is active with no bypass actors, strict up-to-date
+branches, squash-only merges and nine required checks: `test`, `pilot-image`,
+`check-protected-paths`, `check-immutable-snapshots`, `source-currency`,
+`pip-audit`, `links`, `Bandit (python)` and `zizmor (actions)`. Source currency
+now runs on pull requests; publishing its issue remains scheduled only.
 
-ADR-0007 found that required checks needed GitHub Pro on this private
-repository, and made the statutory-value guard visibility only. On 2
-October 2026 the API returned a branch-protection object for `main`, so
-the plan now appears to allow it. If GitHub still refuses the ruleset,
-ADR-0007 stands, Q1 closes as not possible, and the merge rules stay by
-agreement. Once the ruleset is active, it supersedes ADR-0007's
-"visibility only" for the checks it requires: the guard still warns rather
-than fails, but it must run.
-
-Source currency runs weekly, not on pull requests, so it cannot yet be a
-required check. It becomes one when a pull-request trigger is added (a
-report only; its issue step stays on the schedule).
+The deliberately failing required check on #168 produced GitHub's BLOCKED
+state while the other eight required checks passed. This is observed
+red-check blocking, not evidence of an attempted bypass or merge. The
+[probe record](../docs/programme/2026-10-05-main-ruleset-probe.md) preserves
+its exact checks. It supersedes ADR-0007's historical platform limitation;
+the statutory-value guard still reports protected changes rather than
+automatically deciding whether their values are acceptable.
 
 ### What changes elsewhere
 
@@ -145,18 +141,30 @@ merged, the decisions made, the open Tier C items and what comes next.
 
 ## Amendment approved by Pete, 5 October 2026
 
-Pete instructed this closeout session to accept the best options in the
-supplied decisions. Item 4 explicitly chooses BUILD_PLAN's reviewer rotation:
-use whichever model did not author the PR. Rule 4's original GPT/Codex naming
-assumed Claude authorship; it never authorised same-model clearance. The
-amendment changes the reviewer identity, not review depth or protected gates.
+Pete's 5 October approval, "accept, approve, proceed", covers the other-model
+rotation and the annotated v0.2.0 tag on `adf4058`. The dated quotation and
+its scope are preserved in the [approval record](../docs/programme/2026-10-06-pete-approvals.md).
+Rule 4's original GPT/Codex naming assumed Claude authorship; it never
+authorised same-model clearance. The amendment changes reviewer identity,
+not review depth or protected gates.
 
-For this bounded closeout, Pete also explicitly authorised Codex to accept,
-commit, push and merge the prepared work in order once the gates pass. This
-is session authority, not a permanent transfer of all Tier C decisions. It
-includes the named v0.2 tag correction and the supplied scope/governance choices;
-new unsourced interpretations, protected statutory values, public release,
-microdata/governance access and paid resources retain their existing gates.
+On 6 October Pete said "agree to both", approving this single-pass condition:
+
+For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
+calculated amount, the single Claude review must be a full `pr-review` pass with
+primary-source re-derivation, recorded against the final head.
+
+For mixed authorship, record review coverage by commit; a same-model pass
+cannot clear that model's changes.
+
+Earlier bounded Codex merge authority is superseded for this closeout by
+Pete's 6 October instruction, "yes this session owns all merges into main":
+the Claude Code session is the sole merger. Codex pushes fixes and opens
+PRs, but does not merge or enable auto-merge. Every push requires fresh
+Claude review of the final head. If main subsequently moves, the Claude
+train integrates it and repeats the final-head gates. New unsourced
+interpretations, protected statutory values, public release, microdata
+and governance access, and paid resources retain their existing gates.
 
 The project-permission settings are prepared separately for Pete's explicit
 approval of their command and branch scope. Existing per-command permissions
