@@ -2,7 +2,7 @@
 
 Author: GPT/Codex. This is an author preflight, not cross-model clearance.
 Historical preflight base: `1e185f7652bebce693a9c709cb716b4a9bcfdf5a`.
-Current integration base: `d501dfaa3488eb0d278f914c1237f0af8cfb58f3`.
+Current integration base: `c72c409ac15f78f47691211ba343a3d219f51648`.
 Decision and archive change first pinned at `e049d63`; later changes only fix
 Markdown table continuity and add this packet. Final review must name the
 published final head in the PR before merge.
@@ -57,3 +57,28 @@ and SHA-256 were compared directly. Its metadata header is excluded.
 Historical command results above cover their stated heads only; the next
 exact-head detached author preflight and fresh Claude review are required
 before Claude Code's sole merge train accepts this head.
+
+## Codex-lane update on current main, 6 October 2026
+
+The Codex-lane request preserves the already-approved scope decisions and
+assigns final independent review and integration to Claude Code. Integrated
+main `c72c409ac15f78f47691211ba343a3d219f51648` after #163 and #166 landed.
+Updated only stale tracker claims arising from that integration: #166 is
+merged, #171 belongs to Claude, #148/#151 final heads are read from their
+live PRs, and #172 is the commissioned source comparison. Approved D9–D18
+and original main D1–D8 remain unchanged; the original brief body and dated
+approval record remain unchanged. The original closeout D7/D8 semantics are
+now D11/D12 because main already owns the numerical D7/D8 identifiers.
+
+Preserve Workbench first; 2026–27 basic annual salary/wages with uncertainty
+`needs_review`; JS single 25+ no children, SPS principal caregiver, SLP single
+no children restricted capacity, all bounded existing-grant gross weekly
+slices. Preserve official reviewed disposable-income definition, uncovered
+components, EMTR first and later adequacy/replacement measures. No D2
+candidate is selected; Q9/ADR-0018 and Q10 remain open.
+
+The separate exact-head author preflight and full final-head handoff follow
+in the PR after this commit. Earlier author/reviewer results above cover
+only their historical heads. #170's clean replacement is #176; if Claude
+integrates that shared governance/tracker change before #167, merge the
+new main and repeat both final-head gates. Codex does not merge either PR.
