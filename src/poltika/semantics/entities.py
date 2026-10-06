@@ -88,7 +88,7 @@ _SCHEMES: tuple[IdentifierScheme, ...] = (
         entity_type=EntityType.HOUSEHOLD,
         # src/poltika/semantics/population.py:37 `_ID`, applied by the
         # PopulationHousehold.household_id validator at :78-82.
-        pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]*\Z",
         issuer="PopulationHousehold in a PopulationDataset (semantics/population.py); "
         "unique within one population (population.py:104-108)",
     ),

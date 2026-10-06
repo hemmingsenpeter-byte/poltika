@@ -27,7 +27,8 @@ Pete delegated acceptance of engineering work to Claude Code on 2 October
   amount also needs the independent cross-model review, cleared
   in `review_packets/review_queue.md`, before it merges. GPT/Codex reviews Claude-authored work; Claude reviews
   GPT/Codex-authored work. A Claude reviewer pass can satisfy both gates for
-  Codex-authored work if it meets the independent-review standard. A same-model
+  Codex-authored work only as a full `pr-review` with primary-source
+  re-derivation, recorded against the final head. A same-model
   pass cannot clear this gate. Any later commit requires a final-head re-review.
 
 For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a

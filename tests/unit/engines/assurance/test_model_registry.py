@@ -12,6 +12,7 @@ registered model needs a current generated card. CI runs this with the rest of
 from __future__ import annotations
 
 import ast
+import json
 import shutil
 from pathlib import Path
 
@@ -24,6 +25,7 @@ from poltika.engines.assurance.model_cards import (
     Registry,
     card_problems,
     load_registry,
+    render_card,
 )
 
 SRC = REPO_ROOT / "src"
@@ -218,3 +220,26 @@ def test_an_async_engine_without_an_entry_fails(registry: Registry, tmp_path: Pa
     assert unclassified(registry, src) == [
         "poltika.new_benefit.calculate_new_benefit is an engine entry point with no registry entry"
     ]
+
+
+def test_golden_snapshot_count_is_pinned_to_the_fixture(registry: Registry) -> None:
+    path = "tests/fixtures/golden_results_v0_1.json"
+    snapshot = json.loads((REPO_ROOT / path).read_text())
+    registered = {
+        case.count
+        for model in registry.models
+        for case in model.validation.cases
+        if case.path == path
+    }
+    assert registered == {len(snapshot)} == {9}
+
+
+def test_declared_policy_versions_match_policy_yaml(registry: Registry) -> None:
+    declared = {m.id: m.policy_versions for m in registry.models}
+    assert declared["wff_engine"] == {"working_for_families": "0.1.0"}
+    assert declared["as_engine"] == {"accommodation_supplement": "0.1.1"}
+    for model in registry.models:
+        for policy_id, version in model.policy_versions.items():
+            spec = yaml.safe_load((REPO_ROOT / "policy_specs" / policy_id / "policy.yaml").read_text())
+            assert spec["policy_version"] == version, f"{model.id}: {policy_id}"
+            assert f"policy {policy_id} {version}" in render_card(registry, model.id).splitlines()[6]

@@ -4,7 +4,7 @@ Generated from `model_registry/registry.yaml` by
 `python -m poltika.engines.assurance.model_cards`. Do not edit by hand.
 
 - **Id:** `wff_engine` (engine)
-- **Version:** 0.1.0. Package version in pyproject.toml. The engine has no version of its own. Each run records the source commit (src/poltika/scenarios/record.py, CodeIdentity). Policy version working_for_families 0.1.0 (policy_specs/working_for_families/policy.yaml).
+- **Version:** 0.1.0 (package); policy working_for_families 0.1.0. Package version in pyproject.toml. The engine has no version of its own. Each run records the source commit (src/poltika/scenarios/record.py, CodeIdentity). The policy version comes from policy_specs/working_for_families/policy.yaml.
 - **Owner:** Pete (accountable model owner and decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Assigned under Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
 - **Validation status:** `spec_validated`
 - **Computed dependency label:** `spec_validated` (the least mature model it relies on; not yet attached to runtime outputs)

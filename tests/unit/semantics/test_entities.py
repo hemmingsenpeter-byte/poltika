@@ -160,3 +160,12 @@ def test_population_definition() -> None:
             geography="g",
             description="d",  # type: ignore[arg-type]
         )
+
+
+@pytest.mark.parametrize("value", ["a\n", "s0000001\n"])
+def test_household_id_with_a_trailing_newline_is_refused(value: str) -> None:
+    # `$` also matches before a final newline; `\Z` does not.
+    with pytest.raises(ValidationError):
+        _household(value)
+    with pytest.raises(InvalidIdentifierError):
+        validate_identifier("household_id", value)

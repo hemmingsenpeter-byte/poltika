@@ -81,8 +81,9 @@ and [doctrine/review-doctrine.md](doctrine/review-doctrine.md).
    Claude-authored work; Claude reviews GPT/Codex-authored work. Its row in
    `review_packets/review_queue.md` must be cleared before the PR merges.
    Claude's final-head `poltika-reviewer` pass may meet both gates for
-   GPT/Codex-authored work if it independently derives the contract. A same-model
-   check cannot clear the cross-model row.
+   GPT/Codex-authored work only as a full `pr-review` with primary-source
+   re-derivation, recorded against the final head. A same-model check cannot
+   clear the cross-model row.
 
 For GPT/Codex-authored PRs touching `policy_specs/`, `engines/simulator/` or a
 calculated amount, the single Claude review must be a full `pr-review` pass with

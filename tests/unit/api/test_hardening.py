@@ -165,3 +165,8 @@ def test_the_limit_applies_before_the_password_check(
         headers=headers,
     )
     assert response.status_code == 413
+
+
+def test_telemetry_never_auto_configures_exporters_from_the_environment() -> None:
+    # FastAPI keeps the constructor's telemetry config privately; this pins it.
+    assert app._telemetry.get("auto_configure") is False

@@ -29,6 +29,16 @@ account and sets the password; the repository holds no credentials.
   the calculation routes and both pages don't need one. To enable them, set
   `POLTIKA_DATABASE_URL` to a PostgreSQL database; the entrypoint applies
   the migrations at start.
+  A plain `postgresql://` URL, as Render and Fly.io give it, selects the
+  psycopg 3 driver the image installs: SQLAlchemy 2.1 (2.1.2 in `uv.lock`)
+  made psycopg 3 the default for `postgresql://`. Under SQLAlchemy 2.0 the
+  same URL would select psycopg2, which is not installed, so write
+  `postgresql+psycopg://` if you pin an older SQLAlchemy.
+- Adds no telemetry exporters from the environment. The app is built with
+  `FastAPI(telemetry={"auto_configure": False})`, so FastAPI's native
+  OpenTelemetry support never adds OTLP exporters from `OTEL_*` environment
+  variables a platform may set (`src/poltika/api/main.py`). Exporting
+  telemetry needs a deliberate code change.
 - Reads `policy_specs/` from `/policy_specs`, the copy baked into the image
   at build time (`POLTIKA_POLICY_SPECS_DIR=/policy_specs`, set in the
   `Dockerfile`). To deploy a reviewed copy instead of the image's build-time

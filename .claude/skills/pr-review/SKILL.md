@@ -55,7 +55,7 @@ it to know which gate a review can close.
 
 | Who wrote the PR | Your pass is | Closes the independent-review gate |
 | --- | --- | --- |
-| GPT/Codex | Independent cross-model review (Claude Code) | Yes for that author's work; acceptance separately follows ADR-0020 |
+| GPT/Codex | Independent cross-model review (Claude Code) | Yes for that author's work, on the final head. For `policy_specs/`, `engines/simulator/` or a calculated amount, only as a full `pr-review` with primary-source re-derivation. Acceptance then follows ADR-0020's merge rules |
 | Claude Code, another session | Fresh same-model check | No. Say so, as `reviews/2026-09-27-v0-2-fresh-same-model-check.md` does |
 | Claude Code, this session | Author preflight: stop and use `pr-review-preflight` | No |
 | Mixed (e.g. Codex fixes on a Claude PR) | Split by commit: cross-model for the other model's commits, same-model for the rest | Only for the other model's commits |
@@ -244,7 +244,13 @@ keep your derived expectations above the author's response.
 Choose one verdict for the SHA:
 
 - **Ready to merge**: no open P1, P2 or escalation, and CI green on this
-  SHA. List any blockers that aren't code separately.
+  SHA. List any blockers that aren't code separately. The verdict is
+  review evidence, not the merge: under ADR-0020's merge rules Claude Code
+  merges Tier A/B work only when the branch is up to date, the author
+  preflight and a final-head `poltika-reviewer` pass have run, and, for
+  `policy_specs/`, `engines/simulator/` or a calculated amount, the
+  cross-model row in `review_packets/review_queue.md` is cleared. Tier C
+  stays with Pete.
 - **Changes requested**: at least one P1 or P2 is open.
 - **Needs Pete's decision**: an escalation blocks part of the change.
 - **Not reviewable yet**: the head is still moving, the scope is
