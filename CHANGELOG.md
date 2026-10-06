@@ -2,7 +2,7 @@
 
 ## Unreleased (passive source-preservation archive, 6 October 2026)
 
-- ADR-0022 (proposed) and `src/poltika/data/acquisition/`: a passive,
+- ADR-0022 and `src/poltika/data/acquisition/`: a passive,
   content-addressed archive of what authoritative sources published, starting with
   Stats NZ (`scripts/ingest/stats_nz.py`, `data/source_archive/`). Exact bytes,
   canonical source metadata and one record per retrieval, with content and metadata

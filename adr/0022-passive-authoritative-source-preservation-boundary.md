@@ -1,7 +1,7 @@
 # ADR-0022: Passive authoritative-source preservation boundary
 
 **Date:** 6 October 2026
-**Status:** proposed. Tier A/B engineering decision under ADR-0020, logged in
+**Status:** accepted by Pete on 6 October 2026. Logged in
 `docs/decision_log.md` (D5-D8). It extends ADR-0003 and replaces nothing. It
 does not mark Programme Step 27 ("Historical policy/data states") started or
 complete.
