@@ -172,7 +172,7 @@ requested or received; this reviewer made no code/record correction or GitHub po
 - `git diff --exit-code 52cf02e 1b64d0e`,
   `git diff --exit-code c4c4b2a 38e5629`,
   `git diff --exit-code 40b3386 0046be0`: identical trees.
-- `git diff --exit-code 40b3386 HEAD --` all eleven #177 PR paths: no difference.
+- `git diff --exit-code 40b3386 a8b214f05c7aa7380fb0ca0adfd68c30c81bf06d --` all eleven #177 PR paths: no difference.
 - `git diff --check 52cf02e^2 52cf02e`,
   `git diff --check c4c4b2a^2 c4c4b2a`,
   `git diff --check 40b3386^ 40b3386`: clean.

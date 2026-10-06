@@ -108,7 +108,7 @@ env -i PATH=/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src \
 
 The parent lane runs the broad CI-equivalent suite and live GitHub checks centrally; they were not duplicated in this bounded pass. No deploy, external-resource fetch or unbounded entity-expansion stress test was run. The tested supported XML variants are determined by baseline ElementTree on Python 3.12.14; this does not claim results for other interpreter/Expat versions.
 
-Interpreter startup initially stalled in the inherited environment. A clean environment resolved it; all final dynamic results above completed. The discarded attempt stopped by the exact-head assertion is not counted as a check.
+Interpreter startup initially stalled. After startup recovered, all final dynamic results completed in a clean environment; the earlier stall's cause remains unconfirmed. The discarded attempt stopped by the exact-head assertion is not counted as a check.
 
 Nothing outside this assigned record and reviewer scratch files was edited. No source fixes, statutory values, posts, commits, merges, shared Git mutations or cleanup were performed by this reviewer.
 
