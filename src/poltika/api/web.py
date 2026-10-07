@@ -19,6 +19,9 @@ exists. With neither, the middleware passes every request through. The
 setting is read on each request, like `api/access.py`'s password, so a test
 or operator change takes effect at once.
 
+Every cache header is `private`: the responses sit behind the password, so
+no shared cache may keep them.
+
 It is registered inside `BasicAuthMiddleware` (`api/main.py`), so pages need
 the password like everything else; only `/healthz` is open.
 """
@@ -57,9 +60,9 @@ _STATIC_SUFFIXES = frozenset(
 )
 _MEDIA_TYPES = {".woff2": "font/woff2", ".webmanifest": "application/manifest+json"}
 
-_IMMUTABLE = "public, max-age=31536000, immutable"
-_REVALIDATE = "no-cache"
-_SHORT = "public, max-age=3600"
+_IMMUTABLE = "private, max-age=31536000, immutable"
+_REVALIDATE = "private, no-cache"
+_SHORT = "private, max-age=3600"
 
 
 def web_dir() -> Path | None:

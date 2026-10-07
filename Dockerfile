@@ -4,7 +4,7 @@
 #
 # Task B0.1.3 (ADR-0023): the web app is built in a Node stage and the export
 # is copied in; FastAPI serves it from POLTIKA_WEB_DIR (api/web.py).
-FROM node:20-slim AS web
+FROM node:22-slim AS web
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
