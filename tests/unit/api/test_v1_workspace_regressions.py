@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 from poltika.api import v1_scenarios
 from poltika.api.household import HouseholdCalculationRequest, record_from_request
 from poltika.api.main import app
-from poltika.api.v1_blocks import CalculationChainBlock
+from poltika.api.v1_blocks import CalculationChainBlock, Notice
 from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.scenarios.record import CodeIdentity, canonical_json, result_payload, run_scenario
 from poltika.scenarios.store import StoredRun
@@ -165,6 +165,28 @@ def test_household_context_and_calculation_steps_describe_the_original_run(
     unresolved_rules = next(b for b in audit.blocks if b.id == "rules_in_work_tax_credit")
     assert "not calculated" in unresolved_rules.notes[0]
     assert "combined checks" not in unresolved_rules.notes[0]
+
+
+def test_unresolved_component_steps_defer_to_the_reported_outcome() -> None:
+    payload = _payload()
+    payload["as_claimant_is_wff_claimant_or_partner"] = "unknown"
+    request = HouseholdCalculationRequest.model_validate(payload)
+    run = run_scenario(
+        record_from_request(request),
+        WFF_POLICY_DIR,
+        AS_POLICY_DIR,
+        code=CodeIdentity("0.1.0", None, None, None),
+    )
+    report = build_combined_provenance_report(run, WFF_POLICY_DIR, AS_POLICY_DIR)
+    (component,) = report["accommodation_supplement"]["components"]
+    assert component["outcome"] == "needs_review"
+    assert component["steps"] and not component["rules_applied"]
+    blocks = v1_scenarios._household_provenance_blocks(report)
+    notice = next(
+        b for b in blocks if isinstance(b, Notice) and b.id == "superseded_accommodation_supplement"
+    )
+    assert "reported outcome" in notice.text
+    assert "combined checks" not in notice.text
 
 
 def test_legacy_household_provenance_is_explicitly_unavailable() -> None:
