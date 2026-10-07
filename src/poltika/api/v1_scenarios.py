@@ -131,6 +131,8 @@ def _store() -> ScenarioStore:
         return _store_for(database_url())
     except StoreError:
         _fail(503, "scenario_storage_unavailable", "Scenario storage is not configured here.")
+    except (SQLAlchemyError, ValueError):
+        _fail(503, "scenario_storage_unavailable", "Scenario storage is not configured correctly.")
 
 
 @contextmanager
@@ -717,7 +719,7 @@ def _household_provenance_blocks(provenance: dict[str, Any] | None) -> list[Any]
                     "notes": [
                         "Applied to the reported result."
                         if component["rules_applied"]
-                        else "Original module rules; the combined checks superseded this result."
+                        else "Original module rules; the reported result was not calculated."
                     ],
                 }
             )
@@ -781,8 +783,8 @@ def _household_provenance_blocks(provenance: dict[str, Any] | None) -> list[Any]
                             id=f"superseded_{cid}",
                             tone="caution",
                             text=(
-                                "These original module steps were superseded by the combined "
-                                "household checks. They do not establish a calculated entitlement."
+                                "These recorded module steps do not establish a calculated "
+                                "entitlement. The component's reported outcome explains why."
                             ),
                         )
                     )

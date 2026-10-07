@@ -47,6 +47,55 @@ def test_legacy_validation_keeps_its_response() -> None:
     assert isinstance(response.json()["detail"], list)
 
 
+@pytest.mark.parametrize(
+    "url",
+    [
+        "postgresql+psycopg:/localhost/poltika",
+        "postgresql+psycopg://localhost:notaport/poltika",
+    ],
+)
+@pytest.mark.parametrize(
+    "method,path,kwargs",
+    [
+        ("GET", "/api/v1/scenarios", {}),
+        (
+            "POST",
+            "/api/v1/scenarios",
+            {
+                "json": {
+                    "title": "Test",
+                    "options": [
+                        {
+                            "label": "A",
+                            "reform": {
+                                "reform_id": "test",
+                                "overrides": [
+                                    {
+                                        "policy_id": "working_for_families",
+                                        "parameter_id": "family_tax_credit_abatement_threshold",
+                                        "operation": "set",
+                                        "value": "50000",
+                                    }
+                                ],
+                            },
+                        }
+                    ],
+                }
+            },
+        ),
+        ("POST", f"/api/v1/scenarios/{'0' * 64}/runs", {}),
+    ],
+)
+def test_malformed_postgresql_configuration_is_a_coded_storage_error(
+    url: str, method: str, path: str, kwargs: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("POLTIKA_DATABASE_URL", url)
+    response = client.request(method, path, **kwargs)
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
+    assert url not in response.text
+
+
 @pytest.fixture(scope="module")
 def original_run() -> StoredRun:
     request = HouseholdCalculationRequest.model_validate(_payload())
@@ -113,6 +162,9 @@ def test_household_context_and_calculation_steps_describe_the_original_run(
     assert {"original_sources_working_for_families", "rules_family_tax_credit"} <= {
         block.id for block in audit.blocks
     }
+    unresolved_rules = next(b for b in audit.blocks if b.id == "rules_in_work_tax_credit")
+    assert "not calculated" in unresolved_rules.notes[0]
+    assert "combined checks" not in unresolved_rules.notes[0]
 
 
 def test_legacy_household_provenance_is_explicitly_unavailable() -> None:
