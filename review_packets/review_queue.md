@@ -123,6 +123,7 @@ were independently reviewed by Claude Code with no blocking findings
 | #111 | v0.2 | Stats NZ snapshots, manifests, four transformations and 54 canonical variables (Tasks 3.1-3.2) | Data | Medium | reviewed (GPT/Codex; Pete confirmed 27 Sep 2026) |
 | #113 | v0.2 | Synthetic development population derived from #111 (`calibration.py`, `calibrate_cli.py`, spec); fresh same-model check in the PR comment, A10-A11 named in the release-docs PR | Scenarios, data boundary | Medium | reviewed (GPT/Codex; Pete confirmed 27 Sep 2026) |
 | #112 | v0.3 | Codex-authored fixes F1-F3 for #109 and the catalogue wording review | Scenarios, policy_specs | Medium | reviewed (Claude Code, PR #112 comment) |
+| #187 | programme | Task B0.1.2: durable reform scenarios and the web workspace view (which stored amounts appear, in which units, and how not-calculated values read) | API, scenarios store, migration 0002 | Medium | awaiting GPT/Codex review (packet: review_packets/b0_1_2_scenarios_preflight.md) |
 
 ## Plan and decision PRs (not counted against the cap)
 
