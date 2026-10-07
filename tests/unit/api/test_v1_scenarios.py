@@ -152,3 +152,20 @@ def test_without_a_database_storage_is_unavailable(monkeypatch: pytest.MonkeyPat
     response = client.get("/api/v1/scenarios")
     assert response.status_code == 503
     assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
+
+
+def test_an_unreachable_database_is_a_coded_503(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("POLTIKA_DATABASE_URL", "postgresql+psycopg://nobody@127.0.0.1:1/none")
+    response = client.get("/api/v1/scenarios")
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
+
+
+def test_a_group_mean_distinguishes_none_from_not_calculated() -> None:
+    from decimal import Decimal
+
+    from poltika.api.workbench_tables import NONE_IN_GROUP, NOT_CALCULATED, _mean_or
+
+    assert _mean_or(Decimal("12.345"), Decimal(3)) == "12.35"
+    assert _mean_or(None, Decimal(3)) == NONE_IN_GROUP
+    assert _mean_or(None, Decimal(0)) == NOT_CALCULATED
