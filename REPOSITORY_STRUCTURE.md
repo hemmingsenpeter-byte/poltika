@@ -181,6 +181,9 @@ poltika/
 │   │                        record.py (Task 30: scenario records, artifact
 │   │                        manifests, canonical identity, code identity,
 │   │                        record_from_plain);
+│   │                        reform_record.py (Task B0.1.2: reform scenario
+│   │                        and run identities; store.py keeps them in the
+│   │                        reform_scenario and reform_run tables, migration 0002);
 │   │                        conditional.py (v0.3 Task 1b.2, ADR-0016:
 │   │                        conditional answers, i.e. branches, bounds and
 │   │                        next question for missing facts, all by engine
@@ -269,7 +272,11 @@ poltika/
 │                            types, limitations; never a policy value);
 │                            v1.py and v1_schemas.py (Task B0.1.1, ADR-0023:
 │                            the read-only /api/v1 catalogue of meta, models,
-│                            datasets and evidence, with typed responses)
+│                            datasets and evidence, with typed responses);
+│                            v1_scenarios.py and v1_blocks.py (Task B0.1.2:
+│                            durable reform scenarios and the seven-tab
+│                            workspace view of typed blocks; places stored
+│                            values, computes none)
 │                            — no llm/ layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy

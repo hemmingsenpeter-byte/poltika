@@ -580,3 +580,86 @@ def build_results(
         "headline": headline(options),
         "tabs": tabs,
     }
+
+
+# --- distribution (Task B0.1.2) ----------------------------------------------------------
+
+_DIMENSIONS = (
+    ("decile", analysis.by_decile),
+    ("household_type", analysis.by_household_type),
+    ("children", analysis.by_children),
+    ("region", analysis.by_region),
+)
+
+
+def _money_or(value: Decimal | None) -> str:
+    return NOT_CALCULATED if value is None else str(_money(value))
+
+
+def distribution_tables(options: Sequence[OptionResult]) -> list[dict[str, Any]]:
+    """Gains and losses of any size by income decile, household type,
+    children and region, from `analysis`'s grouped summaries. Built once,
+    when the run is made, and stored with it. Unlike the winners and losers
+    tables there is no threshold: every calculated change counts."""
+    tables = []
+    for measure in config.MEASURES:
+        unit = analysis.component_set_unit(measure.components)
+        for dimension_id, group in _DIMENSIONS:
+            rows: list[list[Any]] = []
+            notes: list[str] = []
+            dimension = ""
+            for option in options:
+                table = group(option.dataset, option.run, list(measure.components))
+                dimension = table.dimension
+                for key in sorted(table.groups):
+                    s = table.groups[key]
+                    c = s.by_class
+                    rows.append(
+                        [
+                            option.label,
+                            key,
+                            _count(s.weight),
+                            _count(c[analysis.ChangeClass.GAIN]),
+                            _count(c[analysis.ChangeClass.LOSS]),
+                            _count(c[analysis.ChangeClass.NO_CHANGE]),
+                            _count(
+                                c[analysis.ChangeClass.NEEDS_REVIEW]
+                                + c[analysis.ChangeClass.UNSUPPORTED]
+                            ),
+                            _money_or(s.mean_gain),
+                            _money_or(s.mean_loss),
+                            _money(s.total_change) if s.calculated_weight else NOT_CALCULATED,
+                        ]
+                    )
+                notes += [
+                    f"{option.label}: {_count(w)} weighted households left out ({reason})."
+                    for reason, w in sorted(table.left_out.items())
+                ]
+            tables.append(
+                _table(
+                    f"distribution_{measure.measure_id}_{dimension_id}",
+                    f"{measure.label} by {dimension} ({unit})",
+                    [
+                        _col("option", "Option"),
+                        _col("group", dimension.capitalize()),
+                        _col("households", "Households", "count"),
+                        _col("gain", "Gain", "count"),
+                        _col("loss", "Loss", "count"),
+                        _col("no_change", "No change", "count"),
+                        _col("not_calculated", "Not calculated", "count"),
+                        _col("mean_gain", f"Mean gain ({unit})", "money"),
+                        _col("mean_loss", f"Mean loss ({unit})", "money"),
+                        _col("total_change", f"Total change, calculated ({unit})", "money"),
+                    ],
+                    rows,
+                    notes=[
+                        (
+                            "Any change counts here, with no threshold. Weighted households. "
+                            "A household whose component was not calculated is counted as not "
+                            "calculated, never as no change."
+                        ),
+                        *notes,
+                    ],
+                )
+            )
+    return tables
