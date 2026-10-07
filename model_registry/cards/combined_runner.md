@@ -4,7 +4,7 @@ Generated from `model_registry/registry.yaml` by
 `python -m poltika.engines.assurance.model_cards`. Do not edit by hand.
 
 - **Id:** `combined_runner` (runner)
-- **Version:** 0.1.0. Package version in pyproject.toml. The runner has no version of its own. It runs WFF policy 0.1.0 and AS policy 0.1.1 as requested by the caller.
+- **Version:** 0.1.0 (package); policy working_for_families 0.1.0; policy accommodation_supplement 0.1.1. Package version in pyproject.toml. The runner has no version of its own. It runs the WFF and AS policy versions the caller requests.
 - **Owner:** Pete (accountable model owner and decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Assigned under Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
 - **Validation status:** `spec_validated`
 - **Computed dependency label:** `spec_validated` (the least mature model it relies on; not yet attached to runtime outputs)

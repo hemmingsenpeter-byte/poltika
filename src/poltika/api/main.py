@@ -97,6 +97,9 @@ app = FastAPI(
         "reliable as the caller's own verification of its inputs."
     ),
     lifespan=_lifespan,
+    # Never add OTLP exporters from environment variables: a hosted image must
+    # not start sending request telemetry anywhere without a deliberate change.
+    telemetry={"auto_configure": False},
 )
 app.include_router(wff_router)
 app.include_router(as_router)

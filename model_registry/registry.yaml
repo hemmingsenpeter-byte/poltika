@@ -19,8 +19,9 @@ models:
     version_basis: >-
       Package version in pyproject.toml. The engine has no version of its own.
       Each run records the source commit (src/poltika/scenarios/record.py,
-      CodeIdentity). Policy version working_for_families 0.1.0
-      (policy_specs/working_for_families/policy.yaml).
+      CodeIdentity). The policy version comes from
+      policy_specs/working_for_families/policy.yaml.
+    policy_versions: {working_for_families: "0.1.0"}
     owner: >-
       Pete (accountable model owner and decisions); Claude Code (implementation);
       GPT/Codex (sources, interpretation, independent review). Assigned under
@@ -137,8 +138,9 @@ models:
     version_basis: >-
       Package version in pyproject.toml. The engine has no version of its own.
       Each run records the source commit (src/poltika/scenarios/record.py,
-      CodeIdentity). Policy version accommodation_supplement 0.1.1
-      (policy_specs/accommodation_supplement/policy.yaml).
+      CodeIdentity). The policy version comes from
+      policy_specs/accommodation_supplement/policy.yaml.
+    policy_versions: {accommodation_supplement: "0.1.1"}
     owner: >-
       Pete (accountable model owner and decisions); Claude Code (implementation);
       GPT/Codex (sources, interpretation, independent review). Assigned under
@@ -257,7 +259,8 @@ models:
     version: "0.1.0"
     version_basis: >-
       Package version in pyproject.toml. The runner has no version of its own.
-      It runs WFF policy 0.1.0 and AS policy 0.1.1 as requested by the caller.
+      It runs the WFF and AS policy versions the caller requests.
+    policy_versions: {working_for_families: "0.1.0", accommodation_supplement: "0.1.1"}
     owner: >-
       Pete (accountable model owner and decisions); Claude Code (implementation);
       GPT/Codex (sources, interpretation, independent review). Assigned under
@@ -411,7 +414,7 @@ models:
         source: docs/releases/V0_2_LIMITATIONS.md
       - text: Everyone is an in-work non-beneficiary (assumption A6). No beneficiary or main-benefit interaction is exercised.
         source: docs/releases/V0_2_LIMITATIONS.md
-      - text: Four household types only. The population represents 1.45 million households, not 2.03 million.
+      - text: Four household types only. The population models 1.45 million households, not 2.03 million.
         source: docs/releases/V0_2_LIMITATIONS.md
       - text: Static and full take-up. No behavioural response, take-up rate or timing.
         source: docs/releases/V0_2_LIMITATIONS.md

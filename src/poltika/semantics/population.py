@@ -34,7 +34,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 SYNTHETIC_LABEL = "Synthetic development population, not an estimate for New Zealand."
 
-_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*\Z")
 
 
 class PersonRole(str, Enum):

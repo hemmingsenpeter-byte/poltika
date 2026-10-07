@@ -82,6 +82,8 @@ class Model(_Strict):
     kind: Literal["engine", "runner"]
     version: str
     version_basis: str
+    # Policy id -> the policy.yaml `policy_version` the model runs, if any.
+    policy_versions: dict[str, str] = {}
     owner: str
     purpose: str
     entry_points: tuple[EntryPoint, ...]
@@ -175,6 +177,11 @@ def _one_line(text: str) -> str:
     return " ".join(text.split())
 
 
+def _version_line(m: Model) -> str:
+    policies = "; ".join(f"policy {pid} {ver}" for pid, ver in m.policy_versions.items())
+    return f"{m.version} (package); {policies}" if policies else f"{m.version} (package)"
+
+
 def render_card(registry: Registry, model_id: str) -> str:
     m = registry.model(model_id)
     v = m.validation
@@ -185,7 +192,7 @@ def render_card(registry: Registry, model_id: str) -> str:
         "`python -m poltika.engines.assurance.model_cards`. Do not edit by hand.",
         "",
         f"- **Id:** `{m.id}` ({m.kind})",
-        f"- **Version:** {m.version}. {_one_line(m.version_basis)}",
+        f"- **Version:** {_version_line(m)}. {_one_line(m.version_basis)}",
         f"- **Owner:** {_one_line(m.owner)}",
         f"- **Validation status:** `{v.level}`",
         (

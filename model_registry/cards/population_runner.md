@@ -4,7 +4,7 @@ Generated from `model_registry/registry.yaml` by
 `python -m poltika.engines.assurance.model_cards`. Do not edit by hand.
 
 - **Id:** `population_runner` (runner)
-- **Version:** 0.1.0. Package version in pyproject.toml. The runner has no version of its own. Each run has a run_id that hashes the population, the reform, the code identity and the policy files (src/poltika/scenarios/microsim/runner.py).
+- **Version:** 0.1.0 (package). Package version in pyproject.toml. The runner has no version of its own. Each run has a run_id that hashes the population, the reform, the code identity and the policy files (src/poltika/scenarios/microsim/runner.py).
 - **Owner:** Pete (accountable model owner and decisions); Claude Code (implementation); GPT/Codex (sources, interpretation, independent review). Assigned under Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
 - **Validation status:** `spec_validated`
 - **Computed dependency label:** `spec_validated` (the least mature model it relies on; not yet attached to runtime outputs)
@@ -60,7 +60,7 @@ Open items:
 - Every result is for the synthetic development population, not an estimate for New Zealand. (`docs/releases/V0_2_LIMITATIONS.md`)
 - Household type, income, tenure, housing cost, region and area are drawn independently, so real correlations are lost. Income is two coarse uniform bands. (`docs/releases/V0_2_LIMITATIONS.md`)
 - Everyone is an in-work non-beneficiary (assumption A6). No beneficiary or main-benefit interaction is exercised. (`docs/releases/V0_2_LIMITATIONS.md`)
-- Four household types only. The population represents 1.45 million households, not 2.03 million. (`docs/releases/V0_2_LIMITATIONS.md`)
+- Four household types only. The population models 1.45 million households, not 2.03 million. (`docs/releases/V0_2_LIMITATIONS.md`)
 - Static and full take-up. No behavioural response, take-up rate or timing. (`docs/releases/V0_2_LIMITATIONS.md`)
 - The 2026-27 in-work tax credit and minimum family tax credit are needs_review for every household, so there is no WFF total. (`docs/releases/V0_2_LIMITATIONS.md`)
 - No annual Accommodation Supplement figure and no combined effective marginal tax rate. (`docs/releases/V0_2_LIMITATIONS.md`)
