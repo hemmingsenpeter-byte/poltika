@@ -231,8 +231,13 @@ function ReformForm({ registry, compare, navigate }: { registry: Registry; compa
           check,
         };
       });
+      const resolved = items.filter((x): x is ConfirmationItem => x !== null);
+      if (resolved.length !== options.length) {
+        // Never show a panel (or enable Run) with an option left unchecked.
+        throw new Error("An option no longer matches a supported instrument or parameter.");
+      }
       setChecked({
-        items: items.filter((x): x is ConfirmationItem => x !== null),
+        items: resolved,
         reform: options.map((o, i) => ({ label: o.label.trim(), reform: reformOf(o, i) })),
       });
     } catch (e) {

@@ -73,7 +73,7 @@ export function SourcesList({ block }: { block: BlockOf<"sources"> }) {
         {block.sources.map((s) => (
           <li key={s.id} className="rounded-md border border-border bg-surface p-3 text-sm">
             <p className="font-medium">
-              {s.url ? (
+              {s.url && isWebUrl(s.url) ? (
                 <a href={s.url} rel="noreferrer" target="_blank" className="underline underline-offset-2">
                   {s.title ?? s.id}
                 </a>
@@ -186,4 +186,15 @@ export function UnsupportedBlock({ type }: { type: string }): ReactNode {
       </p>
     </div>
   );
+}
+
+
+/** Only http(s) sources become links; anything else is shown as text. */
+function isWebUrl(url: string): boolean {
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
 }
