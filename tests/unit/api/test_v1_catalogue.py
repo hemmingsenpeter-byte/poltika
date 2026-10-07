@@ -173,3 +173,67 @@ def test_the_catalogue_is_in_the_openapi_contract(client: TestClient) -> None:
         ok = schema["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
         assert ok["schema"], path
     assert "ModelDetail" in schema["components"]["schemas"]
+
+
+@pytest.mark.parametrize("content", ["a: [unclosed", "models: 5"])
+def test_an_invalid_registry_is_unavailable_not_a_500(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, content: str
+) -> None:
+    broken = tmp_path / "registry.yaml"
+    broken.write_text(content)
+    monkeypatch.setenv("POLTIKA_MODEL_REGISTRY_PATH", str(broken))
+    for path in ("/api/v1/models", "/api/v1/models/wff_engine"):
+        response = client.get(path)
+        assert response.status_code == 503, path
+        assert response.json()["detail"]["code"] == "catalogue_unavailable"
+        assert str(tmp_path) not in response.text
+
+
+@pytest.mark.parametrize(
+    ("relative", "path"),
+    [
+        ("datasets/stats_nz_household_net_worth.v1.yaml", "/api/v1/datasets"),
+        ("populations/nz_synthetic_development.v1.yaml", "/api/v1/datasets"),
+        ("variables/dictionary.yaml", "/api/v1/datasets/stats_nz_household_net_worth"),
+    ],
+)
+def test_an_unparseable_metadata_file_is_unavailable_not_a_500(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, relative: str, path: str
+) -> None:
+    root = tmp_path / "metadata"
+    shutil.copytree(DEFAULT_METADATA_DIR, root)
+    (root / relative).write_text("key: [unclosed")
+    monkeypatch.setenv("POLTIKA_DATA_METADATA_DIR", str(root))
+    response = client.get(path)
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "catalogue_unavailable"
+    assert str(tmp_path) not in response.text
+
+
+def test_an_invalid_policy_catalogue_makes_evidence_unavailable(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    copy = tmp_path / "accommodation_supplement"
+    shutil.copytree(WFF_POLICY_DIR.parent / "accommodation_supplement", copy)
+    (copy / "sources.yaml").write_text("sources: [unclosed")
+    monkeypatch.setattr("poltika.api.v1._deployed_policy_dirs", lambda: (WFF_POLICY_DIR, copy))
+    response = client.get("/api/v1/evidence")
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "catalogue_unavailable"
+
+
+def test_meta_survives_an_unreadable_population(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    corrupt = tmp_path / "population.json"
+    corrupt.write_text("{not json")
+    monkeypatch.setenv("POLTIKA_POPULATION_PATH", str(corrupt))
+    response = client.get("/api/v1/meta")
+    assert response.status_code == 200
+    assert response.json()["population"] is None
+
+
+def test_lookups_document_their_404s(client: TestClient) -> None:
+    paths = client.get("/openapi.json").json()["paths"]
+    for path in ("/api/v1/models/{model_id}", "/api/v1/datasets/{dataset_id}", "/api/v1/evidence"):
+        assert {"404", "503"} <= set(paths[path]["get"]["responses"]), path
