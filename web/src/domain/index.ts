@@ -28,4 +28,22 @@ export type ScenarioKind = ScenarioItem["kind"];
 
 /** `GET /workbench/registry` is an untyped payload on the backend, so these
  *  are described by the zod schema in `api/schemas.ts`. */
-export type { Instrument, Registry, RegistryParameter } from "@/api/schemas";
+export type {
+  CheckResult,
+  HouseholdExample,
+  Instrument,
+  Registry,
+  RegistryParameter,
+  ValidInstrument,
+} from "@/api/schemas";
+
+/** The scenario workspace, as generated from the backend contract. */
+export type Workspace = S["Workspace"];
+export type Tab = S["Tab"];
+export type TabId = Tab["id"];
+export type Block = Tab["blocks"][number];
+export type BlockType = Block["type"];
+export type BlockOf<T extends BlockType> = Extract<Block, { type: T }>;
+export type MetricBlock = S["MetricBlock"];
+export type MetricValue = S["MetricValue"];
+export type RunCreated = S["RunCreated"];

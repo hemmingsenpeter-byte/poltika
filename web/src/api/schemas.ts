@@ -184,11 +184,27 @@ export const ScenarioListSchema = z.object({
 
 /** `GET /workbench/registry` has no response model on the backend (ADR-0018),
  *  so this schema is the contract for the fields the web app reads. */
+const CurrentValueSchema = z.object({
+  outcome: z.string(),
+  value: z.string().nullable(),
+  source_id: z.string().nullish(),
+  locator: z.string().nullish(),
+  effective_from: z.string().nullish(),
+});
+
 const RegistryParameterSchema = z.object({
   id: z.string(),
+  policy_id: z.string(),
   unit: z.string(),
   unit_label: z.string(),
   editable: z.boolean(),
+  value_type: z.string(),
+  current: CurrentValueSchema,
+});
+
+const RegistrySourceSchema = z.object({
+  id: z.string(),
+  title: z.string().nullable(),
 });
 
 const InstrumentSchema = z.discriminatedUnion("valid", [
@@ -198,7 +214,9 @@ const InstrumentSchema = z.discriminatedUnion("valid", [
     title: z.string(),
     version: z.string().nullable(),
     runnable: z.boolean(),
+    reference_period: z.object({ from: z.string(), to: z.string() }),
     parameters: z.array(RegistryParameterSchema),
+    sources: z.array(RegistrySourceSchema),
   }),
   z.object({ valid: z.literal(false), id: z.string(), error: z.string() }),
 ]);
@@ -206,8 +224,74 @@ const InstrumentSchema = z.discriminatedUnion("valid", [
 export const RegistrySchema = z.object({
   law_baseline: z.string(),
   instruments: z.array(InstrumentSchema),
+  limitations: z.array(z.string()),
+  max_options: z.number(),
+  status_quo_label: z.string(),
+});
+
+/** `POST /workbench/check`: each override against the baseline, or why not. */
+export const CheckSchema = z.object({
+  ok: z.boolean(),
+  changes: z.array(
+    z.object({
+      policy_id: z.string(),
+      parameter_id: z.string(),
+      operation: z.string(),
+      operand: z.string(),
+      baseline: z.string().nullable(),
+      resulting: z.string().nullable(),
+      unit: z.string(),
+    }),
+  ),
+  problems: z.array(z.object({ policy_id: z.string(), parameter_id: z.string(), message: z.string() })),
+});
+
+/** `GET /analyst/examples`: example household requests (untyped on the backend). */
+export const HouseholdExamplesSchema = z.array(
+  z.object({ id: z.string(), description: z.string(), request: z.record(z.string(), z.unknown()) }),
+);
+
+/** `POST /scenarios`: only the identifiers the web app navigates with. */
+export const HouseholdCreatedSchema = z.object({ scenario_id: z.string(), result_id: z.string() });
+
+export const RunCreatedSchema = z.object({ scenario_id: z.string(), run_id: z.string() }) satisfies z.ZodType<S["RunCreated"]>;
+
+/** The workspace: the top-level shape and each block's discriminator are
+ *  checked; block bodies are trusted to the generated types. An unknown block
+ *  type passes through so the page can say it is unsupported. */
+const TabSchema = z.object({
+  id: z.enum(["overview", "fiscal", "distribution", "evidence", "assumptions", "technical", "audit"]),
+  title: z.string(),
+  status: z.enum(["available", "empty", "unavailable", "deferred"]),
+  note: z.string().nullish(),
+  blocks: z.array(z.looseObject({ id: z.string(), type: z.string() })),
+});
+
+export const WorkspaceSchema = z.object({
+  scenario: z.object({
+    scenario_id: z.string(),
+    kind: z.enum(["reform", "household"]),
+    title: z.string(),
+    description: z.string(),
+    created_at: z.string().nullable(),
+  }),
+  run: z.object({ run_id: z.string(), created_at: z.string().nullable(), reproducible: z.boolean().nullable() }).nullable(),
+  runs: z.array(z.object({ run_id: z.string(), created_at: z.string().nullable() })),
+  context: z
+    .object({
+      law_baseline: z.string(),
+      reference_period: z.string(),
+      policy_versions: z.record(z.string(), z.string()),
+      population_label: z.string().nullable(),
+      synthetic: z.boolean(),
+    })
+    .nullable(),
+  tabs: z.array(TabSchema),
 });
 
 export type Instrument = z.infer<typeof InstrumentSchema>;
+export type ValidInstrument = Extract<Instrument, { valid: true }>;
 export type RegistryParameter = z.infer<typeof RegistryParameterSchema>;
 export type Registry = z.infer<typeof RegistrySchema>;
+export type CheckResult = z.infer<typeof CheckSchema>;
+export type HouseholdExample = z.infer<typeof HouseholdExamplesSchema>[number];

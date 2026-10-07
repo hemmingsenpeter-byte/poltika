@@ -120,3 +120,22 @@ model-specific component.
 **A service call.** Add a function to a file in `src/api/services` that calls
 `getJson(path, schema)`; add its zod schema to `src/api/schemas.ts` with
 `satisfies z.ZodType<components["schemas"]["..."]>`.
+
+**A scenario tab or a block type.** The backend owns what a workspace holds
+(`src/poltika/api/v1_blocks.py`); the page only shows it.
+
+1. The backend adds the block type (a Pydantic model with a `type` literal) to
+   the `Block` union in `v1_blocks.py` and fills it in `v1_scenarios.py`.
+2. Regenerate the types: `uv run --extra dev python scripts/development/dump_openapi.py && (cd web && npm run gen:api)`.
+3. Add a renderer to the `REGISTRY` in `src/components/blocks/BlockRenderer.tsx`.
+   The registry is typed over every block type, so `npm run typecheck` fails
+   until the new type has a component. A type the registry does not know shows
+   an "Unsupported block" notice rather than failing.
+4. Add a fixture to `src/test/fixtures/workspace.ts` and a case to
+   `BlockRenderer.test.tsx`.
+
+A new tab id is added to `TabId` in `v1_blocks.py` and to `TAB_IDS` in
+`src/features/workspace/WorkspaceView.tsx`; the tab appears with its blocks.
+Never compute a value in a component: show the string the API sent, format it
+with `src/format`, and show an outcome word (never "0") when it has no value.
+A table cell is shown exactly as the server rounded it (`formatExact`).

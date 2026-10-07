@@ -128,3 +128,35 @@ export function formatPp(fraction: string | null): string {
   const n = percentNumber(fraction);
   return n === null ? fraction : `${signed(n, true)} pp`;
 }
+
+/** A numeric string as the API gave it, with thousands separators and nothing
+ *  rounded or rescaled. Anything that is not a plain decimal is returned
+ *  unchanged. Used for table cells, which the server has already rounded. */
+export function formatExact(value: string): string {
+  const parts = parse(value);
+  if (!parts) return value;
+  const fraction = parts.fraction ? `.${parts.fraction}` : "";
+  return `${parts.negative ? MINUS : ""}${group(parts.whole)}${fraction}`;
+}
+
+export type Outcome = "calculated" | "needs_review" | "unsupported" | "not_calculated";
+
+/** Words for a value that has no number. Never "0". */
+export const OUTCOME_WORDS: Record<Exclude<Outcome, "calculated">, string> = {
+  not_calculated: NOT_CALCULATED,
+  needs_review: "Needs review",
+  unsupported: "Unsupported",
+};
+
+const OUTCOME_CELLS: Record<string, Exclude<Outcome, "calculated">> = {
+  "not calculated": "not_calculated",
+  not_calculated: "not_calculated",
+  "needs review": "needs_review",
+  needs_review: "needs_review",
+  unsupported: "unsupported",
+};
+
+/** The outcome a table cell string stands for, or null for ordinary text. */
+export function outcomeOfCell(cell: string): Exclude<Outcome, "calculated"> | null {
+  return OUTCOME_CELLS[cell.trim().toLowerCase()] ?? null;
+}
