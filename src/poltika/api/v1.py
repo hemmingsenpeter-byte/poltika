@@ -15,7 +15,8 @@ web app can say the catalogue is unavailable instead of "none".
 from __future__ import annotations
 
 import os
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 from datetime import date
 from functools import lru_cache
 from importlib.metadata import PackageNotFoundError
@@ -25,7 +26,6 @@ from typing import Any, NoReturn
 
 import yaml
 from fastapi import APIRouter, HTTPException
-from pydantic import ValidationError
 
 from poltika.api.access import configured_credentials
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
@@ -97,22 +97,41 @@ _ARCHIVE_NOTE = (
     "Source Archive snapshots are preserved separately (ADR-0022) and are not yet exposed "
     "in this catalogue."
 )
-_ERRORS: dict[int | str, dict[str, Any]] = {503: {"model": ErrorBody}}
+_UNAVAILABLE: dict[int | str, dict[str, Any]] = {503: {"model": ErrorBody}}
+_LOOKUP: dict[int | str, dict[str, Any]] = {404: {"model": ErrorBody}, **_UNAVAILABLE}
+# What reading a malformed or unreadable catalogue file can raise.
+_UNREADABLE = (OSError, yaml.YAMLError, ValueError, KeyError, TypeError, PoltikaError)
 
 
 def _fail(status: int, code: str, message: str) -> NoReturn:
     raise HTTPException(status_code=status, detail={"code": code, "message": message})
 
 
+@contextmanager
+def _catalogue_read(what: str) -> Iterator[None]:
+    """A missing or invalid catalogue file is a 503 the web app can name,
+    never a bare 500. The message names the catalogue, not the server path."""
+    try:
+        yield
+    except _UNREADABLE as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={"code": "catalogue_unavailable", "message": f"The {what} here is invalid."},
+        ) from exc
+
+
 def _deployed_policy_dirs() -> tuple[Path, ...]:
     return (WFF_POLICY_DIR, AS_POLICY_DIR)
 
 
-@router.get("/meta", response_model=Meta)
+@router.get("/meta", response_model=Meta, responses=_UNAVAILABLE)
 def meta() -> Meta:
+    """The deployment's configuration. A population that is not configured,
+    or cannot be read, is reported as `null` so the rest stays available."""
     policies = []
     for policy_dir in _deployed_policy_dirs():
-        spec = load_policy_spec(policy_dir / "policy.yaml")
+        with _catalogue_read("policy specification"):
+            spec = load_policy_spec(policy_dir / "policy.yaml")
         policies.append(
             PolicyVersion(
                 policy_id=spec.policy_id,
@@ -144,7 +163,7 @@ def _population_info() -> PopulationInfo | None:
 
     try:
         p = population()
-    except HTTPException:
+    except (HTTPException, OSError, ValueError):
         return None
     return PopulationInfo(
         population_id=p.population_id, version=p.version, synthetic=p.synthetic, label=p.label
@@ -156,7 +175,8 @@ def _registry() -> Registry:
     path = Path(configured) if configured else REGISTRY_PATH
     if not path.is_file():
         _fail(503, "catalogue_unavailable", "The model registry is not configured here.")
-    return _load_registry(str(path), path.stat().st_mtime_ns)
+    with _catalogue_read("model registry"):
+        return _load_registry(str(path), path.stat().st_mtime_ns)
 
 
 @lru_cache(maxsize=2)
@@ -164,7 +184,7 @@ def _load_registry(path: str, mtime_ns: int) -> Registry:
     return load_registry(Path(path))
 
 
-@router.get("/models", response_model=ModelCatalogue, responses=_ERRORS)
+@router.get("/models", response_model=ModelCatalogue, responses=_UNAVAILABLE)
 def models() -> ModelCatalogue:
     registry = _registry()
     return ModelCatalogue(
@@ -186,7 +206,7 @@ def models() -> ModelCatalogue:
     )
 
 
-@router.get("/models/{model_id}", response_model=ModelDetail, responses=_ERRORS)
+@router.get("/models/{model_id}", response_model=ModelDetail, responses=_LOOKUP)
 def model_detail(model_id: str) -> ModelDetail:
     registry = _registry()
     if model_id not in {m.id for m in registry.models}:
@@ -207,10 +227,8 @@ def _metadata_root() -> Path:
 
 
 def _manifests(root: Path) -> list[DatasetManifest]:
-    try:
+    with _catalogue_read("dataset catalogue"):
         return dataset_manifests(root)
-    except PoltikaError:
-        _fail(503, "catalogue_unavailable", "A dataset manifest here is invalid.")
 
 
 def _period(manifest: DatasetManifest) -> Period:
@@ -229,7 +247,7 @@ def _by_dataset(manifests: Iterable[DatasetManifest]) -> dict[str, list[DatasetM
     return grouped
 
 
-@router.get("/datasets", response_model=DatasetCatalogue, responses=_ERRORS)
+@router.get("/datasets", response_model=DatasetCatalogue, responses=_UNAVAILABLE)
 def datasets() -> DatasetCatalogue:
     root = _metadata_root()
     summaries = []
@@ -250,10 +268,8 @@ def datasets() -> DatasetCatalogue:
         )
     populations = []
     for path in population_spec_paths(root):
-        try:
+        with _catalogue_read("population specification"):
             spec = SyntheticSpec.model_validate(yaml.safe_load(path.read_text()))
-        except ValidationError:
-            _fail(503, "catalogue_unavailable", "A population specification here is invalid.")
         populations.append(
             PopulationSpecSummary(
                 population_id=spec.population_id,
@@ -269,13 +285,14 @@ def datasets() -> DatasetCatalogue:
     )
 
 
-@router.get("/datasets/{dataset_id}", response_model=DatasetDetail, responses=_ERRORS)
+@router.get("/datasets/{dataset_id}", response_model=DatasetDetail, responses=_LOOKUP)
 def dataset_detail(dataset_id: str) -> DatasetDetail:
     root = _metadata_root()
     versions = _by_dataset(_manifests(root)).get(dataset_id)
     if not versions:
         _fail(404, "dataset_not_found", f"No dataset '{dataset_id}' is catalogued.")
-    defined = variable_dictionary(root).by_id()
+    with _catalogue_read("variable dictionary"):
+        defined = variable_dictionary(root).by_id()
     mapped = sorted({v for m in versions for v in m.canonical_variable_mapping})
     return DatasetDetail(
         dataset_id=dataset_id,
@@ -319,9 +336,10 @@ def dataset_detail(dataset_id: str) -> DatasetDetail:
     )
 
 
-@router.get("/evidence", response_model=list[PolicyEvidence])
+@router.get("/evidence", response_model=list[PolicyEvidence], responses=_LOOKUP)
 def evidence(policy: str | None = None) -> list[PolicyEvidence]:
-    reports = [_policy_evidence(d) for d in _deployed_policy_dirs()]
+    with _catalogue_read("evidence catalogue"):
+        reports = [_policy_evidence(d) for d in _deployed_policy_dirs()]
     if policy is None:
         return reports
     chosen = [r for r in reports if r.policy_id == policy]
