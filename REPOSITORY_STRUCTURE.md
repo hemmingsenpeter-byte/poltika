@@ -25,6 +25,7 @@ poltika/
 ├── BUILD_PLAN_v0_3.md    — detailed household-economic-model lane for Phase B;
 │                          conformance/validation maps to C and survey/secure population work to E
 ├── BUILD_PLAN_v0_1_6.md  — active statutory-maintenance lane: source currency and policy years
+├── BUILD_PLAN_B0_1_WEB.md — detailed lane for programme Task B0.1, the web frontend (ADR-0023)
 ├── BUILD_PLAN_v0_2.md    — release closeout for existing static microsimulation;
 │                          retained while v0.2.0 is untagged, not a competing programme order
 ├── BUILD_PLAN.md        — historical v0.1 build record; retained frozen doctrine anchors
@@ -381,6 +382,8 @@ target slots; see below. `engines/assurance/` now holds provenance,
 evidence coverage, deterministic explanations and source-currency reports.
 Run identities and manifests also live in `scenarios/record.py`; golden
 results and traces remain in `tests/regression/` and `tests/fixtures/`.
+Migration 0002 also retains each newly stored household run's verified
+provenance report in `run.provenance_json`; legacy rows stay NULL.
 
 The existing data and microsimulation modules are development-population
 machinery, not evidence that national representativeness has been achieved.
@@ -462,6 +465,9 @@ poltika/
 │   ├── ingest/
 │   ├── validate/
 │   └── development/
+│
+├── web/                 — Task B0.1 (ADR-0023): Next.js static-export frontend, served by FastAPI;
+│                          presentation only, never calculates; created by B0.1.3
 │
 └── outputs/
 ```

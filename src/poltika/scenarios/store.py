@@ -2,8 +2,8 @@
 
 Tables (append-only; the repository layer has no update path):
 - `scenario`: a `ScenarioRecord`, keyed by `scenario_id`;
-- `run`: a result, keyed by `result_id`, with its artifact manifest and
-  reproducibility flag;
+- `run`: a result, keyed by `result_id`, with its artifact manifest,
+  reproducibility flag and original verified provenance report;
 - `artifact`: the exact bytes of every file a run bound, keyed by SHA-256;
 - `reform_scenario` and `reform_run` (Task B0.1.2, ADR-0023): a reform
   scenario's definition (its options), and each run's results payload as
@@ -12,7 +12,8 @@ Tables (append-only; the repository layer has no update path):
 
 `created_at` records when a row was first written. It is set by the
 database, is never part of an identity hash, and is NULL for runs stored
-before migration 0002.
+before migration 0002. Those older runs also have no retained provenance
+report; re-saving one does not invent or backfill its historical trace.
 
 Storing the bytes lets a run replay after the repository's policy files
 change (Task 32.4). Code replay uses the manifest's git commit and is
@@ -54,8 +55,10 @@ from sqlalchemy import (
     func,
     select,
 )
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from poltika.common.errors import ImmutableRecordError, StoredRunNotFoundError, StoreError
+from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.scenarios.record import (
     CodeIdentity,
     ScenarioRecord,
@@ -91,6 +94,7 @@ run_table = Table(
     Column("result_json", Text, nullable=False),
     Column("reproducible", Boolean, nullable=False),
     Column("created_at", DateTime(timezone=True), nullable=True, server_default=func.now()),
+    Column("provenance_json", Text, nullable=True),
 )
 reform_scenario_table = Table(
     "reform_scenario",
@@ -144,6 +148,7 @@ class StoredRun:
     manifest: dict[str, Any]
     result: dict[str, Any]
     reproducible: bool
+    provenance: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -215,6 +220,7 @@ class ScenarioStore:
             if hashlib.sha256(content).hexdigest() != sha:
                 raise StoreError(f"{key} no longer matches the run's recorded hash; refusing to store")
             artifacts[sha] = content
+        provenance = build_combined_provenance_report(run, wff_policy_dir, as_policy_dir)
         with self._engine.begin() as conn:
             _insert_once(
                 conn,
@@ -236,7 +242,13 @@ class ScenarioStore:
                     "manifest_json": canonical_json(run.manifest),
                     "result_json": canonical_json(result_payload(run.result)),
                     "reproducible": run.manifest.reproducible,
+                    "provenance_json": canonical_json(provenance),
                 },
+                # This first-write report preserves the original input order.
+                # The existing identity/content checks still govern a re-save;
+                # canonical child reordering must not replace the report, and
+                # a legacy NULL must not be backfilled with a later trace.
+                equivalent={"provenance_json": lambda _stored, _new: True},
             )
 
     def get_run(self, result_id: str) -> StoredRun:
@@ -251,13 +263,33 @@ class ScenarioStore:
         if scenario_id(record) != row.scenario_id:
             # Task 34.3 F10: never replay a different scenario than was stored.
             raise StoreError(f"stored scenario {row.scenario_id} does not rebuild to the same identity")
+        manifest = json.loads(row.manifest_json)
+        provenance = None
+        if row.provenance_json is not None:
+            try:
+                provenance = json.loads(row.provenance_json)
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise StoreError(f"stored run {result_id} has an invalid provenance report") from exc
+            policy_files = [
+                {"path": path, "sha256": sha} for path, sha in manifest["policy_files"]
+            ]
+            if (
+                not isinstance(provenance, dict)
+                or provenance.get("scenario_id") != row.scenario_id
+                or provenance.get("result_id") != row.result_id
+                or provenance.get("policy_files") != policy_files
+                or provenance.get("code") != manifest["code"]
+                or provenance.get("reproducible") != row.reproducible
+            ):
+                raise StoreError(f"stored run {result_id} provenance does not match its identity and manifest")
         return StoredRun(
             result_id=row.result_id,
             scenario_id=row.scenario_id,
             record=record,
-            manifest=json.loads(row.manifest_json),
+            manifest=manifest,
             result=json.loads(row.result_json),
             reproducible=row.reproducible,
+            provenance=provenance,
         )
 
     def restore_artifacts(self, stored: StoredRun, target: Path) -> tuple[Path, Path]:
@@ -325,21 +357,22 @@ class ScenarioStore:
         existing id raises `ImmutableRecordError`."""
         definition_json = canonical_json(definition)
         with self._engine.begin() as conn:
+            conn.execute(
+                pg_insert(reform_scenario_table)
+                .values(
+                    scenario_id=scenario_id,
+                    definition_json=definition_json,
+                    title=title,
+                    description=description,
+                )
+                .on_conflict_do_nothing(index_elements=[reform_scenario_table.c.scenario_id])
+            )
             existing = conn.execute(
                 select(reform_scenario_table).where(
                     reform_scenario_table.c.scenario_id == scenario_id
                 )
-            ).one_or_none()
-            if existing is None:
-                conn.execute(
-                    reform_scenario_table.insert().values(
-                        scenario_id=scenario_id,
-                        definition_json=definition_json,
-                        title=title,
-                        description=description,
-                    )
-                )
-            elif existing.definition_json != definition_json:
+            ).one()
+            if existing.definition_json != definition_json:
                 raise ImmutableRecordError(
                     f"reform_scenario {scenario_id} is already stored with a different definition"
                 )
@@ -510,12 +543,15 @@ def _insert_once(
     *,
     equivalent: dict[str, Callable[[Any, Any], bool]] | None = None,
 ) -> None:
-    """Insert a row, or check an existing row has the same content. A column
-    in `equivalent` is compared with its own test instead of `==`."""
-    existing = conn.execute(select(table).where(table.c[key] == value)).one_or_none()
-    if existing is None:
-        conn.execute(table.insert().values({key: value, **columns}))
-        return
+    """Insert atomically, then check the stored row has the same content.
+    Duplicate writers retain the first row. A column in `equivalent` is
+    compared with its own test instead of `==`."""
+    conn.execute(
+        pg_insert(table)
+        .values({key: value, **columns})
+        .on_conflict_do_nothing(index_elements=[table.c[key]])
+    )
+    existing = conn.execute(select(table).where(table.c[key] == value)).one()
     for name, new in columns.items():
         same = (equivalent or {}).get(name)
         stored = getattr(existing, name)

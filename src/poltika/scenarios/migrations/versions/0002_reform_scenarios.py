@@ -1,8 +1,9 @@
 """Task B0.1.2 (ADR-0023): reform scenarios, their runs, and run times.
 
 Adds `reform_scenario` and `reform_run` (append-only, like 0001's tables)
-and a nullable `created_at` on `run`. Rows stored before this migration keep
-`created_at` NULL: their time was not recorded, and none is invented.
+and nullable `created_at` and `provenance_json` on `run`. Rows stored before
+this migration keep both NULL: their time and report were not retained,
+and neither is invented.
 
 Revision ID: 0002
 """
@@ -25,6 +26,7 @@ def upgrade() -> None:
     )
     # Only rows written from now on get a time.
     op.alter_column("run", "created_at", server_default=sa.func.now())
+    op.add_column("run", sa.Column("provenance_json", sa.Text, nullable=True))
     op.create_table(
         "reform_scenario",
         sa.Column("scenario_id", sa.String(64), primary_key=True),
@@ -58,4 +60,5 @@ def downgrade() -> None:
     op.drop_index("reform_run_scenario_id", table_name="reform_run")
     op.drop_table("reform_run")
     op.drop_table("reform_scenario")
+    op.drop_column("run", "provenance_json")
     op.drop_column("run", "created_at")

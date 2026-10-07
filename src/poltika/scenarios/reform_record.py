@@ -8,9 +8,10 @@ scenario; its title and description are labels kept beside it.
 A reform run is one execution of every option on a population. Each option's
 own run id already hashes the population, the reform, the code identity and
 the policy files (`microsim.runner`), so the reform run id hashes the
-scenario id with those option run ids. Rerunning on the same deployment
-reproduces the same id; a changed population, code or policy file gives a
-new one. Timestamps are never hashed (as in `record.py`).
+scenario id with those option run ids and the stored results hash. The
+results hash also distinguishes a changed payload when an installed
+deployment has no recorded source commit. Identical payloads reproduce the
+same id. Timestamps and display-only build metadata are never hashed.
 """
 
 from __future__ import annotations
@@ -43,13 +44,16 @@ def reform_scenario_id(definition: dict[str, Any]) -> str:
     return _sha256(canonical_json({"type": "reform_scenario", "definition": definition}))
 
 
-def reform_run_id(scenario_id: str, option_run_ids: Sequence[str]) -> str:
+def reform_run_id(
+    scenario_id: str, option_run_ids: Sequence[str], *, results_sha256: str
+) -> str:
     return _sha256(
         canonical_json(
             {
                 "type": "reform_run",
                 "scenario_id": scenario_id,
                 "option_run_ids": list(option_run_ids),
+                "results_sha256": results_sha256,
             }
         )
     )

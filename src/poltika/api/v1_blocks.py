@@ -175,6 +175,7 @@ class ChainStep(BaseModel):
     step_id: str
     rule_id: str | None
     description: str
+    inputs: dict[str, Cell] = {}
     result: Cell
 
 

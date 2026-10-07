@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 from pathlib import Path
 
@@ -143,6 +144,80 @@ def test_a_missing_metadata_directory_is_unavailable(
 ) -> None:
     monkeypatch.setenv("POLTIKA_DATA_METADATA_DIR", str(tmp_path / "absent"))
     assert client.get("/api/v1/datasets").json()["detail"]["code"] == "catalogue_unavailable"
+
+
+@pytest.mark.parametrize(
+    "path", ["/api/v1/datasets", "/api/v1/datasets/ird_working_for_families_statistics"]
+)
+def test_a_missing_manifest_directory_is_unavailable_not_empty_or_not_found(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, path: str
+) -> None:
+    monkeypatch.setenv("POLTIKA_DATA_METADATA_DIR", str(tmp_path))
+    response = client.get(path)
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "catalogue_unavailable"
+    assert str(tmp_path) not in response.text
+
+
+def test_an_existing_empty_manifest_directory_is_a_valid_empty_catalogue(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    (tmp_path / "datasets").mkdir()
+    monkeypatch.setenv("POLTIKA_DATA_METADATA_DIR", str(tmp_path))
+    response = client.get("/api/v1/datasets")
+    assert response.status_code == 200
+    assert response.json()["datasets"] == []
+    response = client.get("/api/v1/datasets/no_such_dataset")
+    assert response.status_code == 404
+    assert response.json()["detail"]["code"] == "dataset_not_found"
+
+
+def test_a_missing_dictionary_is_unavailable_not_undefined_variables(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    root = tmp_path / "metadata"
+    shutil.copytree(DEFAULT_METADATA_DIR, root)
+    (root / "variables" / "dictionary.yaml").unlink()
+    monkeypatch.setenv("POLTIKA_DATA_METADATA_DIR", str(root))
+    response = client.get("/api/v1/datasets/ird_working_for_families_statistics")
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "catalogue_unavailable"
+    assert str(tmp_path) not in response.text
+
+
+@pytest.mark.skipif(os.name != "posix", reason="requires POSIX directory permissions")
+@pytest.mark.parametrize(
+    ("path", "configuration"),
+    [
+        ("/api/v1/models", "POLTIKA_MODEL_REGISTRY_PATH"),
+        ("/api/v1/datasets", "POLTIKA_DATA_METADATA_DIR"),
+    ],
+)
+def test_an_unreadable_catalogue_ancestor_is_unavailable_not_a_500(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    path: str,
+    configuration: str,
+) -> None:
+    private = tmp_path / "private"
+    private.mkdir()
+    asset = private / "asset"
+    if configuration == "POLTIKA_MODEL_REGISTRY_PATH":
+        shutil.copy(REGISTRY_PATH, asset)
+    else:
+        asset.mkdir()
+    monkeypatch.setenv(configuration, str(asset))
+    private.chmod(0)
+    try:
+        if os.access(private, os.X_OK):
+            pytest.skip("the current user can bypass directory permissions")
+        response = client.get(path)
+    finally:
+        private.chmod(0o700)
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "catalogue_unavailable"
+    assert str(tmp_path) not in response.text
 
 
 def test_evidence_carries_every_source_with_its_rank_and_checks(client: TestClient) -> None:

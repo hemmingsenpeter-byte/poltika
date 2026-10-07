@@ -17,14 +17,18 @@ calculated as such, never as 0 (ADR-0018). Storage needs
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Coroutine, Iterator, Mapping
+from contextlib import contextmanager
 from functools import lru_cache
 from typing import Annotated, Any, Literal, NoReturn
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 from fastapi import Path as PathParam
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.routing import APIRoute
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
+from sqlalchemy.exc import SQLAlchemyError
 
 from poltika.api import workbench_config as config
 from poltika.api.microsim import execute_reform
@@ -34,6 +38,8 @@ from poltika.api.v1_blocks import (
     AuditField,
     AuditRecordBlock,
     Block,
+    CalculationChainBlock,
+    ChainStep,
     Context,
     MetricBlock,
     MetricValue,
@@ -62,12 +68,35 @@ from poltika.api.workbench import (
 )
 from poltika.api.workbench import ScenarioHeader as WorkbenchHeader
 from poltika.api.workbench_tables import NOT_CALCULATED, distribution_tables
-from poltika.common.errors import StoreError
+from poltika.common.errors import ImmutableRecordError, StoreError
 from poltika.scenarios.microsim.reform import Reform
-from poltika.scenarios.reform_record import reform_definition, reform_run_id, reform_scenario_id
+from poltika.scenarios.reform_record import (
+    reform_definition,
+    reform_run_id,
+    reform_scenario_id,
+    results_sha256,
+)
 from poltika.scenarios.store import ReformRun, ReformScenario, ScenarioStore, database_url
 
-router = APIRouter(prefix="/api/v1/scenarios", tags=["scenarios"])
+
+class _ScenarioRoute(APIRoute):
+    def get_route_handler(self) -> Callable[[Request], Coroutine[Any, Any, Response]]:
+        handler = super().get_route_handler()
+
+        async def validated(request: Request) -> Response:
+            try:
+                return await handler(request)
+            except RequestValidationError as exc:
+                message = "; ".join(
+                    f"{'.'.join(str(part) for part in error['loc'])}: {error['msg']}"
+                    for error in exc.errors()
+                )
+                _fail(422, "invalid_scenario", message)
+
+        return validated
+
+
+router = APIRouter(prefix="/api/v1/scenarios", tags=["scenarios"], route_class=_ScenarioRoute)
 
 ScenarioId = Annotated[str, PathParam(pattern=r"^[0-9a-f]{64}$")]
 _ERRORS: dict[int | str, dict[str, Any]] = {
@@ -102,6 +131,27 @@ def _store() -> ScenarioStore:
         return _store_for(database_url())
     except StoreError:
         _fail(503, "scenario_storage_unavailable", "Scenario storage is not configured here.")
+    except (SQLAlchemyError, ValueError):
+        _fail(503, "scenario_storage_unavailable", "Scenario storage is not configured correctly.")
+
+
+@contextmanager
+def _storage() -> Iterator[None]:
+    """Database and integrity failures as coded errors, never a bare 500."""
+    try:
+        yield
+    except ImmutableRecordError as exc:
+        _fail(409, "immutable_record", str(exc))
+    except StoreError as exc:
+        _fail(503, "scenario_storage_unavailable", f"Stored scenario data failed a check: {exc}")
+    except SQLAlchemyError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "scenario_storage_unavailable",
+                "message": "Scenario storage cannot be reached or is not migrated.",
+            },
+        ) from exc
 
 
 # --- contracts ---------------------------------------------------------------------------
@@ -151,7 +201,8 @@ def list_scenarios(
     limit: Annotated[int, Query(ge=1, le=100)] = 25,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> ScenarioList:
-    items, total = _store().list_scenarios(kind, limit, offset)
+    with _storage():
+        items, total = _store().list_scenarios(kind, limit, offset)
     return ScenarioList(
         items=[
             ScenarioItem(
@@ -183,10 +234,11 @@ def create_scenario(request: CreateScenario) -> ScenarioItem:
     definition = reform_definition(
         config.BASELINE_DATE, [(o.label, o.reform) for o in request.options]
     )
-    stored = store.save_reform_scenario(
-        reform_scenario_id(definition), definition, request.title, request.description
-    )
-    return _item(stored, store)
+    with _storage():
+        stored = store.save_reform_scenario(
+            reform_scenario_id(definition), definition, request.title, request.description
+        )
+        return _item(stored, store)
 
 
 def _item(s: ReformScenario, store: ScenarioStore) -> ScenarioItem:
@@ -205,7 +257,8 @@ def _item(s: ReformScenario, store: ScenarioStore) -> ScenarioItem:
 @router.post("/{scenario_id}/runs", status_code=201, response_model=RunCreated, responses=_ERRORS)
 def create_run(scenario_id: ScenarioId) -> RunCreated:
     store = _store()
-    scenario = store.get_reform_scenario(scenario_id)
+    with _storage():
+        scenario = store.get_reform_scenario(scenario_id)
     if scenario is None:
         _fail(404, "scenario_not_found", "No reform scenario has this id.")
     options = [
@@ -223,10 +276,12 @@ def create_run(scenario_id: ScenarioId) -> RunCreated:
         "format": _FORMAT,
         "workbench": _plain(payload),
         "distribution": _plain(distribution_tables(results)),
+        "context": _context(payload).model_dump(mode="json"),
     }
     option_run_ids = tuple(run.run_id for _, _, run in labelled)
-    run_id = reform_run_id(scenario_id, option_run_ids)
-    store.save_reform_run(run_id, scenario_id, option_run_ids, stored)
+    run_id = reform_run_id(scenario_id, option_run_ids, results_sha256=results_sha256(stored))
+    with _storage():
+        store.save_reform_run(run_id, scenario_id, option_run_ids, stored)
     return RunCreated(scenario_id=scenario_id, run_id=run_id)
 
 
@@ -258,12 +313,14 @@ def _plain(value: Any) -> Any:
 
 @router.get("/{scenario_id}", response_model=Workspace, responses=_ERRORS)
 def workspace(scenario_id: ScenarioId) -> Workspace:
-    return _workspace(scenario_id, None)
+    with _storage():
+        return _workspace(scenario_id, None)
 
 
 @router.get("/{scenario_id}/runs/{run_id}", response_model=Workspace, responses=_ERRORS)
 def run_workspace(scenario_id: ScenarioId, run_id: ScenarioId) -> Workspace:
-    return _workspace(scenario_id, run_id)
+    with _storage():
+        return _workspace(scenario_id, run_id)
 
 
 def _workspace(scenario_id: str, run_id: str | None) -> Workspace:
@@ -317,6 +374,18 @@ def _unit(label: str) -> Unit:
 
 
 def _context(payload: dict[str, Any] | None) -> Context:
+    if payload is not None:
+        tabs = {t["id"]: _by_id(t) for t in payload["tabs"]}
+        modelled = next(y for y in tabs["fiscal"]["horizon"]["years"] if y["modelled"])
+        return Context(
+            law_baseline=payload["law_baseline"],
+            reference_period=f"{modelled['label']}: {modelled['note']}",
+            policy_versions={
+                row[0]: row[1] for row in tabs["assumptions"]["parameters_used"]["rows"]
+            },
+            population_label=payload["population_label"],
+            synthetic=bool(payload["synthetic"]),
+        )
     modelled = next(y for y in config.FISCAL_YEARS if y.modelled)
     return Context(
         law_baseline=config.BASELINE_LABEL,
@@ -449,7 +518,11 @@ def _reform_workspace(s: ReformScenario, run: ReformRun | None, refs: list[RunRe
             run_id=run.run_id, created_at=run.created_at, reproducible=first["reproducible"]
         ),
         runs=refs,
-        context=_context(payload),
+        context=(
+            Context.model_validate(run.results["context"])
+            if "context" in run.results
+            else _context(payload)
+        ),
         tabs=workspace_tabs,
     )
 
@@ -576,7 +649,7 @@ def _models(model_id: str) -> ModelRefBlock:
             stack.extend(registry.model(current).depends_on)
     return ModelRefBlock(
         id="models",
-        title="Models used",
+        title="Current model registry",
         models=[
             ModelRefItem(id=m.id, name=m.name, version=m.version, label=registry.label(m.id))
             for m in (registry.model(i) for i in ids)
@@ -589,6 +662,135 @@ def _models(model_id: str) -> ModelRefBlock:
 _OUTCOMES = ("calculated", "needs_review", "unsupported")
 
 
+def _household_provenance_blocks(provenance: dict[str, Any] | None) -> list[Any]:
+    if provenance is None:
+        return [
+            Notice(
+                id="original_provenance",
+                tone="unavailable",
+                text="The original calculation steps were not retained for this legacy run.",
+            )
+        ]
+    blocks: list[Any] = []
+    for policy_id in ("working_for_families", "accommodation_supplement"):
+        report = provenance[policy_id]
+        blocks.append(
+            {
+                "type": "table",
+                "id": f"original_sources_{policy_id}",
+                "title": f"Original cited sources: {policy_id.replace('_', ' ')}",
+                "columns": [
+                    {"id": key, "label": label, "kind": "text"}
+                    for key, label in (
+                        ("id", "Source"),
+                        ("title", "Title"),
+                        ("url", "Link"),
+                        ("checks", "Check evidence"),
+                    )
+                ],
+                "rows": [
+                    [
+                        source["id"],
+                        source["title"],
+                        source["url"],
+                        "; ".join(c["text"] for c in source["check_evidence"]),
+                    ]
+                    for source in report["sources"]
+                ],
+                "notes": ["Cited by the original run, from its retained verified report."],
+            }
+        )
+        for component in report["components"]:
+            cid = component["component_id"]
+            blocks.append(
+                {
+                    "type": "table",
+                    "id": f"rules_{cid}",
+                    "title": f"Specification rules: {cid.replace('_', ' ')}",
+                    "columns": [
+                        {"id": "id", "label": "Rule", "kind": "text"},
+                        {
+                            "id": "summary",
+                            "label": "Original specification summary",
+                            "kind": "text",
+                        },
+                    ],
+                    "rows": [[rule["id"], rule["summary"]] for rule in component["source_rules"]],
+                    "notes": [
+                        "Applied to the reported result."
+                        if component["rules_applied"]
+                        else "Original module rules; the reported result was not calculated."
+                    ],
+                }
+            )
+            blocks.append(
+                {
+                    "type": "table",
+                    "id": f"parameters_{cid}",
+                    "title": f"Parameters consulted: {cid.replace('_', ' ')}",
+                    "columns": [
+                        {"id": key, "label": label, "kind": "text"}
+                        for key, label in (
+                            ("parameter_id", "Parameter"),
+                            ("outcome", "Outcome"),
+                            ("value", "Value"),
+                            ("unit", "Unit"),
+                            ("review_status", "Review status"),
+                            ("source_id", "Source"),
+                            ("locator", "Locator"),
+                        )
+                    ],
+                    "rows": [
+                        [
+                            p[key]
+                            for key in (
+                                "parameter_id",
+                                "outcome",
+                                "value",
+                                "unit",
+                                "review_status",
+                                "source_id",
+                                "locator",
+                            )
+                        ]
+                        for p in component["parameters"]
+                    ],
+                    "notes": ["Retained from the original verified provenance report."],
+                }
+            )
+            if component["steps"]:
+                unit = "NZD per tax year" if policy_id == "working_for_families" else "NZD per week"
+                blocks.append(
+                    CalculationChainBlock(
+                        id=f"calculation_{cid}",
+                        title=f"{cid.replace('_', ' ')} ({unit})",
+                        steps=[
+                            ChainStep(
+                                component_id=cid,
+                                inputs={key: str(value) for key, value in step["inputs"].items()},
+                                **{
+                                    key: step[key]
+                                    for key in ("step_id", "rule_id", "description", "result")
+                                },
+                            )
+                            for step in component["steps"]
+                        ],
+                    )
+                )
+                if not component["rules_applied"]:
+                    blocks.append(
+                        Notice(
+                            id=f"superseded_{cid}",
+                            tone="caution",
+                            text=(
+                                "These recorded module steps do not establish a calculated "
+                                "entitlement. The component's reported outcome explains why."
+                            ),
+                        )
+                    )
+    return blocks
+
+
 def _household_workspace(
     store: ScenarioStore, scenario_id: str, result_id: str | None, refs: list[RunRef]
 ) -> Workspace:
@@ -597,7 +799,7 @@ def _household_workspace(
         kind="household",
         title=_HOUSEHOLD_TITLE,
         description=_HOUSEHOLD_DESCRIPTION,
-        created_at=refs[-1].created_at if refs else None,
+        created_at=min((r.created_at for r in refs if r.created_at), default=None),
     )
     if result_id is None:
         note = "This scenario has no stored run."
@@ -633,7 +835,13 @@ def _household_workspace(
             precision="household_rule",
             evidence_class="Model output",
             context=c.get("reason") or "",
-            provenance=[ProvenanceRef(tab="audit", block_id="identity")],
+            provenance=[
+                ProvenanceRef(tab="audit", block_id="identity"),
+                ProvenanceRef(
+                    tab="audit",
+                    block_id=f"parameters_{name}" if stored.provenance else "original_provenance",
+                ),
+            ],
         )
         for name, unit, c in components
     ]
@@ -673,7 +881,23 @@ def _household_workspace(
             reproducible=stored.reproducible,
         ),
         runs=refs,
-        context=_context(None).model_copy(update={"population_label": None, "synthetic": False}),
+        context=Context(
+            law_baseline=(
+                f"Policy lookup dates: WFF {stored.record.wff_lookup_date}; "
+                f"Accommodation Supplement {stored.record.as_lookup_date}"
+            ),
+            reference_period=(
+                f"WFF {stored.result['wff_period'][0]} to {stored.result['wff_period'][1]}; "
+                f"Accommodation Supplement {stored.result['accommodation_supplement_period'][0]} "
+                f"to {stored.result['accommodation_supplement_period'][1]} (ends exclusive)"
+            ),
+            policy_versions={
+                "working_for_families": stored.record.requested_wff_policy_version,
+                "accommodation_supplement": stored.record.requested_as_policy_version,
+            },
+            population_label=None,
+            synthetic=False,
+        ),
         tabs=[
             _tab(
                 "overview",
@@ -732,6 +956,7 @@ def _household_workspace(
                             "Replay: POST /scenarios/{result_id}/replay re-runs it against these exact files."
                         ],
                     },
+                    *_household_provenance_blocks(stored.provenance),
                 ],
             ),
         ],

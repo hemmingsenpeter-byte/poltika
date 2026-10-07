@@ -592,8 +592,15 @@ _DIMENSIONS = (
 )
 
 
-def _money_or(value: Decimal | None) -> str:
-    return NOT_CALCULATED if value is None else str(_money(value))
+NONE_IN_GROUP = "none"
+
+
+def _mean_or(value: Decimal | None, calculated_weight: Decimal) -> str:
+    """A group mean, or why there is none: no household in the group was
+    calculated ("not calculated"), or none had that kind of change ("none")."""
+    if value is not None:
+        return str(_money(value))
+    return NONE_IN_GROUP if calculated_weight else NOT_CALCULATED
 
 
 def distribution_tables(options: Sequence[OptionResult]) -> list[dict[str, Any]]:
@@ -626,8 +633,8 @@ def distribution_tables(options: Sequence[OptionResult]) -> list[dict[str, Any]]
                                 c[analysis.ChangeClass.NEEDS_REVIEW]
                                 + c[analysis.ChangeClass.UNSUPPORTED]
                             ),
-                            _money_or(s.mean_gain),
-                            _money_or(s.mean_loss),
+                            _mean_or(s.mean_gain, s.calculated_weight),
+                            _mean_or(s.mean_loss, s.calculated_weight),
                             _money(s.total_change) if s.calculated_weight else NOT_CALCULATED,
                         ]
                     )
@@ -635,6 +642,12 @@ def distribution_tables(options: Sequence[OptionResult]) -> list[dict[str, Any]]
                     f"{option.label}: {_count(w)} weighted households left out ({reason})."
                     for reason, w in sorted(table.left_out.items())
                 ]
+                invalid = option.run.validation.by_status()[RecordStatus.INVALID][1]
+                if invalid:
+                    notes.append(
+                        f"{option.label}: {_count(invalid)} weighted households left out "
+                        "(invalid records)."
+                    )
             tables.append(
                 _table(
                     f"distribution_{measure.measure_id}_{dimension_id}",
@@ -656,7 +669,8 @@ def distribution_tables(options: Sequence[OptionResult]) -> list[dict[str, Any]]
                         (
                             "Any change counts here, with no threshold. Weighted households. "
                             "A household whose component was not calculated is counted as not "
-                            "calculated, never as no change."
+                            "calculated, never as no change. A mean shows \"none\" when no "
+                            "calculated household in the group had that kind of change."
                         ),
                         *notes,
                     ],
