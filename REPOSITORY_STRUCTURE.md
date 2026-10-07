@@ -134,6 +134,9 @@ poltika/
 │   │                        the v0.2 D8 refusal of unsourced conversions
 │   ├── data/              — v0.2 Phase 1: manifest.py (raw-snapshot manifest),
 │   │                        registry.py (checksummed dataset registry),
+│   │                        metadata_index.py (Task B0.1.1: read-only listing of
+│   │                        manifests, population specs and the variable
+│   │                        dictionary for the web catalogue; reads no snapshot),
 │   │                        transform.py (versioned transformation registry;
 │   │                        transforms/ holds one module per dataset),
 │   │                        xlsx.py (standard-library reader for published
@@ -263,7 +266,10 @@ poltika/
 │                            and workbench_config.py (presentation
 │                            config only: tabs, fiscal-year slots,
 │                            measures, winner/loser thresholds, family
-│                            types, limitations; never a policy value)
+│                            types, limitations; never a policy value);
+│                            v1.py and v1_schemas.py (Task B0.1.1, ADR-0023:
+│                            the read-only /api/v1 catalogue of meta, models,
+│                            datasets and evidence, with typed responses)
 │                            — no llm/ layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
@@ -451,7 +457,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 
 | Directory | May depend on | Must not depend on |
 | --- | --- | --- |
-| `src/poltika/data/` | `common/`; `semantics/variables.py` (the canonical types it produces) | `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`, other `semantics/` internals. Nothing outside `data/` imports it (`tests/unit/data/test_boundary.py`) |
+| `src/poltika/data/` | `common/`; `semantics/variables.py` (the canonical types it produces) | `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`, other `semantics/` internals. Nothing outside `data/` imports it (`tests/unit/data/test_boundary.py`), except the web catalogue's read of dataset metadata (`api/v1.py` may import only `data/metadata_index.py` and `data/manifest.py`; Task B0.1.1, ADR-0023) |
 | `src/poltika/data/acquisition/` (ADR-0022) | `common/`; standard library | `data/registry`, `data/context`, `data/transform`, `data/transforms/`, `data/manifest`'s `DatasetManifest`, `engines/`, `policy/`, `scenarios/`, `api/`, `llm/`. It never writes under `data/raw/` or `data/metadata/`. Inside `data/` but not on the governed path: nothing in the governed path (registry, context, transform, transforms/) reads the archive, and nothing outside `data/acquisition/` may name `data/source_archive` or `POLTIKA_SOURCE_ARCHIVE_DIR` (`tests/unit/data/acquisition/test_archive_boundary.py`) |
 | `src/poltika/semantics/` | `common/` | source-specific formats/APIs, `engines/` |
 | `src/poltika/policy/` | `semantics/`, `common/` | `data/` (raw or processed), source-specific formats |
@@ -459,7 +465,7 @@ data/  →  semantics/  →  policy/  →  engines/  →  scenarios/
 | `src/poltika/engines/assurance/` | `semantics/`, `policy/`, `scenarios/`, `engines/simulator/`, `common/` | source-specific formats/APIs |
 | `src/poltika/scenarios/` | `engines/simulator/`, `engines/assurance/`, `policy/`, `semantics/`, `common/` (Task 28.4: the combined WFF+AS runner calls both module entry points -- downstream of `engines/`, per the layer arrow above) | `data/` (raw or processed), `api/`, `llm/`, source-specific formats. **One-way rule:** `engines/` must never import `scenarios/`'s combined runner; the simulator row's permission to use `scenarios/` covers scenario *definitions* only, so no import cycle can form. |
 | `src/poltika/llm/` | `scenarios/` (to build/read a `ScenarioRequest`) | `engines/simulator/` internals, raw/processed data |
-| `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly); `scenarios/` and `engines/assurance/` for the Task 33 combined household route (`api/household.py`) and the Task 33.2 stored scenario routes (`api/scenarios.py`, via `scenarios/store.py`); `scenarios/microsim/` and `semantics/population.py` for the v0.2 routes (`api/microsim.py`), reading only the population file an operator sets in `POLTIKA_POPULATION_PATH`; `POLTIKA_POLICY_SPECS_DIR` at deploy time (ADR-0011 -- an operator-set deployment variable, not a per-request caller input) | `data/` (raw or processed), source-specific formats, a *request*-supplied policy directory path (still prohibited -- no HTTP caller may choose the policy directory) |
+| `src/poltika/api/` | `engines/simulator/`, `common/` (Task 21: directly); `scenarios/` and `engines/assurance/` for the Task 33 combined household route (`api/household.py`) and the Task 33.2 stored scenario routes (`api/scenarios.py`, via `scenarios/store.py`); `scenarios/microsim/` and `semantics/population.py` for the v0.2 routes (`api/microsim.py`), reading only the population file an operator sets in `POLTIKA_POPULATION_PATH`; `POLTIKA_POLICY_SPECS_DIR` at deploy time (ADR-0011 -- an operator-set deployment variable, not a per-request caller input); for the `/api/v1` catalogue (`api/v1.py`, Task B0.1.1), `engines/assurance/` model cards, evidence and provenance, and dataset *metadata* through `data/metadata_index.py`, located by the operator-set `POLTIKA_MODEL_REGISTRY_PATH` and `POLTIKA_DATA_METADATA_DIR` | `data/` (raw or processed), source-specific formats, a *request*-supplied policy directory path (still prohibited -- no HTTP caller may choose the policy directory) |
 
 Concretely: the simulator must never do
 
