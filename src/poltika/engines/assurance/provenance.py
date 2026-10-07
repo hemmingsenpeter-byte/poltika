@@ -391,6 +391,13 @@ def _decision_path(verified: Mapping[str, bytes], decision_id: str) -> str:
     return matches[0]
 
 
+def catalogue_source_entry(source_id: str, entry: Mapping[str, Any]) -> dict[str, Any]:
+    """One catalogued source as the provenance report shows it, with its
+    dated checks and check evidence, for other read-only views (Task B0.1.1's
+    `/api/v1/evidence`)."""
+    return _source_entry(source_id, entry)
+
+
 def _source_entry(source_id: str, entry: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "id": source_id,
