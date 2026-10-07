@@ -1,6 +1,16 @@
 # v0.1.5 Task 8.1: the pilot image -- the API, its locked dependencies, and a
 # default copy of policy_specs/. Deployments mount their reviewed copy over
 # /policy_specs (ADR-0011: policy files are deploy-time configuration).
+#
+# Task B0.1.3 (ADR-0023): the web app is built in a Node stage and the export
+# is copied in; FastAPI serves it from POLTIKA_WEB_DIR (api/web.py).
+FROM node:20-slim AS web
+WORKDIR /web
+COPY web/package.json web/package-lock.json ./
+RUN npm ci
+COPY web/ ./
+RUN npm run build
+
 FROM python:3.12-slim
 
 RUN pip install --no-cache-dir "uv>=0.8,<1"
@@ -13,6 +23,7 @@ RUN uv sync --locked --no-dev --extra serve --no-editable \
 
 COPY policy_specs /policy_specs
 COPY deploy/entrypoint.sh /entrypoint.sh
+COPY --from=web /web/out /app/web
 
 # Task B0.1.1 (ADR-0023): what /api/v1 lists -- the model registry and the
 # dataset metadata (manifests, population specs, variable dictionary). No
@@ -36,6 +47,7 @@ ENV PATH=/app/.venv/bin:$PATH \
     POLTIKA_POPULATION_PATH=/app/population.json \
     POLTIKA_MODEL_REGISTRY_PATH=/app/model_registry/registry.yaml \
     POLTIKA_DATA_METADATA_DIR=/app/data-metadata \
+    POLTIKA_WEB_DIR=/app/web \
     POLTIKA_REQUIRE_ACCESS_PASSWORD=1 \
     PYTHONUNBUFFERED=1
 
