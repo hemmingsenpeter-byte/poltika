@@ -185,15 +185,15 @@ Use the detailed v0.3 lane and the five-PR policy onboarding process.
 Sourcing and supported-slice decisions precede implementation. Complete
 household semantics only to the extent required by these models.
 
-B0.1. **Web frontend: the single product surface.** Claude Code implements;
-    GPT/Codex reviews which amounts are shown; Pete owns hosting, access and
-    ADR-0018 acceptance. Detailed lane: [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md)
-    ([ADR-0023](adr/0023-web-frontend-product-surface.md)).
-    Done when a password-protected user at `poltika.onrender.com` can start
-    or open a scenario and move from its headline result through fiscal,
-    distributional, evidence, assumption, technical and audit views, and
-    browse models and datasets, with every number traced to an API value and
-    no calculation in the frontend. It blocks none of Tasks 5–11.
+**B0.1. Web frontend: the single product surface.** Claude Code implements;
+GPT/Codex reviews which amounts are shown; Pete owns hosting, access and
+ADR-0018 acceptance. Detailed lane: [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md)
+([ADR-0023](adr/0023-web-frontend-product-surface.md)).
+Done when a password-protected user at `poltika.onrender.com` can start
+or open a scenario and move from its headline result through fiscal,
+distributional, evidence, assumption, technical and audit views, and
+browse models and datasets, with every number traced to an API value and
+no calculation in the frontend. It blocks none of Tasks 5–11.
 
 5. **Minimum household semantic contracts.** Claude Code implements;
    GPT/Codex reviews source-derived mappings.

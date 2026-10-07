@@ -1,9 +1,11 @@
 # Poltika web frontend: detailed Task B0.1 lane
 
 **Date:** 7 October 2026
-**Status:** Active supporting plan for programme Task B0.1, approved by Pete
-on 7 October 2026 ([ADR-0023](adr/0023-web-frontend-product-surface.md);
-[decision log](docs/decision_log.md) D24–D25). The sole master build order
+**Status:** Active supporting plan for programme Task B0.1, requested by
+Pete on 7 October 2026. Pete decided its four Tier C questions (decision log
+D24); the engineering choices are Claude Code's Tier A/B decisions (D25)
+([ADR-0023](adr/0023-web-frontend-product-surface.md);
+[decision log](docs/decision_log.md)). The sole master build order
 remains [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md).
 
 **Starts:** at the head of Phase B, on the merged WFF/AS, scenario-store,
@@ -103,7 +105,10 @@ Assumptions, Technical and Audit.
   deliberate, narrow boundary change: `api/` may read dataset *metadata*
   through `data/manifest.py` and `data/registry.py`, never a data value,
   recorded in [REPOSITORY_STRUCTURE.md](REPOSITORY_STRUCTURE.md)'s boundary
-  table and its test in the same PR. The Source Archive stays closed:
+  table and its test in the same PR. The test also forbids naming the
+  `data/metadata` path outside `data/`, so the endpoint takes its location
+  from `POLTIKA_DATA_METADATA_DIR`, as `POLTIKA_POPULATION_PATH` already
+  works, and the test gains one named `ALLOWED` entry. The Source Archive stays closed:
   nothing outside `data/acquisition/` may name it (ADR-0022), so the Data
   page shows it as not yet exposed until a separate boundary decision.
   *Done when:* each endpoint is tested, typed in OpenAPI and served from the
@@ -113,7 +118,8 @@ Assumptions, Technical and Audit.
   the workspace view.** Migration `0002`: append-only `reform_scenario` and
   `reform_run`, and a nullable `created_at` on `run`. `GET/POST
   /api/v1/scenarios`, `POST /api/v1/scenarios/{sid}/runs` (through the
-  existing Workbench run path, keeping the single-run 429 guard) and `GET
+  population runner the Workbench already uses, keeping the single-run 429
+  guard of `POST /microsim/runs`) and `GET
   /api/v1/scenarios/{sid}[/runs/{rid}]` returning the workspace view for
   reform and household runs. Values are assembled from existing payloads,
   never recomputed: headline → Overview; fiscal components, coverage and
@@ -128,6 +134,8 @@ Assumptions, Technical and Audit.
   "not recorded"; the Render build commit is display-only metadata and never
   enters run identity. Without `POLTIKA_DATABASE_URL` the routes answer
   `503 {code: "scenario_storage_unavailable"}`.
+  This retention overlaps Task 14's counterfactual scenario contract; Task 14
+  owns replay and may supersede these tables.
   *Done when:* identities are deterministic and append-only, the view never
   sums across units or turns a non-calculated value into 0, golden household
   and reform views are tested, and the review-queue row clears.

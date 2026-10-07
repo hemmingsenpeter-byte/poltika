@@ -1,9 +1,9 @@
 # ADR-0023: Web frontend as the single product surface (Task B0.1)
 
 **Date:** 7 October 2026
-**Status:** accepted by Pete on 7 October 2026. Logged in
-`docs/decision_log.md` (D24 for Pete's Tier C decisions, D25 for the
-engineering choices). It extends ADR-0013 and ADR-0021, and does not accept
+**Status:** accepted 7 October 2026. Decisions 1-4 are Tier C, decided by
+Pete in session (`docs/decision_log.md` D24). Decisions 5-13 are Claude
+Code's Tier A/B choices under ADR-0020 (D25), reversible as stated below. It extends ADR-0013 and ADR-0021, and does not accept
 ADR-0018 (PETE_QUEUE Q9 stays open).
 
 ## Context
@@ -72,7 +72,8 @@ Engineering choices (Tier A/B, Claude Code):
     payloads are stored append-only in PostgreSQL, beside the household
     store, with `created_at` outside every identity hash. This extends
     ADR-0013, which kept population runs in memory. Retained, replayable
-    counterfactual contracts remain Task 14.
+    counterfactual contracts remain Task 14, which may supersede these
+    tables.
 11. **npm**, because it ships with Node on the runner and in the image.
 12. **A narrow data-boundary exception.** `api/` may read dataset
     *metadata* through `data/manifest.py` and `data/registry.py` to list
