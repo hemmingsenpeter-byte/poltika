@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { isApiError } from "@/api/errors";
-import { runScenario } from "@/api/services/scenarioService";
+import { rerunHouseholdScenario, runScenario } from "@/api/services/scenarioService";
 import { BlockRenderer } from "@/components/blocks/BlockRenderer";
 import { ErrorState, Empty, Loading, Unavailable } from "@/components/states";
 import { buttonClasses, Button } from "@/components/ui/Button";
@@ -69,6 +69,8 @@ export function WorkspaceView({ workspace, navigate }: { workspace: Workspace; n
   const [pendingBlock, setPendingBlock] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [runError, setRunError] = useState<unknown>(null);
+  const pendingRun = useRef<AbortController | null>(null);
+  useEffect(() => () => pendingRun.current?.abort(), []);
 
   // The URL is read after mount so the exported HTML and hydration agree.
   useEffect(() => {
@@ -99,15 +101,23 @@ export function WorkspaceView({ workspace, navigate }: { workspace: Workspace; n
   }, [pendingBlock, selected]);
 
   async function runAgain() {
+    if (pendingRun.current || (scenario.kind === "household" && !run)) return;
+    const controller = new AbortController();
+    pendingRun.current = controller;
     setRunning(true);
     setRunError(null);
     try {
-      const created = await runScenario(scenario.scenario_id);
-      navigate(`/scenarios/${scenario.scenario_id}/runs/${created.run_id}`);
+      const nextRunId = scenario.kind === "reform"
+        ? (await runScenario(scenario.scenario_id, controller.signal)).run_id
+        : (await rerunHouseholdScenario(run!.run_id, controller.signal)).new_result_id;
+      if (!controller.signal.aborted) navigate(`/scenarios/${scenario.scenario_id}/runs/${nextRunId}`);
     } catch (error) {
-      setRunError(error);
+      if (!controller.signal.aborted) setRunError(error);
     } finally {
-      setRunning(false);
+      if (pendingRun.current === controller) {
+        pendingRun.current = null;
+        if (!controller.signal.aborted) setRunning(false);
+      }
     }
   }
 
@@ -121,17 +131,17 @@ export function WorkspaceView({ workspace, navigate }: { workspace: Workspace; n
         description={scenario.description || undefined}
         actions={
           <div className="flex flex-wrap gap-2">
-            {scenario.kind === "reform" ? (
+            {scenario.kind === "reform" || run ? (
               <Button variant="primary" onClick={runAgain} disabled={running}>
                 {running ? "Running…" : run ? "Run again" : "Run analysis"}
               </Button>
             ) : null}
-            <Link
-              href={`/scenarios/new?template=${scenario.kind === "reform" ? "policy_change" : "household"}`}
+            {scenario.kind === "reform" || run ? <Link
+              href={scenario.kind === "reform" ? `/scenarios/new?fromScenario=${encodeURIComponent(scenario.scenario_id)}` : `/scenarios/new?fromHousehold=${encodeURIComponent(scenario.scenario_id)}&fromRun=${encodeURIComponent(run!.run_id)}`}
               className={buttonClasses({ variant: "secondary" }, "no-underline")}
             >
               Edit as new scenario
-            </Link>
+            </Link> : null}
           </div>
         }
       />
@@ -184,9 +194,10 @@ export function WorkspaceView({ workspace, navigate }: { workspace: Workspace; n
           </div>
         ) : null}
         {context ? <Context context={context} /> : null}
-        <p className="mt-3 text-xs text-muted">
-          Export: available from the classic workbench API. A stored run is not kept in the memory those exports read.
-        </p>
+        {run && scenario.kind === "reform" ? <div className="mt-3 flex flex-wrap gap-2">
+          <a className={buttonClasses({ variant: "secondary" }, "no-underline")} href={`/api/v1/scenarios/${encodeURIComponent(scenario.scenario_id)}/runs/${encodeURIComponent(run.run_id)}/export.xlsx`} download>Export Excel</a>
+          <a className={buttonClasses({ variant: "secondary" }, "no-underline")} href={`/api/v1/scenarios/${encodeURIComponent(scenario.scenario_id)}/runs/${encodeURIComponent(run.run_id)}/export/headline.csv`} download>Export headline CSV</a>
+        </div> : null}
       </Card>
 
       <Tabs

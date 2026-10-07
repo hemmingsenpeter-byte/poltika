@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
+import { getHouseholdDefinition, getScenarioDefinition } from "@/api/services/scenarioService";
+import { ErrorState, Loading } from "@/components/states";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { useAsync } from "@/lib/useAsync";
 
 import { HouseholdBuilder } from "./newScenario/HouseholdBuilder";
 import { ReformBuilder } from "./newScenario/ReformBuilder";
@@ -24,21 +27,41 @@ function templateFrom(search: string): Template | null {
 }
 
 export function NewScenarioPage() {
+  return <Suspense fallback={<Loading label="Loading the scenario form" />}><NewScenarioContent /></Suspense>;
+}
+
+function CloneBuilder({ scenarioId, navigate }: { scenarioId: string; navigate: (href: string) => void }) {
+  const definition = useAsync((signal) => getScenarioDefinition(scenarioId, signal), `definition:${scenarioId}`);
+  if (definition.status === "loading") return <Loading label="Loading the saved settings" />;
+  if (definition.status === "error") return <ErrorState error={definition.error} onRetry={definition.reload} />;
+  return <ReformBuilder compare={definition.data.options.length === 2} initial={definition.data} navigate={navigate} />;
+}
+
+function HouseholdCloneBuilder({ scenarioId, runId, navigate }: { scenarioId: string; runId: string; navigate: (href: string) => void }) {
+  const definition = useAsync((signal) => getHouseholdDefinition(scenarioId, runId, signal), `household-definition:${scenarioId}:${runId}`);
+  if (definition.status === "loading") return <Loading label="Loading the saved household facts" />;
+  if (definition.status === "error") return <ErrorState error={definition.error} onRetry={definition.reload} />;
+  return <HouseholdBuilder initial={definition.data} navigate={navigate} />;
+}
+
+function NewScenarioContent() {
   const router = useRouter();
-  // The query is read after mount: the exported page is the same for every URL.
-  const [template, setTemplate] = useState<Template | null | undefined>(undefined);
-  useEffect(() => setTemplate(templateFrom(window.location.search)), []);
+  const query = useSearchParams();
+  const template = templateFrom(query.toString());
+  const fromScenario = query.get("fromScenario");
+  const fromHousehold = query.get("fromHousehold");
+  const fromRun = query.get("fromRun");
   const navigate = (href: string) => router.push(href);
   const current = TEMPLATES.find((t) => t.id === template);
 
   return (
     <div>
-      <PageHeader title={current?.title ?? "New scenario"} description={current?.text} />
-      {template === undefined ? null : current === undefined ? (
+      <PageHeader title={fromScenario || fromHousehold ? "Edit as new scenario" : current?.title ?? "New scenario"} description={current?.text} />
+      {fromHousehold && fromRun ? <HouseholdCloneBuilder key={`${fromHousehold}:${fromRun}`} scenarioId={fromHousehold} runId={fromRun} navigate={navigate} /> : fromScenario ? <CloneBuilder key={fromScenario} scenarioId={fromScenario} navigate={navigate} /> : current === undefined ? (
         <ul className="grid gap-3 sm:grid-cols-3">
           {TEMPLATES.map((t) => (
             <li key={t.id}>
-              <Link href={`/scenarios/new?template=${t.id}`} className="block no-underline" onClick={() => setTemplate(t.id)}>
+              <Link href={`/scenarios/new?template=${t.id}`} className="block no-underline">
                 <Card className="h-full hover:bg-surface-muted">
                   <p className="font-medium">{t.title}</p>
                   <p className="mt-1 text-sm text-muted">{t.text}</p>

@@ -42,7 +42,7 @@ describe("BlockRenderer", () => {
     expect(onOpen).toHaveBeenCalledWith("fiscal", "fiscal_components");
   });
 
-  it("renders a table with a caption, column scopes, exact cells and outcome markers", () => {
+  it("renders population table cells to three significant figures with outcome markers", () => {
     render(<BlockRenderer block={byType("table")} />);
     const table = screen.getByRole("table", { name: "Who is affected" });
     expect(within(table).getByText("Who is affected")).toBeInTheDocument();
@@ -50,11 +50,33 @@ describe("BlockRenderer", () => {
       expect(header).toHaveAttribute("scope", expect.stringMatching(/^col(group)?$/));
     }
     expect(within(table).getAllByRole("columnheader", { name: "Measure" })[0]).toHaveAttribute("scope", "col");
-    expect(within(table).getByText("1,234,567")).toBeInTheDocument();
-    expect(within(table).getByText("1,234.50")).toBeInTheDocument();
+    expect(within(table).getByText("1.23M")).toBeInTheDocument();
+    expect(within(table).getByText("1.23k")).toBeInTheDocument();
     expect(within(table).getByText("Not calculated")).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /Who is affected/ })).toHaveAttribute("tabindex", "0");
     expect(screen.getByText("Weighted households.")).toBeInTheDocument();
+  });
+
+  it("preserves exact household and parameter cells in a table", () => {
+    const block = byType("table");
+    if (block.type !== "table" || !("columns" in block)) throw new Error("Missing table fixture");
+    render(<BlockRenderer block={{
+      ...block,
+      columns: block.columns.map((column) => ({ ...column, precision: "household_rule" })),
+      rows: [["Household rule", "1234567", "1234.567"]],
+    }} />);
+    expect(screen.getByText("1,234,567")).toBeInTheDocument();
+    expect(screen.getByText("1,234.567")).toBeInTheDocument();
+  });
+
+  it("shows recorded calculation inputs verbatim without adding units", () => {
+    render(<BlockRenderer block={byType("calculation_chain")} />);
+    const inputs = screen.getByLabelText("Recorded inputs");
+    expect(screen.getByText("amount")).toBeInTheDocument();
+    expect(screen.getByText("1234.567")).toBeInTheDocument();
+    expect(screen.getByText("365")).toBeInTheDocument();
+    expect(screen.getByText("Not recorded")).toBeInTheDocument();
+    expect(inputs).not.toHaveTextContent("per week");
   });
 
   it("renders sources with a safe link, and check evidence in a details element", () => {
@@ -65,8 +87,8 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("Check evidence").closest("details")).not.toBeNull();
   });
 
-  it("says a block type is unsupported instead of crashing", () => {
-    const unknown = { type: "heatmap", id: "x" } as unknown as Block;
+  it.each(["heatmap", "constructor", "toString"])("says %s is unsupported instead of crashing", (type) => {
+    const unknown: Block = { type, id: "x" };
     render(<BlockRenderer block={unknown} />);
     expect(screen.getByText(/Unsupported block/)).toBeInTheDocument();
   });

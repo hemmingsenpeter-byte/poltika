@@ -37,12 +37,14 @@ function titleOf(block: Block): string | null {
 }
 
 export function BlockRenderer({ block, onOpen }: { block: Block; onOpen?: OpenBlock | undefined }) {
-  const Component = (REGISTRY as Record<string, ComponentType<Props<BlockType>> | undefined>)[block.type];
+  const Component = Object.hasOwn(REGISTRY, block.type)
+    ? (REGISTRY as Record<string, ComponentType<Props<BlockType>> | undefined>)[block.type]
+    : undefined;
   const title = titleOf(block);
   return (
     <div id={`block-${block.id}`} className="mt-6 scroll-mt-20 first:mt-0">
       {title && block.type !== "notice" ? <h3 className="mb-2 text-sm font-semibold">{title}</h3> : null}
-      {Component ? <Component block={block} onOpen={onOpen} /> : <UnsupportedBlock type={String(block.type)} />}
+      {Component ? <Component block={block as BlockOf<BlockType>} onOpen={onOpen} /> : <UnsupportedBlock type={block.type} />}
     </div>
   );
 }

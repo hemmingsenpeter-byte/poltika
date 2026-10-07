@@ -1,21 +1,25 @@
 import type { BlockOf } from "@/domain";
-import { formatExact, outcomeOfCell } from "@/format";
+import { formatCount, formatExact, outcomeOfCell } from "@/format";
 
 import { OutcomeMarker } from "./Outcome";
 
 type Table = BlockOf<"table">;
 
-function Cell({ kind, cell }: { kind: Table["columns"][number]["kind"]; cell: string | null }) {
+function Cell({ column, cell }: { column: Table["columns"][number]; cell: string | null }) {
   if (cell === null) return <OutcomeMarker outcome="not_calculated" />;
   const outcome = outcomeOfCell(cell);
   if (outcome) return <OutcomeMarker outcome={outcome} />;
-  if (kind === "text") return <>{cell}</>;
-  // The server has already rounded these; show them exactly.
-  return <span className="num">{formatExact(cell)}</span>;
+  if (column.kind === "text") return <>{cell}</>;
+  return <span className="num">{
+    column.precision === "population_estimate"
+      ? formatCount(cell, { precision: column.precision })
+      : formatExact(cell)
+  }</span>;
 }
 
 /** A semantic table with column groups, a sticky header and a keyboard-focusable
- *  scroll container. Cells are shown as given; nothing is computed here. */
+ *  scroll container. Column precision preserves household rules and parameter
+ *  strings while showing population aggregates to three significant figures. */
 export function TableBlockView({ block }: { block: Table }) {
   const label = block.title ?? "Table";
   const groups: { name: string | null; span: number }[] = [];
@@ -66,11 +70,11 @@ export function TableBlockView({ block }: { block: Table }) {
                   const className = `px-3 py-2 ${c.kind === "text" ? "" : "num text-right"}`;
                   return i === 0 && c.kind === "text" ? (
                     <th key={c.id} scope="row" className={`${className} font-normal`}>
-                      <Cell kind={c.kind} cell={cell} />
+                      <Cell column={c} cell={cell} />
                     </th>
                   ) : (
                     <td key={c.id} className={className}>
-                      <Cell kind={c.kind} cell={cell} />
+                      <Cell column={c} cell={cell} />
                     </td>
                   );
                 })}

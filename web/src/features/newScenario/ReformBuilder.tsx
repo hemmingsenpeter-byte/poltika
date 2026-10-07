@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { checkReform, getRegistry } from "@/api/services/registryService";
-import { createScenario, type Operation, type Reform, runScenario } from "@/api/services/scenarioService";
-import { ErrorState, Loading } from "@/components/states";
+import { createScenario, type CreateScenarioRequest, type Operation, type Reform, runScenario } from "@/api/services/scenarioService";
+import { ErrorState, Loading, Unavailable } from "@/components/states";
 import { Button } from "@/components/ui/Button";
 import type { CheckResult, Registry, ValidInstrument } from "@/domain";
 import { humanise } from "@/lib/labels";
@@ -19,7 +19,7 @@ const OPERATIONS: { value: Operation; label: string }[] = [
   { value: "multiply", label: "Multiply by" },
 ];
 
-type OptionForm = { label: string; instrumentId: string; parameterId: string; operation: Operation; value: string };
+type OptionForm = { label: string; instrumentId: string; parameterId: string; operation: Operation; value: string; reformId?: string; reformDescription?: string };
 
 const INPUT = "h-9 w-full rounded-md border border-border-strong bg-surface px-2 text-sm";
 
@@ -46,8 +46,8 @@ function runnable(registry: Registry): ValidInstrument[] {
 
 function reformOf(option: OptionForm, index: number): Reform {
   return {
-    reform_id: `option_${index + 1}`,
-    description: option.label,
+    reform_id: option.reformId ?? `option_${index + 1}`,
+    description: option.reformDescription ?? option.label,
     overrides: [
       { policy_id: option.instrumentId, parameter_id: option.parameterId, operation: option.operation, value: option.value.trim() },
     ],
@@ -160,32 +160,61 @@ function OptionFields({
   );
 }
 
-type Checked = { items: ConfirmationItem[]; reform: unknown };
+type Checked = { items: ConfirmationItem[]; request: CreateScenarioRequest };
 
 export function ReformBuilder({
   compare,
   navigate,
+  initial,
 }: {
   compare: boolean;
   navigate: (href: string) => void;
+  initial?: CreateScenarioRequest;
 }) {
   const registry = useAsync(getRegistry, "registry");
   if (registry.status === "loading") return <Loading label="Loading the supported policies" />;
   if (registry.status === "error") return <ErrorState error={registry.error} onRetry={registry.reload} />;
-  return <ReformForm registry={registry.data} compare={compare} navigate={navigate} />;
+  if (initial && (
+    initial.options.length < 1 || initial.options.length > 2 ||
+    initial.options.some((o) => o.reform.overrides.length !== 1 || !registry.data.instruments.some((i) =>
+      i.valid && i.runnable && i.id === o.reform.overrides[0]?.policy_id &&
+      i.parameters.some((p) => p.editable && p.id === o.reform.overrides[0]?.parameter_id),
+    ))
+  )) {
+    return <div className="space-y-4">
+      <Unavailable title="These settings cannot be edited here" reason="This form supports one parameter per option, for up to two options from the current supported policies. The original settings are shown below." />
+      <details><summary className="cursor-pointer text-sm">Original settings</summary><pre className="mt-2 overflow-auto text-xs">{JSON.stringify(initial, null, 2)}</pre></details>
+    </div>;
+  }
+  return <ReformForm registry={registry.data} compare={compare} navigate={navigate} initial={initial} />;
 }
 
-function ReformForm({ registry, compare, navigate }: { registry: Registry; compare: boolean; navigate: (href: string) => void }) {
+function ReformForm({ registry, compare, navigate, initial }: { registry: Registry; compare: boolean; navigate: (href: string) => void; initial?: CreateScenarioRequest }) {
   const instruments = runnable(registry);
   const blank = (label: string): OptionForm => ({ label, instrumentId: "", parameterId: "", operation: "set", value: "" });
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [options, setOptions] = useState<OptionForm[]>(compare ? [blank("Option A"), blank("Option B")] : [blank("Proposed change")]);
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [options, setOptions] = useState<OptionForm[]>(initial ? initial.options.map((o) => ({
+    label: o.label,
+    instrumentId: o.reform.overrides[0]!.policy_id,
+    parameterId: o.reform.overrides[0]!.parameter_id,
+    operation: o.reform.overrides[0]!.operation,
+    value: o.reform.overrides[0]!.value,
+    reformId: o.reform.reform_id,
+    reformDescription: o.reform.description,
+  })) : compare ? [blank("Option A"), blank("Option B")] : [blank("Proposed change")]);
   const [checked, setChecked] = useState<Checked | null>(null);
   const [checking, setChecking] = useState(false);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [touched, setTouched] = useState(false);
+  const checkRequest = useRef<AbortController | null>(null);
+  const runRequest = useRef<AbortController | null>(null);
+
+  useEffect(() => () => {
+    checkRequest.current?.abort();
+    runRequest.current?.abort();
+  }, []);
 
   const statusQuo = registry.status_quo_label.trim().toLowerCase();
   const labels = options.map((o) => o.label.trim());
@@ -205,6 +234,10 @@ function ReformForm({ registry, compare, navigate }: { registry: Registry; compa
   const ready = !titleError && !descriptionError && options.every(optionReady);
 
   function edit(update: () => void) {
+    if (runRequest.current) return;
+    checkRequest.current?.abort();
+    checkRequest.current = null;
+    setChecking(false);
     update();
     setChecked(null);
     setError(null);
@@ -212,11 +245,20 @@ function ReformForm({ registry, compare, navigate }: { registry: Registry; compa
 
   async function review() {
     setTouched(true);
-    if (!ready) return;
+    if (!ready || checkRequest.current || runRequest.current) return;
+    const controller = new AbortController();
+    checkRequest.current = controller;
+    const request: CreateScenarioRequest = {
+      title: title.trim(),
+      description: description.trim(),
+      options: options.map((o, i) => ({ label: o.label.trim(), reform: reformOf(o, i) })),
+    };
     setChecking(true);
+    setChecked(null);
     setError(null);
     try {
-      const results: CheckResult[] = await Promise.all(options.map((o, i) => checkReform(reformOf(o, i))));
+      const results: CheckResult[] = await Promise.all(request.options.map((o) => checkReform(o.reform, controller.signal)));
+      if (controller.signal.aborted) return;
       const items = options.map((o, i): ConfirmationItem | null => {
         const instrument = instruments.find((x) => x.id === o.instrumentId);
         const parameter = instrument?.parameters.find((q) => q.id === o.parameterId);
@@ -238,29 +280,37 @@ function ReformForm({ registry, compare, navigate }: { registry: Registry; compa
       }
       setChecked({
         items: resolved,
-        reform: options.map((o, i) => ({ label: o.label.trim(), reform: reformOf(o, i) })),
+        request,
       });
     } catch (e) {
-      setError(e);
+      if (!controller.signal.aborted) setError(e);
     } finally {
-      setChecking(false);
+      if (checkRequest.current === controller) {
+        checkRequest.current = null;
+        if (!controller.signal.aborted) setChecking(false);
+      }
     }
   }
 
   async function run() {
+    if (!checked || !checked.items.every((i) => i.check.ok) || runRequest.current || checkRequest.current) return;
+    const controller = new AbortController();
+    runRequest.current = controller;
     setRunning(true);
     setError(null);
     try {
-      const scenarioId = await createScenario({
-        title: title.trim(),
-        description: description.trim(),
-        options: options.map((o, i) => ({ label: o.label.trim(), reform: reformOf(o, i) })),
-      });
-      const created = await runScenario(scenarioId);
+      const scenarioId = await createScenario(checked.request, controller.signal);
+      if (controller.signal.aborted) return;
+      const created = await runScenario(scenarioId, controller.signal);
+      if (controller.signal.aborted) return;
       navigate(`/scenarios/${created.scenario_id}/runs/${created.run_id}`);
     } catch (e) {
-      setError(e);
-      setRunning(false);
+      if (!controller.signal.aborted) setError(e);
+    } finally {
+      if (runRequest.current === controller) {
+        runRequest.current = null;
+        if (!controller.signal.aborted) setRunning(false);
+      }
     }
   }
 
@@ -274,6 +324,7 @@ function ReformForm({ registry, compare, navigate }: { registry: Registry; compa
         }}
         noValidate
       >
+        <fieldset disabled={running} className="space-y-4">
         <Field id="title" label="Title" error={touched ? titleError : null}>
           <input id="title" className={INPUT} maxLength={80} value={title} onChange={(e) => edit(() => setTitle(e.target.value))} />
         </Field>
@@ -302,18 +353,22 @@ function ReformForm({ registry, compare, navigate }: { registry: Registry; compa
           {checking ? "Checking…" : "Review before running"}
         </Button>
         {touched && !ready ? <p className="text-sm text-bad-fg">Complete the fields marked above to continue.</p> : null}
+        </fieldset>
       </form>
 
       {error ? <ErrorState error={error} onRetry={checked ? run : review} /> : null}
       {running ? <Loading label="Running on the synthetic population — about 30–60 seconds" /> : null}
       {checked ? (
-        <ConfirmationPanel
+        <div className="space-y-2">
+          <ConfirmationPanel
           items={checked.items}
           limitations={registry.limitations}
-          reformJson={checked.reform}
+          reformJson={checked.request.options}
           onRun={run}
           running={running}
-        />
+          />
+          <p className="text-xs text-muted">Identical settings reuse the same stored scenario. Its original title and description are retained.</p>
+        </div>
       ) : null}
     </div>
   );

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -7,8 +7,14 @@ import { workspaceFixture } from "@/test/fixtures/workspace";
 
 import { WorkspaceView } from "./WorkspaceView";
 
-const service = vi.hoisted(() => ({ runScenario: (): Promise<unknown> => Promise.resolve(undefined) }));
-vi.mock("@/api/services/scenarioService", () => ({ runScenario: () => service.runScenario() }));
+const service = vi.hoisted(() => ({
+  runScenario: (() => Promise.resolve(undefined)) as (scenarioId: string, signal?: AbortSignal) => Promise<unknown>,
+  rerunHousehold: vi.fn<(resultId: string, signal?: AbortSignal) => Promise<{ new_result_id: string }>>(),
+}));
+vi.mock("@/api/services/scenarioService", () => ({
+  runScenario: (scenarioId: string, signal?: AbortSignal) => service.runScenario(scenarioId, signal),
+  rerunHouseholdScenario: (resultId: string, signal?: AbortSignal) => service.rerunHousehold(resultId, signal),
+}));
 
 beforeEach(() => window.history.replaceState(null, "", "/scenarios/x"));
 
@@ -21,7 +27,9 @@ describe("WorkspaceView", () => {
     expect(screen.getByRole("button", { name: "Copy run ID" })).toBeInTheDocument();
     expect(screen.getByText("Law as at 1 April 2026")).toBeInTheDocument();
     expect(screen.getByText("Synthetic")).toBeInTheDocument();
-    expect(screen.getByText(/available from the classic workbench API/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Export Excel" })).toHaveAttribute("href", `/api/v1/scenarios/${"a".repeat(64)}/runs/${"b".repeat(64)}/export.xlsx`);
+    expect(screen.getByRole("link", { name: "Export headline CSV" })).toHaveAttribute("href", `/api/v1/scenarios/${"a".repeat(64)}/runs/${"b".repeat(64)}/export/headline.csv`);
+    expect(screen.getByRole("link", { name: "Edit as new scenario" })).toHaveAttribute("href", `/scenarios/new?fromScenario=${"a".repeat(64)}`);
   });
 
   it("moves focus and selection with the arrow keys (roving tabindex)", async () => {
@@ -78,9 +86,37 @@ describe("WorkspaceView", () => {
     expect(screen.getByRole("button", { name: "Try again" })).toBeInTheDocument();
   });
 
-  it("offers no run button for a household scenario", () => {
+  it("reruns a household through the existing legacy endpoint", async () => {
     const base = workspaceFixture();
-    render(<WorkspaceView workspace={{ ...base, scenario: { ...base.scenario, kind: "household" } }} navigate={() => undefined} />);
-    expect(screen.queryByRole("button", { name: "Run again" })).toBeNull();
+    const navigate = vi.fn();
+    service.rerunHousehold.mockResolvedValue({ new_result_id: "new_result" });
+    render(<WorkspaceView workspace={{ ...base, scenario: { ...base.scenario, kind: "household" } }} navigate={navigate} />);
+    fireEvent.click(screen.getByRole("button", { name: "Run again" }));
+    await waitFor(() => expect(navigate).toHaveBeenCalledWith(`/scenarios/${base.scenario.scenario_id}/runs/new_result`));
+    expect(service.rerunHousehold).toHaveBeenCalledWith(base.run?.run_id, expect.any(AbortSignal));
+    expect(screen.queryByRole("link", { name: "Export Excel" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Edit as new scenario" })).toHaveAttribute("href", `/scenarios/new?fromHousehold=${base.scenario.scenario_id}&fromRun=${base.run?.run_id}`);
+  });
+
+  it("selects a different stored run by its full ID", () => {
+    const base = workspaceFixture();
+    const navigate = vi.fn();
+    render(<WorkspaceView workspace={{ ...base, runs: [...base.runs, { run_id: "another_run", created_at: null }] }} navigate={navigate} />);
+    fireEvent.change(screen.getByLabelText("Run"), { target: { value: "another_run" } });
+    expect(navigate).toHaveBeenCalledWith(`/scenarios/${base.scenario.scenario_id}/runs/another_run`);
+  });
+
+  it("ignores a pending run completion after leaving the workspace", async () => {
+    let finish!: (value: { scenario_id: string; run_id: string }) => void;
+    const run = vi.fn<(scenarioId: string, signal?: AbortSignal) => Promise<unknown>>(() => new Promise((resolve) => { finish = resolve; }));
+    service.runScenario = run;
+    const navigate = vi.fn();
+    const view = render(<WorkspaceView workspace={workspaceFixture()} navigate={navigate} />);
+    fireEvent.click(screen.getByRole("button", { name: "Run again" }));
+    const signal = run.mock.calls[0]?.[1];
+    view.unmount();
+    expect(signal?.aborted).toBe(true);
+    await act(async () => { finish({ scenario_id: "s", run_id: "r" }); });
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

@@ -151,6 +151,16 @@ export function CalculationChain({ block }: { block: BlockOf<"calculation_chain"
               </>
             ) : null}
           </p>
+          {Object.keys(s.inputs).length > 0 ? (
+            <dl className="mt-2 text-xs" aria-label="Recorded inputs">
+              {Object.entries(s.inputs).map(([name, value]) => (
+                <div key={name} className="flex flex-wrap gap-x-2">
+                  <dt className="font-mono text-muted">{name}</dt>
+                  <dd>{value === null ? <span className="text-muted">Not recorded</span> : <span className="num">{value}</span>}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
           <p className="mt-1">
             Result: {s.result === null ? <span className="text-muted">Not calculated</span> : <span className="num">{s.result}</span>}
           </p>

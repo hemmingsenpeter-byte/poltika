@@ -1,8 +1,8 @@
-import type { Block, Workspace } from "@/domain";
+import type { BlockOf, BlockType, Workspace } from "@/domain";
 
 /** One block of every type the backend can send, with a metric whose value was
  *  not calculated. Values are strings, as the API sends them. */
-export const BLOCKS: Block[] = [
+export const BLOCKS: BlockOf<BlockType>[] = [
   {
     type: "metric",
     id: "headline_ftc",
@@ -24,9 +24,9 @@ export const BLOCKS: Block[] = [
     id: "headline",
     title: "Who is affected",
     columns: [
-      { id: "measure", label: "Measure", kind: "text", group: null },
-      { id: "better", label: "Better off", kind: "count", group: "Households" },
-      { id: "mean", label: "Mean change", kind: "money", group: "Households" },
+      { id: "measure", label: "Measure", kind: "text", group: null, precision: "household_rule" },
+      { id: "better", label: "Better off", kind: "count", group: "Households", precision: "population_estimate" },
+      { id: "mean", label: "Mean change", kind: "money", group: "Households", precision: "population_estimate" },
     ],
     rows: [
       ["Family Tax Credit", "1234567", "1234.50"],
@@ -77,7 +77,7 @@ export const BLOCKS: Block[] = [
     type: "calculation_chain",
     id: "chain",
     title: "Calculation",
-    steps: [{ component_id: "ftc", step_id: "s1", rule_id: "R1", description: "Apply the rate.", result: "100" }],
+    steps: [{ component_id: "ftc", step_id: "s1", rule_id: "R1", description: "Apply the rate.", inputs: { amount: "1234.567", eligible_days: "365", missing: null }, result: "100" }],
   },
   {
     type: "model_ref",

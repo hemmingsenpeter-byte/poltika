@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { components } from "./schema.gen";
+import type { Workspace } from "@/domain";
 
 /** Response schemas, each checked against the generated OpenAPI types. A
  *  response that does not parse is an `ApiError{kind:"invalid_response"}`. */
@@ -256,15 +257,88 @@ export const HouseholdCreatedSchema = z.object({ scenario_id: z.string(), result
 
 export const RunCreatedSchema = z.object({ scenario_id: z.string(), run_id: z.string() }) satisfies z.ZodType<S["RunCreated"]>;
 
-/** The workspace: the top-level shape and each block's discriminator are
- *  checked; block bodies are trusted to the generated types. An unknown block
- *  type passes through so the page can say it is unsupported. */
+const TabId = z.enum(["overview", "fiscal", "distribution", "evidence", "assumptions", "technical", "audit"]);
+const BlockFields = { id: z.string(), title: z.string().nullable().optional() };
+const Cell = z.string().nullable();
+const Precision = z.enum(["household_rule", "population_estimate"]);
+
+const KnownBlockSchema = z.discriminatedUnion("type", [
+  z.object({
+    ...BlockFields,
+    type: z.literal("table"),
+    columns: z.array(z.object({
+      id: z.string(), label: z.string(), kind: z.enum(["text", "money", "count", "share"]),
+      group: z.string().nullable().optional(),
+      precision: Precision.default("household_rule"),
+    })),
+    rows: z.array(z.array(Cell)),
+    notes: z.array(z.string()),
+  }),
+  z.object({
+    ...BlockFields, type: z.literal("horizon"),
+    years: z.array(z.object({ label: z.string(), modelled: z.boolean(), note: z.string() })),
+  }),
+  z.object({ ...BlockFields, type: z.literal("list"), items: z.array(z.string()) }),
+  z.object({
+    ...BlockFields,
+    type: z.literal("metric"),
+    label: z.string(),
+    unit: z.object({
+      label: z.string(), currency: z.literal("NZD").nullable(),
+      period: z.enum(["tax_year", "week"]).nullable(), basis: z.literal("nominal").nullable(),
+      per: z.enum(["household", "population"]).nullable(),
+    }),
+    values: z.array(z.object({
+      option: z.string(), value: Cell,
+      outcome: z.enum(["calculated", "needs_review", "unsupported", "not_calculated"]),
+    })),
+    precision: Precision,
+    evidence_class: EvidenceClass,
+    context: z.string(),
+    provenance: z.array(z.object({ tab: TabId, block_id: z.string() })),
+  }),
+  z.object({
+    ...BlockFields, type: z.literal("notice"),
+    tone: z.enum(["info", "caution", "unavailable"]), text: z.string(),
+  }),
+  z.object({
+    ...BlockFields, type: z.literal("sources"), policy_id: z.string(), policy_version: Cell,
+    sources: z.array(z.object({
+      id: z.string(), title: Cell, url: Cell, kind: Cell, source_type: Cell,
+      authority_rank: z.number().nullable(),
+      checked_on: z.array(z.object({ field: z.string(), date: z.string() })),
+      check_evidence: z.array(z.string()),
+    })),
+  }),
+  z.object({
+    ...BlockFields, type: z.literal("audit_record"),
+    fields: z.array(z.object({ label: z.string(), value: Cell, note: Cell.optional() })),
+  }),
+  z.object({
+    ...BlockFields, type: z.literal("calculation_chain"),
+    steps: z.array(z.object({
+      component_id: z.string(), step_id: z.string(), rule_id: Cell,
+      description: z.string(), inputs: z.record(z.string(), Cell).default({}), result: Cell,
+    })),
+  }),
+  z.object({
+    ...BlockFields, type: z.literal("model_ref"),
+    models: z.array(z.object({ id: z.string(), name: z.string(), version: z.string(), label: z.string() })),
+  }),
+]) satisfies z.ZodType<S["Tab"]["blocks"][number]>;
+
+const knownBlockTypes = new Set<string>(KnownBlockSchema.options.map((schema) => schema.shape.type.value));
+const UnknownBlockSchema = z.looseObject({ ...BlockFields, type: z.string() })
+  .refine((block) => !knownBlockTypes.has(block.type), "Known block bodies must match their schema");
+
+/** Validate every body we render. Future block types may pass through to the
+ * unsupported marker, but a malformed known block cannot take that path. */
 const TabSchema = z.object({
-  id: z.enum(["overview", "fiscal", "distribution", "evidence", "assumptions", "technical", "audit"]),
+  id: TabId,
   title: z.string(),
   status: z.enum(["available", "empty", "unavailable", "deferred"]),
   note: z.string().nullish(),
-  blocks: z.array(z.looseObject({ id: z.string(), type: z.string() })),
+  blocks: z.array(z.union([KnownBlockSchema, UnknownBlockSchema])),
 });
 
 export const WorkspaceSchema = z.object({
@@ -287,7 +361,7 @@ export const WorkspaceSchema = z.object({
     })
     .nullable(),
   tabs: z.array(TabSchema),
-});
+}) satisfies z.ZodType<Workspace>;
 
 export type Instrument = z.infer<typeof InstrumentSchema>;
 export type ValidInstrument = Extract<Instrument, { valid: true }>;
@@ -295,3 +369,69 @@ export type RegistryParameter = z.infer<typeof RegistryParameterSchema>;
 export type Registry = z.infer<typeof RegistrySchema>;
 export type CheckResult = z.infer<typeof CheckSchema>;
 export type HouseholdExample = z.infer<typeof HouseholdExamplesSchema>[number];
+
+export const ScenarioDefinitionSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  options: z.array(z.object({
+    label: z.string(),
+    reform: z.object({
+      reform_id: z.string(),
+      description: z.string(),
+      overrides: z.array(z.object({
+        policy_id: z.string(), parameter_id: z.string(),
+        operation: z.enum(["set", "add", "multiply"]), value: z.string(),
+      })),
+    }),
+  })),
+}) satisfies z.ZodType<S["CreateScenario-Output"]>;
+
+export const RerunResponseSchema = z.object({
+  original_result_id: z.string(),
+  new_result_id: z.string(),
+  changed_artifacts: z.array(z.string()),
+  result_changed: z.boolean(),
+}) satisfies z.ZodType<S["RerunResponse"]>;
+
+const HouseholdFactStatus = z.enum(["verified", "excluded", "unknown"]);
+const RequestedPolicy = { modelled_date: z.string(), requested_policy_version: z.string() };
+export const HouseholdDefinitionSchema = z.strictObject({
+  as_claimant_is_wff_claimant_or_partner: HouseholdFactStatus,
+  wff: z.strictObject({
+    ...RequestedPolicy,
+    household_eligibility: HouseholdFactStatus,
+    extra_instalment_status: HouseholdFactStatus,
+    children: z.array(z.strictObject({
+      qualifies_whole_year: HouseholdFactStatus,
+      best_start_cohort: z.enum(["in_supported_cohort", "outside_best_start_entitlement", "other_cohort_unsupported", "unknown"]),
+      best_start_no_disqualifying_payment: HouseholdFactStatus,
+    })),
+    partner_status: z.enum(["single", "partnered", "unknown"]),
+    family_scheme_income: z.strictObject({ claimant_amount: z.string(), partner_amount: z.string().nullable().optional() }).nullable().optional(),
+    net_family_scheme_income: z.string().nullable().optional(),
+    net_family_scheme_income_me3_attested: z.boolean(),
+    in_work_eligibility: HouseholdFactStatus,
+    ftc_iwtc_protected_or_direct_abatement: HouseholdFactStatus,
+    mc6a_veterans_payment: HouseholdFactStatus,
+    mc6b_disqualifying_payment: HouseholdFactStatus,
+    minimum_family_full_time_earner_weeks: HouseholdFactStatus,
+    best_start_no_shared_care: HouseholdFactStatus,
+    best_start_protected_credit: HouseholdFactStatus,
+  }),
+  accommodation_supplement: z.strictObject({
+    ...RequestedPolicy,
+    assessment_week_start: z.string(), assessment_week_end: z.string(),
+    household_eligibility: HouseholdFactStatus,
+    claimant_category: z.enum(["jobseeker_support", "sole_parent_support", "supported_living_payment", "non_beneficiary", "pension_or_veterans", "mixed_benefit_couple"]).nullable().optional(),
+    tenure_type: z.enum(["rent_contributions_or_board", "homeowner"]).nullable().optional(),
+    partner_status: z.enum(["single", "ordinary_couple", "joint_tenancy", "community_spouse_or_partner"]).nullable().optional(),
+    statistical_area_unit: z.enum(["area1", "area2", "area3", "area4"]).nullable().optional(),
+    weekly_accommodation_costs: z.string().nullable().optional(),
+    dependent_children_count: z.number().int().nullable().optional(),
+    cash_assets: z.string().nullable().optional(),
+    exempt_cash_asset_status: HouseholdFactStatus,
+    weekly_income: z.string().nullable().optional(),
+    ordinary_rate_status: HouseholdFactStatus,
+    eldest_dependent_child_under_16: HouseholdFactStatus,
+  }),
+}) satisfies z.ZodType<S["HouseholdCalculationRequest-Output"]>;

@@ -49,6 +49,7 @@ class Column(BaseModel):
     # money, count and share cells are numeric strings or an outcome word.
     kind: Literal["text", "money", "count", "share"]
     group: str | None = None
+    precision: Literal["household_rule", "population_estimate"] = "household_rule"
 
 
 class TableBlock(_Block):

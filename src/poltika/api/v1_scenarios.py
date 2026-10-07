@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Coroutine, Iterator, Mapping
 from contextlib import contextmanager
+from dataclasses import asdict
 from functools import lru_cache
 from typing import Annotated, Any, Literal, NoReturn
 
@@ -31,6 +32,7 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 from sqlalchemy.exc import SQLAlchemyError
 
 from poltika.api import workbench_config as config
+from poltika.api.household import HouseholdCalculationRequest
 from poltika.api.microsim import execute_reform
 from poltika.api.v1 import _deployed_policy_dirs, _policy_evidence, _registry, meta
 from poltika.api.v1_blocks import (
@@ -67,8 +69,9 @@ from poltika.api.workbench import (
     payload_and_options,
 )
 from poltika.api.workbench import ScenarioHeader as WorkbenchHeader
+from poltika.api.workbench_export import table_csv, to_xlsx
 from poltika.api.workbench_tables import NOT_CALCULATED, distribution_tables
-from poltika.common.errors import ImmutableRecordError, StoreError
+from poltika.common.errors import ImmutableRecordError, StoredRunNotFoundError, StoreError
 from poltika.scenarios.microsim.reform import Reform
 from poltika.scenarios.reform_record import (
     reform_definition,
@@ -241,6 +244,113 @@ def create_scenario(request: CreateScenario) -> ScenarioItem:
         return _item(stored, store)
 
 
+@router.get("/{scenario_id}/definition", response_model=CreateScenario, responses=_ERRORS)
+def scenario_definition(scenario_id: ScenarioId) -> CreateScenario:
+    """Copy the retained reform settings into a new, independently checked draft."""
+    with _storage():
+        scenario = _store().get_reform_scenario(scenario_id)
+        if scenario is None:
+            _fail(404, "scenario_not_found", "No reform scenario has this id.")
+        return CreateScenario(
+            title=scenario.title,
+            description=scenario.description,
+            options=scenario.definition["options"],
+        )
+
+
+@router.get(
+    "/{scenario_id}/runs/{run_id}/definition",
+    response_model=HouseholdCalculationRequest,
+    responses=_ERRORS,
+)
+def household_definition(
+    scenario_id: ScenarioId, run_id: ScenarioId
+) -> HouseholdCalculationRequest:
+    """Copy stored facts, dates and requested versions without filling missing facts."""
+    with _storage():
+        try:
+            stored = _store().get_run(run_id)
+        except StoredRunNotFoundError:
+            _fail(404, "run_not_found", "No household run has this id.")
+        if stored.scenario_id != scenario_id:
+            _fail(404, "run_not_found", "No run with this id belongs to the scenario.")
+        record = stored.record
+        return HouseholdCalculationRequest.model_validate(
+            {
+                "wff": {
+                    **asdict(record.household.wff),
+                    "modelled_date": record.wff_lookup_date,
+                    "requested_policy_version": record.requested_wff_policy_version,
+                },
+                "accommodation_supplement": {
+                    **asdict(record.household.accommodation_supplement),
+                    "modelled_date": record.as_lookup_date,
+                    "assessment_week_start": record.assessment_week.start,
+                    "assessment_week_end": record.assessment_week.end,
+                    "requested_policy_version": record.requested_as_policy_version,
+                },
+                "as_claimant_is_wff_claimant_or_partner": record.household.as_claimant_is_wff_claimant_or_partner,
+            }
+        )
+
+
+def _retained_reform_run(scenario_id: str, run_id: str) -> ReformRun:
+    run = _store().get_reform_run(run_id)
+    if run is None or run.scenario_id != scenario_id:
+        _fail(404, "run_not_found", "No run with this id belongs to the scenario.")
+    return run
+
+
+@router.get(
+    "/{scenario_id}/runs/{run_id}/export.xlsx",
+    response_class=Response,
+    responses={
+        **_ERRORS,
+        200: {
+            "content": {
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                    "schema": {"type": "string", "format": "binary"}
+                }
+            }
+        },
+    },
+)
+def stored_workbook(scenario_id: ScenarioId, run_id: ScenarioId) -> Response:
+    """Use the existing writer on retained results; no rerun or live policy lookup."""
+    with _storage():
+        run = _retained_reform_run(scenario_id, run_id)
+        return Response(
+            content=to_xlsx(run.results["workbench"]),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f'attachment; filename="poltika-{run_id[:12]}.xlsx"'},
+        )
+
+
+@router.get(
+    "/{scenario_id}/runs/{run_id}/export/{table_id}.csv",
+    response_class=Response,
+    responses={
+        **_ERRORS,
+        200: {"content": {"text/csv": {"schema": {"type": "string", "format": "binary"}}}},
+    },
+)
+def stored_table(
+    scenario_id: ScenarioId,
+    run_id: ScenarioId,
+    table_id: Annotated[str, PathParam(pattern=r"^[a-z0-9_]+$")],
+) -> Response:
+    with _storage():
+        run = _retained_reform_run(scenario_id, run_id)
+        text = table_csv(run.results["workbench"], table_id)
+        if text is None:
+            _fail(404, "table_not_found", "No table with this id belongs to the stored run.")
+        return Response(
+            content=text,
+            media_type="text/csv; charset=utf-8",
+            headers={"Content-Disposition": f'attachment; filename="{table_id}.csv"'},
+        )
+
+
 def _item(s: ReformScenario, store: ScenarioStore) -> ScenarioItem:
     runs = store.runs_of(s.scenario_id)
     return ScenarioItem(
@@ -400,6 +510,19 @@ def _by_id(tab: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {b["id"]: b for b in tab["blocks"]}
 
 
+def _population_block(block: dict[str, Any]) -> dict[str, Any]:
+    """Mark aggregate columns for P3 display without changing stored values."""
+    if block["type"] != "table":
+        return block
+    return {
+        **block,
+        "columns": [
+            {**column, "precision": "population_estimate"} if column["kind"] != "text" else column
+            for column in block["columns"]
+        ],
+    }
+
+
 def _reform_workspace(s: ReformScenario, run: ReformRun | None, refs: list[RunRef]) -> Workspace:
     header = ScenarioHeader(
         scenario_id=s.scenario_id,
@@ -428,7 +551,7 @@ def _reform_workspace(s: ReformScenario, run: ReformRun | None, refs: list[RunRe
         _tab(
             "fiscal",
             [
-                *fiscal.values(),
+                *(_population_block(b) for b in fiscal.values()),
                 Notice(
                     id="net_crown_impact",
                     title="Net Crown impact",
@@ -444,8 +567,12 @@ def _reform_workspace(s: ReformScenario, run: ReformRun | None, refs: list[RunRe
         _tab(
             "distribution",
             [
-                *(b for k, b in households.items() if k.startswith("winners_losers_")),
-                *run.results["distribution"],
+                *(
+                    _population_block(b)
+                    for k, b in households.items()
+                    if k.startswith("winners_losers_")
+                ),
+                *(_population_block(b) for b in run.results["distribution"]),
                 households["worked_examples"],
             ],
         ),
@@ -563,37 +690,43 @@ def _overview(payload: dict[str, Any], assumptions: dict[str, dict[str, Any]]) -
             )
         )
     blocks.append(
-        {
-            "type": "table",
-            "id": "headline",
-            "title": "Who is affected",
-            "columns": [
-                {"id": "measure", "label": "Measure", "kind": "text"},
-                {"id": "option", "label": "Option", "kind": "text"},
-                {"id": "better_off", "label": "Better off", "kind": "count"},
-                {"id": "worse_off", "label": "Worse off", "kind": "count"},
-                {"id": "no_change", "label": "No material change", "kind": "count"},
-                {"id": "not_calculated", "label": "Not calculated", "kind": "count"},
-                {"id": "mean_change", "label": "Mean change of those calculated", "kind": "money"},
-                {"id": "unit", "label": "Unit", "kind": "text"},
-            ],
-            "rows": [
-                [
-                    i["measure"],
-                    i["option"],
-                    i["better_off"],
-                    i["worse_off"],
-                    i["no_material_change"],
-                    i["not_calculated"],
-                    i["mean_change"] if i["mean_change"] is not None else NOT_CALCULATED,
-                    i["unit"],
-                ]
-                for i in payload["headline"]
-            ],
-            "notes": [
-                "Weighted households. Better or worse off means a change at or above the threshold shown in Distribution."
-            ],
-        }
+        _population_block(
+            {
+                "type": "table",
+                "id": "headline",
+                "title": "Who is affected",
+                "columns": [
+                    {"id": "measure", "label": "Measure", "kind": "text"},
+                    {"id": "option", "label": "Option", "kind": "text"},
+                    {"id": "better_off", "label": "Better off", "kind": "count"},
+                    {"id": "worse_off", "label": "Worse off", "kind": "count"},
+                    {"id": "no_change", "label": "No material change", "kind": "count"},
+                    {"id": "not_calculated", "label": "Not calculated", "kind": "count"},
+                    {
+                        "id": "mean_change",
+                        "label": "Mean change of those calculated",
+                        "kind": "money",
+                    },
+                    {"id": "unit", "label": "Unit", "kind": "text"},
+                ],
+                "rows": [
+                    [
+                        i["measure"],
+                        i["option"],
+                        i["better_off"],
+                        i["worse_off"],
+                        i["no_material_change"],
+                        i["not_calculated"],
+                        i["mean_change"] if i["mean_change"] is not None else NOT_CALCULATED,
+                        i["unit"],
+                    ]
+                    for i in payload["headline"]
+                ],
+                "notes": [
+                    "Weighted households. Better or worse off means a change at or above the threshold shown in Distribution."
+                ],
+            }
+        )
     )
     blocks.append({**assumptions["parameters_changed"], "title": "What was tested"})
     return blocks

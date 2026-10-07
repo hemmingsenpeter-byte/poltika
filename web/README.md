@@ -18,10 +18,13 @@ npm ci
 npm run dev        # http://localhost:3000
 ```
 
-`next dev` proxies `/api`, `/workbench` and `/healthz` to the API at
+`next dev` proxies `/api`, `/workbench`, `/healthz`, `/analyst`,
+`/openapi.json`, `/household` and `/microsim` to the API at
 `http://localhost:8000` (`next.config.mjs` rewrites). A static export forbids
 rewrites, so they exist only under `next dev`; set `POLTIKA_API_ORIGIN` to
-point elsewhere. If the API has `POLTIKA_ACCESS_PASSWORD` set, the browser asks
+point elsewhere. Legacy `/scenarios` requests for JSON also reach the API;
+HTML and React navigation requests reach Next.js. If the API has
+`POLTIKA_ACCESS_PASSWORD` set, the browser asks
 for it once on the first API call.
 
 To try the production arrangement instead:

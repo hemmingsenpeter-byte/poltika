@@ -1,7 +1,10 @@
 import { getJson, postJson } from "../client";
 import {
   HouseholdCreatedSchema,
+  HouseholdDefinitionSchema,
+  RerunResponseSchema,
   RunCreatedSchema,
+  ScenarioDefinitionSchema,
   ScenarioListSchema,
   WorkspaceSchema,
 } from "../schemas";
@@ -22,6 +25,18 @@ export type ReformOption = { label: string; reform: Reform };
 
 export type CreateScenarioRequest = { title: string; description: string; options: ReformOption[] };
 
+export function getScenarioDefinition(scenarioId: string, signal?: AbortSignal): Promise<CreateScenarioRequest> {
+  return getJson(`/api/v1/scenarios/${encodeURIComponent(scenarioId)}/definition`, ScenarioDefinitionSchema, signal);
+}
+
+export function rerunHouseholdScenario(resultId: string, signal?: AbortSignal): Promise<{ new_result_id: string }> {
+  return postJson(`/scenarios/${encodeURIComponent(resultId)}/rerun`, undefined, RerunResponseSchema, signal);
+}
+
+export function getHouseholdDefinition(scenarioId: string, resultId: string, signal?: AbortSignal): Promise<Record<string, unknown>> {
+  return getJson(`/api/v1/scenarios/${encodeURIComponent(scenarioId)}/runs/${encodeURIComponent(resultId)}/definition`, HouseholdDefinitionSchema, signal);
+}
+
 export function listScenarios(kind?: ScenarioKind, signal?: AbortSignal): Promise<ScenarioList> {
   const query = kind ? `?kind=${kind}` : "";
   return getJson(`/api/v1/scenarios${query}`, ScenarioListSchema, signal);
@@ -41,7 +56,7 @@ export function getWorkspace(scenarioId: string, runId?: string, signal?: AbortS
   const path = runId
     ? `/api/v1/scenarios/${encodeURIComponent(scenarioId)}/runs/${encodeURIComponent(runId)}`
     : `/api/v1/scenarios/${encodeURIComponent(scenarioId)}`;
-  return getJson(path, WorkspaceSchema, signal) as Promise<Workspace>;
+  return getJson(path, WorkspaceSchema, signal);
 }
 
 /** `POST /scenarios` with an example's request body. The household run is
