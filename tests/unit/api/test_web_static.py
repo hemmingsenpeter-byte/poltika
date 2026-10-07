@@ -84,7 +84,7 @@ def test_ui_routes_serve_their_exported_page(
     response = client.get(path, headers=HTML)
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/html")
-    assert response.headers["cache-control"] == "no-cache"
+    assert response.headers["cache-control"] == "private, no-cache"
     assert f"<title>{page}</title>" in response.text
     assert "content-security-policy" in response.headers  # still inside the headers layer
 
@@ -104,7 +104,7 @@ def test_head_is_served_without_a_body(client: TestClient, web_dir: Path) -> Non
 def test_next_static_is_immutable(client: TestClient, web_dir: Path) -> None:
     response = client.get("/_next/static/x.js")
     assert response.status_code == 200
-    assert response.headers["cache-control"] == "public, max-age=31536000, immutable"
+    assert response.headers["cache-control"] == "private, max-age=31536000, immutable"
     assert response.text == "console.log(1)"
 
 
