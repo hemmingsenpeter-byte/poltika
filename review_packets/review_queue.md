@@ -19,13 +19,14 @@ primary-source re-derivation and merged (`reviews/2026-10-06-pr148.md`, `pr151.m
 [#163](https://github.com/hemmingsenpeter-byte/poltika/pull/163) merged at `f9c69d8` and
 [#164](https://github.com/hemmingsenpeter-byte/poltika/pull/164) at `94df1a0`.
 
-**Current merged review debt, 7 October 2026: 4 open scopes out of 10** (#181 counted from its merge).
+**Current merged review debt, 7 October 2026 (closeout, `main` `4c33c63`): 5 open scopes out of 11.**
 The single table below retains #177's seven Claude-only scopes and adds
 #177's own Claude-authored records commit. Independent Codex re-checks of
 the merged snapshot `a8b214f` clear six bounded scopes. #174 and #162 retain
 reproduced P2 findings; their Claude fixes are in #179 and #181, and each row
 stays open until Codex reviews the fix's exact final head. #179 and #181 are
-Claude-authored rows awaiting the same Codex recheck. Same-model checks, author preflight and CI remain
+Claude-authored rows awaiting the same Codex recheck, as is #182 (the
+self-hosted CI runner, authored by Pete's local Claude session). Same-model checks, author preflight and CI remain
 supporting evidence. This is review clearance, not acceptance of a release
 or independent review of the new Codex-authored documentation PR.
 
@@ -87,6 +88,7 @@ were independently reviewed by Claude Code with no blocking findings
 | #161 | programme | Units registry; squash `9e67009`, final head `f4465d6`; later exact-rescale correction #169 retained | Semantics, tests | Medium | reviewed ([reviews/2026-10-07-codex-recheck-units.md](../reviews/2026-10-07-codex-recheck-units.md)); bounded Claude-authored scope |
 | #179 | programme | Shared `common/safe_xml.py` DTD guard (fails closed), Stats NZ SDMX DTD refusal, response-size cap (D20), Bandit MEDIUM gate; squash `eacc5a2`, final head `527dbb7`; Claude commits `d88daa4`/`e8af4b3`/`bb19ef8`/`41ce431` | Data reader, acquisition, CI | High | open — merged on same-model `poltika-reviewer` passes (no P1/P2) and `/security-review`; Pete chose not to wait for a Codex security pass (not rule 4). Awaits Codex recheck of `527dbb7` |
 | #181 | programme | Integration-train follow-ups: review wording, `pr-review` skill, review-rule entry-point test, household id `\Z`, model-card policy versions, FastAPI telemetry, #162 R1 and #177 R1 fixes; Claude-authored | Docs, skills, semantics, assurance cards, API, acceptance tests | Medium | open — awaits Codex recheck of its final head |
+| #182 | programme | Self-hosted Mac CI runner (D21): `runs-on: [self-hosted, poltika]`, `pilot-image` hosted only on image-input changes; squash `dd2c485`, final head `342d469`; Claude-authored (Pete's local session) | CI workflows, decision log | Medium | open — merged on same-model `poltika-reviewer` passes (no P1/P2; P3s deferred to a follow-up) and author preflight. Awaits Codex recheck of `342d469` |
 | #162 | programme | Mechanical never-build checks; squash `5a8c17e`, final head `e637daa` | Acceptance tests | Low | open — R1 P2 TEST_ERROR: unrelated negation masks a prohibited milestone claim; [finding](../reviews/2026-10-07-codex-recheck-never-build.md). Fix in #181 (Claude-authored): negation bound to its clause. Awaits Codex recheck of #181's final head |
 | #132 | pilot | Hosted hardening: security headers, body and request limits, cache admission, declined-label validation and CI smoke check | API, CI | Medium | reviewed (reviews/2026-10-02-pr132.md) |
 | #133 | workbench | Analyst workbench backend (ADR-0018, proposed): `api/workbench*.py` registry, check, tabbed results, xlsx/csv export; `scenarios/microsim/worked_examples.py`; `execute_reform` extracted in `api/microsim.py`; `openpyxl`. Author preflight: `review_packets/workbench_backend_preflight.md` | API, microsim | Medium | reviewed (`reviews/2026-10-02-pr133.md`) |
@@ -137,3 +139,4 @@ were independently reviewed by Claude Code with no blocking findings
 | --- | --- | --- | --- |
 | #151 R1 P3 | A schema for `coverage_limits` (`reviews/2026-10-06-pr151.md`) | Only one test reads the key; a schema belongs with its first consumer | The first benefit specification that consumes `coverage_limits` |
 | #167 | Preflight hashes recorded in #167's records | They name heads superseded by #167's three conflicted integrations; they are kept as historical evidence and not recomputed | None: labelled historical; later heads carry their own final-head reviews |
+| #154 (closed, D22) | Codex recheck of the Claude-authored test commits `ff28a9b`/`0b3f2aa`/`5a45719`; P3 R3 (control characters break the chart SVG; a lone surrogate raises `UnicodeEncodeError`) and R4 (standalone population tables carry no synthetic label) | #154 was closed unmerged and parked for Phase F Task 24 (D22), so it is not merged review debt | Task 24, if the branch `codex/reporting-review-fixes` is revived |

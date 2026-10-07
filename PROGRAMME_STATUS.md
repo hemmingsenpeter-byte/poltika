@@ -77,7 +77,8 @@ and review again before merge; this is the reconciliation snapshot.
 | Security CI | Done; Claude Code, GPT/Codex review and fixes | #142 merged, `b292666` | Its checks are among the nine required by the applied Q1 ruleset. |
 | Governance files | Done; Claude Code | #143 merged, `6a7da14` | |
 | Hosting policy-path documentation | Done; Claude Code | #140 merged, `96900a4` | Documents `POLTIKA_POLICY_SPECS_DIR`. This is not the dev-tooling PR. |
-| Independent review debt | Done; GPT/Codex, Claude Code coordinates | #128, #150, #152 merged (`fe67875`) | `review_packets/review_queue.md` is current: no open implementation assurance rows. |
+| Independent review debt | In progress; GPT/Codex rechecks, Claude Code coordinates | #128, #150, #152 merged (`fe67875`); 6 October train rechecks #180 (`1bc9834`) | `review_packets/review_queue.md` (7 October closeout): 5 open programme scopes (#174, #179, #181, #182, #162), each awaiting a Codex recheck of a named final head. No release row is open. |
+| 6 October integration train | Done; Claude Code sole merger (D18) | #178, #179, #180, #182, #181 merged; `main` `4c33c63` | Record: `reviews/2026-10-07-closeout.md`. #154 parked (D22). |
 
 ## Release and maintenance state
 
@@ -298,6 +299,6 @@ Primary-source tax/benefit scoping and D1–D3 proposals
 are parallel research (#148/#151 drafts); existing A closeout continues with
 its current owners. (3 October handoff; #150 and #152 have since merged and the #128 queue row is closed.)
 
-## Open PRs outside the closeout (live state, 5 October 2026)
+## Open PRs (live state, 7 October 2026)
 
-[#154](https://github.com/hemmingsenpeter-byte/poltika/pull/154) (draft, reporting evidence) and [#155](https://github.com/hemmingsenpeter-byte/poltika/pull/155) (draft, closeout plan) are open. Dependabot [#156](https://github.com/hemmingsenpeter-byte/poltika/pull/156)-[#160](https://github.com/hemmingsenpeter-byte/poltika/pull/160) are open. None is part of this closeout's merges.
+None. [#154](https://github.com/hemmingsenpeter-byte/poltika/pull/154) was closed unmerged and parked for Phase F Task 24 (D22); [#155](https://github.com/hemmingsenpeter-byte/poltika/pull/155) is closed; Dependabot [#156](https://github.com/hemmingsenpeter-byte/poltika/pull/156)-[#160](https://github.com/hemmingsenpeter-byte/poltika/pull/160) merged on 6 October. CI runs on the self-hosted runner (D21).
