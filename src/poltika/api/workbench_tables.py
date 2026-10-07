@@ -642,6 +642,12 @@ def distribution_tables(options: Sequence[OptionResult]) -> list[dict[str, Any]]
                     f"{option.label}: {_count(w)} weighted households left out ({reason})."
                     for reason, w in sorted(table.left_out.items())
                 ]
+                invalid = option.run.validation.by_status()[RecordStatus.INVALID][1]
+                if invalid:
+                    notes.append(
+                        f"{option.label}: {_count(invalid)} weighted households left out "
+                        "(invalid records)."
+                    )
             tables.append(
                 _table(
                     f"distribution_{measure.measure_id}_{dimension_id}",

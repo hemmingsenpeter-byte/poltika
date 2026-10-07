@@ -173,9 +173,9 @@ def _population_info() -> PopulationInfo | None:
 def _registry() -> Registry:
     configured = os.environ.get("POLTIKA_MODEL_REGISTRY_PATH")
     path = Path(configured) if configured else REGISTRY_PATH
-    if not path.is_file():
-        _fail(503, "catalogue_unavailable", "The model registry is not configured here.")
     with _catalogue_read("model registry"):
+        if not path.is_file():
+            _fail(503, "catalogue_unavailable", "The model registry is not configured here.")
         return _load_registry(str(path), path.stat().st_mtime_ns)
 
 
@@ -221,8 +221,9 @@ def model_detail(model_id: str) -> ModelDetail:
 
 def _metadata_root() -> Path:
     root = metadata_dir()
-    if not root.is_dir():
-        _fail(503, "catalogue_unavailable", "The dataset catalogue is not configured here.")
+    with _catalogue_read("dataset catalogue"):
+        if not root.is_dir():
+            _fail(503, "catalogue_unavailable", "The dataset catalogue is not configured here.")
     return root
 
 

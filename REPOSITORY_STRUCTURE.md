@@ -354,6 +354,8 @@ target slots; see below. `engines/assurance/` now holds provenance,
 evidence coverage, deterministic explanations and source-currency reports.
 Run identities and manifests also live in `scenarios/record.py`; golden
 results and traces remain in `tests/regression/` and `tests/fixtures/`.
+Migration 0002 also retains each newly stored household run's verified
+provenance report in `run.provenance_json`; legacy rows stay NULL.
 
 The existing data and microsimulation modules are development-population
 machinery, not evidence that national representativeness has been achieved.

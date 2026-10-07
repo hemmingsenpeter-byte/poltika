@@ -169,3 +169,49 @@ def test_a_group_mean_distinguishes_none_from_not_calculated() -> None:
     assert _mean_or(Decimal("12.345"), Decimal(3)) == "12.35"
     assert _mean_or(None, Decimal(3)) == NONE_IN_GROUP
     assert _mean_or(None, Decimal(0)) == NOT_CALCULATED
+
+
+def test_distribution_tables_report_invalid_households_left_out() -> None:
+    from decimal import Decimal
+
+    from poltika.api.workbench_tables import OptionResult, distribution_tables
+    from poltika.scenarios.microsim.reform import Reform
+    from poltika.scenarios.microsim.runner import run_population
+    from poltika.scenarios.record import CodeIdentity
+    from poltika.semantics.population import HouseholdCharacteristics, PersonRole
+    from tests.conftest import AS_POLICY_DIR, WFF_POLICY_DIR
+    from tests.unit.scenarios.test_population import _dataset, _household, _people
+
+    characteristics = HouseholdCharacteristics(
+        region="Test region", gross_household_income=Decimal(20000)
+    )
+    population = _dataset(
+        _household(
+            "valid",
+            weight=Decimal(3),
+            persons=_people(
+                PersonRole.CLAIMANT, PersonRole.DEPENDENT_CHILD, PersonRole.DEPENDENT_CHILD
+            ),
+            characteristics=characteristics,
+        ),
+        _household(
+            "invalid",
+            weight=Decimal(7),
+            persons=_people(PersonRole.PARTNER),
+            characteristics=characteristics,
+        ),
+    )
+    run = run_population(
+        population,
+        Reform.model_validate(_reform()),
+        WFF_POLICY_DIR,
+        AS_POLICY_DIR,
+        code=CodeIdentity("test", None, None, None),
+    )
+    tables = distribution_tables([OptionResult("A", population, run, [])])
+    assert tables
+    for table in tables:
+        # Invalid records have no result to assign to a change class or group.
+        # Their omitted weight must still be visible in every dimension.
+        assert sum(Decimal(row[2]) for row in table["rows"]) == Decimal(3)
+        assert "A: 7 weighted households left out (invalid records)." in table["notes"]
