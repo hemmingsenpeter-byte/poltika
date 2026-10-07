@@ -276,7 +276,13 @@ poltika/
 │                            v1_scenarios.py and v1_blocks.py (Task B0.1.2:
 │                            durable reform scenarios and the seven-tab
 │                            workspace view of typed blocks; places stored
-│                            values, computes none)
+│                            values, computes none);
+│                            web.py (Task B0.1.3: ASGI middleware serving
+│                            the exported web app from POLTIKA_WEB_DIR --
+│                            /_next assets, and exported pages for a GET
+│                            whose Accept prefers text/html on a declared UI
+│                            route; everything else passes through; runs
+│                            inside the password check)
 │                            — no llm/ layer yet;
 │                            _wff_policy_dir()/_as_policy_dir() each
 │                            resolve POLTIKA_POLICY_SPECS_DIR at deploy
@@ -284,6 +290,26 @@ poltika/
 │
 ├── scripts/ingest/        — stats_nz.py: CLI for the source-preservation archive
 │                            (--list, --dataset, --all, --dry-run; cron-friendly)
+├── scripts/development/   — dump_openapi.py (Task B0.1.3): writes web/openapi.json from
+│                            the FastAPI app; CI regenerates and fails on drift
+├── web/                   — Task B0.1.3 (ADR-0023): the web frontend. Next.js App Router,
+│                            TypeScript strict, Tailwind; `output: 'export'` static build
+│                            (web/out) that FastAPI serves from the same image. npm with a
+│                            committed package-lock.json. See web/README.md.
+│   ├── openapi.json       — generated from the API (scripts/development/dump_openapi.py)
+│   └── src/
+│       ├── app/           — routes only (thin: dynamic ones export one `_` placeholder)
+│       ├── features/      — page-level client components, one per route
+│       ├── components/    — layout/, navigation/, ui/, blocks/, states/ (generic; they
+│       │                    never call fetch and never name an instrument)
+│       ├── domain/        — domain types narrowed from the generated schema
+│       ├── api/           — schema.gen.ts (generated), client.ts (the one fetch wrapper),
+│       │                    errors.ts, schemas.ts (zod, typed against the generated
+│       │                    types) and services/ (the only callers of the client)
+│       ├── config/        — navigation.ts and capabilities.ts (declarative)
+│       ├── format/        — central, unit-tested formatters
+│       ├── lib/           — small hooks and helpers (useRouteIds, useAsync)
+│       └── styles/        — globals.css design tokens
 │
 └── tests/
     ├── conftest.py        — shared fixtures/helpers (Task 15), used by tests/regression/;
@@ -316,7 +342,8 @@ poltika/
     │   │                        AS rate-selector tests (Task 26a repair)
     │   └── api/             — FastAPI TestClient tests (Task 21 WFF,
     │                          Task 24.8 AS, Task 33 household and
-    │                          stored scenario routes)
+    │                          stored scenario routes; test_web_static.py,
+    │                          Task B0.1.3: serving, deep links, caching, auth)
     ├── installed_artifact/ — builds and installs the real wheel into a
     │                          throwaway venv, confirms the API works
     │                          standalone (ADR-0011); marked
