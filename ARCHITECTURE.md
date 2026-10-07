@@ -87,7 +87,9 @@ that each release or external-user gate has passed.
 
 The Python runtime remains 3.12. Population runs are kept in process memory;
 the existing PostgreSQL store persists household scenarios. There is no
-Next.js application or LLM implementation. Phase B reuses the household
+Next.js application or LLM implementation yet; programme Task B0.1
+(ADR-0023) builds the Next.js frontend as a static export served by FastAPI,
+the single product surface in which Task 15 completes the Workbench. Phase B reuses the household
 engines and their identities; Phase C completes the analyst workflow;
 Phase E hardens existing population machinery.
 

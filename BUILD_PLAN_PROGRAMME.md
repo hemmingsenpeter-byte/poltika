@@ -31,7 +31,8 @@ The governing hierarchy is:
    household/tax-benefit graph/measures, with population work in E;
    [BUILD_PLAN_v0_1_6.md](BUILD_PLAN_v0_1_6.md) for parallel source currency,
    effective-dated years and enacted changes; [BUILD_PLAN_v0_2.md](BUILD_PLAN_v0_2.md)
-   for release closeout until v0.2.0 is tagged.
+   for release closeout until v0.2.0 is tagged; [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md)
+   for Task B0.1's web frontend.
 5. [PROGRAMME_STATUS.md](PROGRAMME_STATUS.md): live owners, status, PRs,
    evidence and blockers; a merged asset is not a completed capability gate.
 6. [PETE_QUEUE.md](PETE_QUEUE.md): retained Tier C decisions/actions.
@@ -81,7 +82,7 @@ milestone decision (P18), and can be lost if the evidence stops supporting it.
 | 9 | EMTR / incentive measures | B, 11 |
 | 10 | Conformance | C, 12, alongside B |
 | 11 | Validation | C, 13, alongside B |
-| 12 | Analyst Workbench | C, 15 |
+| 12 | Analyst Workbench | C, 15; surface from B, B0.1 |
 | 13 | Scenario contract | C, 14; delivered with the workflow |
 | 14 | Pilot 1 | D, 16 |
 | 15 | PopulationDataset | E, 17 |
@@ -184,6 +185,16 @@ Use the detailed v0.3 lane and the five-PR policy onboarding process.
 Sourcing and supported-slice decisions precede implementation. Complete
 household semantics only to the extent required by these models.
 
+B0.1. **Web frontend: the single product surface.** Claude Code implements;
+    GPT/Codex reviews which amounts are shown; Pete owns hosting, access and
+    ADR-0018 acceptance. Detailed lane: [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md)
+    ([ADR-0023](adr/0023-web-frontend-product-surface.md)).
+    Done when a password-protected user at `poltika.onrender.com` can start
+    or open a scenario and move from its headline result through fiscal,
+    distributional, evidence, assumption, technical and audit views, and
+    browse models and datasets, with every number traced to an API value and
+    no calculation in the frontend. It blocks none of Tasks 5–11.
+
 5. **Minimum household semantic contracts.** Claude Code implements;
    GPT/Codex reviews source-derived mappings.
    Done when units, periods, people/families, income facts, identifiers and
@@ -224,7 +235,8 @@ until explicitly sourced/reviewed and decided through the applicable tier.
 
 Conformance and benchmark review run alongside B. The first analyst product
 surface is the existing Analyst Workbench; complete its workflow over its
-current contracts rather than creating a parallel product stack.
+current contracts inside the B0.1 web app (ADR-0023) rather than creating a
+parallel product stack.
 
 12. **Legislation conformance.** Claude Code assembles the matrix/harness;
     GPT/Codex independently derives missing cases through the test doctrine.
