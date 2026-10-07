@@ -15,9 +15,16 @@ on:
 permissions:
   contents: read
 
+# Most jobs run on the self-hosted runner (decision log D21), which works
+# one job at a time, so a newer push to a pull request cancels the older
+# run. Pushes to main and scheduled runs are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, poltika]
     env:
       # Fail, rather than skip to green, if the PostgreSQL binaries are missing.
       POLTIKA_REQUIRE_POSTGRES: "1"
@@ -33,9 +40,17 @@ jobs:
       - name: Put the runner's PostgreSQL server binaries on PATH
         run: |
           set -euo pipefail
-          PG_BIN=$(ls -d /usr/lib/postgresql/*/bin | sort -V | tail -1)
+          if [ "$RUNNER_OS" = macOS ]; then
+            # Postgres.app's PostgreSQL 16 on the self-hosted Mac (D21).
+            PG_BIN=/Applications/Postgres.app/Contents/Versions/16/bin
+          else
+            PG_BIN=$(ls -d /usr/lib/postgresql/*/bin | sort -V | tail -1)
+          fi
           "$PG_BIN/postgres" --version
           echo "$PG_BIN" >> "$GITHUB_PATH"
+          # pytest's temporary directories, and so the test server's data
+          # directory, live under this job's temporary directory.
+          echo "PYTEST_DEBUG_TEMPROOT=$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Install
         run: uv sync --locked --extra dev
@@ -60,10 +75,57 @@ jobs:
           POLTIKA_REQUIRE_CODE_REPLAY: "1"
         run: uv run --extra dev pytest -q -m code_replay
 
+      - name: Stop a test PostgreSQL server left by a cancelled run
+        # A superseded run is cancelled mid-suite, possibly before the
+        # fixture stops its server; on the persistent self-hosted runner
+        # (D21) it would otherwise keep running. Only this job's servers match.
+        if: always()
+        run: pkill -f "postgres -D $RUNNER_TEMP/" || true
+
+  image-inputs:
+    # Whether a pull request changes anything the pilot image is built from
+    # (the Dockerfile's COPY lines, plus this workflow's smoke test). Keep
+    # the list in step with the Dockerfile.
+    if: github.event_name == 'pull_request'
+    runs-on: [self-hosted, poltika]
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Compare the image inputs with the merge base
+        id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          # Any git error counts as a change, so the image is still checked.
+          MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA") || MERGE_BASE=""
+          if [ -n "$MERGE_BASE" ] && git diff --quiet "$MERGE_BASE" "$HEAD_SHA" -- \
+              Dockerfile .dockerignore pyproject.toml uv.lock README.md src policy_specs \
+              deploy data/metadata/populations .github/workflows/tests.yml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
   pilot-image:
     # v0.1.5 Task 8.1: the pilot container builds and serves a household
     # calculation and the analyst page. The scenario store is exercised by
-    # the test job above; here the image runs without a database.
+    # the test job above; here the image runs without a database. It is the
+    # one job on a GitHub-hosted runner, because the self-hosted Mac has no
+    # Docker (D21). To spend no hosted minutes it is skipped, which a
+    # required check counts as passing, on pushes to main (the up-to-date
+    # pull request already built the same tree) and on pull requests that
+    # change no image input. If image-inputs fails, it runs.
+    needs: image-inputs
+    if: >-
+      !cancelled() && github.event_name == 'pull_request'
+      && needs.image-inputs.outputs.changed != 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
