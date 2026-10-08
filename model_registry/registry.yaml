@@ -457,6 +457,12 @@ models:
 # non-model infrastructure explicitly uses wraps: null and records its boundary.
 # A new public entry point must be registered above or listed here with a reason.
 not_engines:
+  - module: poltika.api.v1_scenarios
+    function: run_workspace
+    reason: >-
+      Retrieves a stored scenario run and presents its workspace from persisted
+      results and evidence. It calculates no policy outcome and runs no model.
+    wraps: null
   - module: poltika.data.acquisition.ingest
     function: run_sources
     reason: >-

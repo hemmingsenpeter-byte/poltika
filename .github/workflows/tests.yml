@@ -107,7 +107,7 @@ jobs:
           MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA") || MERGE_BASE=""
           if [ -n "$MERGE_BASE" ] && git diff --quiet "$MERGE_BASE" "$HEAD_SHA" -- \
               Dockerfile .dockerignore pyproject.toml uv.lock README.md src policy_specs \
-              deploy data/metadata/populations .github/workflows/tests.yml; then
+              deploy data/metadata model_registry .github/workflows/tests.yml; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -159,3 +159,10 @@ jobs:
           curl -sf $C localhost:8000/microsim/population > population.json
           python3 -c "import json; assert json.load(open('population.json'))['population_id'] == 'nz_synthetic_development'"
           test "$(curl -s $C -o /dev/null -w '%{http_code}' localhost:8000/scenarios/$(printf '0%.0s' $(seq 1 64)))" = 503
+          # Task B0.1.1: the catalogue is served from the image's own copies.
+          curl -sf $C localhost:8000/api/v1/models > models.json
+          python3 -c "import json; assert 'wff_engine' in [m['id'] for m in json.load(open('models.json'))['models']]"
+          curl -sf $C localhost:8000/api/v1/datasets > datasets.json
+          python3 -c "import json; assert json.load(open('datasets.json'))['datasets']"
+          curl -sf $C localhost:8000/api/v1/evidence > evidence.json
+          python3 -c "import json; assert all(not p['problems'] for p in json.load(open('evidence.json')))"
