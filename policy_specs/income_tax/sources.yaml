@@ -103,6 +103,14 @@ sources:
     locator: Schedule 1 Part A clause 1 and Table 1; cross-reference BB 1 and BC 6.
     covers: General basic-rate table, subject to the annual taxing Act and special-rate exclusions.
     verification_status: listed_provisions_author_checked_independent_review_pending
+    specification_check:
+      checked_on: 2026-10-08
+      locator: Schedule 1 Part A clause 1/Table 1; BC 6(1)-(2).
+      finding: >-
+        Literal five per-dollar rows and basic-rate formula checked
+        against the dated Act. The specification's documentary table
+        transcribes this source without resolving fractional dollars.
+      limitation: No executable 2026-27 authority or precision approval.
     scope_check:
       finding: >-
         Clause 1 uses Table 1 for each dollar of taxable income and applies
@@ -121,6 +129,12 @@ sources:
     locator: Sections 2(5), 37(1), 37(4).
     covers: Commencement and income-year application of the replacement Schedule 1 Part A Table 1.
     verification_status: listed_provisions_author_checked_independent_review_pending
+    specification_check:
+      checked_on: 2026-10-08
+      locator: Sections 2(5), 37(1), 37(4).
+      finding: >-
+        Part 4 commencement and table replacement/application rechecked
+        against the enacted text, separately from annual-rate enactment.
     effective_note: >-
       Part 4 commences on 1 April 2025; section 37(4) applies the table
       replacement for the 2025-26 and later income years. This is
@@ -173,6 +187,10 @@ sources:
     locator: Income tax rates / From 1 April 2025; introductory income and withholding paragraphs; Secondary tax rates.
     covers: Operational cross-check of the basic-rate table and the distinction between annual tax and withholding codes.
     verification_status: named_sections_author_checked_independent_review_pending
+    specification_check:
+      checked_on: 2026-10-08
+      locator: Income tax rates / From 1 April 2025.
+      finding: Current page cross-checks the five statutory bands and rates.
     limitation: >-
       Current agency guidance is not a dated full-year legislative audit.
       Income-category examples do not establish that every payment from
@@ -186,6 +204,10 @@ sources:
     locator: Introductory calculator scope and Gather your information.
     covers: Basic yearly tax on total taxable income, separately from credits, tax already paid and the ACC earners levy.
     verification_status: page_scope_author_checked_independent_review_pending
+    specification_check:
+      checked_on: 2026-10-08
+      finding: Basic yearly tax excludes credits, already-paid tax and ACC; requires taxable income.
+      limitation: Calculator not executed; no numerical benchmark retained.
     limitation: >-
       The interactive calculator was not executed and no result PDF or
       independent numerical benchmark was retained. This entry proves
@@ -309,7 +331,7 @@ sources:
     retrieved_on: 2026-10-08
     locator: Printed page 7 Income year; printed pages 43-44 Tax on taxable income and worksheet.
     covers: Earlier-year worksheet research and apparent threshold discrepancy, not an approved benchmark.
-    verification_status: extracted_text_checked_visual_confirmation_and_independent_review_pending
+    verification_status: text_and_pdf_visual_author_checked_independent_review_pending
     specification_check:
       checked_on: 2026-10-08
       reference_period:
@@ -320,8 +342,9 @@ sources:
         shows threshold A 78,101 in the 78,101-180,000 row, rate .33,
         accumulated tax 15,650.50; page 44 instructs subtract/multiply/add.
       limitation: >-
-        Apparent discrepancy against statutory per-dollar bands is
-        parked in DEC-003; screenshots were requested but no image was
-        available to inspect. No corrected value, numeric benchmark,
+        The author visually confirmed the same row in the direct PDF
+        rendered with macOS PDFKit after web screenshots supplied no
+        image. Apparent discrepancy against statutory per-dollar bands
+        is parked in DEC-003. No corrected value, numeric benchmark,
         precision rule or 2026-27 applicability is adopted. URL query
         timestamps do not make agency content an immutable version.

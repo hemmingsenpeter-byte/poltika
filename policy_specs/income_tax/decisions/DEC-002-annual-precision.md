@@ -9,7 +9,8 @@ They do not establish in this check a complete procedure for fractional
 taxable dollars, intermediate precision, final rounding and ties. Checks of
 [TAA ss 22D, 22H, 22I, 92 and 92A](https://www.legislation.govt.nz/act/public/1994/166/en/2026-09-04/),
 the [IRD yearly-tax calculator scope](https://www.ird.govt.nz/income-tax/income-tax-for-individuals/how-income-is-taxed/work-out-tax-on-your-yearly-income)
-and March 2026 IR3G calculation pages did not close those gaps.
+and IR3G 2026 calculation pages (retrieved cover: August 2026) did not close
+those gaps. That guide covers 2025–26, not the commissioned period.
 
 This is a bounded negative finding, not a claim that no official rounding
 rule exists. PAYE or FBT worksheet conventions have different output scope

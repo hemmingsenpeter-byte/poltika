@@ -16,14 +16,18 @@ official value or benchmark expectation.
 The guide's printed p 7 covers **1 April 2025 to 31 March 2026**, not the
 commissioned 2026–27 period. The web reader labels the retrieved cover
 August 2026. The query's modified timestamp is not a document version or
-immutable snapshot. Screenshot requests yielded no viewable image in this
-session; the row remains extracted-text evidence pending visual confirmation.
+immutable snapshot. Web screenshot requests yielded no viewable image.
+The directly retrieved PDF was then rendered with macOS PDFKit: the author
+visually confirmed the same threshold/rate/accumulated-tax cells on printed
+p 43. The source observation is confirmed; the conflict's interpretation
+and disposition still require independent review and Pete.
 
 No worksheet cell has been silently repaired or adopted into fixtures. No
 2026–27 benchmark is inferred from this earlier-year guide. All numeric
 work remains blocked by DEC-001/002 regardless of this candidate guide.
 
-**Smallest Pete action:** confirm the row visually and obtain an official
-correction/clarification or a separately retained, period-matched benchmark;
+**Smallest Pete action:** review the visually confirmed row independently
+and obtain an official correction/clarification or a separately retained,
+period-matched benchmark;
 review that evidence independently before any expected-result adoption.
 See PETE_QUEUE Q18.
