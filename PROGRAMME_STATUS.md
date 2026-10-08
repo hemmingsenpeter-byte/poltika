@@ -2,7 +2,7 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**As of:** 5 October 2026. **Repository baseline:** `origin/main` after #146
+**Reconciliation snapshot:** 5 October 2026; campaign/Budget overlay planning rows added 9 October 2026. **Repository baseline at reconciliation:** `origin/main` after #146
 (`a782693`); reconciled against live GitHub state on this date. This migration
 branch is documentation work, not evidence that any new economic model is built.
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), under
