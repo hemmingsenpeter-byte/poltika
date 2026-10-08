@@ -74,9 +74,10 @@ Render integration was found but was not installed/connected at the check.
 No resources, environment values or actual deployment were inspected or
 changed. Workspace, service ID/region, capacity and spend remain unverified.
 
-After #188 and #189 are accepted and merged, use separate bounded B0.1.5
-completion, B0.1.6 accessibility/charts and B0.1.7 deployment work. Preserve
-implemented pages and backend values. Deployment acceptance must demonstrate:
+After #188 and #189 are accepted and merged, verify B0.1.5 coverage and assign
+only evidenced remaining gaps. Use separate bounded B0.1.6 accessibility/charts
+and B0.1.7 deployment work. Preserve implemented pages and backend values.
+Deployment acceptance must demonstrate:
 
 1. Unauthenticated routes return 401 except the intended health endpoint.
 2. Authenticated Home, Scenarios, Models and Data work.
