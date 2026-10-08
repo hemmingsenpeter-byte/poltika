@@ -3,10 +3,11 @@
 No new actionable P1 or P2 findings at `5be777c3abf7f0e533e1025a31d52de45d461ecf`.
 The original eight P2 findings retain their dispositions in the PR-branch
 record `reviews/2026-10-08-pr189.md`. The GPT/Codex review of Claude's
-scenario experience is complete. Actual Claude review of the earlier
-Codex-authored fixes remains pending; this pass cannot independently review
-its own model's work or clear that separate gate. No merge is recommended
-until the owning Claude session records that review.
+scenario experience is complete. The owning Claude session subsequently
+recorded its fresh-context cross-model review of the Codex fixes as clear.
+Both model scopes now have review evidence with no unresolved P1/P2 at the
+frozen source head. The owning session retains stack integration and merge
+authority; a later semantic change needs renewed review.
 
 ## Review inputs
 
@@ -59,7 +60,38 @@ A later request to run a separate authenticated Claude reviewer was rejected
 by automatic approval review: the CLI could transmit repository contents
 and the prompt to an external service, and that destination/payload was not
 sufficiently authorized. It did not execute. No workaround was attempted;
-the owning Claude session retains the pending cross-model gate.
+the owning Claude session retained the pending cross-model gate at that time.
+
+## Subsequent cross-model clearance
+
+At 04:07 UTC on 8 October 2026 the owning Claude session posted its actual
+fresh-context `poltika-reviewer` result for `10291cf`…`9c6a254`:
+[PR #189 clearance](https://github.com/hemmingsenpeter-byte/poltika/pull/189#issuecomment-6051987408).
+It checked all eight fixes and reported no unresolved P1/P2. The remaining
+`9c6a254`…`5be777c` delta is review and queue metadata, covered by this Codex
+final-head check. This later review closes the previously pending Codex-fix
+gate; the failed CLI attempts above remain historical evidence.
+
+Claude listed three non-blocking P3 follow-ups: null household facts should
+read “Not recorded”; the reform description stays stale after an option edit;
+population table money cells omit the currency symbol. These remain with
+the owning frontend session; this documentation PR changes no frontend.
+Claude also confirmed [#192 is clear from its side](https://github.com/hemmingsenpeter-byte/poltika/pull/192#issuecomment-6051987821).
+
+Pete's subsequent “accept and proceed” authorises advancing this review
+record and the gated policy-specification work. It does not choose a pending
+policy interpretation or override the stack's ownership and CI gates.
+
+## Documentation update preflight
+
+Author preflight, GPT/Codex: independently read the two linked Claude
+comments, checked their scope against the frozen #189 head, and retained
+the original verification results and failed-attempt history. The #189
+queue row is moved into the six-column review table and marked reviewed,
+with no outstanding P1/P2. The branch's main integration is conflict-free.
+Only this record and the review queue change in this follow-up. Whitespace
+checks pass, and the existing review-queue acceptance tests pass (2 tests).
+This preflight does not review its own semantic change independently.
 
 ## Verification
 
