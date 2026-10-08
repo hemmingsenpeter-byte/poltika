@@ -210,6 +210,14 @@ def _check_bound_artifacts(run: PopulationRun) -> None:
 def _payload(
     scenario: ScenarioHeader, labelled: list[tuple[str, PopulationDataset, PopulationRun]]
 ) -> dict[str, Any]:
+    return payload_and_options(scenario, labelled)[0]
+
+
+def payload_and_options(
+    scenario: ScenarioHeader, labelled: list[tuple[str, PopulationDataset, PopulationRun]]
+) -> tuple[dict[str, Any], list[OptionResult]]:
+    """The results payload and the option results it was built from (Task
+    B0.1.2 stores both the payload and blocks built from the options)."""
     for _, _, run in labelled:
         _check_bound_artifacts(run)
     families = _families()
@@ -224,7 +232,7 @@ def _payload(
         for label, dataset, run in labelled
     ]
     try:
-        return build_results(
+        payload = build_results(
             scenario.model_dump(),
             options,
             instruments(config.BASELINE_DATE),
@@ -232,6 +240,7 @@ def _payload(
         )
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return payload, options
 
 
 @router.post("/results")
