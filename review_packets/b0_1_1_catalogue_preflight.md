@@ -11,7 +11,8 @@ calculated amount, so no review-queue row is required (ADR-0020).
 - Plan: `BUILD_PLAN_B0_1_WEB.md` B0.1.1 (PR #185), ADR-0023.
 - Sources: none. The endpoints rearrange existing registry, manifest,
   dictionary, source-catalogue and evidence-coverage content.
-- Tests: `tests/unit/api/test_v1_catalogue.py` (25 cases), the data and
+- Tests: full suite 1721 passed, 22 skipped (at `bf1177b`); after the fixes,
+  `tests/unit/api/test_v1_catalogue.py` (33 cases), the data and
   Source Archive boundary tests, ruff, `mypy --strict src`, the full suite.
 
 ## Independent review
