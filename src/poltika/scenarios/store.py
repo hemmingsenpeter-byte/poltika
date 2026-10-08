@@ -2,9 +2,18 @@
 
 Tables (append-only; the repository layer has no update path):
 - `scenario`: a `ScenarioRecord`, keyed by `scenario_id`;
-- `run`: a result, keyed by `result_id`, with its artifact manifest and
-  reproducibility flag;
-- `artifact`: the exact bytes of every file a run bound, keyed by SHA-256.
+- `run`: a result, keyed by `result_id`, with its artifact manifest,
+  reproducibility flag and original verified provenance report;
+- `artifact`: the exact bytes of every file a run bound, keyed by SHA-256;
+- `reform_scenario` and `reform_run` (Task B0.1.2, ADR-0023): a reform
+  scenario's definition (its options), and each run's results payload as
+  the Workbench built it, stored verbatim so a link to a run outlives the
+  process that computed it.
+
+`created_at` records when a row was first written. It is set by the
+database, is never part of an identity hash, and is NULL for runs stored
+before migration 0002. Those older runs also have no retained provenance
+report; re-saving one does not invent or backfill its historical trace.
 
 Storing the bytes lets a run replay after the repository's policy files
 change (Task 32.4). Code replay uses the manifest's git commit and is
@@ -27,12 +36,14 @@ import json
 import os
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from sqlalchemy import (
     Boolean,
     Column,
+    DateTime,
     Engine,
     ForeignKey,
     LargeBinary,
@@ -41,10 +52,13 @@ from sqlalchemy import (
     Table,
     Text,
     create_engine,
+    func,
     select,
 )
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from poltika.common.errors import ImmutableRecordError, StoredRunNotFoundError, StoreError
+from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.scenarios.record import (
     CodeIdentity,
     ScenarioRecord,
@@ -56,6 +70,7 @@ from poltika.scenarios.record import (
     run_scenario,
     scenario_id,
 )
+from poltika.scenarios.reform_record import results_sha256
 
 metadata = MetaData()
 scenario_table = Table(
@@ -78,6 +93,32 @@ run_table = Table(
     Column("manifest_json", Text, nullable=False),
     Column("result_json", Text, nullable=False),
     Column("reproducible", Boolean, nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=True, server_default=func.now()),
+    Column("provenance_json", Text, nullable=True),
+)
+reform_scenario_table = Table(
+    "reform_scenario",
+    metadata,
+    Column("scenario_id", String(64), primary_key=True),
+    Column("definition_json", Text, nullable=False),
+    Column("title", Text, nullable=False),
+    Column("description", Text, nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+reform_run_table = Table(
+    "reform_run",
+    metadata,
+    Column("run_id", String(64), primary_key=True),
+    Column(
+        "scenario_id",
+        String(64),
+        ForeignKey("reform_scenario.scenario_id"),
+        nullable=False,
+    ),
+    Column("option_run_ids_json", Text, nullable=False),
+    Column("results_json", Text, nullable=False),
+    Column("results_sha256", String(64), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
 )
 
 
@@ -107,6 +148,7 @@ class StoredRun:
     manifest: dict[str, Any]
     result: dict[str, Any]
     reproducible: bool
+    provenance: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -123,6 +165,42 @@ class DriftReport:
     new_result_id: str
     changed_artifacts: tuple[str, ...]
     result_changed: bool
+
+
+@dataclass(frozen=True)
+class ReformScenario:
+    scenario_id: str
+    definition: dict[str, Any]
+    title: str
+    description: str
+    created_at: datetime
+
+
+@dataclass(frozen=True)
+class ReformRun:
+    run_id: str
+    scenario_id: str
+    option_run_ids: tuple[str, ...]
+    results: dict[str, Any]
+    results_sha256: str
+    created_at: datetime
+
+
+@dataclass(frozen=True)
+class RunListing:
+    run_id: str
+    created_at: datetime | None
+
+
+@dataclass(frozen=True)
+class ScenarioListing:
+    scenario_id: str
+    kind: Literal["reform", "household"]
+    title: str | None
+    description: str | None
+    created_at: datetime | None
+    runs: int
+    latest_run_id: str | None
 
 
 class ScenarioStore:
@@ -142,6 +220,7 @@ class ScenarioStore:
             if hashlib.sha256(content).hexdigest() != sha:
                 raise StoreError(f"{key} no longer matches the run's recorded hash; refusing to store")
             artifacts[sha] = content
+        provenance = build_combined_provenance_report(run, wff_policy_dir, as_policy_dir)
         with self._engine.begin() as conn:
             _insert_once(
                 conn,
@@ -163,7 +242,13 @@ class ScenarioStore:
                     "manifest_json": canonical_json(run.manifest),
                     "result_json": canonical_json(result_payload(run.result)),
                     "reproducible": run.manifest.reproducible,
+                    "provenance_json": canonical_json(provenance),
                 },
+                # This first-write report preserves the original input order.
+                # The existing identity/content checks still govern a re-save;
+                # canonical child reordering must not replace the report, and
+                # a legacy NULL must not be backfilled with a later trace.
+                equivalent={"provenance_json": lambda _stored, _new: True},
             )
 
     def get_run(self, result_id: str) -> StoredRun:
@@ -178,13 +263,33 @@ class ScenarioStore:
         if scenario_id(record) != row.scenario_id:
             # Task 34.3 F10: never replay a different scenario than was stored.
             raise StoreError(f"stored scenario {row.scenario_id} does not rebuild to the same identity")
+        manifest = json.loads(row.manifest_json)
+        provenance = None
+        if row.provenance_json is not None:
+            try:
+                provenance = json.loads(row.provenance_json)
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise StoreError(f"stored run {result_id} has an invalid provenance report") from exc
+            policy_files = [
+                {"path": path, "sha256": sha} for path, sha in manifest["policy_files"]
+            ]
+            if (
+                not isinstance(provenance, dict)
+                or provenance.get("scenario_id") != row.scenario_id
+                or provenance.get("result_id") != row.result_id
+                or provenance.get("policy_files") != policy_files
+                or provenance.get("code") != manifest["code"]
+                or provenance.get("reproducible") != row.reproducible
+            ):
+                raise StoreError(f"stored run {result_id} provenance does not match its identity and manifest")
         return StoredRun(
             result_id=row.result_id,
             scenario_id=row.scenario_id,
             record=record,
-            manifest=json.loads(row.manifest_json),
+            manifest=manifest,
             result=json.loads(row.result_json),
             reproducible=row.reproducible,
+            provenance=provenance,
         )
 
     def restore_artifacts(self, stored: StoredRun, target: Path) -> tuple[Path, Path]:
@@ -241,6 +346,194 @@ class ScenarioStore:
         )
 
 
+    # --- Task B0.1.2: reform scenarios and the scenario index -------------
+
+    def save_reform_scenario(
+        self, scenario_id: str, definition: dict[str, Any], title: str, description: str
+    ) -> ReformScenario:
+        """Store a reform scenario, or return the stored one with the same
+        definition. Its id hashes the definition only, so the first title
+        and description saved are kept; a different definition under an
+        existing id raises `ImmutableRecordError`."""
+        definition_json = canonical_json(definition)
+        with self._engine.begin() as conn:
+            conn.execute(
+                pg_insert(reform_scenario_table)
+                .values(
+                    scenario_id=scenario_id,
+                    definition_json=definition_json,
+                    title=title,
+                    description=description,
+                )
+                .on_conflict_do_nothing(index_elements=[reform_scenario_table.c.scenario_id])
+            )
+            existing = conn.execute(
+                select(reform_scenario_table).where(
+                    reform_scenario_table.c.scenario_id == scenario_id
+                )
+            ).one()
+            if existing.definition_json != definition_json:
+                raise ImmutableRecordError(
+                    f"reform_scenario {scenario_id} is already stored with a different definition"
+                )
+        stored = self.get_reform_scenario(scenario_id)
+        assert stored is not None
+        return stored
+
+    def get_reform_scenario(self, scenario_id: str) -> ReformScenario | None:
+        with self._engine.connect() as conn:
+            row = conn.execute(
+                select(reform_scenario_table).where(
+                    reform_scenario_table.c.scenario_id == scenario_id
+                )
+            ).one_or_none()
+        if row is None:
+            return None
+        return ReformScenario(
+            scenario_id=row.scenario_id,
+            definition=json.loads(row.definition_json),
+            title=row.title,
+            description=row.description,
+            created_at=row.created_at,
+        )
+
+    def save_reform_run(
+        self,
+        run_id: str,
+        scenario_id: str,
+        option_run_ids: tuple[str, ...],
+        results: dict[str, Any],
+    ) -> ReformRun:
+        """Store a run's results payload verbatim (append-only). The same run
+        id with different results raises `ImmutableRecordError`."""
+        results_json = canonical_json(results)
+        with self._engine.begin() as conn:
+            _insert_once(
+                conn,
+                reform_run_table,
+                "run_id",
+                run_id,
+                {
+                    "scenario_id": scenario_id,
+                    "option_run_ids_json": canonical_json(list(option_run_ids)),
+                    "results_json": results_json,
+                    "results_sha256": results_sha256(results),
+                },
+            )
+        stored = self.get_reform_run(run_id)
+        assert stored is not None
+        return stored
+
+    def get_reform_run(self, run_id: str) -> ReformRun | None:
+        with self._engine.connect() as conn:
+            row = conn.execute(
+                select(reform_run_table).where(reform_run_table.c.run_id == run_id)
+            ).one_or_none()
+        if row is None:
+            return None
+        results = json.loads(row.results_json)
+        if results_sha256(results) != row.results_sha256:
+            raise StoreError(f"stored reform run {run_id} does not match its results hash")
+        return ReformRun(
+            run_id=row.run_id,
+            scenario_id=row.scenario_id,
+            option_run_ids=tuple(json.loads(row.option_run_ids_json)),
+            results=results,
+            results_sha256=row.results_sha256,
+            created_at=row.created_at,
+        )
+
+    def runs_of(self, scenario_id: str) -> list[RunListing]:
+        """A scenario's runs, newest first (runs stored before 0002 last)."""
+        with self._engine.connect() as conn:
+            reform = conn.execute(
+                select(reform_run_table.c.run_id, reform_run_table.c.created_at).where(
+                    reform_run_table.c.scenario_id == scenario_id
+                )
+            ).all()
+            household = conn.execute(
+                select(run_table.c.result_id, run_table.c.created_at).where(
+                    run_table.c.scenario_id == scenario_id
+                )
+            ).all()
+        listed = [RunListing(r[0], r[1]) for r in [*reform, *household]]
+        return sorted(listed, key=_newest_first)
+
+    def household_scenario_exists(self, scenario_id: str) -> bool:
+        with self._engine.connect() as conn:
+            found = conn.execute(
+                select(scenario_table.c.scenario_id).where(
+                    scenario_table.c.scenario_id == scenario_id
+                )
+            ).one_or_none()
+        return found is not None
+
+    def list_scenarios(
+        self, kind: Literal["reform", "household"] | None, limit: int, offset: int
+    ) -> tuple[list[ScenarioListing], int]:
+        """Every stored scenario, newest first, and the total. A household
+        scenario's time is its first run's; one with no dated run sorts last."""
+        listings: list[ScenarioListing] = []
+        with self._engine.connect() as conn:
+            if kind in (None, "reform"):
+                rows = conn.execute(
+                    select(
+                        reform_scenario_table.c.scenario_id,
+                        reform_scenario_table.c.title,
+                        reform_scenario_table.c.description,
+                        reform_scenario_table.c.created_at,
+                        func.count(reform_run_table.c.run_id),
+                    )
+                    .select_from(reform_scenario_table.outerjoin(reform_run_table))
+                    .group_by(reform_scenario_table.c.scenario_id)
+                ).all()
+                listings += [
+                    ScenarioListing(r[0], "reform", r[1], r[2], r[3], r[4], None) for r in rows
+                ]
+            if kind in (None, "household"):
+                rows = conn.execute(
+                    select(
+                        scenario_table.c.scenario_id,
+                        func.min(run_table.c.created_at),
+                        func.count(run_table.c.result_id),
+                    )
+                    .select_from(scenario_table.outerjoin(run_table))
+                    .group_by(scenario_table.c.scenario_id)
+                ).all()
+                listings += [
+                    ScenarioListing(r[0], "household", None, None, r[1], r[2], None) for r in rows
+                ]
+        listings.sort(
+            key=lambda s: (
+                s.created_at is None,
+                -(s.created_at.timestamp() if s.created_at else 0),
+                s.scenario_id,
+            )
+        )
+        page = listings[offset : offset + limit]
+        page = [
+            ScenarioListing(
+                s.scenario_id,
+                s.kind,
+                s.title,
+                s.description,
+                s.created_at,
+                s.runs,
+                next(iter(self.runs_of(s.scenario_id)), RunListing("", None)).run_id or None,
+            )
+            for s in page
+        ]
+        return page, len(listings)
+
+
+def _newest_first(run: RunListing) -> tuple[bool, float, str]:
+    return (
+        run.created_at is None,
+        -(run.created_at.timestamp() if run.created_at else 0),
+        run.run_id,
+    )
+
+
 def _insert_once(
     conn: Any,
     table: Table,
@@ -250,12 +543,15 @@ def _insert_once(
     *,
     equivalent: dict[str, Callable[[Any, Any], bool]] | None = None,
 ) -> None:
-    """Insert a row, or check an existing row has the same content. A column
-    in `equivalent` is compared with its own test instead of `==`."""
-    existing = conn.execute(select(table).where(table.c[key] == value)).one_or_none()
-    if existing is None:
-        conn.execute(table.insert().values({key: value, **columns}))
-        return
+    """Insert atomically, then check the stored row has the same content.
+    Duplicate writers retain the first row. A column in `equivalent` is
+    compared with its own test instead of `==`."""
+    conn.execute(
+        pg_insert(table)
+        .values({key: value, **columns})
+        .on_conflict_do_nothing(index_elements=[table.c[key]])
+    )
+    existing = conn.execute(select(table).where(table.c[key] == value)).one()
     for name, new in columns.items():
         same = (equivalent or {}).get(name)
         stored = getattr(existing, name)

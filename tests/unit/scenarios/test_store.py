@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from poltika.common.errors import ImmutableRecordError, StoreError
+from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.engines.simulator.outcome import FactStatus
 from poltika.scenarios.record import CodeIdentity, ScenarioRun, run_scenario
 from poltika.scenarios.store import ScenarioStore
@@ -120,8 +121,80 @@ def test_the_same_scenario_with_children_reordered_saves_as_the_same_run(databas
     run_a, run_b = _reordered_children_runs()
     assert (run_a.scenario_id, run_a.result_id) == (run_b.scenario_id, run_b.result_id)
     store.save_run(run_a, WFF_POLICY_DIR, AS_POLICY_DIR)
+    original_provenance = store.get_run(run_a.result_id).provenance
     store.save_run(run_b, WFF_POLICY_DIR, AS_POLICY_DIR)
     assert store.get_run(run_a.result_id).scenario_id == run_a.scenario_id
+    assert store.get_run(run_a.result_id).provenance == original_provenance
+
+
+def test_the_original_provenance_is_retained_after_policy_files_change(
+    database_url: str, tmp_path: Path
+) -> None:
+    store = ScenarioStore.from_url(database_url)
+    wff, as_ = _copy_policies(tmp_path)
+    run = run_scenario(
+        record_from_yaml(_household()), wff, as_, code=replace(CODE, package_version="retained-report")
+    )
+    original = build_combined_provenance_report(run, wff, as_)
+    store.save_run(run, wff, as_)
+    with (wff / "sources.yaml").open("a") as source:
+        source.write("\n# A later source catalogue revision\n")
+
+    retained = store.get_run(run.result_id).provenance
+    assert retained == original
+    assert retained is not None
+    assert retained["working_for_families"]["components"][0]["steps"]
+
+
+def test_resaving_a_legacy_run_does_not_backfill_its_provenance(database_url: str) -> None:
+    from sqlalchemy import create_engine, update
+
+    from poltika.scenarios.store import run_table
+
+    store = ScenarioStore.from_url(database_url)
+    run = run_scenario(
+        record_from_yaml(_household()),
+        WFF_POLICY_DIR,
+        AS_POLICY_DIR,
+        code=replace(CODE, package_version="legacy-report"),
+    )
+    store.save_run(run, WFF_POLICY_DIR, AS_POLICY_DIR)
+    # Simulate a row predating migration 0002, which retained no report.
+    with create_engine(database_url).begin() as conn:
+        conn.execute(
+            update(run_table).where(run_table.c.result_id == run.result_id).values(provenance_json=None)
+        )
+    assert store.get_run(run.result_id).provenance is None
+    store.save_run(run, WFF_POLICY_DIR, AS_POLICY_DIR)
+    assert store.get_run(run.result_id).provenance is None
+
+
+@pytest.mark.parametrize("field", ["scenario_id", "result_id", "policy_files", "code"])
+def test_a_retained_report_must_match_its_original_run(database_url: str, field: str) -> None:
+    from sqlalchemy import create_engine, update
+
+    from poltika.scenarios.record import canonical_json
+    from poltika.scenarios.store import run_table
+
+    store = ScenarioStore.from_url(database_url)
+    run = run_scenario(
+        record_from_yaml(_household()),
+        WFF_POLICY_DIR,
+        AS_POLICY_DIR,
+        code=replace(CODE, package_version=f"mismatched-report-{field}"),
+    )
+    store.save_run(run, WFF_POLICY_DIR, AS_POLICY_DIR)
+    provenance = store.get_run(run.result_id).provenance
+    assert provenance is not None
+    mismatched = {**provenance, field: "different"}
+    with create_engine(database_url).begin() as conn:
+        conn.execute(
+            update(run_table)
+            .where(run_table.c.result_id == run.result_id)
+            .values(provenance_json=canonical_json(mismatched))
+        )
+    with pytest.raises(StoreError, match="provenance does not match"):
+        store.get_run(run.result_id)
 
 
 def test_a_stored_scenario_id_cannot_hold_a_different_household(database_url: str) -> None:
@@ -161,4 +234,3 @@ def test_replay_fails_explicitly_when_an_artifact_is_missing(database_url: str, 
         conn.execute(delete(artifact_table).where(artifact_table.c.sha256 == sha))
     with pytest.raises(StoreError, match="missing"):
         store.replay(run.result_id, tmp_path / "replay", code=CODE)
-
