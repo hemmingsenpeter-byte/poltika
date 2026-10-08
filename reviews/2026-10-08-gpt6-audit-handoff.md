@@ -100,3 +100,7 @@ Governing authority: ADR-0020 (reviews/delegation), ADR-0021 (economist-first), 
 **For each item, report:** disposition; base/head SHA; exact reproducer/test; code/PR link; independent reviewer; remaining Pete action; whether it blocks development, deployment with synthetic data, deployment with real personal data, or formal Pilot 1.
 
 **Closeout criterion:** this review packet is explicitly linked to independently reviewed remediation PRs and/or documented accepted Tier C risk decisions. A docs-only merge is NOT closeout.
+
+## Subsequent verification, 9 October 2026
+
+See [the independently performed supporting disposition check](2026-10-09-pr191-dispositions.md) for the current A1–A7 classifications, scope gates, owners and Q13 operator runbook. A3's missing-review observation is superseded by actual Claude review of the old #189 source; its new conflicted integration still requires fresh review and CI. This historical audit is retained, not treated as a resolved security/privacy finding.
