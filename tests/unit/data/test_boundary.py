@@ -16,6 +16,11 @@ from pathlib import Path
 SRC = Path(__file__).resolve().parents[3] / "src" / "poltika"
 DATA_PACKAGE = SRC / "data"
 ALLOWED: set[str] = {"scenarios/microsim/calibrate_cli.py", "scenarios/microsim/crossval_cli.py"}
+# Task B0.1.1 (ADR-0023): the web catalogue lists dataset metadata. It may
+# import only `poltika.data.metadata_index` and the manifest type, never a
+# snapshot reader (`test_the_catalogue_reads_metadata_only`).
+CATALOGUE = "api/v1.py"
+CATALOGUE_IMPORTS = {"poltika.data.metadata_index", "poltika.data.manifest"}
 _DATA_PATH = re.compile(r"""["'](?:\.\./)*data/(?:raw|processed|metadata)\b""")
 # A path built with `/`: Path("data") / "raw", and the like.
 _DATA_JOIN = re.compile(r"""["']data["']\s*\)?\s*/\s*["'](?:raw|processed|metadata)["']""")
@@ -43,10 +48,18 @@ def test_nothing_outside_the_data_layer_imports_it() -> None:
     offenders = sorted(
         str(p.relative_to(SRC))
         for p in _outside_modules()
-        if str(p.relative_to(SRC)) not in ALLOWED
+        if str(p.relative_to(SRC)) not in ALLOWED | {CATALOGUE}
         and any(n == "poltika.data" or n.startswith("poltika.data.") for n in _imports(p))
     )
     assert offenders == []
+
+
+def test_the_catalogue_reads_metadata_only() -> None:
+    data_imports = {
+        n for n in _imports(SRC / CATALOGUE) if n == "poltika.data" or n.startswith("poltika.data.")
+    }
+    assert data_imports <= CATALOGUE_IMPORTS
+    assert "poltika.data.metadata_index" in data_imports
 
 
 def test_nothing_outside_the_data_layer_names_a_data_path() -> None:
