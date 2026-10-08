@@ -44,7 +44,7 @@ describe("HouseholdBuilder", () => {
     service.create.mockResolvedValue({ scenario_id: "s", result_id: "r" });
     const { navigate } = await choose();
     expect(screen.getByText(/One household; no population/)).toBeInTheDocument();
-    expect(screen.getByText(/reference period 2026-06-01 to 2026-06-08/)).toBeInTheDocument();
+    expect(screen.getByText(/assessment week 2026-06-01 to 2026-06-08 \(end exclusive\)/)).toBeInTheDocument();
     expect(screen.getByText("12345")).toBeInTheDocument();
     expect(screen.getByText(/Test primary source · Test locator/)).toBeInTheDocument();
     expect(screen.getByText("Test limitation")).toBeInTheDocument();
@@ -81,7 +81,7 @@ describe("HouseholdBuilder", () => {
     const textarea = await screen.findByLabelText("Copied household facts");
     const edited = { ...copied, wff: { ...copied.wff, family_income: "54321" } };
     fireEvent.change(textarea, { target: { value: JSON.stringify(edited) } });
-    expect(screen.getByText(/Version historical · reference period 2025-06-01/)).toBeInTheDocument();
+    expect(screen.getByText(/Version historical · per tax year; policy lookup date 2025-06-01/)).toBeInTheDocument();
     expect(screen.getByText(/currently deployed policies/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Save & calculate" }));
     await waitFor(() => expect(service.create).toHaveBeenCalledWith(edited, expect.any(AbortSignal)));

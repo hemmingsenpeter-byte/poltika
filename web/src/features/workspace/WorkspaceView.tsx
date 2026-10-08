@@ -148,7 +148,7 @@ export function WorkspaceView({ workspace, navigate }: { workspace: Workspace; n
 
       {running ? (
         <div className="mb-4">
-          <Loading label="Running on the synthetic population — about 30–60 seconds" />
+          <Loading label={scenario.kind === "household" ? "Calculating the household using its requested policy versions" : "Running on the synthetic population — about 30–60 seconds"} />
         </div>
       ) : null}
       {runError ? (

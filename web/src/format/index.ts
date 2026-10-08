@@ -158,5 +158,6 @@ const OUTCOME_CELLS: Record<string, Exclude<Outcome, "calculated">> = {
 
 /** The outcome a table cell string stands for, or null for ordinary text. */
 export function outcomeOfCell(cell: string): Exclude<Outcome, "calculated"> | null {
-  return OUTCOME_CELLS[cell.trim().toLowerCase()] ?? null;
+  const key = cell.trim().toLowerCase();
+  return Object.hasOwn(OUTCOME_CELLS, key) ? (OUTCOME_CELLS[key] ?? null) : null;
 }

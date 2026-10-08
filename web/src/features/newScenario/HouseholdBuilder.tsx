@@ -122,8 +122,10 @@ export function HouseholdBuilder({ navigate, initial }: { navigate: (href: strin
               if (typeof facts !== "object" || facts === null || Array.isArray(facts)) return null;
               const values = facts as Record<string, unknown>;
               const policy = registry.data.instruments.find((i) => i.valid && i.id === policyId);
-              const period = key === "wff" ? values.modelled_date : `${values.assessment_week_start} to ${values.assessment_week_end}`;
-              return <div key={key}><dt className="font-medium">{policy?.valid ? policy.title : humanise(policyId)}</dt><dd>Version {String(values.requested_policy_version ?? "not recorded")} · reference period {String(period ?? "not recorded")}</dd></div>;
+              const period = key === "wff"
+                ? `per tax year; policy lookup date ${values.modelled_date ?? "not recorded"}`
+                : `per week; assessment week ${values.assessment_week_start ?? "not recorded"} to ${values.assessment_week_end ?? "not recorded"} (end exclusive); policy lookup date ${values.modelled_date ?? "not recorded"}`;
+              return <div key={key}><dt className="font-medium">{policy?.valid ? policy.title : humanise(policyId)}</dt><dd>Version {String(values.requested_policy_version ?? "not recorded")} · {period}</dd></div>;
             })}
           </dl>
           <p className="text-sm text-muted">
