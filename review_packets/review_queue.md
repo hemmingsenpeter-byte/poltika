@@ -126,6 +126,7 @@ were independently reviewed by Claude Code with no blocking findings
 | #113 | v0.2 | Synthetic development population derived from #111 (`calibration.py`, `calibrate_cli.py`, spec); fresh same-model check in the PR comment, A10-A11 named in the release-docs PR | Scenarios, data boundary | Medium | reviewed (GPT/Codex; Pete confirmed 27 Sep 2026) |
 | #112 | v0.3 | Codex-authored fixes F1-F3 for #109 and the catalogue wording review | Scenarios, policy_specs | Medium | reviewed (Claude Code, PR #112 comment) |
 | #187 | programme | Task B0.1.2: durable reform scenarios and the web workspace view (which stored amounts appear, in which units, and how not-calculated values read) | API, scenarios store, migration 0002 | Medium | reviewed ([reviews/2026-10-08-pr187.md](../reviews/2026-10-08-pr187.md)); Claude-authored `278ef3d` reviewed by Codex, Codex fixes independently Claude-reviewed through implementation head `199ba20`; no unresolved P1/P2. Final-head CI remains required |
+| #189 | programme | Task B0.1.4: web scenario flow, confirmation and workspace rendering of stored amounts (formatting, outcomes, units) | Web frontend and retained definition/export API | Medium | Codex review complete ([reviews/2026-10-08-pr189.md](../reviews/2026-10-08-pr189.md)); original Claude head `82b8f1c` reviewed, eight P2 findings fixed. Independent Claude review of Codex fixes `17bf1bd` and final `9c6a254` remains pending after account session limit; only follow-up `1496de4` has Claude clearance. Final-head reviewer/CI gates remain open |
 
 ## Plan and decision PRs (not counted against the cap)
 
@@ -139,6 +140,5 @@ were independently reviewed by Claude Code with no blocking findings
 | From | Item | Why deferred | Picked up by |
 | --- | --- | --- | --- |
 | #151 R1 P3 | A schema for `coverage_limits` (`reviews/2026-10-06-pr151.md`) | Only one test reads the key; a schema belongs with its first consumer | The first benefit specification that consumes `coverage_limits` |
-| #189 | programme | Task B0.1.4: web scenario flow, confirmation panel and workspace rendering of stored amounts (formatting, outcome markers, units) | Web frontend | Medium | awaiting GPT/Codex review (packet: review_packets/b0_1_4_scenarios_ui_preflight.md on the PR branch) |
 | #167 | Preflight hashes recorded in #167's records | They name heads superseded by #167's three conflicted integrations; they are kept as historical evidence and not recomputed | None: labelled historical; later heads carry their own final-head reviews |
 | #154 (closed, D22) | Codex recheck of the Claude-authored test commits `ff28a9b`/`0b3f2aa`/`5a45719`; P3 R3 (control characters break the chart SVG; a lone surrogate raises `UnicodeEncodeError`) and R4 (standalone population tables carry no synthetic label) | #154 was closed unmerged and parked for Phase F Task 24 (D22), so it is not merged review debt | Task 24, if the branch `codex/reporting-review-fixes` is revived |
