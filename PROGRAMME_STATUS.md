@@ -92,7 +92,7 @@ packets can still say “open” historically and do not override current record
 | WFF and Accommodation Supplement | v0.1 task/review records; policy_specs; golden cases | Existing supported 2026-27 slices; in-work tax credit remains `needs_review`; no income-tax/main-benefit engine. |
 | Calculation traces / provenance | #40, #45, #60 and combined report records | Parameter/source/rule/input/rounding traces and hash-bound artifacts; no general evidence graph needed to reuse. |
 | Deterministic explanations / evidence coverage | #82–#84, #86, #88 | Verified templates and source coverage; not an AI explanation layer. |
-| Scenario identity and replay | #60, #63, #64, #65, #68 | Household artifact identities, replay/code checks and append-only PostgreSQL store; population/workbench runs remain in memory. |
+| Scenario identity and replay | #60, #63, #64, #65, #68; #187 | Household artifact identities, replay/code checks and append-only PostgreSQL store. #187 adds durable `/api/v1` reform scenarios/runs and retained Workbench results; legacy `/microsim` and `/workbench` run lookups remain in memory. B0.1 frontend acceptance and deployed persistence are separate gates. |
 | Data manifests, registry and canonical variables | #93, #111, #114, #120 | Frozen source snapshots/transforms and lineage; no complete national ontology. |
 | Canonical population schema / adapter | #93, #117 | Weighted household/person forms; synthetic mapping assumptions are explicit; shared household model still pending. |
 | Validation, weighting, reform contract | #94, #108 | Existing checks, weighted summaries and parameter overrides; no robust representative-population calibration yet. |
