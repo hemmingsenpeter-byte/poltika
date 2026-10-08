@@ -629,6 +629,21 @@
             "title": "Description",
             "type": "string"
           },
+          "inputs": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "default": {},
+            "title": "Inputs",
+            "type": "object"
+          },
           "result": {
             "anyOf": [
               {

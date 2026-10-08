@@ -892,6 +892,13 @@ export interface components {
             component_id: string;
             /** Description */
             description: string;
+            /**
+             * Inputs
+             * @default {}
+             */
+            inputs: {
+                [key: string]: string | null;
+            };
             /** Result */
             result: string | null;
             /** Rule Id */
