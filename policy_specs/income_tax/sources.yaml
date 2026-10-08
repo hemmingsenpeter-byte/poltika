@@ -1,31 +1,56 @@
 # Programme Phase B Task 7 / BUILD_PLAN_v0_3.md local 0.1.
 # A source inventory and scope proposal, not an approved executable policy.
-as_of: 2026-10-03
-status: draft_source_scope
-review_status: independent_review_and_pete_d1_pending
+as_of: 2026-10-08
+status: draft_specification_pending_review
+review_status: independent_claude_specification_review_and_open_pete_decisions_pending
+specification: specification.md
+scope_decision:
+  id: D11
+  decided_by: Pete
+  decided_on: 2026-10-05
+  record: ../../docs/decision_log.md
+  scope: 2026-27 basic annual ordinary salary_and_wage_income_only
+  limitation: Scope commission only; annual authority and precision remain needs_review.
 scope_note: ../../docs/research/task_0_1_income_tax_scope.md
 proposed_reference_period:
   from: 2026-04-01
   to: 2027-04-01
-  status: proposal_not_approved
+  status: slice_commissioned_by_d11_not_policy_approval
 annual_rates_status:
   reference_tax_year: 2026-27
   status: needs_review
   reason: >-
-    BB 1 requires an annual taxing Act. The retrieved 2026-27 instrument
-    is Bill 344-1, not an enacted annual rates Act. Current Schedule 1
-    and an IRD operational table do not clear that statutory gate.
+    D11 and the current user instruction retain the 2026-27 enactment
+    verification gate. Bill 344-1 remains proposed-law context. TAA
+    section 92A separately permits Commissioner assessments at basic
+    rates before annual enactment; its effect on a Poltika component
+    is not decided here (DEC-001). No blanket invalidity of official
+    pre-enactment assessments is claimed.
   recheck: >-
     Locate enacted 2026-27 annual rates legislation and its application
     provision, recheck relevant amendments for the approved period,
     and obtain independent review before approving parameters.
 retrieval_note: >-
-  Checked 3 October 2026 Pacific/Auckland. NZ Legislation HTML was
+  Original inventory checked 3 October 2026 Pacific/Auckland. NZ Legislation HTML was
   retrieved directly using curl with a browser user agent after the web
   reader returned 403 or an access error. Modern /en/<version>/ routes
   worked; legacy whole.html did not. Only the provisions listed below
   were reviewed. Agency HTML is a dated observation, not an immutable
   historical snapshot. No raw statistical dataset was acquired.
+specification_check:
+  checked_on: 2026-10-08
+  author: GPT/Codex
+  evidence_class: AI hypothesis pending independent review and applicable Pete decisions
+  method: >-
+    Direct official dated NZ Legislation HTML when web-reader opens
+    failed, plus separate official IRD guidance. Two GPT readers checked
+    the cited provisions; this is not the required Claude cross-model review.
+  decision_records:
+    - decisions/DEC-001-annual-authority.md
+    - decisions/DEC-002-annual-precision.md
+    - decisions/DEC-003-ird-worksheet-conflict.md
+  precision_status: needs_review
+  full_period_amendment_coverage: needs_review
 sources:
   - id: it-income-tax-act-core
     kind: legislation
@@ -35,14 +60,27 @@ sources:
     retrieved_on: 2026-10-03
     locator: >-
       BB 1; BC 1-8; CE 1(1)(a); CF 1(1)(c); CW 33(1)(a);
-      DA 2(4), (7); LC 13(1)-(6); MA 3; RD 3(1);
-      YA 1 definition of main benefit; YD 1; YE 1(1)-(5).
+      BD 1(1)-(5); BD 3(1)-(4); DA 2(4), (7); DA 3(3)-(5);
+      LC 13(1)-(6); MA 3; RD 3(1); YA 1 definitions of main benefit,
+      filing taxpayer and non-filing taxpayer; YD 1; YE 1(1)-(5).
     covers: >-
       Annual-taxing-Act requirement; taxable income versus gross income;
       basic liability versus credits and terminal tax; ordinary salary
       and wages; main benefits and exempt benefit categories; distinct
       PAYE rules; residency and tax-year scope; IETC as a separate credit.
     verification_status: listed_provisions_author_checked_independent_review_pending
+    specification_check:
+      checked_on: 2026-10-08
+      locator: >-
+        BB 1; BC 1-6, 8; BD 1(1)-(5), BD 3(1)-(4); CE 1(1)(a);
+        DA 2(4),(7), DA 3(3)-(5); YD 1; YE 1(1)-(5);
+        YA 1 filing taxpayer and non-filing taxpayer.
+      finding: >-
+        Employment-income classification and year allocation precede
+        taxable income. Specific express deduction overrides remain
+        possible. Absence of manual IR3 filing is not itself statutory
+        non-filing taxpayer status. No timing algorithm is adopted.
+      limitation: No new general deduction, residence, assessment or precision implementation.
     scope_check:
       finding: >-
         BC 2-5 distinguish assessable income, deductions, losses and
@@ -213,6 +251,12 @@ sources:
       The Bill is proposed law and is not placed in this catalogue as
       legislation or amending legislation. IRD's dated status page is
       supplemented by the later Parliament progress entry below.
+    specification_check:
+      checked_on: 2026-10-08
+      finding: >-
+        IRD page still labels its status as at 15 September 2026,
+        first reading. This is a dated observation, not confirmation
+        of current enactment. Bill 344-1 authority stays needs_review.
   - id: it-parliament-annual-rates-bill-2026-progress
     kind: agency_change_notice
     title: New Zealand Parliament - Bill 344-1 progress
@@ -234,3 +278,50 @@ sources:
       page and official Bill text separately leave enactment unverified.
       Recheck enactment immediately before any 2026-27 parameter approval;
       do not infer future passage or commencement.
+  - id: it-tax-administration-act-assessment
+    kind: legislation
+    title: Tax Administration Act 1994 - individual annual accounts and basic-rate assessments
+    url: https://www.legislation.govt.nz/act/public/1994/166/en/2026-09-04/
+    source_version: 2026-09-04
+    retrieved_on: 2026-10-08
+    locator: Sections 22D(2)-(3), 22H(1)-(4), 22I(1)-(4), 92(1)-(2B), 92A(1)-(2).
+    covers: >-
+      Individual annual-account and assessment context; Commissioner
+      assessments at basic rates before an annual taxing Act and
+      adjustment if annual rates differ.
+    verification_status: author_checked_independent_claude_review_pending
+    specification_check:
+      checked_on: 2026-10-08
+      finding: >-
+        Section 22I treats a final account as a return and assessment.
+        Section 92A expressly permits the Commissioner to assess before
+        annual enactment and preserves validity, with rate adjustment.
+      limitation: >-
+        Not authority for Poltika to make an official assessment; the
+        D11 project gate stays needs_review under DEC-001. Checked
+        provisions do not settle annual fractional-dollar/final-rounding
+        rules. No write-off or filing/assessment route is implemented.
+  - id: it-ird-ir3g-2026-worksheet-candidate
+    kind: agency_guidance
+    title: Inland Revenue IR3G 2026 - earlier-year tax calculation worksheet candidate
+    url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir1---ir99/ir3g/ir3g-2026.pdf?modified=20260331185539
+    source_version: 2026 guide; web reader labels cover August 2026; retrieved 8 October 2026.
+    retrieved_on: 2026-10-08
+    locator: Printed page 7 Income year; printed pages 43-44 Tax on taxable income and worksheet.
+    covers: Earlier-year worksheet research and apparent threshold discrepancy, not an approved benchmark.
+    verification_status: extracted_text_checked_visual_confirmation_and_independent_review_pending
+    specification_check:
+      checked_on: 2026-10-08
+      reference_period:
+        from: 2025-04-01
+        to: 2026-04-01
+      finding: >-
+        Page 7 identifies the 2025-26 year. Extracted page 43 text
+        shows threshold A 78,101 in the 78,101-180,000 row, rate .33,
+        accumulated tax 15,650.50; page 44 instructs subtract/multiply/add.
+      limitation: >-
+        Apparent discrepancy against statutory per-dollar bands is
+        parked in DEC-003; screenshots were requested but no image was
+        available to inspect. No corrected value, numeric benchmark,
+        precision rule or 2026-27 applicability is adopted. URL query
+        timestamps do not make agency content an immutable version.
