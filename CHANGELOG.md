@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased (campaign-policy and NZ Budget analysis roadmap, 9 October 2026)
+
+- Documentation-only product-scope refinement under the sole ADR-0021 master
+  programme: C14a verified claim-to-scenario intake, optional D16a
+  campaign-policy household pilot, F24a repeatable NZ Budget analysis using
+  validated representative fiscal/distributional reporting, and I29a
+  historical Budget as-of replay. Public/research presentation stays at
+  O 51; no party/plan ranking, automatic statutory promotion or LLM numerical
+  authority. See [use-case specification](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
+- Updated ROADMAP, PROGRAMME_STATUS, frontend supporting plan, architecture,
+  repo map, README and decision record. No engine, source value, database
+  migration, API or runtime capability changed; no release/pilot gate is met.
+
 ## Unreleased (passive source-preservation archive, 6 October 2026)
 
 - ADR-0022 and `src/poltika/data/acquisition/`: a passive,
