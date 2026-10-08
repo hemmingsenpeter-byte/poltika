@@ -139,5 +139,6 @@ were independently reviewed by Claude Code with no blocking findings
 | From | Item | Why deferred | Picked up by |
 | --- | --- | --- | --- |
 | #151 R1 P3 | A schema for `coverage_limits` (`reviews/2026-10-06-pr151.md`) | Only one test reads the key; a schema belongs with its first consumer | The first benefit specification that consumes `coverage_limits` |
+| #189 | programme | Task B0.1.4: web scenario flow, confirmation panel and workspace rendering of stored amounts (formatting, outcome markers, units) | Web frontend | Medium | awaiting GPT/Codex review (packet: review_packets/b0_1_4_scenarios_ui_preflight.md on the PR branch) |
 | #167 | Preflight hashes recorded in #167's records | They name heads superseded by #167's three conflicted integrations; they are kept as historical evidence and not recomputed | None: labelled historical; later heads carry their own final-head reviews |
 | #154 (closed, D22) | Codex recheck of the Claude-authored test commits `ff28a9b`/`0b3f2aa`/`5a45719`; P3 R3 (control characters break the chart SVG; a lone surrogate raises `UnicodeEncodeError`) and R4 (standalone population tables carry no synthetic label) | #154 was closed unmerged and parked for Phase F Task 24 (D22), so it is not merged review debt | Task 24, if the branch `codex/reporting-review-fixes` is revived |
