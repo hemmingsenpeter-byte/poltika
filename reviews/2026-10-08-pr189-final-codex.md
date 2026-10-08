@@ -55,6 +55,12 @@ with the other Claude session was attempted. The owning session needs a
 fresh-context review of `10291cf`…`5be777c`, including the Codex fix
 `17bf1bd` and follow-ups, before clearing the remaining queue gate.
 
+A later request to run a separate authenticated Claude reviewer was rejected
+by automatic approval review: the CLI could transmit repository contents
+and the prompt to an external service, and that destination/payload was not
+sufficiently authorized. It did not execute. No workaround was attempted;
+the owning Claude session retains the pending cross-model gate.
+
 ## Verification
 
 Frozen checkout: `/private/tmp/poltika-codex-pr189-frozen-check`.
