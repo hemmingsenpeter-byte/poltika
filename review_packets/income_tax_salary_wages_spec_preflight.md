@@ -5,6 +5,7 @@ GPT same-model source check; not independent Claude review or Pete acceptance.
 
 ## Mechanical review inputs
 
+- PR: https://github.com/hemmingsenpeter-byte/poltika/pull/193.
 - Programme Task 7; `BUILD_PLAN_v0_3.md` 2.1; D11 scope commission.
 - Base: `57e4ddb` (merged #186). Source head:
   `8ef7a2066edc04544185977cc82bf92228bc1edb`.
