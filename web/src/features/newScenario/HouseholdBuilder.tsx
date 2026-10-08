@@ -7,6 +7,7 @@ import { createHouseholdScenario } from "@/api/services/scenarioService";
 import { Empty, ErrorState, Loading } from "@/components/states";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { periodLabel } from "@/format";
 import { humanise } from "@/lib/labels";
 import { useAsync } from "@/lib/useAsync";
 
@@ -123,8 +124,8 @@ export function HouseholdBuilder({ navigate, initial }: { navigate: (href: strin
               const values = facts as Record<string, unknown>;
               const policy = registry.data.instruments.find((i) => i.valid && i.id === policyId);
               const period = key === "wff"
-                ? `per tax year; policy lookup date ${values.modelled_date ?? "not recorded"}`
-                : `per week; assessment week ${values.assessment_week_start ?? "not recorded"} to ${values.assessment_week_end ?? "not recorded"} (end exclusive); policy lookup date ${values.modelled_date ?? "not recorded"}`;
+                ? `${periodLabel("tax_year")}; policy lookup date ${values.modelled_date ?? "not recorded"}`
+                : `${periodLabel("week")}; assessment week ${values.assessment_week_start ?? "not recorded"} to ${values.assessment_week_end ?? "not recorded"} (end exclusive); policy lookup date ${values.modelled_date ?? "not recorded"}`;
               return <div key={key}><dt className="font-medium">{policy?.valid ? policy.title : humanise(policyId)}</dt><dd>Version {String(values.requested_policy_version ?? "not recorded")} · {period}</dd></div>;
             })}
           </dl>

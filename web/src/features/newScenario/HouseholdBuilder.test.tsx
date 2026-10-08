@@ -17,7 +17,7 @@ const EXAMPLE = {
   id: "example", description: "Example household",
   request: {
     wff: { modelled_date: "2026-06-01", requested_policy_version: "test", family_income: "12345" },
-    accommodation_supplement: { assessment_week_start: "2026-06-01", assessment_week_end: "2026-06-08", requested_policy_version: "test", accommodation_cost: "300" },
+    accommodation_supplement: { modelled_date: "2026-06-03", assessment_week_start: "2026-06-01", assessment_week_end: "2026-06-08", requested_policy_version: "test", accommodation_cost: "300" },
     as_claimant_is_wff_claimant_or_partner: true,
   },
 };
@@ -45,6 +45,8 @@ describe("HouseholdBuilder", () => {
     const { navigate } = await choose();
     expect(screen.getByText(/One household; no population/)).toBeInTheDocument();
     expect(screen.getByText(/assessment week 2026-06-01 to 2026-06-08 \(end exclusive\)/)).toBeInTheDocument();
+    expect(screen.getByText(/per tax year; policy lookup date 2026-06-01/)).toBeInTheDocument();
+    expect(screen.getByText(/per week;.*policy lookup date 2026-06-03/)).toBeInTheDocument();
     expect(screen.getByText("12345")).toBeInTheDocument();
     expect(screen.getByText(/Test primary source · Test locator/)).toBeInTheDocument();
     expect(screen.getByText("Test limitation")).toBeInTheDocument();
