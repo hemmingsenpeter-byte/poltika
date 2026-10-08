@@ -1,7 +1,18 @@
 # DEC-003 — apparent IR3G worksheet discrepancy
 
-**Status:** open; `needs_review`. **Owner:** Pete. **Raised:** GPT/Codex,
-8 October 2026. **Class:** AI hypothesis; proposed `SOURCE_CONFLICT`.
+**Policy:** Personal income tax, D11 salary/wage slice.
+**Date:** 2026-10-08 (record raised).
+**Decision owner:** Pete
+**Decision date:** none.
+**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
+**Class:** AI hypothesis; proposed `SOURCE_CONFLICT`.
+
+## Ambiguity
+
+An earlier-year IR3G worksheet threshold appears inconsistent with the
+statutory per-dollar bands. Its interpretation and benchmark use are open.
+
+## Evidence considered
 
 The [IRD IR3G 2026 guide](https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir1---ir99/ir3g/ir3g-2026.pdf?modified=20260331185539),
 retrieved 8 October, printed p 43, has an extracted-text row for the
@@ -21,6 +32,8 @@ The directly retrieved PDF was then rendered with macOS PDFKit: the author
 visually confirmed the same threshold/rate/accumulated-tax cells on printed
 p 43. The source observation is confirmed; the conflict's interpretation
 and disposition still require independent review and Pete.
+
+## Decision
 
 No worksheet cell has been silently repaired or adopted into fixtures. No
 2026–27 benchmark is inferred from this earlier-year guide. All numeric

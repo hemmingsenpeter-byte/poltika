@@ -1,7 +1,18 @@
 # DEC-002 — annual taxable-income and tax precision
 
-**Status:** open; `needs_review`. **Owner:** Pete. **Raised:** GPT/Codex,
-8 October 2026. **Class:** AI hypothesis; proposed discrepancy `MISSING_SOURCE`.
+**Policy:** Personal income tax, D11 salary/wage slice.
+**Date:** 2026-10-08 (record raised).
+**Decision owner:** Pete
+**Decision date:** none.
+**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
+**Class:** AI hypothesis; proposed discrepancy `MISSING_SOURCE`.
+
+## Ambiguity
+
+The complete annual procedure for fractional taxable dollars, intermediate
+precision, final rounding and ties remains unverified in the bounded check.
+
+## Evidence considered
 
 The reviewed [ITA Schedule 1 Part A cl 1/Table 1 and BC 6](https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/)
 give a table for each dollar and the basic-rate/liability relationship.
@@ -11,6 +22,8 @@ taxable dollars, intermediate precision, final rounding and ties. Checks of
 the [IRD yearly-tax calculator scope](https://www.ird.govt.nz/income-tax/income-tax-for-individuals/how-income-is-taxed/work-out-tax-on-your-yearly-income)
 and IR3G 2026 calculation pages (retrieved cover: August 2026) did not close
 those gaps. That guide covers 2025–26, not the commissioned period.
+
+## Decision
 
 This is a bounded negative finding, not a claim that no official rounding
 rule exists. PAYE or FBT worksheet conventions have different output scope
