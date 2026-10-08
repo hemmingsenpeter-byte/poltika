@@ -2,7 +2,7 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**Direction approved:** 3 October 2026, [ADR-0021](adr/0021-economist-first-pilot-programme.md).
+**Direction approved:** 3 October 2026, [ADR-0021](adr/0021-economist-first-pilot-programme.md). **Use-case overlays:** 9 October 2026 (campaign policy and NZ Budget analysis; no changed capability gate).
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) is the single active
 master build order. This roadmap explains the direction; detailed tasks,
 dependencies and gates belong in that programme. Live evidence, owners and
