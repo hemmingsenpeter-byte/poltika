@@ -40,11 +40,14 @@ def metadata_dir() -> Path:
 
 def dataset_manifests(root: Path) -> list[DatasetManifest]:
     """Every manifest under `root/datasets`, ordered by dataset and snapshot
-    version. A malformed or misnamed manifest raises `DatasetRegistryError`,
-    as it does for the registry."""
+    version. A missing directory, malformed or misnamed manifest raises
+    `DatasetRegistryError`; an existing empty directory is a valid empty
+    catalogue."""
     manifests: list[DatasetManifest] = []
     directory = root / "datasets"
-    for path in sorted(directory.glob("*.yaml")) if directory.is_dir() else []:
+    if not directory.is_dir():
+        raise DatasetRegistryError("The dataset manifest directory is missing.")
+    for path in sorted(directory.glob("*.yaml")):
         try:
             manifest = DatasetManifest.model_validate(yaml.safe_load(path.read_text()))
         except ValidationError as exc:
@@ -62,6 +65,4 @@ def population_spec_paths(root: Path) -> list[Path]:
 
 def variable_dictionary(root: Path) -> DataDictionary:
     path = root / "variables" / "dictionary.yaml"
-    if not path.is_file():
-        return DataDictionary()
     return DataDictionary.model_validate(yaml.safe_load(path.read_text()))
