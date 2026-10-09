@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased (web shell, 7 October 2026)
+
+- Task B0.1.3 (ADR-0023): `web/`, the first web frontend. Next.js (App Router,
+  TypeScript strict, Tailwind) built as a static export and served by FastAPI
+  from the same image (`api/web.py`, `POLTIKA_WEB_DIR`): Home with a search over
+  the supported analyses, Scenarios, Models and Data pages, declarative
+  navigation behind capabilities, central formatters and shared loading, error,
+  empty and unavailable states. Types are generated from the API's OpenAPI
+  document (`scripts/development/dump_openapi.py`); CI fails on drift. The
+  Dockerfile gains a Node build stage, CI a `web` job, `security.yml` an
+  `npm audit` and Dependabot the npm ecosystem. A `GET` is answered with a page
+  only when its `Accept` header prefers `text/html` on a declared UI route; API
+  clients and every existing route are unchanged. No calculated amount, protected
+  value or result identity changes.
+
 ## Unreleased (passive source-preservation archive, 6 October 2026)
 
 - ADR-0022 and `src/poltika/data/acquisition/`: a passive,
