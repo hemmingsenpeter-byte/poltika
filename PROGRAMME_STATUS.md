@@ -2,8 +2,8 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**As of:** 9 October 2026. **Repository baseline:** `origin/main` after #187
-(`26cd8a6dde236f5c3df93602979f5f85de283643`), reconciled against live GitHub
+**As of:** 10 October 2026. **Baseline:** `origin/main` after #188
+(`9a79a2e`), reconciled against live GitHub
 state for this closeout. This refresh records existing work and claims no new
 capability acceptance.
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), under
@@ -121,7 +121,7 @@ packets can still say “open” historically and do not override current record
 
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| B0.1 | Web frontend (single product surface) | In progress | Claude Code; GPT/Codex reviews shown amounts; Pete hosting/access | #185 plan, #186 B0.1.1 catalogue (`57e4ddb`) and #187 B0.1.2 scenarios/workspace (`26cd8a6`) merged. #188 B0.1.3 shell/Home/Models/Data remains open; #189 B0.1.4 scenario experience remains open. #192 carries completed review of the old #189 head (`5be777c`) | Integrate #192 review evidence before #189; merge #188 before #189 through Claude, on current-head CI and renewed review after conflicts. Verify B0.1.5 coverage already in #188 before assigning work. B0.1.6 charts/accessibility and B0.1.7 deployment remain unaccepted; Q15 retains Render workspace, paid database, secrets and ruleset decisions | [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md); ADR-0023; review records and packets remain evidence for their stated heads. Stored definition/export and household rerun fixes are in #189. No B0.1 deployment or formal Pilot 1 acceptance is evidenced | New (7 Oct 2026); surface for C 15 |
+| B0.1 | Web frontend (single product surface) | In progress | Claude Code; GPT/Codex reviews shown amounts; Pete hosting/access | #185 plan, #186 B0.1.1 (`57e4ddb`), #187 B0.1.2 (`26cd8a6`) and #188 B0.1.3 shell/Home/Models/Data (`9a79a2e`) merged. #189 B0.1.4 remains open. #192 carries completed review of the old #189 head (`5be777c`) | Integrate #192 review evidence before #189; #189 needs current-head CI and renewed review after updating onto #188. B0.1.5: inventory which catalogue gaps #188's Models/Data screens already close before assigning work. B0.1.6 charts/accessibility and B0.1.7 deployment remain unaccepted; Q15 retains Render workspace, paid database, secrets and ruleset decisions | [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md); ADR-0023; review records and packets remain evidence for their stated heads. Stored definition/export and household rerun fixes are in #189. No B0.1 deployment or formal Pilot 1 acceptance is evidenced | New (7 Oct 2026); surface for C 15 |
 | 5 | Minimum household semantics | In progress (one bounded patch) | Claude Code; GPT/Codex mapping review | #161 (units, `9e67009`), #169 (exact rescale), #166 (periods, `c72c409`), #171 (entities, `b176ddc`), #181 (household id `\Z`) | Next: bind every `ParameterUnit` and input unit that `policy_specs/*/policy.yaml` declares to a registered `semantics.units` unit, a `PeriodType` and a per-entity qualifier, enforced by a test over every policy, so an unregistered unit or a cross-period use fails. This is the open "reconcile with the registry (2.1)" item. Today `semantics.units`, `semantics.periods` and `semantics.entities` are imported only by their own tests and, for `PriceBasis`, by `semantics/variables.py`. The person and family identifier schemes stay unassigned until Task 6 defines them. | Gap analysis in `docs/programme/2026-10-07-task5-gap-analysis.md`; `units.convert` and `periods.convert_amount` refuse every conversion | 2.1–2.6, 2.10 scoped |
 | 6 | Shared household model | Not started (parked draft exists) | Claude Code; GPT/Codex mapping review | None | Starts after 5. The uncommitted, unreviewed 3 October draft in `/Users/peterhemmingsen/poltika-p1-household` (`semantics/household.py`, 451 lines; `scenarios/household_mappings.py`, 550 lines) is input to be reviewed, not accepted work. Its arithmetic spell pro-rating needs review against "no hidden conversions" before reuse. | ADR-0017 accepted; v0.3 1.1–1.3 acceptance: source-derived WFF/AS mapping review and byte-identical golden results/IDs | 2.7; v0.3 Phase 1; W6 |
 | 7 | Personal income tax | In progress (source scope only) | GPT/Codex source writer; separate evidence checker; Claude Code implementation; Pete D1 | #148 source scope merged at `164fdbd` after final-head Claude cross-model review (`reviews/2026-10-06-pr148.md`) | Next: a source-approved specification (onboarding PR 2). Pete approved the first 2026–27 salary/wage slice (decision-log D11); Bill 344-1 annual-rate authority and precision remain `needs_review`; 5–6 for integration | Source draft and separate same-model check retained; no approved specification, parameters, benchmarks or engine | 3A; v0.3 0.1 / Phase 2 |
@@ -294,9 +294,7 @@ GPT/Codex source work.
 
 #184 (closeout record: `reviews/2026-10-07-closeout.md`, PETE_QUEUE Q12–Q14, and the #182 and #154
 queue rows) merged at `88107a2`. #182 and #181 merged, and #154 was closed unmerged (parked, above).
-#155 is closed, and Dependabot #156–#160 merged on 6 October. Work opened after that historical closeout is tracked separately. As checked on
-9 October, #183, #188, #189, #191 (draft audit), #192 (review record) and #193
-(gated income-tax specification) remain open. #186/#187 are merged. #191's
+#155 is closed, and Dependabot #156–#160 merged on 6 October. Work opened after that historical closeout is tracked separately. As checked on 10 October, #183, #189, #191 (draft audit), #192, #193 (gated income-tax specification), #194/#195 (draft decision proposals), #196 (roadmap overlays) and Dependabot #197–#202 are open. #186, #187, #188 and #190 are merged. #191's
 findings need individual dispositions/remediation; merging its documentation
 would not resolve them. #193 does not complete Task 7 and cannot clear pending
 annual-authority, precision or source-conflict decisions by itself. Neither
