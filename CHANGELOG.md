@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased (Dependabot paused, 10 October 2026)
+
+- `.github/dependabot.yml`: `open-pull-requests-limit: 0` for all three
+  ecosystems, at Pete's instruction (decision log D27). Version-update PRs stop
+  until the limits are restored. Tooling only; no calculated amount changes.
+
 ## Unreleased (web shell, 7 October 2026)
 
 - Task B0.1.3 (ADR-0023): `web/`, the first web frontend. Next.js (App Router,
