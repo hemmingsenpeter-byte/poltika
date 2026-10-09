@@ -301,6 +301,18 @@ def _retained_reform_run(scenario_id: str, run_id: str) -> ReformRun:
     return run
 
 
+def _retained_workbench(run: ReformRun) -> dict[str, Any]:
+    """The stored workbench payload, or a coded error for a run saved in another shape."""
+    payload = run.results.get("workbench") if isinstance(run.results, dict) else None
+    if not isinstance(payload, dict):
+        _fail(
+            503,
+            "scenario_storage_unavailable",
+            "Stored scenario data failed a check: this run has no usable workbench results.",
+        )
+    return payload
+
+
 @router.get(
     "/{scenario_id}/runs/{run_id}/export.xlsx",
     response_class=Response,
@@ -320,7 +332,7 @@ def stored_workbook(scenario_id: ScenarioId, run_id: ScenarioId) -> Response:
     with _storage():
         run = _retained_reform_run(scenario_id, run_id)
         return Response(
-            content=to_xlsx(run.results["workbench"]),
+            content=to_xlsx(_retained_workbench(run)),
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={"Content-Disposition": f'attachment; filename="poltika-{run_id[:12]}.xlsx"'},
         )
@@ -341,7 +353,7 @@ def stored_table(
 ) -> Response:
     with _storage():
         run = _retained_reform_run(scenario_id, run_id)
-        text = table_csv(run.results["workbench"], table_id)
+        text = table_csv(_retained_workbench(run), table_id)
         if text is None:
             _fail(404, "table_not_found", "No table with this id belongs to the stored run.")
         return Response(

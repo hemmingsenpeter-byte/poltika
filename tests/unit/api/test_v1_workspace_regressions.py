@@ -452,6 +452,16 @@ def test_exports_require_run_ownership(
     assert response.json()["detail"]["code"] == "run_not_found"
 
 
+@pytest.mark.parametrize("suffix", ["export.xlsx", "export/fiscal_components.csv"])
+def test_exports_of_a_run_without_workbench_results_are_coded(
+    retained_reform: SimpleNamespace, suffix: str
+) -> None:
+    del retained_reform.run.results["workbench"]
+    response = client.get(f"/api/v1/scenarios/{RETAINED_SID}/runs/{RETAINED_RID}/{suffix}")
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
+
+
 def test_a_missing_stored_table_is_a_coded_404(retained_reform: SimpleNamespace) -> None:
     response = client.get(f"/api/v1/scenarios/{RETAINED_SID}/runs/{RETAINED_RID}/export/missing_table.csv")
     assert response.status_code == 404
