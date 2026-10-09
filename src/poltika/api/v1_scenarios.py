@@ -552,7 +552,7 @@ def _reform_workspace(s: ReformScenario, run: ReformRun | None, refs: list[RunRe
             context=_context(None),
             tabs=[_unavailable(t, note) for t in TAB_TITLES],
         )
-    payload = run.results["workbench"]
+    payload = _retained_workbench(run)
     tabs = {t["id"]: t for t in payload["tabs"]}
     fiscal, households, assumptions = (
         _by_id(tabs[t]) for t in ("fiscal", "households", "assumptions")
