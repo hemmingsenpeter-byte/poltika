@@ -69,6 +69,17 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("1,234.567")).toBeInTheDocument();
   });
 
+  it("renders an empty numeric cell as Not calculated, not blank", () => {
+    const block = byType("table");
+    if (block.type !== "table" || !("columns" in block)) throw new Error("Missing table fixture");
+    render(<BlockRenderer block={{
+      ...block,
+      columns: block.columns.map((column, i) => (i === 0 ? column : { ...column, kind: "money" as const })),
+      rows: [["Empty", "", ""]],
+    }} />);
+    expect(screen.getAllByText("Not calculated")).toHaveLength(2);
+  });
+
   it("shows recorded calculation inputs verbatim without adding units", () => {
     render(<BlockRenderer block={byType("calculation_chain")} />);
     const inputs = screen.getByLabelText("Recorded inputs");

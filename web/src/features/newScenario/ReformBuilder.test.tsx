@@ -181,6 +181,23 @@ describe("ReformBuilder", () => {
     expect(create.mock.calls[0]?.[0]).toEqual(initial);
   });
 
+  it("drops a cloned reform id and description once the value is edited", async () => {
+    const initial: CreateScenarioRequest = {
+      title: "Saved", description: "",
+      options: [{ label: "Proposed change", reform: { reform_id: "retained_1", description: "Set to 7000", overrides: [{ policy_id: "working_for_families", parameter_id: "ftc_rate", operation: "set", value: "7000" }] } }],
+    };
+    const check = vi.fn<(reform: Reform, signal?: AbortSignal) => Promise<CheckResult>>().mockResolvedValue(OK);
+    svc.check = check;
+    render(<ReformBuilder compare={false} initial={initial} navigate={navigate} />);
+    fireEvent.change(await screen.findByLabelText("Value"), { target: { value: "8000" } });
+    fireEvent.click(screen.getByRole("button", { name: "Review before running" }));
+    await waitFor(() => expect(check).toHaveBeenCalledOnce());
+    const reform = check.mock.calls[0]![0];
+    expect(reform.reform_id).toBe("option_1");
+    expect(reform.description).toBe("Proposed change");
+    expect(reform.overrides[0]?.value).toBe("8000");
+  });
+
   it("starts only one retry when a busy error is clicked twice", async () => {
     svc.check = () => Promise.resolve(OK);
     const create = vi.fn<(request: CreateScenarioRequest, signal?: AbortSignal) => Promise<string>>().mockResolvedValue("s1");

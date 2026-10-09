@@ -54,6 +54,15 @@ function reformOf(option: OptionForm, index: number): Reform {
   };
 }
 
+// A cloned reform's id and description describe the settings it was cloned with.
+// Once the override changes they would mislead, so drop them (reformOf then falls back).
+function withoutStaleReform(prev: OptionForm, next: OptionForm): OptionForm {
+  const changed =
+    prev.instrumentId !== next.instrumentId || prev.parameterId !== next.parameterId ||
+    prev.operation !== next.operation || prev.value !== next.value;
+  return changed ? { ...next, reformId: undefined, reformDescription: undefined } : next;
+}
+
 function OptionFields({
   index,
   option,
@@ -346,7 +355,7 @@ function ReformForm({ registry, compare, navigate, initial }: { registry: Regist
             showLabel={compare}
             labelError={touched ? labelError(i) : null}
             valueError={touched ? valueError(o) : null}
-            onChange={(next) => edit(() => setOptions(options.map((x, j) => (j === i ? next : x))))}
+            onChange={(next) => edit(() => setOptions(options.map((x, j) => (j === i ? withoutStaleReform(x, next) : x))))}
           />
         ))}
         <Button type="submit" variant="secondary" disabled={checking || running}>

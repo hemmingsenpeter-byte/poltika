@@ -6,7 +6,8 @@ import { OutcomeMarker } from "./Outcome";
 type Table = BlockOf<"table">;
 
 function Cell({ column, cell }: { column: Table["columns"][number]; cell: string | null }) {
-  if (cell === null) return <OutcomeMarker outcome="not_calculated" />;
+  // An empty numeric cell is a missing value, never a blank that reads as zero.
+  if (cell === null || (cell === "" && column.kind !== "text")) return <OutcomeMarker outcome="not_calculated" />;
   const outcome = outcomeOfCell(cell);
   if (outcome) return <OutcomeMarker outcome={outcome} />;
   if (column.kind === "text") return <>{cell}</>;
