@@ -1,13 +1,18 @@
 # ADR-0020 professional baseline: keep locked dependencies and pinned
-# actions current. Minor and patch updates are grouped into one PR per
-# ecosystem; major updates arrive one at a time so they get a real review.
+# actions current. Minor and patch updates are grouped into one monthly PR
+# per ecosystem. Major updates are ignored (D26): each one is real migration
+# work, so it is taken deliberately in its own PR when there is a reason to.
+# Known vulnerabilities are caught by pip-audit and npm audit in CI.
 version: 2
 updates:
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       uv-minor-patch:
         update-types:
@@ -17,8 +22,11 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       actions-minor-patch:
         update-types:
@@ -28,8 +36,11 @@ updates:
   - package-ecosystem: "npm"
     directory: "/web"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       npm-minor-patch:
         update-types:
