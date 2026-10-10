@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { ApiError } from "@/api/errors";
 import { getDataset } from "@/api/services/dataService";
-import { ErrorState, Loading } from "@/components/states";
+import { ErrorState, Loading, Unavailable } from "@/components/states";
 import { Section } from "@/components/ui/Card";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { DataTable } from "@/components/ui/DataTable";
@@ -32,6 +32,15 @@ function Detail({ detail }: { detail: DatasetDetail }) {
             { key: "version", header: "Version", numeric: true, render: (s) => s.raw_snapshot_version },
             { key: "vintage", header: "Vintage", render: (s) => s.vintage },
             { key: "retrieved", header: "Retrieved", render: (s) => <span className="num whitespace-nowrap">{s.retrieval_date}</span> },
+            {
+              key: "coverage",
+              header: "Coverage",
+              render: (s) => (
+                <span className="num whitespace-nowrap">
+                  {s.observation_reference_period.from} to {s.observation_reference_period.to}
+                </span>
+              ),
+            },
             { key: "method", header: "Method", render: (s) => s.retrieval_method },
             {
               key: "sha",
@@ -55,6 +64,28 @@ function Detail({ detail }: { detail: DatasetDetail }) {
               ),
             },
           ]}
+        />
+      </Section>
+
+      <Section title="Source and scope" id="source">
+        <DataTable
+          caption="Source, units and population by snapshot"
+          rows={detail.snapshots}
+          rowKey={(s) => `${s.raw_snapshot_version}`}
+          columns={[
+            { key: "version", header: "Version", numeric: true, render: (s) => s.raw_snapshot_version },
+            { key: "publisher", header: "Publisher", render: (s) => s.source_organisation },
+            { key: "source", header: "Source", render: (s) => <span className="break-all">{s.source_url_or_identifier}</span> },
+            { key: "units", header: "Units", render: (s) => s.units },
+            { key: "population", header: "Geography and population", render: (s) => s.geography_population },
+          ]}
+        />
+      </Section>
+
+      <Section title="Used by" id="used-by">
+        <Unavailable
+          title="Not recorded"
+          reason="No model or scenario declares which datasets it reads, so Poltika cannot list what uses this dataset."
         />
       </Section>
 
@@ -91,6 +122,10 @@ function Detail({ detail }: { detail: DatasetDetail }) {
 
       <Section title="Raw bytes" id="raw-bytes">
         <p className="text-sm">{detail.raw_bytes_note}</p>
+      </Section>
+
+      <Section title="Source Archive snapshots" id="source-archive">
+        <Unavailable title="Not yet exposed" reason="Preserved Source Archive snapshots are not yet exposed by the API (ADR-0022)." />
       </Section>
     </div>
   );
