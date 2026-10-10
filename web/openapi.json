@@ -1,0 +1,5654 @@
+{
+  "components": {
+    "schemas": {
+      "AccessInfo": {
+        "properties": {
+          "password_required": {
+            "title": "Password Required",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "password_required"
+        ],
+        "title": "AccessInfo",
+        "type": "object"
+      },
+      "Answer": {
+        "additionalProperties": false,
+        "properties": {
+          "answer": {
+            "description": "One of the question's answer values, or an amount or count",
+            "title": "Answer",
+            "type": "string"
+          },
+          "fact": {
+            "description": "The fact's label, as a question's `fact` gives it",
+            "title": "Fact",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fact",
+          "answer"
+        ],
+        "title": "Answer",
+        "type": "object"
+      },
+      "AnswerOption": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "label"
+        ],
+        "title": "AnswerOption",
+        "type": "object"
+      },
+      "ApiError": {
+        "description": "The body of a 4xx/5xx from `/api/v1`: a stable code the UI keys its\nstate on, and a message for people.",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ApiError",
+        "type": "object"
+      },
+      "Area": {
+        "description": "A verified Statistical Area Unit resolved to Area 1-4\n(`as-msd-areas`). Never inferred from a suburb/city name; never\nsilently defaulted to Area 4 -- there is deliberately no default\nmember here at all.",
+        "enum": [
+          "area1",
+          "area2",
+          "area3",
+          "area4"
+        ],
+        "title": "Area",
+        "type": "string"
+      },
+      "AsCalculationRequest": {
+        "additionalProperties": false,
+        "description": "Mirrors `AsScenario`'s own fields; see this module's docstring.",
+        "properties": {
+          "assessment_week_end": {
+            "format": "date",
+            "title": "Assessment Week End",
+            "type": "string"
+          },
+          "assessment_week_start": {
+            "format": "date",
+            "title": "Assessment Week Start",
+            "type": "string"
+          },
+          "cash_assets": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Assets"
+          },
+          "claimant_category": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ClaimantCategory"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dependent_children_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dependent Children Count"
+          },
+          "eldest_dependent_child_under_16": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "exempt_cash_asset_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "household_eligibility": {
+            "$ref": "#/components/schemas/FactStatus"
+          },
+          "modelled_date": {
+            "format": "date",
+            "title": "Modelled Date",
+            "type": "string"
+          },
+          "ordinary_rate_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "partner_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PartnerType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "requested_policy_version": {
+            "title": "Requested Policy Version",
+            "type": "string"
+          },
+          "statistical_area_unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Area"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tenure_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TenureType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "weekly_accommodation_costs": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Accommodation Costs"
+          },
+          "weekly_income": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Income"
+          }
+        },
+        "required": [
+          "modelled_date",
+          "assessment_week_start",
+          "assessment_week_end",
+          "requested_policy_version",
+          "household_eligibility"
+        ],
+        "title": "AsCalculationRequest",
+        "type": "object"
+      },
+      "AsCalculationResponse": {
+        "properties": {
+          "accommodation_supplement": {
+            "$ref": "#/components/schemas/AsComponentResultResponse"
+          },
+          "explanation": {
+            "additionalProperties": true,
+            "title": "Explanation",
+            "type": "object"
+          }
+        },
+        "required": [
+          "accommodation_supplement",
+          "explanation"
+        ],
+        "title": "AsCalculationResponse",
+        "type": "object"
+      },
+      "AsComponentResultResponse": {
+        "description": "Pinned response shape for the single `accommodation_supplement`\ncomponent -- see this module's docstring for why `value` is `Decimal`,\nnot `float`. `value` is non-null iff `outcome == \"calculated\"`,\nmirroring `ComponentResult`'s own \"never treat a missing value as\nzero\" contract exactly.",
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "enum": [
+                  "evidenced_exclusion",
+                  "not_modelled"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "missing_facts": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Facts",
+            "type": "array"
+          },
+          "outcome": {
+            "enum": [
+              "calculated",
+              "needs_review",
+              "unsupported"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "AsComponentResultResponse",
+        "type": "object"
+      },
+      "AssignedFact": {
+        "properties": {
+          "fact": {
+            "title": "Fact",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fact",
+          "value",
+          "label"
+        ],
+        "title": "AssignedFact",
+        "type": "object"
+      },
+      "AuditField": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "AuditField",
+        "type": "object"
+      },
+      "AuditRecordBlock": {
+        "properties": {
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/AuditField"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "audit_record",
+            "default": "audit_record",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fields"
+        ],
+        "title": "AuditRecordBlock",
+        "type": "object"
+      },
+      "BestStartCohort": {
+        "description": "A child's Best Start birth-cohort classification. Not a bool: a child\ncan be genuinely outside Best Start entitlement altogether (too old --\noutside the first-three-years window entirely), or within that general\nwindow but in a birth cohort/period specification.md explicitly puts\noutside the v0.1 calculable branch (\"later birth cohorts ... require\nseparate review; do not apply this branch to them\") -- collapsing those\ntwo into one `bool` would silently treat \"out of this narrow branch,\nentitlement genuinely unknown\" the same as \"verified zero entitlement\",\nwhich is exactly the false-zero bug this type exists to prevent.",
+        "enum": [
+          "in_supported_cohort",
+          "outside_best_start_entitlement",
+          "other_cohort_unsupported",
+          "unknown"
+        ],
+        "title": "BestStartCohort",
+        "type": "string"
+      },
+      "BoundsResponse": {
+        "properties": {
+          "branches": {
+            "title": "Branches",
+            "type": "integer"
+          },
+          "calculated": {
+            "title": "Calculated",
+            "type": "integer"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "high": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "High"
+          },
+          "kind": {
+            "enum": [
+              "bounds",
+              "points"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "low": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low"
+          }
+        },
+        "required": [
+          "low",
+          "high",
+          "calculated",
+          "branches",
+          "complete",
+          "kind"
+        ],
+        "title": "BoundsResponse",
+        "type": "object"
+      },
+      "BranchOutcome": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "calculated",
+              "needs_review",
+              "unsupported"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "outcome",
+          "value"
+        ],
+        "title": "BranchOutcome",
+        "type": "object"
+      },
+      "BranchResponse": {
+        "description": "One ordinary engine run with the assignment filled in.",
+        "properties": {
+          "assignment": {
+            "items": {
+              "$ref": "#/components/schemas/AssignedFact"
+            },
+            "title": "Assignment",
+            "type": "array"
+          },
+          "components": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BranchOutcome"
+            },
+            "title": "Components",
+            "type": "object"
+          },
+          "unresolved": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unresolved",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assignment",
+          "components",
+          "unresolved"
+        ],
+        "title": "BranchResponse",
+        "type": "object"
+      },
+      "BuildInfo": {
+        "properties": {
+          "commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commit"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "commit",
+          "note"
+        ],
+        "title": "BuildInfo",
+        "type": "object"
+      },
+      "CalculationChainBlock": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/ChainStep"
+            },
+            "title": "Steps",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "calculation_chain",
+            "default": "calculation_chain",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "steps"
+        ],
+        "title": "CalculationChainBlock",
+        "type": "object"
+      },
+      "ChainStep": {
+        "properties": {
+          "component_id": {
+            "title": "Component Id",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "inputs": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "default": {},
+            "title": "Inputs",
+            "type": "object"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          },
+          "step_id": {
+            "title": "Step Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_id",
+          "step_id",
+          "rule_id",
+          "description",
+          "result"
+        ],
+        "title": "ChainStep",
+        "type": "object"
+      },
+      "ChangeRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "approval": {
+            "title": "Approval",
+            "type": "string"
+          },
+          "change": {
+            "title": "Change",
+            "type": "string"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "evidence": {
+            "title": "Evidence",
+            "type": "string"
+          },
+          "validation_rerun": {
+            "title": "Validation Rerun",
+            "type": "string"
+          },
+          "why": {
+            "title": "Why",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date",
+          "change",
+          "why",
+          "evidence",
+          "validation_rerun",
+          "approval"
+        ],
+        "title": "ChangeRecord",
+        "type": "object"
+      },
+      "CheckEvidence": {
+        "properties": {
+          "field": {
+            "title": "Field",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "text"
+        ],
+        "title": "CheckEvidence",
+        "type": "object"
+      },
+      "CheckRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "reform": {
+            "$ref": "#/components/schemas/Reform"
+          }
+        },
+        "required": [
+          "reform"
+        ],
+        "title": "CheckRequest",
+        "type": "object"
+      },
+      "ChildFactsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "best_start_cohort": {
+            "$ref": "#/components/schemas/BestStartCohort",
+            "default": "unknown"
+          },
+          "best_start_no_disqualifying_payment": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "qualifies_whole_year": {
+            "$ref": "#/components/schemas/FactStatus"
+          }
+        },
+        "required": [
+          "qualifies_whole_year"
+        ],
+        "title": "ChildFactsRequest",
+        "type": "object"
+      },
+      "ClaimantCategory": {
+        "description": "r 18(1)(b)'s income-reduction route applies only to a\nnon-beneficiary (r 18, r 17's definition) -- Jobseeker Support, Sole\nParent Support, and Supported Living Payment claimants have no\nseparate AS income test at all (AS-08). NZ Superannuation/Veteran's\nPension (a different s 67(e)/Schedule 5 income-*limit* exclusion\nroute) and a mixed-benefit couple (a separate half-married rate\ntable) are unsupported in this branch -- listed here so an unverified\nor unsupported category is a structural fact, not an inferred default.",
+        "enum": [
+          "jobseeker_support",
+          "sole_parent_support",
+          "supported_living_payment",
+          "non_beneficiary",
+          "pension_or_veterans",
+          "mixed_benefit_couple"
+        ],
+        "title": "ClaimantCategory",
+        "type": "string"
+      },
+      "Column": {
+        "properties": {
+          "group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "text",
+              "money",
+              "count",
+              "share"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "kind"
+        ],
+        "title": "Column",
+        "type": "object"
+      },
+      "ComponentResultResponse": {
+        "description": "Pinned response shape for one WFF component -- see this module's\ndocstring for why `value` is `Decimal`, not `float`. `value` is\nnon-null iff `outcome == \"calculated\"`, mirroring `ComponentResult`'s\nown \"never treat a missing value as zero\" contract exactly.",
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "enum": [
+                  "evidenced_exclusion",
+                  "not_modelled"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "missing_facts": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Facts",
+            "type": "array"
+          },
+          "outcome": {
+            "enum": [
+              "calculated",
+              "needs_review",
+              "unsupported"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "ComponentResultResponse",
+        "type": "object"
+      },
+      "Context": {
+        "description": "What the results are relative to.",
+        "properties": {
+          "law_baseline": {
+            "title": "Law Baseline",
+            "type": "string"
+          },
+          "policy_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Policy Versions",
+            "type": "object"
+          },
+          "population_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Population Label"
+          },
+          "reference_period": {
+            "title": "Reference Period",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "law_baseline",
+          "reference_period",
+          "policy_versions",
+          "population_label",
+          "synthetic"
+        ],
+        "title": "Context",
+        "type": "object"
+      },
+      "CreateScenario": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Description",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/OptionRequest"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Options",
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "options"
+        ],
+        "title": "CreateScenario",
+        "type": "object"
+      },
+      "DatasetCatalogue": {
+        "properties": {
+          "datasets": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetSummary"
+            },
+            "title": "Datasets",
+            "type": "array"
+          },
+          "populations": {
+            "items": {
+              "$ref": "#/components/schemas/PopulationSpecSummary"
+            },
+            "title": "Populations",
+            "type": "array"
+          },
+          "preserved_sources": {
+            "$ref": "#/components/schemas/PreservedSourcesState"
+          }
+        },
+        "required": [
+          "datasets",
+          "populations",
+          "preserved_sources"
+        ],
+        "title": "DatasetCatalogue",
+        "type": "object"
+      },
+      "DatasetDetail": {
+        "properties": {
+          "dataset_id": {
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "raw_bytes_note": {
+            "title": "Raw Bytes Note",
+            "type": "string"
+          },
+          "snapshots": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetSnapshot"
+            },
+            "title": "Snapshots",
+            "type": "array"
+          },
+          "undefined_variables": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Undefined Variables",
+            "type": "array"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/Variable"
+            },
+            "title": "Variables",
+            "type": "array"
+          }
+        },
+        "required": [
+          "dataset_id",
+          "snapshots",
+          "variables",
+          "undefined_variables",
+          "raw_bytes_note"
+        ],
+        "title": "DatasetDetail",
+        "type": "object"
+      },
+      "DatasetSnapshot": {
+        "properties": {
+          "canonical_variable_mapping": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Canonical Variable Mapping",
+            "type": "array"
+          },
+          "dataset_series": {
+            "title": "Dataset Series",
+            "type": "string"
+          },
+          "geography_population": {
+            "title": "Geography Population",
+            "type": "string"
+          },
+          "observation_reference_period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "raw_file": {
+            "title": "Raw File",
+            "type": "string"
+          },
+          "raw_snapshot_version": {
+            "title": "Raw Snapshot Version",
+            "type": "integer"
+          },
+          "retrieval_date": {
+            "format": "date",
+            "title": "Retrieval Date",
+            "type": "string"
+          },
+          "retrieval_method": {
+            "title": "Retrieval Method",
+            "type": "string"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source_organisation": {
+            "title": "Source Organisation",
+            "type": "string"
+          },
+          "source_url_or_identifier": {
+            "title": "Source Url Or Identifier",
+            "type": "string"
+          },
+          "transformation_id": {
+            "title": "Transformation Id",
+            "type": "string"
+          },
+          "transformation_version": {
+            "title": "Transformation Version",
+            "type": "integer"
+          },
+          "units": {
+            "title": "Units",
+            "type": "string"
+          },
+          "vintage": {
+            "title": "Vintage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "raw_snapshot_version",
+          "vintage",
+          "sha256",
+          "raw_file",
+          "transformation_id",
+          "transformation_version",
+          "source_organisation",
+          "dataset_series",
+          "source_url_or_identifier",
+          "retrieval_date",
+          "retrieval_method",
+          "observation_reference_period",
+          "units",
+          "geography_population",
+          "canonical_variable_mapping"
+        ],
+        "title": "DatasetSnapshot",
+        "type": "object"
+      },
+      "DatasetSummary": {
+        "properties": {
+          "dataset_id": {
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "dataset_series": {
+            "title": "Dataset Series",
+            "type": "string"
+          },
+          "latest_retrieval_date": {
+            "format": "date",
+            "title": "Latest Retrieval Date",
+            "type": "string"
+          },
+          "latest_snapshot_version": {
+            "title": "Latest Snapshot Version",
+            "type": "integer"
+          },
+          "latest_vintage": {
+            "title": "Latest Vintage",
+            "type": "string"
+          },
+          "observation_reference_period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "snapshots": {
+            "title": "Snapshots",
+            "type": "integer"
+          },
+          "source_organisation": {
+            "title": "Source Organisation",
+            "type": "string"
+          },
+          "variables": {
+            "title": "Variables",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dataset_id",
+          "source_organisation",
+          "dataset_series",
+          "latest_snapshot_version",
+          "latest_vintage",
+          "latest_retrieval_date",
+          "observation_reference_period",
+          "snapshots",
+          "variables"
+        ],
+        "title": "DatasetSummary",
+        "type": "object"
+      },
+      "EntryPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "function": {
+            "title": "Function",
+            "type": "string"
+          },
+          "module": {
+            "title": "Module",
+            "type": "string"
+          }
+        },
+        "required": [
+          "module",
+          "function"
+        ],
+        "title": "EntryPoint",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "description": "FastAPI's error envelope with `ApiError` inside: `{\"detail\": {...}}`.",
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/ApiError"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "EvidenceSource": {
+        "properties": {
+          "audit_version_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audit Version Url"
+          },
+          "authority_rank": {
+            "title": "Authority Rank",
+            "type": "integer"
+          },
+          "check_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/CheckEvidence"
+            },
+            "title": "Check Evidence",
+            "type": "array"
+          },
+          "checked_on": {
+            "items": {
+              "$ref": "#/components/schemas/SourceCheck"
+            },
+            "title": "Checked On",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "source_type": {
+            "title": "Source Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "source_type",
+          "authority_rank",
+          "title",
+          "url",
+          "audit_version_url",
+          "checked_on",
+          "check_evidence"
+        ],
+        "title": "EvidenceSource",
+        "type": "object"
+      },
+      "ExportOption": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "run_id": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "run_id"
+        ],
+        "title": "ExportOption",
+        "type": "object"
+      },
+      "ExportRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ExportOption"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Options",
+            "type": "array"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioHeader-Input"
+          }
+        },
+        "required": [
+          "options"
+        ],
+        "title": "ExportRequest",
+        "type": "object"
+      },
+      "FactQuestion": {
+        "description": "One missing fact, as its catalogue asks for it (ADR-0016).",
+        "properties": {
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/AnswerOption"
+            },
+            "title": "Answers",
+            "type": "array"
+          },
+          "blocks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Blocks",
+            "type": "array"
+          },
+          "fact": {
+            "title": "Fact",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "fact",
+          "id",
+          "question",
+          "kind",
+          "answers",
+          "unit",
+          "rule",
+          "blocks"
+        ],
+        "title": "FactQuestion",
+        "type": "object"
+      },
+      "FactStatus": {
+        "description": "Tri-state for any fact that gates a component.\n\nOne shared tri-state covers both flavours of gate the calculation\ncontracts use:\n\n- A **domain/eligibility precondition** (e.g. WFF's \"in-work eligibility\n  established\"): `VERIFIED` means the condition holds and the branch may\n  proceed; `EXCLUDED` means it's verified *not* to hold, so the scenario\n  is structurally outside this branch (`unsupported`); `UNKNOWN` means\n  it hasn't been verified either way (`needs_review`).\n- A **known exclusion trigger** (e.g. WFF's MD 14/15 protected credit):\n  `VERIFIED` means verified that the trigger does *not* apply (the\n  ordinary branch proceeds); `EXCLUDED` means verified that it *does*\n  apply (`unsupported` -- the protected/direct-abatement/etc. pathway\n  needs its own specification); `UNKNOWN` means unverified\n  applicability (`needs_review`).\n\nNever a bare `bool`: SCHEMA.md forbids silently defaulting a missing\nfact to a value that would yield entitlement, and a bool has no way to\nrepresent \"not verified\" distinctly from \"verified false\".",
+        "enum": [
+          "verified",
+          "excluded",
+          "unknown"
+        ],
+        "title": "FactStatus",
+        "type": "string"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HorizonBlock": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "horizon",
+            "default": "horizon",
+            "title": "Type",
+            "type": "string"
+          },
+          "years": {
+            "items": {
+              "$ref": "#/components/schemas/HorizonYear"
+            },
+            "title": "Years",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "years"
+        ],
+        "title": "HorizonBlock",
+        "type": "object"
+      },
+      "HorizonYear": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "modelled": {
+            "title": "Modelled",
+            "type": "boolean"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "modelled",
+          "note"
+        ],
+        "title": "HorizonYear",
+        "type": "object"
+      },
+      "HouseholdCalculationRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "accommodation_supplement": {
+            "$ref": "#/components/schemas/AsCalculationRequest"
+          },
+          "as_claimant_is_wff_claimant_or_partner": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "wff": {
+            "$ref": "#/components/schemas/WffCalculationRequest"
+          }
+        },
+        "required": [
+          "wff",
+          "accommodation_supplement"
+        ],
+        "title": "HouseholdCalculationRequest",
+        "type": "object"
+      },
+      "HouseholdCalculationResponse": {
+        "properties": {
+          "accommodation_supplement": {
+            "$ref": "#/components/schemas/AsComponentResultResponse"
+          },
+          "accommodation_supplement_period": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "format": "date",
+                "type": "string"
+              }
+            ],
+            "title": "Accommodation Supplement Period",
+            "type": "array"
+          },
+          "contradictions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Contradictions",
+            "type": "array"
+          },
+          "explanations": {
+            "additionalProperties": true,
+            "title": "Explanations",
+            "type": "object"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "title": "Provenance",
+            "type": "object"
+          },
+          "reproducible": {
+            "title": "Reproducible",
+            "type": "boolean"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResolutionResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_id": {
+            "title": "Result Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "wff": {
+            "$ref": "#/components/schemas/WffCalculationResponse"
+          },
+          "wff_period": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "format": "date",
+                "type": "string"
+              }
+            ],
+            "title": "Wff Period",
+            "type": "array"
+          }
+        },
+        "required": [
+          "wff",
+          "accommodation_supplement",
+          "wff_period",
+          "accommodation_supplement_period",
+          "contradictions",
+          "scenario_id",
+          "result_id",
+          "reproducible",
+          "provenance",
+          "explanations"
+        ],
+        "title": "HouseholdCalculationResponse",
+        "type": "object"
+      },
+      "IntakeRequest": {
+        "additionalProperties": false,
+        "description": "Stateless: the caller sends the household as first entered, every\nanswer so far in order, and every fact declined (\"don't know\").",
+        "properties": {
+          "answers": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Answer"
+            },
+            "title": "Answers",
+            "type": "array"
+          },
+          "asked": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Asked",
+            "type": "array"
+          },
+          "declined": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Declined",
+            "type": "array"
+          },
+          "household": {
+            "$ref": "#/components/schemas/HouseholdCalculationRequest"
+          }
+        },
+        "required": [
+          "household"
+        ],
+        "title": "IntakeRequest",
+        "type": "object"
+      },
+      "IntakeResponse": {
+        "properties": {
+          "calculation": {
+            "$ref": "#/components/schemas/HouseholdCalculationResponse"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FactQuestion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "remaining": {
+            "items": {
+              "$ref": "#/components/schemas/FactQuestion"
+            },
+            "title": "Remaining",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "ask",
+              "incomplete"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "question",
+          "remaining",
+          "calculation"
+        ],
+        "title": "IntakeResponse",
+        "type": "object"
+      },
+      "ListBlock": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "list",
+            "default": "list",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "items"
+        ],
+        "title": "ListBlock",
+        "type": "object"
+      },
+      "Meta": {
+        "properties": {
+          "access": {
+            "$ref": "#/components/schemas/AccessInfo"
+          },
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "build": {
+            "$ref": "#/components/schemas/BuildInfo"
+          },
+          "capabilities": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "title": "Capabilities",
+            "type": "object"
+          },
+          "package_version": {
+            "title": "Package Version",
+            "type": "string"
+          },
+          "policies": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyVersion"
+            },
+            "title": "Policies",
+            "type": "array"
+          },
+          "population": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PopulationInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "service": {
+            "const": "poltika",
+            "default": "poltika",
+            "title": "Service",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package_version",
+          "build",
+          "policies",
+          "population",
+          "access",
+          "capabilities"
+        ],
+        "title": "Meta",
+        "type": "object"
+      },
+      "MetricBlock": {
+        "properties": {
+          "context": {
+            "title": "Context",
+            "type": "string"
+          },
+          "evidence_class": {
+            "enum": [
+              "Fact",
+              "Rule",
+              "Estimate",
+              "Transferred estimate",
+              "Assumption",
+              "Scenario",
+              "Model output",
+              "AI hypothesis"
+            ],
+            "title": "Evidence Class",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "precision": {
+            "enum": [
+              "household_rule",
+              "population_estimate"
+            ],
+            "title": "Precision",
+            "type": "string"
+          },
+          "provenance": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ProvenanceRef"
+            },
+            "title": "Provenance",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "metric",
+            "default": "metric",
+            "title": "Type",
+            "type": "string"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/Unit"
+          },
+          "values": {
+            "items": {
+              "$ref": "#/components/schemas/MetricValue"
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "unit",
+          "values",
+          "precision",
+          "evidence_class",
+          "context"
+        ],
+        "title": "MetricBlock",
+        "type": "object"
+      },
+      "MetricValue": {
+        "description": "One option's value. `value` is a decimal string when `outcome` is\n`calculated`, and null otherwise; `outcome` then says why.",
+        "properties": {
+          "option": {
+            "title": "Option",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "calculated",
+              "needs_review",
+              "unsupported",
+              "not_calculated"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "option",
+          "value",
+          "outcome"
+        ],
+        "title": "MetricValue",
+        "type": "object"
+      },
+      "Model": {
+        "additionalProperties": false,
+        "properties": {
+          "change_log": {
+            "items": {
+              "$ref": "#/components/schemas/ChangeRecord"
+            },
+            "title": "Change Log",
+            "type": "array"
+          },
+          "depends_on": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Depends On",
+            "type": "array"
+          },
+          "entry_points": {
+            "items": {
+              "$ref": "#/components/schemas/EntryPoint"
+            },
+            "title": "Entry Points",
+            "type": "array"
+          },
+          "evidence_classes_consumed": {
+            "items": {
+              "enum": [
+                "Fact",
+                "Rule",
+                "Estimate",
+                "Transferred estimate",
+                "Assumption",
+                "Scenario",
+                "Model output",
+                "AI hypothesis"
+              ],
+              "type": "string"
+            },
+            "title": "Evidence Classes Consumed",
+            "type": "array"
+          },
+          "evidence_note": {
+            "title": "Evidence Note",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "engine",
+              "runner"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "limitations": {
+            "items": {
+              "$ref": "#/components/schemas/Statement"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "model_risks": {
+            "items": {
+              "$ref": "#/components/schemas/Statement"
+            },
+            "title": "Model Risks",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "owner": {
+            "title": "Owner",
+            "type": "string"
+          },
+          "policy_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Policy Versions",
+            "type": "object"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "validation": {
+            "$ref": "#/components/schemas/Validation"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "version_basis": {
+            "title": "Version Basis",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "version",
+          "version_basis",
+          "owner",
+          "purpose",
+          "entry_points",
+          "depends_on",
+          "validation",
+          "evidence_classes_consumed",
+          "evidence_note",
+          "limitations",
+          "model_risks",
+          "change_log"
+        ],
+        "title": "Model",
+        "type": "object"
+      },
+      "ModelCatalogue": {
+        "properties": {
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelSummary"
+            },
+            "title": "Models",
+            "type": "array"
+          },
+          "validation_levels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Validation Levels",
+            "type": "array"
+          }
+        },
+        "required": [
+          "validation_levels",
+          "models"
+        ],
+        "title": "ModelCatalogue",
+        "type": "object"
+      },
+      "ModelDetail": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "model": {
+            "$ref": "#/components/schemas/Model"
+          },
+          "used_by": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Used By",
+            "type": "array"
+          },
+          "validation_levels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Validation Levels",
+            "type": "array"
+          }
+        },
+        "required": [
+          "model",
+          "label",
+          "used_by",
+          "validation_levels"
+        ],
+        "title": "ModelDetail",
+        "type": "object"
+      },
+      "ModelRefBlock": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelRefItem"
+            },
+            "title": "Models",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "model_ref",
+            "default": "model_ref",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "models"
+        ],
+        "title": "ModelRefBlock",
+        "type": "object"
+      },
+      "ModelRefItem": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "version",
+          "label"
+        ],
+        "title": "ModelRefItem",
+        "type": "object"
+      },
+      "ModelSummary": {
+        "properties": {
+          "depends_on": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Depends On",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "policy_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Policy Versions",
+            "type": "object"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "validation_level": {
+            "title": "Validation Level",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "version",
+          "purpose",
+          "policy_versions",
+          "depends_on",
+          "validation_level",
+          "label"
+        ],
+        "title": "ModelSummary",
+        "type": "object"
+      },
+      "Notice": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "tone": {
+            "enum": [
+              "info",
+              "caution",
+              "unavailable"
+            ],
+            "title": "Tone",
+            "type": "string"
+          },
+          "type": {
+            "const": "notice",
+            "default": "notice",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tone",
+          "text"
+        ],
+        "title": "Notice",
+        "type": "object"
+      },
+      "Operation": {
+        "enum": [
+          "set",
+          "add",
+          "multiply"
+        ],
+        "title": "Operation",
+        "type": "string"
+      },
+      "OptionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "reform": {
+            "$ref": "#/components/schemas/Reform"
+          }
+        },
+        "required": [
+          "label",
+          "reform"
+        ],
+        "title": "OptionRequest",
+        "type": "object"
+      },
+      "Override": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "$ref": "#/components/schemas/Operation"
+          },
+          "parameter_id": {
+            "title": "Parameter Id",
+            "type": "string"
+          },
+          "policy_id": {
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "policy_id",
+          "parameter_id",
+          "operation",
+          "value"
+        ],
+        "title": "Override",
+        "type": "object"
+      },
+      "ParameterEvidence": {
+        "properties": {
+          "authority_rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authority Rank"
+          },
+          "effective_from": {
+            "title": "Effective From",
+            "type": "string"
+          },
+          "locator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locator"
+          },
+          "parameter_id": {
+            "title": "Parameter Id",
+            "type": "string"
+          },
+          "review_status": {
+            "title": "Review Status",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Type"
+          }
+        },
+        "required": [
+          "parameter_id",
+          "effective_from",
+          "source_id",
+          "locator",
+          "review_status"
+        ],
+        "title": "ParameterEvidence",
+        "type": "object"
+      },
+      "PartnerStatus": {
+        "description": "Whether the claimant has a partner, per specification.md's \"one\nclaimant and a stable partner status\" domain precondition -- a\nhousehold-level fact, independent of `VerifiedIncome`.\n\nThis exists because `VerifiedIncome.partner_amount is None` is\nambiguous on its own: it's the correct shape both for a genuinely single\nclaimant (no partner to verify) *and* for a partnered claimant whose\npartner's income simply wasn't supplied. Those are not the same case --\nthe second one must be `needs_review`, not silently treated as the\nfirst. `PartnerStatus` is the independent fact that resolves the\nambiguity; see `_partner_income_gap_reason`.",
+        "enum": [
+          "single",
+          "partnered",
+          "unknown"
+        ],
+        "title": "PartnerStatus",
+        "type": "string"
+      },
+      "PartnerType": {
+        "description": "Joint tenancy (s 68) and community spouse/partner (Schedule 4 Part\n7 cl 6A) are both \"couple\" cases with their own special statutory\ntreatment this branch does not model -- distinct from an ordinary\ncouple, not a subset of it.",
+        "enum": [
+          "single",
+          "ordinary_couple",
+          "joint_tenancy",
+          "community_spouse_or_partner"
+        ],
+        "title": "PartnerType",
+        "type": "string"
+      },
+      "Period": {
+        "description": "`[from, to)`, like every other Poltika interval.",
+        "properties": {
+          "from": {
+            "format": "date",
+            "title": "From",
+            "type": "string"
+          },
+          "to": {
+            "format": "date",
+            "title": "To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "title": "Period",
+        "type": "object"
+      },
+      "PolicyEvidence": {
+        "properties": {
+          "catalogue_as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalogue As Of"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterEvidence"
+            },
+            "title": "Parameters",
+            "type": "array"
+          },
+          "policy_id": {
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "policy_version": {
+            "title": "Policy Version",
+            "type": "string"
+          },
+          "problems": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Problems",
+            "type": "array"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/RuleEvidence"
+            },
+            "title": "Rules",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "summary": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Summary",
+            "type": "object"
+          }
+        },
+        "required": [
+          "policy_id",
+          "policy_version",
+          "catalogue_as_of",
+          "sources",
+          "parameters",
+          "rules",
+          "summary",
+          "problems"
+        ],
+        "title": "PolicyEvidence",
+        "type": "object"
+      },
+      "PolicyVersion": {
+        "properties": {
+          "policy_id": {
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "policy_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Version"
+          },
+          "reference_period": {
+            "$ref": "#/components/schemas/Period"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_id",
+          "policy_version",
+          "status",
+          "reference_period"
+        ],
+        "title": "PolicyVersion",
+        "type": "object"
+      },
+      "PopulationInfo": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "population_id": {
+            "title": "Population Id",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "population_id",
+          "version",
+          "synthetic",
+          "label"
+        ],
+        "title": "PopulationInfo",
+        "type": "object"
+      },
+      "PopulationSpecSummary": {
+        "properties": {
+          "households": {
+            "title": "Households",
+            "type": "integer"
+          },
+          "population_id": {
+            "title": "Population Id",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "synthetic": {
+            "const": true,
+            "default": true,
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "population_id",
+          "version",
+          "households",
+          "sources"
+        ],
+        "title": "PopulationSpecSummary",
+        "type": "object"
+      },
+      "PreservedSourcesState": {
+        "properties": {
+          "exposed": {
+            "const": false,
+            "default": false,
+            "title": "Exposed",
+            "type": "boolean"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note"
+        ],
+        "title": "PreservedSourcesState",
+        "type": "object"
+      },
+      "ProvenanceRef": {
+        "description": "Where to look next: the tab and block that explain this value.",
+        "properties": {
+          "block_id": {
+            "title": "Block Id",
+            "type": "string"
+          },
+          "tab": {
+            "enum": [
+              "overview",
+              "fiscal",
+              "distribution",
+              "evidence",
+              "assumptions",
+              "technical",
+              "audit"
+            ],
+            "title": "Tab",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tab",
+          "block_id"
+        ],
+        "title": "ProvenanceRef",
+        "type": "object"
+      },
+      "Reform": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "overrides": {
+            "items": {
+              "$ref": "#/components/schemas/Override"
+            },
+            "minItems": 1,
+            "title": "Overrides",
+            "type": "array"
+          },
+          "reform_id": {
+            "minLength": 1,
+            "title": "Reform Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reform_id",
+          "overrides"
+        ],
+        "title": "Reform",
+        "type": "object"
+      },
+      "ReplayResponse": {
+        "properties": {
+          "code_matches": {
+            "title": "Code Matches",
+            "type": "boolean"
+          },
+          "reproduced": {
+            "title": "Reproduced",
+            "type": "boolean"
+          },
+          "result_id": {
+            "title": "Result Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result_id",
+          "reproduced",
+          "code_matches"
+        ],
+        "title": "ReplayResponse",
+        "type": "object"
+      },
+      "RerunResponse": {
+        "properties": {
+          "changed_artifacts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed Artifacts",
+            "type": "array"
+          },
+          "new_result_id": {
+            "title": "New Result Id",
+            "type": "string"
+          },
+          "original_result_id": {
+            "title": "Original Result Id",
+            "type": "string"
+          },
+          "result_changed": {
+            "title": "Result Changed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "original_result_id",
+          "new_result_id",
+          "changed_artifacts",
+          "result_changed"
+        ],
+        "title": "RerunResponse",
+        "type": "object"
+      },
+      "ResolutionResponse": {
+        "description": "ADR-0016 conditional answer. Nothing here is `calculated`: the\ncomponents' own outcomes above are unchanged.",
+        "properties": {
+          "bounds": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BoundsResponse"
+            },
+            "title": "Bounds",
+            "type": "object"
+          },
+          "branches": {
+            "items": {
+              "$ref": "#/components/schemas/BranchResponse"
+            },
+            "title": "Branches",
+            "type": "array"
+          },
+          "capped": {
+            "title": "Capped",
+            "type": "boolean"
+          },
+          "known": {
+            "additionalProperties": {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            "title": "Known",
+            "type": "object"
+          },
+          "missing": {
+            "items": {
+              "$ref": "#/components/schemas/FactQuestion"
+            },
+            "title": "Missing",
+            "type": "array"
+          },
+          "next_question": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FactQuestion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Summary",
+            "type": "array"
+          }
+        },
+        "required": [
+          "known",
+          "missing",
+          "branches",
+          "bounds",
+          "capped",
+          "next_question",
+          "summary"
+        ],
+        "title": "ResolutionResponse",
+        "type": "object"
+      },
+      "ResultsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/OptionRequest"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Options",
+            "type": "array"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioHeader-Input"
+          }
+        },
+        "required": [
+          "options"
+        ],
+        "title": "ResultsRequest",
+        "type": "object"
+      },
+      "RuleEvidence": {
+        "properties": {
+          "cites_primary_legislation": {
+            "title": "Cites Primary Legislation",
+            "type": "boolean"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rule_id",
+          "sources",
+          "cites_primary_legislation"
+        ],
+        "title": "RuleEvidence",
+        "type": "object"
+      },
+      "RunCreated": {
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "run_id"
+        ],
+        "title": "RunCreated",
+        "type": "object"
+      },
+      "RunHeader": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "reproducible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reproducible"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "created_at",
+          "reproducible"
+        ],
+        "title": "RunHeader",
+        "type": "object"
+      },
+      "RunRef": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "created_at"
+        ],
+        "title": "RunRef",
+        "type": "object"
+      },
+      "RunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "component_set": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Component Set",
+            "type": "array"
+          },
+          "reform": {
+            "$ref": "#/components/schemas/Reform"
+          }
+        },
+        "required": [
+          "reform"
+        ],
+        "title": "RunRequest",
+        "type": "object"
+      },
+      "ScenarioHeader-Input": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "default": "Untitled scenario",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "default": "draft",
+            "enum": [
+              "draft",
+              "final"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "default": "",
+            "maxLength": 20,
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "title": "ScenarioHeader",
+        "type": "object"
+      },
+      "ScenarioHeader-Output": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "reform",
+              "household"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "kind",
+          "title",
+          "description",
+          "created_at"
+        ],
+        "title": "ScenarioHeader",
+        "type": "object"
+      },
+      "ScenarioItem": {
+        "properties": {
+          "created_at": {
+            "title": "Created At"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "reform",
+              "household"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "latest_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Run Id"
+          },
+          "runs": {
+            "title": "Runs",
+            "type": "integer"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_id",
+          "kind",
+          "title",
+          "description",
+          "created_at",
+          "runs",
+          "latest_run_id"
+        ],
+        "title": "ScenarioItem",
+        "type": "object"
+      },
+      "ScenarioList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ScenarioList",
+        "type": "object"
+      },
+      "SourceCheck": {
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "date"
+        ],
+        "title": "SourceCheck",
+        "type": "object"
+      },
+      "SourceCheckOut": {
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "field": {
+            "title": "Field",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "date"
+        ],
+        "title": "SourceCheckOut",
+        "type": "object"
+      },
+      "SourceItem": {
+        "properties": {
+          "authority_rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Authority Rank"
+          },
+          "check_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Check Evidence",
+            "type": "array"
+          },
+          "checked_on": {
+            "items": {
+              "$ref": "#/components/schemas/SourceCheckOut"
+            },
+            "title": "Checked On",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "source_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Type"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "url",
+          "kind",
+          "source_type",
+          "authority_rank",
+          "checked_on",
+          "check_evidence"
+        ],
+        "title": "SourceItem",
+        "type": "object"
+      },
+      "SourcesBlock": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "policy_id": {
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "policy_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Version"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceItem"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "sources",
+            "default": "sources",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "policy_id",
+          "policy_version",
+          "sources"
+        ],
+        "title": "SourcesBlock",
+        "type": "object"
+      },
+      "Statement": {
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "source"
+        ],
+        "title": "Statement",
+        "type": "object"
+      },
+      "StoredRunResponse": {
+        "properties": {
+          "manifest": {
+            "additionalProperties": true,
+            "title": "Manifest",
+            "type": "object"
+          },
+          "record": {
+            "additionalProperties": true,
+            "title": "Record",
+            "type": "object"
+          },
+          "reproducible": {
+            "title": "Reproducible",
+            "type": "boolean"
+          },
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          },
+          "result_id": {
+            "title": "Result Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "title": "Scenario Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result_id",
+          "scenario_id",
+          "record",
+          "manifest",
+          "result",
+          "reproducible"
+        ],
+        "title": "StoredRunResponse",
+        "type": "object"
+      },
+      "Tab": {
+        "properties": {
+          "blocks": {
+            "default": [],
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "audit_record": "#/components/schemas/AuditRecordBlock",
+                  "calculation_chain": "#/components/schemas/CalculationChainBlock",
+                  "horizon": "#/components/schemas/HorizonBlock",
+                  "list": "#/components/schemas/ListBlock",
+                  "metric": "#/components/schemas/MetricBlock",
+                  "model_ref": "#/components/schemas/ModelRefBlock",
+                  "notice": "#/components/schemas/Notice",
+                  "sources": "#/components/schemas/SourcesBlock",
+                  "table": "#/components/schemas/TableBlock"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TableBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/HorizonBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ListBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/MetricBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/Notice"
+                },
+                {
+                  "$ref": "#/components/schemas/SourcesBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/AuditRecordBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/CalculationChainBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelRefBlock"
+                }
+              ]
+            },
+            "title": "Blocks",
+            "type": "array"
+          },
+          "id": {
+            "enum": [
+              "overview",
+              "fiscal",
+              "distribution",
+              "evidence",
+              "assumptions",
+              "technical",
+              "audit"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "empty",
+              "unavailable",
+              "deferred"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status"
+        ],
+        "title": "Tab",
+        "type": "object"
+      },
+      "TableBlock": {
+        "properties": {
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/Column"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "notes": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "table",
+            "default": "table",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "columns",
+          "rows"
+        ],
+        "title": "TableBlock",
+        "type": "object"
+      },
+      "TenureType": {
+        "description": "Schedule 4 Part 7 cl 1-3 (rent/board; the published rent/board entry\nthreshold per DEC-002) is the v0.1 supported branch; cl 4-6 (homeowner,\nmortgage-security \"reasonably required\" MSD judgment) is not.",
+        "enum": [
+          "rent_contributions_or_board",
+          "homeowner"
+        ],
+        "title": "TenureType",
+        "type": "string"
+      },
+      "Unit": {
+        "description": "What a value is measured in. `label` is the engine's own unit string;\n`period` and `currency` state it structurally so nothing is guessed.",
+        "properties": {
+          "basis": {
+            "anyOf": [
+              {
+                "const": "nominal",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "const": "NZD",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "per": {
+            "anyOf": [
+              {
+                "enum": [
+                  "household",
+                  "population"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per"
+          },
+          "period": {
+            "anyOf": [
+              {
+                "enum": [
+                  "tax_year",
+                  "week"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period"
+          }
+        },
+        "required": [
+          "label",
+          "currency",
+          "period",
+          "basis",
+          "per"
+        ],
+        "title": "Unit",
+        "type": "object"
+      },
+      "Validation": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationCase"
+            },
+            "title": "Cases",
+            "type": "array"
+          },
+          "level": {
+            "title": "Level",
+            "type": "string"
+          },
+          "open_items": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Open Items",
+            "type": "array"
+          },
+          "reviews": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reviews",
+            "type": "array"
+          },
+          "tests": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tests",
+            "type": "array"
+          }
+        },
+        "required": [
+          "level",
+          "basis",
+          "cases",
+          "tests",
+          "reviews",
+          "open_items"
+        ],
+        "title": "Validation",
+        "type": "object"
+      },
+      "ValidationCase": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "const": "unknown",
+                "type": "string"
+              }
+            ],
+            "title": "Count"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "path",
+          "count"
+        ],
+        "title": "ValidationCase",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "Variable": {
+        "properties": {
+          "frequency": {
+            "title": "Frequency",
+            "type": "string"
+          },
+          "geography_population": {
+            "title": "Geography Population",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "meaning": {
+            "title": "Meaning",
+            "type": "string"
+          },
+          "measure": {
+            "title": "Measure",
+            "type": "string"
+          },
+          "price_base": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Base"
+          },
+          "price_basis": {
+            "title": "Price Basis",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "required": [
+          "id",
+          "meaning",
+          "unit",
+          "frequency",
+          "price_basis",
+          "price_base",
+          "measure",
+          "geography_population",
+          "valid_from",
+          "valid_to"
+        ],
+        "title": "Variable",
+        "type": "object"
+      },
+      "VerifiedIncomeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "claimant_amount": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              }
+            ],
+            "title": "Claimant Amount"
+          },
+          "partner_amount": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partner Amount"
+          }
+        },
+        "required": [
+          "claimant_amount"
+        ],
+        "title": "VerifiedIncomeRequest",
+        "type": "object"
+      },
+      "WffCalculationRequest": {
+        "additionalProperties": false,
+        "description": "Mirrors `WffScenario`'s own fields; see this module's docstring.",
+        "properties": {
+          "best_start_no_shared_care": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "best_start_protected_credit": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/ChildFactsRequest"
+            },
+            "title": "Children",
+            "type": "array"
+          },
+          "extra_instalment_status": {
+            "$ref": "#/components/schemas/FactStatus"
+          },
+          "family_scheme_income": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifiedIncomeRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ftc_iwtc_protected_or_direct_abatement": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "household_eligibility": {
+            "$ref": "#/components/schemas/FactStatus"
+          },
+          "in_work_eligibility": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "mc6a_veterans_payment": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "mc6b_disqualifying_payment": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "minimum_family_full_time_earner_weeks": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "modelled_date": {
+            "format": "date",
+            "title": "Modelled Date",
+            "type": "string"
+          },
+          "net_family_scheme_income": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Family Scheme Income"
+          },
+          "net_family_scheme_income_me3_attested": {
+            "default": false,
+            "title": "Net Family Scheme Income Me3 Attested",
+            "type": "boolean"
+          },
+          "partner_status": {
+            "$ref": "#/components/schemas/PartnerStatus",
+            "default": "unknown"
+          },
+          "requested_policy_version": {
+            "title": "Requested Policy Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "modelled_date",
+          "requested_policy_version",
+          "household_eligibility",
+          "extra_instalment_status",
+          "children"
+        ],
+        "title": "WffCalculationRequest",
+        "type": "object"
+      },
+      "WffCalculationResponse": {
+        "properties": {
+          "best_start": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          },
+          "family_tax_credit": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          },
+          "in_work_tax_credit": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          },
+          "minimum_family_tax_credit": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          }
+        },
+        "required": [
+          "family_tax_credit",
+          "in_work_tax_credit",
+          "minimum_family_tax_credit",
+          "best_start"
+        ],
+        "title": "WffCalculationResponse",
+        "type": "object"
+      },
+      "WffRouteResponse": {
+        "description": "`/wff/calculate`'s response: the four components plus, per v0.1.5\nPhase 3, a deterministic explanation of each. (The household response\nnests `WffCalculationResponse` and carries its explanations at the top\nlevel instead.)",
+        "properties": {
+          "best_start": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          },
+          "explanations": {
+            "additionalProperties": true,
+            "title": "Explanations",
+            "type": "object"
+          },
+          "family_tax_credit": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          },
+          "in_work_tax_credit": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          },
+          "minimum_family_tax_credit": {
+            "$ref": "#/components/schemas/ComponentResultResponse"
+          }
+        },
+        "required": [
+          "family_tax_credit",
+          "in_work_tax_credit",
+          "minimum_family_tax_credit",
+          "best_start",
+          "explanations"
+        ],
+        "title": "WffRouteResponse",
+        "type": "object"
+      },
+      "Workspace": {
+        "properties": {
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Context"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunHeader"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/RunRef"
+            },
+            "title": "Runs",
+            "type": "array"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioHeader-Output"
+          },
+          "tabs": {
+            "items": {
+              "$ref": "#/components/schemas/Tab"
+            },
+            "title": "Tabs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "scenario",
+          "run",
+          "runs",
+          "context",
+          "tabs"
+        ],
+        "title": "Workspace",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Deterministic NZ policy calculations. Every input marked 'verified' (household_eligibility, income, etc.) is the caller's own assertion that the underlying fact has been verified elsewhere -- this API does not itself confirm any fact against a government record or other authoritative source. A result is therefore a conditional simulation given the facts the caller asserted, not an independently verified entitlement determination; a `calculated` outcome is only as reliable as the caller's own verification of its inputs.",
+    "title": "Poltika API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/accommodation-supplement/calculate": {
+      "post": {
+        "description": "Calculate Accommodation Supplement entitlement for one scenario.\n\n**This is a conditional simulation, not a verified entitlement\ndetermination.** Every `\"verified\"` fact in the request is the\ncaller's own assertion -- Poltika does not independently confirm it\nagainst any government record (see the app-level description in\n`poltika.api.main` for the full statement).\n\nWraps `run_as_module()` directly against the internally-pinned\n`policy_specs/accommodation_supplement` directory. A `PoltikaError`\nraised by the loader (e.g. a `requested_policy_version` mismatch) is\nnot caught here -- it propagates to the app-level exception handlers\nregistered in `poltika.api.main`, which map it to an explicit HTTP\nstatus rather than a 200.",
+        "operationId": "calculate_accommodation_supplement_calculate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AsCalculationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AsCalculationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate",
+        "tags": [
+          "accommodation-supplement"
+        ]
+      }
+    },
+    "/analyst": {
+      "get": {
+        "operationId": "page_analyst_get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Page",
+        "tags": [
+          "analyst"
+        ]
+      }
+    },
+    "/analyst/evidence": {
+      "get": {
+        "description": "v0.1.5 Phase 1: each deployed policy's evidence coverage summary and\nany gaps, so a pilot user can see what the numbers rest on.",
+        "operationId": "evidence_analyst_evidence_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response Evidence Analyst Evidence Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Evidence",
+        "tags": [
+          "analyst"
+        ]
+      }
+    },
+    "/analyst/examples": {
+      "get": {
+        "description": "Example `/household/calculate` requests, one per golden household.",
+        "operationId": "examples_analyst_examples_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response Examples Analyst Examples Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Examples",
+        "tags": [
+          "analyst"
+        ]
+      }
+    },
+    "/analyst/microsim": {
+      "get": {
+        "operationId": "page_analyst_microsim_get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Page",
+        "tags": [
+          "analyst"
+        ]
+      }
+    },
+    "/analyst/pilot-cases": {
+      "get": {
+        "description": "The pilot case pack (v0.1.5 S2.2): 15 households spanning every\noutcome, each with a question for the pilot user.",
+        "operationId": "pilot_cases_analyst_pilot_cases_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response Pilot Cases Analyst Pilot Cases Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Pilot Cases",
+        "tags": [
+          "analyst"
+        ]
+      }
+    },
+    "/api/v1/datasets": {
+      "get": {
+        "operationId": "datasets_api_v1_datasets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetCatalogue"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Datasets",
+        "tags": [
+          "catalogue"
+        ]
+      }
+    },
+    "/api/v1/datasets/{dataset_id}": {
+      "get": {
+        "operationId": "dataset_detail_api_v1_datasets__dataset_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Dataset Detail",
+        "tags": [
+          "catalogue"
+        ]
+      }
+    },
+    "/api/v1/evidence": {
+      "get": {
+        "operationId": "evidence_api_v1_evidence_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "policy",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Policy"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyEvidence"
+                  },
+                  "title": "Response Evidence Api V1 Evidence Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Evidence",
+        "tags": [
+          "catalogue"
+        ]
+      }
+    },
+    "/api/v1/meta": {
+      "get": {
+        "description": "The deployment's configuration. A population that is not configured,\nor cannot be read, is reported as `null` so the rest stays available.",
+        "operationId": "meta_api_v1_meta_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Meta"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Meta",
+        "tags": [
+          "catalogue"
+        ]
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "operationId": "models_api_v1_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelCatalogue"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Models",
+        "tags": [
+          "catalogue"
+        ]
+      }
+    },
+    "/api/v1/models/{model_id}": {
+      "get": {
+        "operationId": "model_detail_api_v1_models__model_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "model_id",
+            "required": true,
+            "schema": {
+              "title": "Model Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Model Detail",
+        "tags": [
+          "catalogue"
+        ]
+      }
+    },
+    "/api/v1/scenarios": {
+      "get": {
+        "operationId": "list_scenarios_api_v1_scenarios_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "reform",
+                    "household"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "List Scenarios",
+        "tags": [
+          "scenarios"
+        ]
+      },
+      "post": {
+        "operationId": "create_scenario_api_v1_scenarios_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScenario"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioItem"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Create Scenario",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}": {
+      "get": {
+        "operationId": "workspace_api_v1_scenarios__scenario_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Workspace",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/runs": {
+      "post": {
+        "operationId": "create_run_api_v1_scenarios__scenario_id__runs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Create Run",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/runs/{run_id}": {
+      "get": {
+        "operationId": "run_workspace_api_v1_scenarios__scenario_id__runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Run Workspace",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/household/calculate": {
+      "post": {
+        "description": "Calculate WFF and Accommodation Supplement for one household.\n\n**This is a conditional simulation, not a verified entitlement\ndetermination.** Each policy is reported in its own period, and there is\nno combined total. A structural error (such as a policy-version\nmismatch) maps to 409 or 500 through the app-level handlers.\n\nWhen a component is waiting for a fact, `resolution` adds what can be\nsaid without it (ADR-0016): the household rerun for each admissible\nanswer, with ranges and the most useful next question. Each branch is\nan ordinary engine run; nothing conditional is labelled `calculated`.",
+        "operationId": "calculate_household_calculate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdCalculationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdCalculationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate",
+        "tags": [
+          "household"
+        ]
+      }
+    },
+    "/household/intake": {
+      "post": {
+        "description": "v0.3 Task 1b.4-1b.5 (ADR-0016): the next question before a run.\n\n- `ask`: the next question for the components asked about, from the\n  fact catalogue, with its admissible answers.\n- `ready`: nothing blocks them.\n- `incomplete`: only declined facts block them; `calculation.resolution`\n  gives what can be said without them.\n\n`calculation` is always the household with the answers so far applied.\nAn answer is the caller's assertion, like every `verified` input. An\ninadmissible answer is a 422 naming what is admissible; it is never\ncoerced. \"Don't know\" is a declined fact, never a default.",
+        "operationId": "intake_household_intake_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Intake",
+        "tags": [
+          "household"
+        ]
+      }
+    },
+    "/microsim/parameters": {
+      "get": {
+        "operationId": "parameters_microsim_parameters_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response Parameters Microsim Parameters Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Parameters",
+        "tags": [
+          "microsim"
+        ]
+      }
+    },
+    "/microsim/population": {
+      "get": {
+        "operationId": "describe_population_microsim_population_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Describe Population Microsim Population Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Describe Population",
+        "tags": [
+          "microsim"
+        ]
+      }
+    },
+    "/microsim/runs": {
+      "post": {
+        "operationId": "create_run_microsim_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Run Microsim Runs Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Run",
+        "tags": [
+          "microsim"
+        ]
+      }
+    },
+    "/microsim/runs/{run_id}": {
+      "get": {
+        "operationId": "fetch_run_microsim_runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component_set",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Component Set"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Fetch Run Microsim Runs  Run Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Fetch Run",
+        "tags": [
+          "microsim"
+        ]
+      }
+    },
+    "/scenarios": {
+      "post": {
+        "description": "Run and store a household scenario. **A conditional simulation, not a\nverified entitlement determination** (see `/household/calculate`).",
+        "operationId": "create_scenarios_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdCalculationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdCalculationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/scenarios/{result_id}": {
+      "get": {
+        "operationId": "fetch_scenarios__result_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "result_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Result Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoredRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Fetch",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/scenarios/{result_id}/replay": {
+      "post": {
+        "operationId": "replay_scenarios__result_id__replay_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "result_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Result Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replay",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/scenarios/{result_id}/rerun": {
+      "post": {
+        "operationId": "rerun_scenarios__result_id__rerun_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "result_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Result Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RerunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rerun",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/wff/calculate": {
+      "post": {
+        "description": "Calculate WFF entitlement for one scenario.\n\n**This is a conditional simulation, not a verified entitlement\ndetermination.** Every `\"verified\"` fact in the request (e.g.\n`household_eligibility: \"verified\"`) is the caller's own assertion --\nPoltika does not independently confirm it against any government\nrecord. A `calculated` result is only as reliable as the caller's own\nverification of the facts it supplied (see the app-level description\nin `poltika.api.main` for the full statement; PR #22 review finding).\n\nWraps `run_wff_module()` directly against the internally-pinned\n`policy_specs/working_for_families` directory. A `PoltikaError` raised\nby the loader (e.g. a `requested_policy_version` mismatch) is not\ncaught here -- it propagates to the app-level exception handlers\nregistered in `poltika.api.main`, which map it to an explicit HTTP\nstatus rather than a 200.",
+        "operationId": "calculate_wff_calculate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WffCalculationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WffRouteResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate",
+        "tags": [
+          "wff"
+        ]
+      }
+    },
+    "/workbench/check": {
+      "post": {
+        "description": "Each override on its own against the baseline parameters: the value\nit would produce, or why it is refused. Nothing is run.",
+        "operationId": "check_workbench_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Check Workbench Check Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Check",
+        "tags": [
+          "workbench"
+        ]
+      }
+    },
+    "/workbench/decisions/{policy_id}/{decision_id}": {
+      "get": {
+        "operationId": "decision_workbench_decisions__policy_id___decision_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "policy_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9_]+$",
+              "title": "Policy Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "decision_id",
+            "required": true,
+            "schema": {
+              "pattern": "^DEC-\\d+$",
+              "title": "Decision Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decision",
+        "tags": [
+          "workbench"
+        ]
+      }
+    },
+    "/workbench/export.xlsx": {
+      "post": {
+        "operationId": "export_xlsx_workbench_export_xlsx_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Xlsx",
+        "tags": [
+          "workbench"
+        ]
+      }
+    },
+    "/workbench/export/{table_id}.csv": {
+      "post": {
+        "operationId": "export_csv_workbench_export__table_id__csv_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "table_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9_]+$",
+              "title": "Table Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Csv",
+        "tags": [
+          "workbench"
+        ]
+      }
+    },
+    "/workbench/registry": {
+      "get": {
+        "operationId": "registry_workbench_registry_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "as_at",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As At"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Registry Workbench Registry Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Registry",
+        "tags": [
+          "workbench"
+        ]
+      }
+    },
+    "/workbench/results": {
+      "post": {
+        "operationId": "results_workbench_results_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Results Workbench Results Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Results",
+        "tags": [
+          "workbench"
+        ]
+      }
+    }
+  }
+}

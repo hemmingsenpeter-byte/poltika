@@ -82,6 +82,51 @@ jobs:
         if: always()
         run: pkill -f "postgres -D $RUNNER_TEMP/" || true
 
+  web:
+    # Task B0.1.3 (ADR-0023): the web app's own checks, on the self-hosted
+    # runner (D21): install, lint, types, tests, the static export, and that
+    # the generated API types still match the Pydantic models.
+    runs-on: [self-hosted, poltika]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        working-directory: web
+        run: |
+          # The self-hosted runner's Node (D21); the image builds on Node 22.
+          node -e 'const m = +process.versions.node.split(".")[0]; if (m < 20) { console.error("Node " + process.version + " is too old"); process.exit(1); }'
+          npm ci
+
+      - name: Lint
+        working-directory: web
+        run: npm run lint
+
+      - name: Typecheck
+        working-directory: web
+        run: npm run typecheck
+
+      - name: Tests (formatters, services, pages, copy scan)
+        working-directory: web
+        run: npm test
+
+      - name: Build (static export)
+        working-directory: web
+        run: npm run build
+
+      - name: Generated API types match the backend
+        run: |
+          set -euo pipefail
+          uv sync --locked --extra dev
+          uv run --extra dev python scripts/development/dump_openapi.py
+          (cd web && npm run gen:api)
+          git diff --exit-code web/openapi.json web/src/api/schema.gen.ts
+
   image-inputs:
     # Whether a pull request changes anything the pilot image is built from
     # (the Dockerfile's COPY lines, plus this workflow's smoke test). Keep
@@ -107,7 +152,7 @@ jobs:
           MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA") || MERGE_BASE=""
           if [ -n "$MERGE_BASE" ] && git diff --quiet "$MERGE_BASE" "$HEAD_SHA" -- \
               Dockerfile .dockerignore pyproject.toml uv.lock README.md src policy_specs \
-              deploy data/metadata model_registry .github/workflows/tests.yml; then
+              deploy data/metadata model_registry web .github/workflows/tests.yml; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -166,3 +211,8 @@ jobs:
           python3 -c "import json; assert json.load(open('datasets.json'))['datasets']"
           curl -sf $C localhost:8000/api/v1/evidence > evidence.json
           python3 -c "import json; assert all(not p['problems'] for p in json.load(open('evidence.json')))"
+          # Task B0.1.3: the web app is served from the image, behind the password.
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Accept: text/html' localhost:8000/)" = 401
+          curl -sf $C -H 'Accept: text/html' localhost:8000/ > home.html
+          grep -q 'What do you want to understand' home.html
+          test "$(curl -s $C -o /dev/null -w '%{http_code}' -H 'Accept: text/html' localhost:8000/models)" = 200
