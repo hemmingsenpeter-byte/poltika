@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import { ApiError } from "@/api/errors";
 import type { ModelDetail } from "@/domain";
+import { expectNoAxeViolations } from "@/test/axe";
 
 import { ModelDetailPage } from "./ModelDetailPage";
-import { expectNoAxeViolations } from "@/test/axe";
 
 const service = vi.hoisted(() => ({ getModel: (): Promise<unknown> => Promise.resolve(undefined) }));
 vi.mock("@/api/services/modelService", () => ({ getModel: () => service.getModel() }));

@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import { ApiError } from "@/api/errors";
 import type { ModelCatalogue } from "@/domain";
+import { expectNoAxeViolations } from "@/test/axe";
 
 import { ModelsPage } from "./ModelsPage";
-import { expectNoAxeViolations } from "@/test/axe";
 
 // A plain function rather than vi.fn(): vitest 4 reports a rejection from a
 // spied function's result as unhandled, though the page handles it.

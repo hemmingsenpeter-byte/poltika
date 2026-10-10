@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { DatasetCatalogue } from "@/domain";
+import { expectNoAxeViolations } from "@/test/axe";
 
 import { DataPage } from "./DataPage";
-import { expectNoAxeViolations } from "@/test/axe";
 
 const service = vi.hoisted(() => ({ listDatasets: (): Promise<unknown> => Promise.resolve(undefined) }));
 vi.mock("@/api/services/dataService", () => ({ listDatasets: () => service.listDatasets() }));
@@ -19,7 +19,7 @@ const CATALOGUE: DatasetCatalogue = {
       latest_snapshot_version: 2,
       latest_vintage: "2024",
       latest_retrieval_date: "2026-09-01",
-      observation_reference_period: { from: "2023-07-01", to: "2024-06-30" },
+      observation_reference_period: { from: "2023-07-01", to: "2024-07-01" },
       snapshots: 2,
       variables: 5,
     },
@@ -37,7 +37,7 @@ describe("DataPage", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Loading datasets");
     expect(await screen.findByText("Household Economic Survey")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Household Economic Survey/ })).toHaveAttribute("href", "/data/stats_nz_hes");
-    expect(screen.getByText("2023-07-01 to 2024-06-30")).toBeInTheDocument();
+    expect(screen.getByText("from 2023-07-01, up to but not including 2024-07-01")).toBeInTheDocument();
     expect(screen.getByText("2026-09-01")).toBeInTheDocument();
     expect(screen.getByText("Synthetic: not an estimate for New Zealand")).toBeInTheDocument();
     expect(screen.getByText("Not yet available")).toBeInTheDocument();
