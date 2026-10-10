@@ -404,6 +404,15 @@ def test_definition_preserves_complete_retained_settings(retained_reform: Simple
     assert retained_reform.run.results == retained_reform.original
 
 
+def test_retained_definition_that_no_longer_validates_is_a_coded_503(
+    retained_reform: SimpleNamespace,
+) -> None:
+    retained_reform.scenario.definition["options"] = [{"label": "", "reform": {}}]
+    response = client.get(f"/api/v1/scenarios/{RETAINED_SID}/definition")
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
+
+
 def test_unknown_definition_is_a_coded_404(retained_reform: SimpleNamespace) -> None:
     response = client.get(f"/api/v1/scenarios/{RETAINED_UNKNOWN_ID}/definition")
     assert response.status_code == 404

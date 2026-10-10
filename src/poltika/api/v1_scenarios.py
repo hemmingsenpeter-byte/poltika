@@ -28,7 +28,7 @@ from fastapi import Path as PathParam
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.routing import APIRoute
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError, model_validator
 from sqlalchemy.exc import SQLAlchemyError
 
 from poltika.api import workbench_config as config
@@ -155,6 +155,10 @@ def _storage() -> Iterator[None]:
                 "message": "Scenario storage cannot be reached or is not migrated.",
             },
         ) from exc
+    except ValidationError as exc:
+        # Retained data that no longer satisfies a current contract. Request
+        # validation is RequestValidationError, a different class.
+        _fail(503, "scenario_storage_unavailable", "Stored scenario data no longer validates.")
 
 
 # --- contracts ---------------------------------------------------------------------------
