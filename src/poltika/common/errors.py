@@ -78,6 +78,11 @@ class UnknownUnitError(PoltikaError):
     """A unit id is not in the unit registry (Task 2.2)."""
 
 
+class UnboundPolicyUnitError(PoltikaError):
+    """A unit or period a policy.yaml declares has no registered binding
+    (Task 5), or an input uses a unit under a period its binding forbids."""
+
+
 class UnitConversionError(PoltikaError):
     """A unit conversion or rescale is refused (Task 2.2)."""
 
