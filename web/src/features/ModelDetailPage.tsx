@@ -76,6 +76,10 @@ function Detail({ detail }: { detail: ModelDetail }) {
         <Definition term="Version">
           <span className="num font-mono">{model.version}</span> ({model.version_basis})
         </Definition>
+        <Definition term="Status">
+          {humanise(model.validation.level)}
+          {label !== model.validation.level ? ` (weakest along its dependencies: ${humanise(label)})` : ""}
+        </Definition>
         <Definition term="Owner">{model.owner}</Definition>
         <Definition term="Policy versions">
           {Object.keys(model.policy_versions).length === 0

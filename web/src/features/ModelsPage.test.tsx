@@ -5,6 +5,7 @@ import { ApiError } from "@/api/errors";
 import type { ModelCatalogue } from "@/domain";
 
 import { ModelsPage } from "./ModelsPage";
+import { expectNoAxeViolations } from "@/test/axe";
 
 // A plain function rather than vi.fn(): vitest 4 reports a rejection from a
 // spied function's result as unhandled, though the page handles it.
@@ -72,5 +73,12 @@ describe("ModelsPage", () => {
     service.listModels = () => Promise.resolve({ validation_levels: [], models: [] });
     render(<ModelsPage />);
     expect(await screen.findByText("No models are registered")).toBeInTheDocument();
+  });
+
+  it("has no axe violations", async () => {
+    service.listModels = () => Promise.resolve(CATALOGUE);
+    const { container } = render(<ModelsPage />);
+    await screen.findByText("Working for Families engine");
+    await expectNoAxeViolations(container);
   });
 });
