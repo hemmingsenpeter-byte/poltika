@@ -155,7 +155,7 @@ def _storage() -> Iterator[None]:
                 "message": "Scenario storage cannot be reached or is not migrated.",
             },
         ) from exc
-    except ValidationError as exc:
+    except ValidationError:
         # Retained data that no longer satisfies a current contract. Request
         # validation is RequestValidationError, a different class.
         _fail(503, "scenario_storage_unavailable", "Stored scenario data no longer validates.")
