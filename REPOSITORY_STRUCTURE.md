@@ -130,6 +130,10 @@ poltika/
 │   ├── semantics/entities.py — Programme Task 2.4: entity types, identifier
 │   │                        schemes (unassigned without a cited rule) and
 │   │                        Population definitions
+│   ├── semantics/unit_binding.py — Programme Task 5: binds every unit a
+│   │                        policy.yaml declares to a registered unit, a
+│   │                        PeriodType and a per-entity qualifier; no
+│   │                        conversion
 │   ├── semantics/periods.py — Programme Task 2.3: period types, the frozen
 │   │                        Period, named period relations with sources, and
 │   │                        the v0.2 D8 refusal of unsourced conversions
