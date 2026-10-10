@@ -137,6 +137,10 @@ poltika/
 │   ├── semantics/periods.py — Programme Task 2.3: period types, the frozen
 │   │                        Period, named period relations with sources, and
 │   │                        the v0.2 D8 refusal of unsourced conversions
+│   ├── semantics/household.py — Pass 1 (ADR-0017, v0.3 Task 1.1): the
+│   │                        canonical Household (people, one family,
+│   │                        housing, dated income and benefit spells,
+│   │                        asserted facts), its period views and identity
 │   ├── data/              — v0.2 Phase 1: manifest.py (raw-snapshot manifest),
 │   │                        registry.py (checksummed dataset registry),
 │   │                        metadata_index.py (Task B0.1.1: read-only listing of
@@ -189,6 +193,11 @@ poltika/
 │   │                        reform_record.py (Task B0.1.2: reform scenario
 │   │                        and run identities; store.py keeps them in the
 │   │                        reform_scenario and reform_run tables, migration 0002);
+│   │                        household_mappings.py (Pass 1, ADR-0017, v0.3
+│   │                        Tasks 1.2-1.3: to_wff/to_as/to_combined from a
+│   │                        Household, with MappingRefusal where it cannot
+│   │                        supply a field; adapters from the existing
+│   │                        request formats onto a Household);
 │   │                        conditional.py (v0.3 Task 1b.2, ADR-0016:
 │   │                        conditional answers, i.e. branches, bounds and
 │   │                        next question for missing facts, all by engine
@@ -325,8 +334,10 @@ poltika/
     │   │                        network) and test_archive_boundary.py, which adds to
     │   │                        data/test_boundary.py
     │   ├── policy/         — loader tests (Task 11)
-    │   ├── semantics/      — vocabulary tests (Programme Tasks 2.3-2.4: periods, entities)
-    │   ├── scenarios/         — combined WFF+AS runner tests (Task 28.4) and
+    │   ├── semantics/      — vocabulary tests (Programme Tasks 2.3-2.4, 5: periods, entities,
+    │   │                     unit binding) and household model tests (Pass 1, v0.3 Tasks 1.1-1.2)
+    │   ├── scenarios/         — household round-trip proof (Pass 1, v0.3
+    │   │                        Task 1.3), combined WFF+AS runner tests (Task 28.4) and
     │   │                        interaction spec-case runner (Task 28.5),
     │   │                        golden household runner (Task 29), store
     │   │                        tests (Task 32; marked postgres, start a
