@@ -41,6 +41,10 @@ class PerEntity(str, Enum):
 
     CHILD = "child"
 
+    # Note: `semantics.entities.EntityType` has no `child`; a child is a
+    # person in the `dependent_child` role (`population.PersonRole`), so this
+    # qualifier is a role, not an entity type, and is deliberately not mapped.
+
 
 class UnitBinding(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -124,11 +128,13 @@ def bind_input_period(period: str) -> PeriodType:
         raise UnboundPolicyUnitError(f"input period '{period}' has no PeriodType") from None
 
 
-def check_input(policy_unit: str, input_period: str) -> UnitBinding:
+def check_input(policy_unit: str, input_period: str | None) -> UnitBinding:
     """Check a unit used under an input period. A bound period must equal the
     input's period; no value is converted between periods."""
     binding = bind_unit(policy_unit)
     get_unit(binding.unit_id)  # raises UnknownUnitError if unregistered
+    if input_period is None:
+        raise UnboundPolicyUnitError(f"unit '{policy_unit}' is used with no period")
     used = bind_input_period(input_period)
     if binding.period_status is PeriodStatus.BOUND and binding.period is not used:
         raise UnboundPolicyUnitError(
@@ -136,3 +142,10 @@ def check_input(policy_unit: str, input_period: str) -> UnitBinding:
             f"amount but is used under period '{input_period}' ({used.value})"
         )
     return binding
+
+
+def check_parameter(policy_unit: str, policy_period: str) -> UnitBinding:
+    """Check a parameter's unit against the policy's own period
+    (`assessment.membership_period`). A unit with a bound period must match
+    it; a rate or an unresolved stock carries no period to compare."""
+    return check_input(policy_unit, policy_period)
