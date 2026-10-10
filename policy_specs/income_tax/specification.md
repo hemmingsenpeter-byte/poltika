@@ -28,6 +28,8 @@ available losses, and no special-rate category are the bounded slice's
 asserted support conditions. They are deliberate scope limits, not claims
 that other taxpayers owe no tax. ([ITA, YE 1, YD 1, CE 1, BC 2–6 and
 Schedule 1 Part A cl 1](https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/))
+Amendments to CE 1 and CE 1BA in the 2026 annual rates legislation were not
+assessed for this slice; CE 1(1)(a) is the only provision relied on.
 
 Basic annual tax is before credits, tax already paid and ACC. It is not
 terminal tax, a refund, PAYE, total payroll deductions, net wages or complete
@@ -98,7 +100,8 @@ cross-check, never substitute annual-rate authority.
 ### Documentary rate table
 
 This is a transcription of **Schedule 1 Part A Table 1**, in the ITA version
-dated 4 September 2026, checked 8 October. It is not a `policy.yaml`, approved
+dated 4 September 2026, retrieved 3 October 2026 and re-checked 8 October 2026
+(`sources.yaml`). It is not a `policy.yaml`, approved
 2026–27 parameter set or statutory expected-value fixture. Literal ranges
 describe each dollar as the source prints them; this draft does not resolve
 fractional dollars between those labels.

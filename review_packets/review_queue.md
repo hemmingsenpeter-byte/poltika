@@ -79,7 +79,6 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
-| #193 | programme | Task 7: 2026–27 ordinary salary/wage source-linked specification, IT-01–IT-08; GPT/Codex authored | policy_specs, source/decision records | High | open — independent Claude primary-source/spec review and Pete Q16–Q18 decisions pending; Bill 344-1 authority and precision stay `needs_review`; packet: [income_tax_salary_wages_spec_preflight.md](income_tax_salary_wages_spec_preflight.md) |
 | #176 | programme | Mechanical main-update exemption; squash `7c0f67e`, final head `0df6008`; Claude commits `be7ca4e`/`0df6008` | Governance, review skills | Low | reviewed ([reviews/2026-10-07-codex-recheck-review-rule.md](../reviews/2026-10-07-codex-recheck-review-rule.md)); bounded Claude-authored scope |
 | #174 | programme | XLSX DTD/entity guard; squash `0d115b4`, final head `3f43c0b`; Claude commits `427e6b6`/`ad4ca88` | Data reader | High | open — R1 P2 CODE_ERROR: malformed declarations reach ElementTree; [finding](../reviews/2026-10-07-codex-recheck-xlsx.md). Fix merged in #179 (Claude-authored `bb19ef8`/`41ce431`; final head `527dbb7`, squash `eacc5a2`): the shared guard fails closed. Awaits Codex recheck of that head |
 | #171 | programme | Entity vocabulary and identifier schemes; squash `b176ddc`, final head `486f376` | Semantics, errors, tests | Medium | reviewed ([reviews/2026-10-07-codex-recheck-entities.md](../reviews/2026-10-07-codex-recheck-entities.md)); bounded Claude-authored scope |
@@ -127,6 +126,12 @@ were independently reviewed by Claude Code with no blocking findings
 | #113 | v0.2 | Synthetic development population derived from #111 (`calibration.py`, `calibrate_cli.py`, spec); fresh same-model check in the PR comment, A10-A11 named in the release-docs PR | Scenarios, data boundary | Medium | reviewed (GPT/Codex; Pete confirmed 27 Sep 2026) |
 | #112 | v0.3 | Codex-authored fixes F1-F3 for #109 and the catalogue wording review | Scenarios, policy_specs | Medium | reviewed (Claude Code, PR #112 comment) |
 | #187 | programme | Task B0.1.2: durable reform scenarios and the web workspace view (which stored amounts appear, in which units, and how not-calculated values read) | API, scenarios store, migration 0002 | Medium | reviewed ([reviews/2026-10-08-pr187.md](../reviews/2026-10-08-pr187.md)); Claude-authored `278ef3d` reviewed by Codex, Codex fixes independently Claude-reviewed through implementation head `199ba20`; no unresolved P1/P2. Final-head CI remains required |
+
+## Open PRs awaiting pre-merge review (not merged review debt)
+
+| PR | Release | Scope | Touches | Risk | Status |
+| --- | --- | --- | --- | --- | --- |
+| #193 | programme | Task 7: 2026–27 ordinary salary/wage source-linked specification, IT-01–IT-08; GPT/Codex authored | policy_specs, source/decision records | High | open, unmerged — independent Claude primary-source/spec review done (`reviews/2026-10-09-pr193-source-recheck.md`; fresh-context pass https://github.com/hemmingsenpeter-byte/poltika/pull/193#issuecomment-6093912718); GPT/Codex queue clearance and Pete Q16–Q18 pending; Bill 344-1 authority and precision stay `needs_review`; packet: [income_tax_salary_wages_spec_preflight.md](income_tax_salary_wages_spec_preflight.md) |
 
 ## Plan and decision PRs (not counted against the cap)
 

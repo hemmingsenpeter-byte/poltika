@@ -33,6 +33,22 @@ visually confirmed the same threshold/rate/accumulated-tax cells on printed
 p 43. The source observation is confirmed; the conflict's interpretation
 and disposition still require independent review and Pete.
 
+## Arithmetic evidence
+
+Reviewer-derived arithmetic (class: Model output from the Table 1 rates and
+thresholds as stated in the specification; the inference drawn from it is an
+AI hypothesis under `doctrine/epistemic-constitution.md`, not an IRD
+statement). Statutory tax on the first $78,100 under Table 1 is
+15,600 x 0.105 + (53,500 - 15,600) x 0.175 + (78,100 - 53,500) x 0.30
+= 1,638 + 6,632.50 + 7,380 = **$15,650.50**. That equals the IR3G
+worksheet's column C for the row starting A = $78,101. Using A = $78,101
+with C = $15,650.50 therefore omits tax on the $78,101st dollar
+(0.33 x $1 = $0.33), whereas the worksheet's previous row uses A = $53,500
+(the threshold itself, not threshold + 1), so the fourth row is internally
+inconsistent with the third. This adds evidence only: the decision, its
+`needs_review` status and the Q18 escalation are unchanged, and no value is
+adopted.
+
 ## Decision
 
 No worksheet cell has been silently repaired or adopted into fixtures. No
