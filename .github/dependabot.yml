@@ -4,7 +4,7 @@
 #
 # PAUSED on 10 October 2026 at Pete's instruction (docs/decision_log.md D27).
 # Each Dependabot PR queues about nine jobs on the single self-hosted
-# runner, and npm PRs also start the hosted pilot-image job that spends the
+# runner, and npm and uv PRs also start the hosted pilot-image job that spends the
 # Actions budget. `open-pull-requests-limit: 0` disables version updates and
 # keeps this configuration. To re-enable, restore a limit per ecosystem.
 # Revisit at B0.1.7 deployment; suggested settings then are a monthly
