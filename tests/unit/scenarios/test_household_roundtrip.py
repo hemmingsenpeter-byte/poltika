@@ -182,3 +182,29 @@ def test_as_only_input_round_trips(name: str, case: dict[str, Any]) -> None:
     assert calculate_accommodation_supplement(mapped, parameters) == calculate_accommodation_supplement(
         original, parameters
     )
+
+
+def test_a_spell_longer_than_the_policy_period_is_refused_not_scaled() -> None:
+    from decimal import Decimal
+
+    from poltika.semantics import household as hh
+
+    base = household_from_as(
+        as_scenario_from_yaml(_AS_ONLY[0][1]["scenario"]), household_id="h1", assessment_week=WEEK
+    )
+    long_year = hh.IncomeSpell(
+        person_id="claimant",
+        income_type=hh.IncomeType.UNSPLIT_TOTAL,
+        start=date(2025, 4, 1),
+        end=date(2027, 4, 1),
+        amount=Decimal(100000),
+        basis=hh.IncomeBasis.WFF_FAMILY_SCHEME,
+    )
+    longer = base.model_copy(update={"income_spells": (long_year,)})
+    wff = to_wff(longer, TAX_YEAR)
+    assert isinstance(wff, MappingRefusal) and "Q10" in wff.reason
+    annual = long_year.model_copy(
+        update={"basis": hh.IncomeBasis.AS_CHARGEABLE_WEEKLY, "amount": Decimal(36500)}
+    )
+    as_ = to_as(base.model_copy(update={"income_spells": (annual,)}), WEEK)
+    assert isinstance(as_, MappingRefusal) and "Q10" in as_.reason

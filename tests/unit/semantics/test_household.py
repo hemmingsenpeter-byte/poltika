@@ -142,20 +142,17 @@ def test_a_gap_in_the_spells_is_unknown_never_zero() -> None:
     assert zero.annual_amount("a", hh.IncomeType.EMPLOYMENT_EARNINGS, YEAR) == Decimal(0)
 
 
-def test_a_spell_straddling_the_period_is_prorated_by_calendar_days() -> None:
-    # 100 over 10 days; 4 of them (June 3-6) fall in the period.
-    household = _household(income_spells=(_spell("a", date(2026, 6, 1), date(2026, 6, 11), "100"),))
-    period = DatePeriod(start=date(2026, 5, 20), end=date(2026, 6, 5))
-    # The period is not covered before June 1, so the view is unknown...
-    assert household.annual_amount("a", hh.IncomeType.EMPLOYMENT_EARNINGS, period) is None
-    # ...and covered once it lies inside the spell.
+def test_a_spell_straddling_the_period_is_not_scaled() -> None:
+    spell = _spell("a", date(2026, 6, 1), date(2026, 6, 11), "100")
+    household = _household(income_spells=(spell,))
     inside = DatePeriod(start=date(2026, 6, 3), end=date(2026, 6, 7))
-    assert household.annual_amount("a", hh.IncomeType.EMPLOYMENT_EARNINGS, inside) == Decimal(40)
+    assert household.annual_amount("a", hh.IncomeType.EMPLOYMENT_EARNINGS, inside) is None
+    assert hh.straddling_spells((spell,), inside) == (spell,)
 
 
-def test_weekly_amount_for_a_week_inside_a_longer_spell() -> None:
+def test_weekly_amount_for_a_week_inside_a_longer_spell_is_unknown() -> None:
     household = _household(income_spells=(_spell("a", date(2026, 6, 1), date(2026, 6, 29), "2800"),))
-    assert household.weekly_amount("a", hh.IncomeType.EMPLOYMENT_EARNINGS, WEEK_PERIOD) == Decimal(700)
+    assert household.weekly_amount("a", hh.IncomeType.EMPLOYMENT_EARNINGS, WEEK_PERIOD) is None
 
 
 def test_weekly_amount_needs_a_seven_day_period() -> None:

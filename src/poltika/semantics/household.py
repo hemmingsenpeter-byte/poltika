@@ -33,11 +33,12 @@ Spell semantics (documented once, here):
 - A period view is `None` unless the spells of one (person, income type,
   basis) cover the whole period. A gap is an unknown, never a zero. A
   verified zero is a spell with amount 0.
-- Pro-rating is arithmetic only: a spell that straddles the period edge
-  contributes `amount * overlap_days / spell_days` (calendar days). A spell
-  wholly inside the period contributes its amount unchanged. This is not a
-  policy rule. A policy that pro-rates differently (for example a weekly
-  rate times 52) does that in its own mapping.
+- No scaling, ever. A period view adds only spells that lie wholly inside
+  the period and tile it with no gap. A spell that extends past the period
+  edge is not apportioned: that would convert an amount between periods
+  without a sourced rule (v0.2 D8/D9, PETE_QUEUE Q10, `periods.convert_amount`
+  refuses). The view is then `None` (unknown) and `straddling_spells` names
+  the offenders so a mapping can refuse with the reason.
 - `basis` says what the figure is. Figures a policy defines in its own
   terms (WFF family scheme income, AS weekly income) cannot be derived from
   earnings by type without that policy's definition, so they enter as
@@ -295,28 +296,28 @@ class BenefitSpell(BaseModel):
         return self
 
 
+def straddling_spells(spells: tuple[IncomeSpell, ...], period: DatePeriod) -> tuple[IncomeSpell, ...]:
+    """Spells that overlap `period` but extend past its edge."""
+    return tuple(
+        s
+        for s in spells
+        if max(s.start, period.start) < min(s.end, period.end) and (s.start < period.start or s.end > period.end)
+    )
+
+
 def amount_in_period(spells: tuple[IncomeSpell, ...], period: DatePeriod) -> Decimal | None:
-    """The amount of `spells` (one person, income type and basis) attributable
-    to `period`, or `None` when they do not cover all of it. See the module
-    docstring for the pro-rating rule."""
-    total: Decimal | None = None
-    overlaps: list[tuple[date, date]] = []
-    for spell in sorted(spells, key=lambda s: s.start):
-        low, high = max(spell.start, period.start), min(spell.end, period.end)
-        if low >= high:
-            continue
-        overlaps.append((low, high))
-        if spell.start >= period.start and spell.end <= period.end:
-            share = spell.amount
-        else:
-            share = spell.amount * Decimal((high - low).days) / Decimal((spell.end - spell.start).days)
-        total = share if total is None else total + share
+    """The sum of `spells` (one person, income type and basis) that lie wholly
+    inside `period` and tile it exactly, or `None`. No spell is scaled: a
+    straddling spell or a gap gives `None` (unknown, never zero)."""
+    inside = sorted((s for s in spells if s.start >= period.start and s.end <= period.end), key=lambda s: s.start)
     cursor = period.start
-    for low, high in overlaps:
-        if low > cursor:
+    for spell in inside:
+        if spell.start != cursor:
             return None
-        cursor = max(cursor, high)
-    return total if cursor >= period.end else None
+        cursor = spell.end
+    if not inside or cursor != period.end:
+        return None
+    return sum((s.amount for s in inside), Decimal(0))
 
 
 class Household(BaseModel):
