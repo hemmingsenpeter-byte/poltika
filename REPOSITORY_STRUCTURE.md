@@ -52,6 +52,7 @@ poltika/
 │                         smallest action that clears it (ADR-0020)
 ├── CONTRIBUTING.md     — the route into the repository: worktree flow, tests, review, tiers (ADR-0020), Make targets, where files go
 ├── SECURITY.md         — what is in scope, how to report privately, supported versions, the automated checks
+├── .github/workflows/fork-pr-gate.yml — fails fork pull requests (self-hosted jobs skip them); hosted, not required
 ├── .github/CODEOWNERS  — the owner, and the high-risk paths (policy_specs/, engines/simulator/, tests/fixtures/, workflows)
 ├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task and collaborator-visible security report; no secrets/personal data
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
@@ -88,7 +89,7 @@ poltika/
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
 ├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map, the v0.2 population methodology and RELEASE_CHECKLIST.md (the gate-based release steps, ending in a PETE_QUEUE.md tagging request)
-├── docs/programme/    — repository reconciliation/reference audits and EXECUTION.md (agent roles, bounded cycles, current handoff; PROGRAMME_STATUS remains the task tracker)
+├── docs/programme/    — repository reconciliation/reference audits and EXECUTION.md (agent roles, bounded cycles, current handoff; PROGRAMME_STATUS remains the task tracker; RUNNER_ISOLATION_RUNBOOK.md, Pete's Q13 steps for a dedicated CI user)
 ├── docs/archive/      — superseded planning snapshots, never an implementation authority
 │   ├── programmes/    — ADR-0019 programme and W1–W10 realignment history
 │   ├── roadmaps/      — dated roadmap snapshots
