@@ -96,6 +96,20 @@ fly deploy
 Google Cloud Run and Railway also run the image unchanged; set the same
 environment variable.
 
+## Data allowed on the hosted pilot
+
+Synthetic or public non-personal data only. The pilot has one shared login
+(HTTP Basic, one username and password) and no per-user or per-workspace
+ownership: anyone holding the password can list every stored scenario
+(`GET /api/v1/scenarios`) and open any stored run by its identifier
+(`/api/v1/scenarios/...`, `/scenarios/{id}`). Do not enter real
+households or anything that identifies a person, and do not give the
+password to anyone who should not see everyone else's records. Stored
+scenarios have no automatic expiry; the operator removes them by resetting
+the database. Real personal data or shared analyst use needs authenticated
+principals and per-user authorisation first (finding A2,
+`reviews/2026-10-11-audit-191-verification.md`).
+
 ## Sharing it
 
 - Give testers the address, the username and the password separately.

@@ -25,7 +25,10 @@ concurrency:
 jobs:
   links:
     name: links
-    if: github.event_name != 'schedule'
+    # Fork pull requests never reach the self-hosted runner (audit A1).
+    if: >-
+      github.event_name != 'schedule' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     # lychee-action downloads only Linux binaries, so on the self-hosted Mac
     # (D21) the same lychee version it pins is fetched and hash-checked here.
     runs-on: [self-hosted, poltika]
