@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { CheckResult, RegistryParameter, ValidInstrument } from "@/domain";
 
+import { expectNoAxeViolations } from "@/test/axe";
+
 import { ConfirmationPanel, type ConfirmationItem } from "./ConfirmationPanel";
 
 const parameter: RegistryParameter = {
@@ -70,5 +72,17 @@ describe("ConfirmationPanel", () => {
     expect(screen.getByRole("button", { name: "Run analysis" })).toBeDisabled();
     expect(screen.getByText(/no such parameter/)).toBeInTheDocument();
     expect(screen.queryByText("Baseline → scenario")).toBeNull();
+  });
+});
+
+
+describe("ConfirmationPanel accessibility", () => {
+  it("has no axe violations, valid or not", async () => {
+    const bad: CheckResult = { ok: false, changes: [], problems: [{ policy_id: "working_for_families", parameter_id: "ftc_rate", message: "no such parameter" }] };
+    for (const check of [OK, bad]) {
+      const { container, unmount } = render(<ConfirmationPanel items={[item(check)]} limitations={["Full take-up."]} reformJson={{ a: 1 }} onRun={() => undefined} running={false} />);
+      await expectNoAxeViolations(container);
+      unmount();
+    }
   });
 });

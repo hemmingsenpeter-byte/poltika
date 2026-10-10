@@ -113,13 +113,15 @@ export function ConfirmationPanel({
             <p className="text-sm font-medium">Poltika has interpreted this as:</p>
             {item.check.ok ? <Interpreted item={item} sourceTitles={titles} /> : null}
             {item.check.problems.length > 0 ? (
-              <ul role="alert" className="space-y-1 text-sm text-bad-fg">
-                {item.check.problems.map((p, i) => (
-                  <li key={i}>
-                    <Pill tone="bad">Problem</Pill> {humanise(p.parameter_id)}: {p.message}
-                  </li>
-                ))}
-              </ul>
+              <div role="alert">
+                <ul className="space-y-1 text-sm text-bad-fg">
+                  {item.check.problems.map((p, i) => (
+                    <li key={i}>
+                      <Pill tone="bad">Problem</Pill> {humanise(p.parameter_id)}: {p.message}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : null}
           </section>
         );

@@ -33,7 +33,9 @@ export function TableBlockView({ block }: { block: Table }) {
   const grouped = groups.some((g) => g.name !== null);
   return (
     <div>
+      {/* A scrollable region must be keyboard-focusable (axe: scrollable-region-focusable). */}
       <div
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
         tabIndex={0}
         role="region"
         aria-label={`${label} (scrollable)`}
@@ -44,11 +46,15 @@ export function TableBlockView({ block }: { block: Table }) {
           <thead className="sticky top-0 z-10 bg-surface-muted text-xs text-muted">
             {grouped ? (
               <tr>
-                {groups.map((g, i) => (
-                  <th key={i} scope="colgroup" colSpan={g.span} className="px-3 py-1.5 text-center font-medium">
-                    {g.name ?? ""}
-                  </th>
-                ))}
+                {groups.map((g, i) =>
+                  g.name === null ? (
+                    <td key={i} colSpan={g.span} />
+                  ) : (
+                    <th key={i} scope="colgroup" colSpan={g.span} className="px-3 py-1.5 text-center font-medium">
+                      {g.name}
+                    </th>
+                  ),
+                )}
               </tr>
             ) : null}
             <tr>
