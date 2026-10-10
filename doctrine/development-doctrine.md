@@ -94,7 +94,7 @@ externally relied upon, release-critical or evidentially consequential.
   relate to, or collect on one branch until there is enough for one. The
   exceptions are a fix for a broken `main` or CI, a security fix, and
   anything Pete asks for separately (Pete, 10 October 2026; decision log
-  D27).
+  D28).
 - Review findings on an open pull request are fixed in that pull request
   before it merges. A new pull request is only for a finding against
   merged work.

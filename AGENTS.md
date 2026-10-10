@@ -46,7 +46,7 @@ in BUILD_PLAN.md until they are deliberately extracted.
 
 Each pull request carries a substantial piece of work. Minor additions are
 batched into the next substantial PR, not opened on their own
-(doctrine/development-doctrine.md, D27).
+(doctrine/development-doctrine.md, D28).
 
 Do not:
 
