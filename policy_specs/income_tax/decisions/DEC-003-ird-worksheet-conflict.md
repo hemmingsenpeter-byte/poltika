@@ -45,7 +45,16 @@ worksheet's column C for the row starting A = $78,101. Using A = $78,101
 with C = $15,650.50 therefore omits tax on the $78,101st dollar
 (0.33 x $1 = $0.33), whereas the worksheet's previous row uses A = $53,500
 (the threshold itself, not threshold + 1), so the fourth row is internally
-inconsistent with the third. This adds evidence only: the decision, its
+inconsistent with the third.
+
+The same guide was retrieved again on 10 October 2026 (SHA-256 prefix
+`4b0f2ffbc831c0aa`) and its printed p 43 table text extracted. Three
+adjacent rows read "$53,501 to $78,100 | $53,500 | .30 | $8,270.50",
+"$78,101 to $180,000 | $78,101 | .33 | $15,650.50" and "$180,001 and over |
+$180,000 | .39 | $49,277.50". The rows either side of the $78,101 row both
+use the threshold itself as A.
+
+This adds evidence only: the decision, its
 `needs_review` status and the Q18 escalation are unchanged, and no value is
 adopted.
 
