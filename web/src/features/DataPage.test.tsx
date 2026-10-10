@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { DatasetCatalogue } from "@/domain";
 
 import { DataPage } from "./DataPage";
+import { expectNoAxeViolations } from "@/test/axe";
 
 const service = vi.hoisted(() => ({ listDatasets: (): Promise<unknown> => Promise.resolve(undefined) }));
 vi.mock("@/api/services/dataService", () => ({ listDatasets: () => service.listDatasets() }));
@@ -55,5 +56,12 @@ describe("DataPage", () => {
     service.listDatasets = () => new Promise((_, reject) => setTimeout(() => reject(error), 0));
     render(<DataPage />);
     expect(await screen.findByRole("alert")).toHaveTextContent("The dataset catalogue here is invalid.");
+  });
+
+  it("has no axe violations", async () => {
+    service.listDatasets = () => Promise.resolve(CATALOGUE);
+    const { container } = render(<DataPage />);
+    await screen.findByText("Household Economic Survey");
+    await expectNoAxeViolations(container);
   });
 });
