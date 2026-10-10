@@ -176,7 +176,7 @@ required checks/reviews are recorded, ownership is clear and releases are
 truthfully described. v0.1.5's historical external-user obligation maps to
 D where applicable; it must not block source scoping/minimum household work
 or be waived by relabelling the baseline. Pending release tags do not block
-B work once its own source/review gates are met. The Q1 ruleset is applied (5 October 2026) but its enforcement is not yet verified with a red check;
+B work once its own source/review gates are met. The Q1 ruleset is applied (5 October 2026); #168 verified that a failing required check produces GitHub BLOCKED, without attempting a merge or bypass;
 ADR-0020's merge rules apply regardless.
 
 ## Phase B — Household economic kernel
