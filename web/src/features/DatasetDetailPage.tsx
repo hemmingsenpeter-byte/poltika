@@ -3,15 +3,25 @@
 import Link from "next/link";
 
 import { ApiError } from "@/api/errors";
-import { getDataset } from "@/api/services/dataService";
+import { getDataset, listDatasets } from "@/api/services/dataService";
 import { ErrorState, Loading, Unavailable } from "@/components/states";
 import { Section } from "@/components/ui/Card";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { DataTable } from "@/components/ui/DataTable";
 import { PageHeader } from "@/components/ui/PageHeader";
 import type { DatasetDetail } from "@/domain";
+import { periodWords } from "@/lib/labels";
 import { useAsync } from "@/lib/useAsync";
 import { useRouteIds } from "@/lib/useRouteIds";
+
+/** The same field the catalogue page reads: `preserved_sources` (ADR-0022). */
+function SourceArchive() {
+  const state = useAsync(listDatasets, "datasets");
+  if (state.status === "loading") return <Loading label="Loading Source Archive state" />;
+  if (state.status === "error") return <ErrorState error={state.error} onRetry={state.reload} />;
+  const { exposed, note } = state.data.preserved_sources;
+  return exposed ? <p className="text-sm">{note}</p> : <Unavailable title="Not yet exposed" reason={note} />;
+}
 
 function Detail({ detail }: { detail: DatasetDetail }) {
   const first = detail.snapshots[0];
@@ -36,9 +46,7 @@ function Detail({ detail }: { detail: DatasetDetail }) {
               key: "coverage",
               header: "Coverage",
               render: (s) => (
-                <span className="num whitespace-nowrap">
-                  {s.observation_reference_period.from} to {s.observation_reference_period.to}
-                </span>
+                <span className="num">{periodWords(s.observation_reference_period)}</span>
               ),
             },
             { key: "method", header: "Method", render: (s) => s.retrieval_method },
@@ -125,7 +133,7 @@ function Detail({ detail }: { detail: DatasetDetail }) {
       </Section>
 
       <Section title="Source Archive snapshots" id="source-archive">
-        <Unavailable title="Not yet exposed" reason="Preserved Source Archive snapshots are not yet exposed by the API (ADR-0022)." />
+        <SourceArchive />
       </Section>
     </div>
   );
