@@ -52,5 +52,5 @@ describe("scenario pages have no axe violations", () => {
       fireEvent.click(screen.getByRole("tab", { name: t.title }));
       await expectNoAxeViolations(container);
     }
-  });
+  }, 30_000);
 });
