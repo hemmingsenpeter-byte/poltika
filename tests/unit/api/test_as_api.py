@@ -1,17 +1,16 @@
 """Task 24.8: FastAPI TestClient tests for the AS calculation route.
 
 Mirrors `test_wff_api.py`'s Task 21 scope, adapted for AS's single-component
-response shape. Unlike WFF's Case 1 (a fully `calculated` result against
-the real approved policy), the real approved AS `policy.yaml` does not yet
-declare the claimant-category base rates (Task 22's deliberate, documented
-gap -- see `accommodation_supplement.py`'s `_param_value()` docstring), so
-there is no request that legitimately produces `calculated` against the
-*real deployed* policy yet. The "ordinary request" case here therefore
-checks the real policy's actual current behaviour -- a clear `needs_review`
-naming the undeclared parameter, never a crash and never a guessed number
--- and a second case demonstrates a real, fully-resolved `unsupported`
-outcome (the r 15 asset ceiling, whose parameters *are* declared in the
-real policy) end-to-end through the API.
+response shape. At Task 24.8 the real approved AS `policy.yaml` did not yet
+declare the claimant-category base rates, so no request could produce
+`calculated` against the real deployed policy and these tests checked its
+then-current behaviour (a clear `needs_review`, never a guessed number). Since
+the Task 26a selector repair (policy 0.1.1) it declares the published
+thresholds, and an ordinary request does produce `calculated` against the real
+policy (see `test_calculate_real_policy_uses_the_published_threshold` and the
+spec case `asset_ceiling_exactly_met_is_eligible`). Tests that use a
+monkeypatched policy directory or fake results exist to reach branches the
+real policy cannot, such as fractional-decimal serialisation.
 """
 
 from __future__ import annotations
