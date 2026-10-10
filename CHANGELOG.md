@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased (web scenario experience, 10 October 2026)
+
+- Task B0.1.4: the public OpenAPI request-body schema names for the legacy
+  `/scenarios`, `/wff/calculate` and `/household/calculate` endpoints change to
+  Pydantic's `*-Input` variants (`Reform-Input`, `Override-Input`,
+  `OptionRequest-Input`, `CreateScenario-Input`, `WffCalculationRequest-Input`,
+  `AsCalculationRequest-Input`, `HouseholdCalculationRequest-Input` and
+  `VerifiedIncomeRequest-Input`), because `Reform` is now also returned. Request
+  shapes are unchanged: each `-Input` schema equals the previous one once the
+  names are normalised. No calculated amount changes.
+
+## Unreleased (Dependabot paused, 10 October 2026)
+
+- `.github/dependabot.yml`: `open-pull-requests-limit: 0` for all three
+  ecosystems, at Pete's instruction (decision log D27). Version-update PRs stop
+  until the limits are restored. Tooling only; no calculated amount changes.
+
 ## Unreleased (web shell, 7 October 2026)
 
 - Task B0.1.3 (ADR-0023): `web/`, the first web frontend. Next.js (App Router,

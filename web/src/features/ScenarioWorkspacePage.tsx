@@ -1,33 +1,34 @@
 "use client";
 
-import { Unavailable } from "@/components/states";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { useRouter } from "next/navigation";
+
+import { isApiError } from "@/api/errors";
+import { getWorkspace } from "@/api/services/scenarioService";
+import { ErrorState, Loading, Unavailable } from "@/components/states";
+import { useAsync } from "@/lib/useAsync";
 import { useMounted } from "@/lib/useMounted";
 import { useRouteIds } from "@/lib/useRouteIds";
 
-/** The workspace itself is B0.1.4. This page shows which scenario and run the
- *  URL names, so deep links can be checked. */
+import { WorkspaceView } from "./workspace/WorkspaceView";
+
+/** /scenarios/:id and /scenarios/:id/runs/:runId. The ids come from the URL
+ *  after mount (the export holds a placeholder). */
 export function ScenarioWorkspacePage() {
   const mounted = useMounted();
-  const ids = useRouteIds();
-  const scenarioId = mounted ? ids.scenarioId : undefined;
-  const runId = mounted ? ids.runId : undefined;
-  return (
-    <div>
-      <PageHeader title={runId ? "Run" : "Scenario"} />
-      <dl className="mb-4 space-y-1 text-sm">
-        <div className="flex gap-3">
-          <dt className="w-24 text-muted">Scenario</dt>
-          <dd className="font-mono break-all">{scenarioId ?? "—"}</dd>
-        </div>
-        {runId ? (
-          <div className="flex gap-3">
-            <dt className="w-24 text-muted">Run</dt>
-            <dd className="font-mono break-all">{runId}</dd>
-          </div>
-        ) : null}
-      </dl>
-      <Unavailable reason="Workspace coming in B0.1.4." />
-    </div>
+  const router = useRouter();
+  const { scenarioId, runId } = useRouteIds();
+  const key = `workspace:${scenarioId ?? ""}:${runId ?? ""}`;
+  const state = useAsync(
+    (signal) => (scenarioId ? getWorkspace(scenarioId, runId, signal) : Promise.reject(new Error("no scenario id"))),
+    key,
   );
+
+  if (!mounted || state.status === "loading") return <Loading label="Loading the scenario" />;
+  if (state.status === "error") {
+    if (isApiError(state.error) && state.error.kind === "unavailable") {
+      return <Unavailable title="Scenarios are not available here" reason={state.error.message} />;
+    }
+    return <ErrorState error={state.error} onRetry={state.reload} />;
+  }
+  return <WorkspaceView key={key} workspace={state.data} navigate={(href) => router.push(href)} />;
 }

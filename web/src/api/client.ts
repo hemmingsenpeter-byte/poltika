@@ -40,13 +40,20 @@ export function parseErrorBody(status: number, body: unknown): ApiError {
   return new ApiError(kind, DEFAULT_MESSAGES[kind], { status });
 }
 
-export async function getJson<T>(path: string, schema: z.ZodType<T>, signal?: AbortSignal): Promise<T> {
+async function send<T>(
+  method: "GET" | "POST",
+  path: string,
+  schema: z.ZodType<T>,
+  body?: unknown,
+  signal?: AbortSignal,
+): Promise<T> {
   let response: Response;
   try {
     response = await fetch(path, {
-      method: "GET",
+      method,
       credentials: "same-origin",
-      headers: { Accept: "application/json" },
+      headers: body === undefined ? { Accept: "application/json" } : { Accept: "application/json", "Content-Type": "application/json" },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       ...(signal ? { signal } : {}),
     });
   } catch (cause) {
@@ -54,18 +61,26 @@ export async function getJson<T>(path: string, schema: z.ZodType<T>, signal?: Ab
     throw new ApiError("network", DEFAULT_MESSAGES.network);
   }
 
-  let body: unknown;
+  let json: unknown;
   try {
-    body = await response.json();
+    json = await response.json();
   } catch {
-    body = undefined;
+    json = undefined;
   }
 
-  if (!response.ok) throw parseErrorBody(response.status, body);
+  if (!response.ok) throw parseErrorBody(response.status, json);
 
-  const parsed = schema.safeParse(body);
+  const parsed = schema.safeParse(json);
   if (!parsed.success) {
     throw new ApiError("invalid_response", DEFAULT_MESSAGES.invalid_response, { status: response.status });
   }
   return parsed.data;
+}
+
+export function getJson<T>(path: string, schema: z.ZodType<T>, signal?: AbortSignal): Promise<T> {
+  return send("GET", path, schema, undefined, signal);
+}
+
+export function postJson<T>(path: string, body: unknown, schema: z.ZodType<T>, signal?: AbortSignal): Promise<T> {
+  return send("POST", path, schema, body, signal);
 }
