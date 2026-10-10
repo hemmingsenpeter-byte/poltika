@@ -5,6 +5,7 @@ import { ApiError } from "@/api/errors";
 import type { DatasetDetail } from "@/domain";
 
 import { DatasetDetailPage } from "./DatasetDetailPage";
+import { expectNoAxeViolations } from "@/test/axe";
 
 const service = vi.hoisted(() => ({ getDataset: (): Promise<unknown> => Promise.resolve(undefined) }));
 vi.mock("@/api/services/dataService", () => ({ getDataset: () => service.getDataset() }));
@@ -84,5 +85,12 @@ describe("DatasetDetailPage", () => {
     service.getDataset = () => new Promise((_, reject) => setTimeout(() => reject(error), 0));
     render(<DatasetDetailPage />);
     expect(await screen.findByRole("alert")).toHaveTextContent("No dataset 'x' is catalogued.");
+  });
+
+  it("has no axe violations", async () => {
+    service.getDataset = () => Promise.resolve(DETAIL);
+    const { container } = render(<DatasetDetailPage />);
+    await screen.findByText("Raw bytes are not served here.");
+    await expectNoAxeViolations(container);
   });
 });

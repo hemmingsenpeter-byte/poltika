@@ -5,6 +5,7 @@ import { ApiError } from "@/api/errors";
 import type { ModelDetail } from "@/domain";
 
 import { ModelDetailPage } from "./ModelDetailPage";
+import { expectNoAxeViolations } from "@/test/axe";
 
 const service = vi.hoisted(() => ({ getModel: (): Promise<unknown> => Promise.resolve(undefined) }));
 vi.mock("@/api/services/modelService", () => ({ getModel: () => service.getModel() }));
@@ -72,5 +73,12 @@ describe("ModelDetailPage", () => {
     service.getModel = () => new Promise((_, reject) => setTimeout(() => reject(error), 0));
     render(<ModelDetailPage />);
     expect(await screen.findByRole("alert")).toHaveTextContent("No model 'x' is registered.");
+  });
+
+  it("has no axe violations", async () => {
+    service.getModel = () => Promise.resolve(DETAIL);
+    const { container } = render(<ModelDetailPage />);
+    await screen.findByRole("heading", { name: "Combined runner" });
+    await expectNoAxeViolations(container);
   });
 });
