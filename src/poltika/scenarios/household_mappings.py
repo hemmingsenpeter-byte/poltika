@@ -119,6 +119,30 @@ def _period(week: AssessmentWeek) -> DatePeriod:
     return DatePeriod(start=week.start, end=week.end)
 
 
+_WFF_BASES = frozenset(
+    {hh.IncomeBasis.WFF_FAMILY_SCHEME, hh.IncomeBasis.WFF_NET_FAMILY_SCHEME_ME3_ATTESTED, hh.IncomeBasis.NET_OF_TAX}
+)
+_AS_BASES = frozenset({hh.IncomeBasis.AS_CHARGEABLE_WEEKLY})
+
+
+def _q10_refusal(
+    household: Household, person_ids: tuple[str, ...], period: DatePeriod, bases: frozenset[hh.IncomeBasis]
+) -> MappingRefusal | None:
+    """A spell that extends past the policy period would need an
+    annualisation or apportionment, which no sourced rule allows (v0.2 D8/D9;
+    PETE_QUEUE Q10). Refused, never scaled."""
+    for spell in household.income_spells:
+        if spell.person_id in person_ids and spell.basis in bases and hh.straddling_spells((spell,), period):
+            return MappingRefusal(
+                "needs_review",
+                "HOUSEHOLD_SPELL_PERIOD_MISMATCH",
+                f"an income spell [{spell.start}, {spell.end}) extends past the policy period "
+                f"[{period.start}, {period.end}); converting it needs a sourced rule (PETE_QUEUE Q10, "
+                "v0.2 D8/D9) and none exists",
+            )
+    return None
+
+
 def _invalid(reason: str) -> MappingRefusal:
     return MappingRefusal("needs_review", "HOUSEHOLD_MAPPING_INVALID_FACTS", reason)
 
@@ -145,6 +169,11 @@ def to_wff(household: Household, tax_year: DatePeriod) -> WffScenario | MappingR
         else ChildFacts(qualifies_whole_year=FactStatus.UNKNOWN)
         for c in children
     ]
+
+    people = tuple(p for p in (family.claimant_id, family.partner_id) if p is not None)
+    mismatch = _q10_refusal(household, people, tax_year, _WFF_BASES)
+    if mismatch is not None:
+        return mismatch
 
     # WFF-01/02 domain: a stable partner status. Unknown stays unknown.
     partner_status = PartnerStatus(family.partner_status.value)
@@ -268,6 +297,10 @@ def to_as(household: Household, assessment_week: AssessmentWeek) -> AsScenario |
             statuses.append(Assertion.UNKNOWN if facts is None else facts.as_dependent_child)
         if Assertion.UNKNOWN not in statuses:
             dependent_children_count = statuses.count(Assertion.VERIFIED)
+
+    mismatch = _q10_refusal(household, (family.claimant_id,), week, _AS_BASES)
+    if mismatch is not None:
+        return mismatch
 
     # AS-07 (r 18): combined weekly income of claimant and partner, a family
     # figure held on the claimant with basis AS_CHARGEABLE_WEEKLY.
