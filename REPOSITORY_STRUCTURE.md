@@ -94,6 +94,7 @@ poltika/
 │   ├── roadmaps/      — dated roadmap snapshots
 │   ├── status/        — dated programme-status snapshots
 │   └── build-plans/   — historical bounded release plans, including v0.1.5
+├── docs/web/          — FRONTEND.md: web frontend architecture, build, deployment, environment and extension guide (B0.1.7)
 ├── docs/pilot/        — v0.1.5 pilot guide, hosting guide (HOSTING.md), and the pilot findings
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question
