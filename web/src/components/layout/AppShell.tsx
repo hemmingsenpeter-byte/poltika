@@ -78,8 +78,16 @@ function NavDrawer({ onClose }: { onClose: () => void }) {
       }
     }
     document.addEventListener("keydown", onKeyDown);
+    // The dialog is md:hidden. Past the md breakpoint it is no longer a modal,
+    // so close it rather than keep trapping Tab in a hidden panel.
+    const wide = window.matchMedia?.("(min-width: 768px)");
+    function onWide(e: MediaQueryListEvent) {
+      if (e.matches) close.current();
+    }
+    wide?.addEventListener("change", onWide);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      wide?.removeEventListener("change", onWide);
       opener?.focus();
     };
   }, []);

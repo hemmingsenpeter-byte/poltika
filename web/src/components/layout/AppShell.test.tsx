@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_CAPABILITIES } from "@/config/capabilities";
@@ -42,5 +42,28 @@ describe("AppShell mobile navigation drawer", () => {
     expect(document.activeElement).toBe(items[0]);
     fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
     expect(document.activeElement).toBe(items[items.length - 1]);
+  });
+
+  it("closes when the viewport crosses the md breakpoint, so Tab is no longer trapped", () => {
+    let notify: (e: { matches: boolean }) => void = () => {};
+    vi.stubGlobal("matchMedia", () => ({
+      matches: false,
+      addEventListener: (_: string, fn: typeof notify) => { notify = fn; },
+      removeEventListener: () => {},
+    }));
+    try {
+      const menu = open();
+      act(() => notify({ matches: true }));
+      expect(screen.queryByRole("dialog")).toBeNull();
+      const outside = document.createElement("button");
+      document.body.append(outside);
+      outside.focus();
+      expect(fireEvent.keyDown(document, { key: "Tab" })).toBe(true);
+      expect(document.activeElement).toBe(outside);
+      outside.remove();
+      expect(menu).toBeInTheDocument();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

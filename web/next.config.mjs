@@ -21,7 +21,7 @@ const nextConfig = {
               {
                 source: "/scenarios/:path*",
                 destination: `${API_ORIGIN}/scenarios/:path*`,
-                has: [{ type: "header", key: "accept", value: "(?:application/json|\\*/\\*)" }],
+                has: [{ type: "header", key: "accept", value: "^(?!.*text/html).*(?:application/json|\\*/\\*).*$" }],
                 missing: [{ type: "header", key: "rsc" }],
               },
               { source: "/api/:path*", destination: `${API_ORIGIN}/api/:path*` },

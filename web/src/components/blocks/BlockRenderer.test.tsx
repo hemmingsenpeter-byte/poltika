@@ -69,6 +69,19 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("1,234.567")).toBeInTheDocument();
   });
 
+  it("never rounds a household-rule money cell and adds no currency the API did not give", () => {
+    const block = byType("table");
+    if (block.type !== "table" || !("columns" in block)) throw new Error("Missing table fixture");
+    render(<BlockRenderer block={{
+      ...block,
+      columns: block.columns.map((column, i) => (i === 0 ? column : { ...column, kind: "money" as const, precision: "household_rule" as const })),
+      rows: [["Rule", "1234.50", "1234567.891"]],
+    }} />);
+    expect(screen.getByText("1,234.50")).toBeInTheDocument();
+    expect(screen.getByText("1,234,567.891")).toBeInTheDocument();
+    expect(screen.queryByText(/\$/)).toBeNull();
+  });
+
   it("renders an empty numeric cell as Not calculated, not blank", () => {
     const block = byType("table");
     if (block.type !== "table" || !("columns" in block)) throw new Error("Missing table fixture");

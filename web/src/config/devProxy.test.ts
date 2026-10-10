@@ -24,6 +24,7 @@ const probe = `
     ['/microsim/population', '*/*'],
     ['/scenarios', 'application/json'],
     ['/scenarios/abc', '*/*'],
+    ['/scenarios', 'application/json, text/plain, */*'],
     ['/scenarios', 'text/html,application/xhtml+xml,*/*;q=0.8'],
     ['/scenarios', '*/*', '1'],
     ['/scenarios/abc', 'application/json', '1'],
@@ -69,14 +70,15 @@ describe("development API proxy", () => {
   });
 
   it("forwards JSON scenario requests before the colliding UI page", () => {
-    expect(config.matches.slice(6, 8).map((request) => request.source)).toEqual([
+    expect(config.matches.slice(6, 9).map((request) => request.source)).toEqual([
+      "/scenarios/:path*",
       "/scenarios/:path*",
       "/scenarios/:path*",
     ]);
   });
 
   it("keeps browser HTML and Next RSC requests on the frontend", () => {
-    expect(config.matches.slice(8).map((request) => request.source)).toEqual([null, null, null]);
+    expect(config.matches.slice(9).map((request) => request.source)).toEqual([null, null, null]);
   });
 
   it("omits all rewrites from the production static export", () => {
