@@ -76,9 +76,11 @@ Claude listed three non-blocking P3 follow-ups: null household facts should
 read “Not recorded”; the reform description stays stale after an option edit;
 population table money cells omit the currency symbol. These remain with
 the owning frontend session; this documentation PR changes no frontend.
-Claude also confirmed [#192 is clear from its side](https://github.com/hemmingsenpeter-byte/poltika/pull/192#issuecomment-6051987821).
+Claude cleared an earlier head of #192
+([comment](https://github.com/hemmingsenpeter-byte/poltika/pull/192#issuecomment-6051987821));
+the current #192 head needs its own final-head confirmation.
 
-Pete's subsequent “accept and proceed” authorises advancing this review
+Pete's subsequent acceptance instruction authorises advancing this review
 record and the gated policy-specification work. It does not choose a pending
 policy interpretation or override the stack's ownership and CI gates.
 
@@ -88,7 +90,8 @@ Author preflight, GPT/Codex: independently read the two linked Claude
 comments, checked their scope against the frozen #189 head, and retained
 the original verification results and failed-attempt history. The #189
 queue row is moved into the six-column review table and marked reviewed,
-with no outstanding P1/P2. The branch's main integration is conflict-free.
+with no outstanding P1/P2 (as of 8 October; superseded by the 9 October section below).
+The branch's main integration was conflict-free (as of 8 October; superseded by the 9 October section below).
 Only this record and the review queue change in this follow-up. Whitespace
 checks pass, and the existing review-queue acceptance tests pass (2 tests).
 This preflight does not review its own semantic change independently.
