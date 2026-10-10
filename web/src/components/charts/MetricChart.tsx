@@ -92,13 +92,17 @@ export default function MetricChart({ block }: { block: MetricBlock }) {
           const y = i * ROW_H + 4;
           const bar = bars.findIndex((b) => b.row === r);
           const n = bar >= 0 ? bars[bar]!.n : null;
-          const w = n !== null && max > 0 ? Math.max((Math.abs(n) / max) * half, 1) : 0;
+          const w = n !== null && max > 0 ? (Math.abs(n) / max) * half : 0;
           return (
             <g key={r.option}>
               <text x={LABEL_W - 8} y={y + 18} textAnchor="end" fontSize="12" fill="var(--color-ink)">
                 {r.option}
               </text>
-              {n !== null ? (
+              {n === 0 ? (
+                // An exact zero has no length: an open circle on the zero line
+                // marks it, and the printed value says it.
+                <circle data-zero cx={zeroX} cy={y + ROW_H / 2 - 2} r={4} fill="var(--color-surface)" stroke="var(--color-ink)" />
+              ) : n !== null ? (
                 <rect
                   x={n < 0 ? zeroX - w : zeroX}
                   y={y + 4}
