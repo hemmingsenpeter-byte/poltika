@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Pill } from "@/components/ui/Pill";
 import type { ScenarioKind } from "@/domain";
+import { formatWhen } from "@/lib/formatWhen";
 import { useAsync } from "@/lib/useAsync";
 
 const KINDS: { value: ScenarioKind | ""; label: string }[] = [
@@ -18,11 +19,6 @@ const KINDS: { value: ScenarioKind | ""; label: string }[] = [
   { value: "reform", label: "Policy change" },
   { value: "household", label: "Household" },
 ];
-
-function formatWhen(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString("en-NZ", { dateStyle: "medium", timeStyle: "short" });
-}
 
 export function ScenariosPage() {
   const [kind, setKind] = useState<ScenarioKind | "">("");
@@ -74,7 +70,7 @@ export function ScenariosPage() {
           <ul className="divide-y divide-border">
             {state.data.items.map((s) => (
               <li key={s.scenario_id}>
-                <Link href={`/scenarios/${s.scenario_id}`} className="block px-4 py-3 no-underline hover:bg-surface-muted">
+                <Link href={s.latest_run_id ? `/scenarios/${s.scenario_id}/runs/${s.latest_run_id}` : `/scenarios/${s.scenario_id}`} className="block px-4 py-3 no-underline hover:bg-surface-muted">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="font-medium">{s.title}</span>
                     <Pill tone="neutral">{s.kind === "reform" ? "Policy change" : "Household"}</Pill>

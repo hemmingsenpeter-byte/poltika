@@ -2,7 +2,7 @@
 
 import { Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { NavList } from "@/components/navigation/NavList";
 import { Button } from "@/components/ui/Button";
@@ -43,6 +43,68 @@ function Header({ onMenu }: { onMenu: () => void }) {
   );
 }
 
+const FOCUSABLE = "a[href], button:not([disabled])";
+
+// Modal behaviour for the mobile drawer: focus moves in, Tab stays inside, Escape
+// closes, and focus returns to whatever opened it (the menu button).
+function NavDrawer({ onClose }: { onClose: () => void }) {
+  const panel = useRef<HTMLDivElement>(null);
+  const close = useRef(onClose);
+  close.current = onClose;
+
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    panel.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        close.current();
+        return;
+      }
+      if (e.key !== "Tab" || !panel.current) return;
+      const items = Array.from(panel.current.querySelectorAll<HTMLElement>(FOCUSABLE));
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!first || !last) return;
+      if (!panel.current.contains(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    // The dialog is md:hidden. Past the md breakpoint it is no longer a modal,
+    // so close it rather than keep trapping Tab in a hidden panel.
+    const wide = window.matchMedia?.("(min-width: 768px)");
+    function onWide(e: MediaQueryListEvent) {
+      if (e.matches) close.current();
+    }
+    wide?.addEventListener("change", onWide);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      wide?.removeEventListener("change", onWide);
+      opener?.focus();
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
+      <button type="button" aria-label="Close navigation" tabIndex={-1} className="absolute inset-0 bg-ink/40" onClick={onClose} />
+      <div ref={panel} className="absolute inset-y-0 left-0 w-64 border-r border-border bg-surface p-3 shadow-card">
+        <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close navigation" className="mb-2">
+          <X aria-hidden="true" className="size-4" />
+        </Button>
+        <NavList onNavigate={onClose} />
+      </div>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -79,22 +141,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Button>
           </aside>
 
-          {drawerOpen ? (
-            <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
-              <button
-                type="button"
-                aria-label="Close navigation"
-                className="absolute inset-0 bg-ink/40"
-                onClick={() => setDrawerOpen(false)}
-              />
-              <div className="absolute inset-y-0 left-0 w-64 border-r border-border bg-surface p-3 shadow-card">
-                <Button variant="ghost" size="sm" onClick={() => setDrawerOpen(false)} aria-label="Close navigation" className="mb-2">
-                  <X aria-hidden="true" className="size-4" />
-                </Button>
-                <NavList onNavigate={() => setDrawerOpen(false)} />
-              </div>
-            </div>
-          ) : null}
+          {drawerOpen ? <NavDrawer onClose={() => setDrawerOpen(false)} /> : null}
 
           <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 px-4 py-6 md:px-8 outline-none">
             <div className="mx-auto max-w-6xl">{children}</div>

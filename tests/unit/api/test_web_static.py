@@ -260,4 +260,3 @@ def test_the_built_export_carries_no_gated_term() -> None:
         text = page.read_text(encoding="utf-8").lower()
         found = [term for term in GATED_TERMS if term in text]
         assert not found, f"{page.relative_to(out)} contains {found}"
-

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatCount, formatMoney, formatPercent, formatPp, NOT_CALCULATED, periodLabel } from "./index";
+import { formatCount, formatMoney, formatPercent, formatPp, NOT_CALCULATED, outcomeOfCell, periodLabel } from "./index";
 
 describe("formatMoney household_rule", () => {
   const rule = { precision: "household_rule" } as const;
@@ -97,5 +97,22 @@ describe("periodLabel", () => {
   it("names the period", () => {
     expect(periodLabel("tax_year")).toBe("per tax year");
     expect(periodLabel("week")).toBe("per week");
+  });
+});
+
+describe("outcomeOfCell", () => {
+  it.each(["constructor", "__proto__", "Option A", "123.45", ""])(
+    "keeps ordinary text %j outside the outcome markers",
+    (cell) => expect(outcomeOfCell(cell)).toBeNull(),
+  );
+
+  it.each([
+    ["not calculated", "not_calculated"],
+    ["NOT_CALCULATED", "not_calculated"],
+    [" Needs review ", "needs_review"],
+    ["needs_review", "needs_review"],
+    ["unsupported", "unsupported"],
+  ])("recognises the supported marker %j", (cell, outcome) => {
+    expect(outcomeOfCell(cell)).toBe(outcome);
   });
 });
