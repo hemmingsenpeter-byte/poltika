@@ -40,4 +40,12 @@ describe("MetricChart", () => {
     render(<MetricCard block={one} />);
     expect(screen.queryByRole("img")).toBeNull();
   });
+
+  it("marks an exact zero with a distinct marker rather than a bar", async () => {
+    const zero = { ...BLOCK, values: [BLOCK.values[0]!, { option: "Option Z", value: "0", outcome: "calculated" as const }] };
+    render(<MetricCard block={zero} />);
+    const chart = await screen.findByRole("img", { name: /Option Z/ });
+    expect(chart.querySelectorAll("svg > g rect").length).toBe(1);
+    expect(chart.querySelectorAll("circle[data-zero]").length).toBe(1);
+  });
 });
