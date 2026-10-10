@@ -88,6 +88,10 @@ Follow the vertical-slice approach in doctrine/development-doctrine.md and
 the single current BUILD_PLAN_PROGRAMME.md. Preserve the frozen constraints
 in BUILD_PLAN.md until they are deliberately extracted.
 
+Each pull request carries a substantial piece of work. Minor additions are
+batched into the next substantial PR, not opened on their own
+(doctrine/development-doctrine.md, D27).
+
 Active lanes are BUILD_PLAN_v0_3.md (household economic kernel) and
 BUILD_PLAN_v0_1_6.md (statutory maintenance). BUILD_PLAN_v0_2.md is release
 closeout support. Archived plans never determine new work.

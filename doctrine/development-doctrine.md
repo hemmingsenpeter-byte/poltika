@@ -86,6 +86,15 @@ externally relied upon, release-critical or evidentially consequential.
   `.claude/skills/new-policy/SKILL.md`: one PR per kind of review
   (sources and specification, values and expected results,
   implementation, interactions, release), not one PR per plan task.
+- A pull request carries a substantial piece of work: a plan task or step,
+  one PR of a policy domain's five-PR structure, or a change of similar
+  weight. Minor additions (a status row, a typo or link fix, a CHANGELOG
+  line, a review record, a small config or tooling tweak) do not get their
+  own pull request. They ride in the next substantial pull request they
+  relate to, or collect on one branch until there is enough for one. The
+  exceptions are a fix for a broken `main` or CI, a security fix, and
+  anything Pete asks for separately (Pete, 10 October 2026; decision log
+  D27).
 - Review findings on an open pull request are fixed in that pull request
   before it merges. A new pull request is only for a finding against
   merged work.
