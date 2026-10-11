@@ -274,6 +274,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/scenarios/{scenario_id}/definition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Scenario Definition
+         * @description Copy the retained reform settings into a new, independently checked draft.
+         */
+        get: operations["scenario_definition_api_v1_scenarios__scenario_id__definition_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/scenarios/{scenario_id}/runs": {
         parameters: {
             query?: never;
@@ -300,6 +320,63 @@ export interface paths {
         };
         /** Run Workspace */
         get: operations["run_workspace_api_v1_scenarios__scenario_id__runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scenarios/{scenario_id}/runs/{run_id}/definition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Household Definition
+         * @description Copy stored facts, dates and requested versions without filling missing facts.
+         */
+        get: operations["household_definition_api_v1_scenarios__scenario_id__runs__run_id__definition_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scenarios/{scenario_id}/runs/{run_id}/export.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stored Workbook
+         * @description Use the existing writer on retained results; no rerun or live policy lookup.
+         */
+        get: operations["stored_workbook_api_v1_scenarios__scenario_id__runs__run_id__export_xlsx_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scenarios/{scenario_id}/runs/{run_id}/export/{table_id}.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stored Table */
+        get: operations["stored_table_api_v1_scenarios__scenario_id__runs__run_id__export__table_id__csv_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -703,7 +780,7 @@ export interface components {
          * AsCalculationRequest
          * @description Mirrors `AsScenario`'s own fields; see this module's docstring.
          */
-        AsCalculationRequest: {
+        "AsCalculationRequest-Input": {
             /**
              * Assessment Week End
              * Format: date
@@ -740,6 +817,48 @@ export interface components {
             weekly_accommodation_costs?: number | string | null;
             /** Weekly Income */
             weekly_income?: number | string | null;
+        };
+        /**
+         * AsCalculationRequest
+         * @description Mirrors `AsScenario`'s own fields; see this module's docstring.
+         */
+        "AsCalculationRequest-Output": {
+            /**
+             * Assessment Week End
+             * Format: date
+             */
+            assessment_week_end: string;
+            /**
+             * Assessment Week Start
+             * Format: date
+             */
+            assessment_week_start: string;
+            /** Cash Assets */
+            cash_assets?: string | null;
+            claimant_category?: components["schemas"]["ClaimantCategory"] | null;
+            /** Dependent Children Count */
+            dependent_children_count?: number | null;
+            /** @default unknown */
+            eldest_dependent_child_under_16: components["schemas"]["FactStatus"];
+            /** @default unknown */
+            exempt_cash_asset_status: components["schemas"]["FactStatus"];
+            household_eligibility: components["schemas"]["FactStatus"];
+            /**
+             * Modelled Date
+             * Format: date
+             */
+            modelled_date: string;
+            /** @default unknown */
+            ordinary_rate_status: components["schemas"]["FactStatus"];
+            partner_status?: components["schemas"]["PartnerType"] | null;
+            /** Requested Policy Version */
+            requested_policy_version: string;
+            statistical_area_unit?: components["schemas"]["Area"] | null;
+            tenure_type?: components["schemas"]["TenureType"] | null;
+            /** Weekly Accommodation Costs */
+            weekly_accommodation_costs?: string | null;
+            /** Weekly Income */
+            weekly_income?: string | null;
         };
         /** AsCalculationResponse */
         AsCalculationResponse: {
@@ -930,7 +1049,7 @@ export interface components {
         };
         /** CheckRequest */
         CheckRequest: {
-            reform: components["schemas"]["Reform"];
+            reform: components["schemas"]["Reform-Input"];
         };
         /** ChildFactsRequest */
         ChildFactsRequest: {
@@ -966,6 +1085,12 @@ export interface components {
             kind: "text" | "money" | "count" | "share";
             /** Label */
             label: string;
+            /**
+             * Precision
+             * @default household_rule
+             * @enum {string}
+             */
+            precision: "household_rule" | "population_estimate";
         };
         /**
          * ComponentResultResponse
@@ -1013,14 +1138,26 @@ export interface components {
             synthetic: boolean;
         };
         /** CreateScenario */
-        CreateScenario: {
+        "CreateScenario-Input": {
             /**
              * Description
              * @default
              */
             description: string;
             /** Options */
-            options: components["schemas"]["OptionRequest"][];
+            options: components["schemas"]["OptionRequest-Input"][];
+            /** Title */
+            title: string;
+        };
+        /** CreateScenario */
+        "CreateScenario-Output": {
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Options */
+            options: components["schemas"]["OptionRequest-Output"][];
             /** Title */
             title: string;
         };
@@ -1227,11 +1364,18 @@ export interface components {
             note: string;
         };
         /** HouseholdCalculationRequest */
-        HouseholdCalculationRequest: {
-            accommodation_supplement: components["schemas"]["AsCalculationRequest"];
+        "HouseholdCalculationRequest-Input": {
+            accommodation_supplement: components["schemas"]["AsCalculationRequest-Input"];
             /** @default unknown */
             as_claimant_is_wff_claimant_or_partner: components["schemas"]["FactStatus"];
-            wff: components["schemas"]["WffCalculationRequest"];
+            wff: components["schemas"]["WffCalculationRequest-Input"];
+        };
+        /** HouseholdCalculationRequest */
+        "HouseholdCalculationRequest-Output": {
+            accommodation_supplement: components["schemas"]["AsCalculationRequest-Output"];
+            /** @default unknown */
+            as_claimant_is_wff_claimant_or_partner: components["schemas"]["FactStatus"];
+            wff: components["schemas"]["WffCalculationRequest-Output"];
         };
         /** HouseholdCalculationResponse */
         HouseholdCalculationResponse: {
@@ -1283,7 +1427,7 @@ export interface components {
              * @default []
              */
             declined: string[];
-            household: components["schemas"]["HouseholdCalculationRequest"];
+            household: components["schemas"]["HouseholdCalculationRequest-Input"];
         };
         /** IntakeResponse */
         IntakeResponse: {
@@ -1519,13 +1663,19 @@ export interface components {
          */
         Operation: "set" | "add" | "multiply";
         /** OptionRequest */
-        OptionRequest: {
+        "OptionRequest-Input": {
             /** Label */
             label: string;
-            reform: components["schemas"]["Reform"];
+            reform: components["schemas"]["Reform-Input"];
+        };
+        /** OptionRequest */
+        "OptionRequest-Output": {
+            /** Label */
+            label: string;
+            reform: components["schemas"]["Reform-Output"];
         };
         /** Override */
-        Override: {
+        "Override-Input": {
             operation: components["schemas"]["Operation"];
             /** Parameter Id */
             parameter_id: string;
@@ -1533,6 +1683,16 @@ export interface components {
             policy_id: string;
             /** Value */
             value: number | string;
+        };
+        /** Override */
+        "Override-Output": {
+            operation: components["schemas"]["Operation"];
+            /** Parameter Id */
+            parameter_id: string;
+            /** Policy Id */
+            policy_id: string;
+            /** Value */
+            value: string;
         };
         /** ParameterEvidence */
         ParameterEvidence: {
@@ -1676,14 +1836,26 @@ export interface components {
             tab: "overview" | "fiscal" | "distribution" | "evidence" | "assumptions" | "technical" | "audit";
         };
         /** Reform */
-        Reform: {
+        "Reform-Input": {
             /**
              * Description
              * @default
              */
             description: string;
             /** Overrides */
-            overrides: components["schemas"]["Override"][];
+            overrides: components["schemas"]["Override-Input"][];
+            /** Reform Id */
+            reform_id: string;
+        };
+        /** Reform */
+        "Reform-Output": {
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Overrides */
+            overrides: components["schemas"]["Override-Output"][];
             /** Reform Id */
             reform_id: string;
         };
@@ -1734,7 +1906,7 @@ export interface components {
         /** ResultsRequest */
         ResultsRequest: {
             /** Options */
-            options: components["schemas"]["OptionRequest"][];
+            options: components["schemas"]["OptionRequest-Input"][];
             scenario?: components["schemas"]["ScenarioHeader-Input"];
         };
         /** RuleEvidence */
@@ -1773,7 +1945,7 @@ export interface components {
         RunRequest: {
             /** Component Set */
             component_set?: string[];
-            reform: components["schemas"]["Reform"];
+            reform: components["schemas"]["Reform-Input"];
         };
         /** ScenarioHeader */
         "ScenarioHeader-Input": {
@@ -2048,17 +2220,24 @@ export interface components {
             valid_to: string | null;
         };
         /** VerifiedIncomeRequest */
-        VerifiedIncomeRequest: {
+        "VerifiedIncomeRequest-Input": {
             /** Claimant Amount */
             claimant_amount: number | string;
             /** Partner Amount */
             partner_amount?: number | string | null;
         };
+        /** VerifiedIncomeRequest */
+        "VerifiedIncomeRequest-Output": {
+            /** Claimant Amount */
+            claimant_amount: string;
+            /** Partner Amount */
+            partner_amount?: string | null;
+        };
         /**
          * WffCalculationRequest
          * @description Mirrors `WffScenario`'s own fields; see this module's docstring.
          */
-        WffCalculationRequest: {
+        "WffCalculationRequest-Input": {
             /** @default unknown */
             best_start_no_shared_care: components["schemas"]["FactStatus"];
             /** @default unknown */
@@ -2066,7 +2245,7 @@ export interface components {
             /** Children */
             children: components["schemas"]["ChildFactsRequest"][];
             extra_instalment_status: components["schemas"]["FactStatus"];
-            family_scheme_income?: components["schemas"]["VerifiedIncomeRequest"] | null;
+            family_scheme_income?: components["schemas"]["VerifiedIncomeRequest-Input"] | null;
             /** @default unknown */
             ftc_iwtc_protected_or_direct_abatement: components["schemas"]["FactStatus"];
             household_eligibility: components["schemas"]["FactStatus"];
@@ -2085,6 +2264,47 @@ export interface components {
             modelled_date: string;
             /** Net Family Scheme Income */
             net_family_scheme_income?: number | string | null;
+            /**
+             * Net Family Scheme Income Me3 Attested
+             * @default false
+             */
+            net_family_scheme_income_me3_attested: boolean;
+            /** @default unknown */
+            partner_status: components["schemas"]["PartnerStatus"];
+            /** Requested Policy Version */
+            requested_policy_version: string;
+        };
+        /**
+         * WffCalculationRequest
+         * @description Mirrors `WffScenario`'s own fields; see this module's docstring.
+         */
+        "WffCalculationRequest-Output": {
+            /** @default unknown */
+            best_start_no_shared_care: components["schemas"]["FactStatus"];
+            /** @default unknown */
+            best_start_protected_credit: components["schemas"]["FactStatus"];
+            /** Children */
+            children: components["schemas"]["ChildFactsRequest"][];
+            extra_instalment_status: components["schemas"]["FactStatus"];
+            family_scheme_income?: components["schemas"]["VerifiedIncomeRequest-Output"] | null;
+            /** @default unknown */
+            ftc_iwtc_protected_or_direct_abatement: components["schemas"]["FactStatus"];
+            household_eligibility: components["schemas"]["FactStatus"];
+            /** @default unknown */
+            in_work_eligibility: components["schemas"]["FactStatus"];
+            /** @default unknown */
+            mc6a_veterans_payment: components["schemas"]["FactStatus"];
+            /** @default unknown */
+            mc6b_disqualifying_payment: components["schemas"]["FactStatus"];
+            /** @default unknown */
+            minimum_family_full_time_earner_weeks: components["schemas"]["FactStatus"];
+            /**
+             * Modelled Date
+             * Format: date
+             */
+            modelled_date: string;
+            /** Net Family Scheme Income */
+            net_family_scheme_income?: string | null;
             /**
              * Net Family Scheme Income Me3 Attested
              * @default false
@@ -2147,7 +2367,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AsCalculationRequest"];
+                "application/json": components["schemas"]["AsCalculationRequest-Input"];
             };
         };
         responses: {
@@ -2589,7 +2809,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateScenario"];
+                "application/json": components["schemas"]["CreateScenario-Input"];
             };
         };
         responses: {
@@ -2667,6 +2887,73 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Workspace"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
+    scenario_definition_api_v1_scenarios__scenario_id__definition_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateScenario-Output"];
                 };
             };
             /** @description Not Found */
@@ -2851,6 +3138,211 @@ export interface operations {
             };
         };
     };
+    household_definition_api_v1_scenarios__scenario_id__runs__run_id__definition_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdCalculationRequest-Output"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
+    stored_workbook_api_v1_scenarios__scenario_id__runs__run_id__export_xlsx_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
+    stored_table_api_v1_scenarios__scenario_id__runs__run_id__export__table_id__csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+                run_id: string;
+                table_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorBody"];
+                };
+            };
+        };
+    };
     calculate_household_calculate_post: {
         parameters: {
             query?: never;
@@ -2860,7 +3352,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["HouseholdCalculationRequest"];
+                "application/json": components["schemas"]["HouseholdCalculationRequest-Input"];
             };
         };
         responses: {
@@ -3040,7 +3532,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["HouseholdCalculationRequest"];
+                "application/json": components["schemas"]["HouseholdCalculationRequest-Input"];
             };
         };
         responses: {
@@ -3166,7 +3658,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["WffCalculationRequest"];
+                "application/json": components["schemas"]["WffCalculationRequest-Input"];
             };
         };
         responses: {
