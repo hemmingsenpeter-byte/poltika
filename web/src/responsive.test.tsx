@@ -51,6 +51,13 @@ describe("narrow-width structure", () => {
     expect(classes(screen.getByRole("table").parentElement!)).toContain("overflow-x-auto");
   });
 
+  it("the data table's scroll region is keyboard-focusable and named (found by axe in a real browser)", () => {
+    render(<DataTable caption="Rows" columns={[{ key: "a", header: "A", render: (r: string) => r }]} rows={["x"]} rowKey={(r) => r} />);
+    const region = screen.getByRole("region", { name: "Rows (scrollable)" });
+    expect(region).toHaveAttribute("tabindex", "0");
+    expect(region).toContainElement(screen.getByRole("table"));
+  });
+
   it("workspace tabs scroll sideways, keep their labels on one line and are tall enough to touch", () => {
     render(
       <Tabs label="Sections" selected="a" onSelect={() => undefined} tabs={[{ id: "a", label: "Overview" }, { id: "b", label: "Distribution" }]}>

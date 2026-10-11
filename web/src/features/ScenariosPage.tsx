@@ -72,7 +72,7 @@ export function ScenariosPage() {
               <li key={s.scenario_id}>
                 <Link href={s.latest_run_id ? `/scenarios/${s.scenario_id}/runs/${s.latest_run_id}` : `/scenarios/${s.scenario_id}`} className="block px-4 py-3 no-underline hover:bg-surface-muted">
                   <span className="flex flex-wrap items-center gap-2">
-                    <span className="font-medium">{s.title}</span>
+                    <span className="min-w-0 font-medium break-words">{s.title}</span>
                     <Pill tone="neutral">{s.kind === "reform" ? "Policy change" : "Household"}</Pill>
                   </span>
                   {s.description ? <span className="mt-0.5 block text-sm text-muted">{s.description}</span> : null}
