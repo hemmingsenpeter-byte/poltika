@@ -11,7 +11,10 @@ import { ValidationPill } from "./ValidationPill";
 
 export function HorizonStrip({ block }: { block: BlockOf<"horizon"> }) {
   return (
-    <ol className="flex gap-2 overflow-x-auto pb-1" aria-label={block.title ?? "Years modelled"}>
+    // A scrollable region must be keyboard-focusable (axe: scrollable-region-focusable).
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+    <div tabIndex={0} role="region" aria-label={`${block.title ?? "Years modelled"} (scrollable)`} className="overflow-x-auto pb-1">
+    <ol className="flex gap-2">
       {block.years.map((y) => (
         <li
           key={y.label}
@@ -26,6 +29,7 @@ export function HorizonStrip({ block }: { block: BlockOf<"horizon"> }) {
         </li>
       ))}
     </ol>
+    </div>
   );
 }
 

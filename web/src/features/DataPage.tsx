@@ -26,7 +26,7 @@ export function DataPage() {
         <>
           <Section title="Datasets" id="datasets">
             {state.data.datasets.length === 0 ? (
-              <Empty title="No datasets are registered" />
+              <Empty title="No datasets are registered">The catalogue on this server is empty.</Empty>
             ) : (
               <ul className="grid gap-3 md:grid-cols-2">
                 {state.data.datasets.map((d) => (
@@ -60,7 +60,7 @@ export function DataPage() {
 
           <Section title="Synthetic population" id="populations">
             {state.data.populations.length === 0 ? (
-              <Empty title="No population specification is registered" />
+              <Empty title="No population specification is registered">The catalogue on this server lists none.</Empty>
             ) : (
               <ul className="space-y-3">
                 {state.data.populations.map((p) => (

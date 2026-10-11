@@ -15,7 +15,8 @@ export function DataTable<Row>({
   rowKey: (row: Row) => string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-md border border-border bg-surface">
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+    <div tabIndex={0} role="region" aria-label={`${caption} (scrollable)`} className="overflow-x-auto rounded-md border border-border bg-surface">
       <table className="w-full border-collapse text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead className="bg-surface-muted text-xs text-muted">

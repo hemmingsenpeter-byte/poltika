@@ -80,11 +80,15 @@ export default function MetricChart({ block }: { block: MetricBlock }) {
         {period && !block.unit.label.includes(period.replace("per ", "")) ? `, ${period}` : ""}
         {block.unit.per ? `, per ${block.unit.per}` : ""}. Source: {block.evidence_class}. {block.context}
       </figcaption>
+      {/* The bars need about 36rem to stay legible, so a narrow screen scrolls
+          this region sideways; the summary and table below carry the same values. */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+      <div tabIndex={0} role="region" aria-label={`${block.label} (scrollable chart)`} data-chart-scroller className="mt-2 max-w-3xl overflow-x-auto">
       <svg
         role="img"
         aria-label={summary}
         viewBox={`0 0 ${LABEL_W + BAR_W + VALUE_W} ${height}`}
-        className="mt-2 w-full max-w-3xl"
+        className="w-full min-w-[36rem]"
       >
         <Defs idp={idp} />
         <line x1={zeroX} x2={zeroX} y1={0} y2={height} stroke="var(--color-border-strong)" />
@@ -119,6 +123,7 @@ export default function MetricChart({ block }: { block: MetricBlock }) {
           );
         })}
       </svg>
+      </div>
       <p className="mt-1 text-sm">{summary}</p>
       <details className="mt-2 text-sm">
         <summary className="cursor-pointer text-accent">Show as a table</summary>
