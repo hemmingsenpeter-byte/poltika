@@ -1,5 +1,15 @@
 # Personal income tax: source scope for Pete's D1 decision
 
+**Follow-up, 8 October 2026:** the D11 salary/wage-only
+[specification draft](../../policy_specs/income_tax/specification.md) is now
+prepared for review. Its [DEC-001](../../policy_specs/income_tax/decisions/DEC-001-annual-authority.md)
+adds TAA s 92A: Commissioner basic-rate assessments may precede annual
+enactment, so the earlier BB 1 discussion below is an incomplete account
+of assessment authority. D11's Poltika gate remains `needs_review`.
+Precision and a candidate earlier-year IRD worksheet discrepancy are also
+parked for Pete; no approved rule, parameter or expected value follows.
+The original source-scope research below is retained as its dated record.
+
 **Programme:** Phase B Task 7; detailed lane `BUILD_PLAN_v0_3.md` local 0.1.
 **Author/check date:** GPT/Codex, 3 October 2026, Pacific/Auckland.
 **Original base:** prepared programme migration `422b055`.
