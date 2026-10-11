@@ -134,7 +134,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
-| Task 5/6 PR | programme | Task 5 unit binding and Task 6 household mappings (ADR-0017 1.1–1.3); Claude Code authored | `src/poltika/semantics`, `src/poltika/scenarios/household_mappings.py`, tests | Medium | open — author preflight and an independent Claude fresh-context review (P2s fixed and re-verified at `c807ea2`); GPT/Codex mapping review owed: [packet](task5_6_unit_binding_household_mapping.md) — confirm the unit bindings, the WFF and AS mappings, the refusals and Q19. No amount changes |
+| #207 | programme | Task 5 unit binding and Task 6 household mappings (ADR-0017 1.1–1.3); Claude Code authored | `src/poltika/semantics`, `src/poltika/scenarios/household_mappings.py`, tests | Medium | open — author preflight and an independent Claude fresh-context review (P2s fixed and re-verified at `c807ea2`); GPT/Codex mapping review owed: [packet](task5_6_unit_binding_household_mapping.md) — confirm the unit bindings, the WFF and AS mappings, the refusals and Q19. No amount changes |
 
 ## Plan and decision PRs (not counted against the cap)
 
