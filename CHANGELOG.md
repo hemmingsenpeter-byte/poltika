@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased (web Models/Data, accessibility, charts and deploy prep, 11 October 2026)
+
+- Task B0.1.5: dataset detail pages show coverage (half-open period wording),
+  units, geography and source; "used by" reads Not recorded because no model
+  declares its datasets; the Source Archive state comes from the API
+  (ADR-0022). Model detail gains a Status row. Both catalogues and both detail
+  pages are tested.
+- Task B0.1.6 (partial): full `jsx-a11y` lint, axe checks in Vitest on the
+  Models, Data and scenario pages (colour contrast is not checked in jsdom),
+  and an accessible SVG metric chart for calculated options (decision log
+  D31). New dev dependencies: `axe-core`, `eslint-plugin-jsx-a11y`.
+- Task B0.1.7 prep: `docs/web/FRONTEND.md`, the `POLTIKA_DATABASE_URL` step in
+  `docs/pilot/HOSTING.md`, and a PostgreSQL restart-persistence test. No
+  deployment. No calculated amount, protected value or result identity changes.
+
 ## Unreleased (web scenario experience, 10 October 2026)
 
 - Task B0.1.4: the public OpenAPI request-body schema names for the legacy
