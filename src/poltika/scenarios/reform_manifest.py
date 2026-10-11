@@ -101,7 +101,7 @@ def verify_manifest(
         for name in sorted(old.keys() | new.keys()):
             if old.get(name) != new.get(name):
                 changed.append(p + f"policy_artifact:{name}")
-        if not any(c.startswith(p) for c in changed) and stored["option_results_sha256"] != now["option_results_sha256"]:
+        unexplained = not any(c.startswith(p) for c in changed)
+        if unexplained and stored["option_results_sha256"] != now["option_results_sha256"]:
             changed.append(p + "results")
     return ReformVerification("drifted" if changed else "identical", tuple(changed))
-
