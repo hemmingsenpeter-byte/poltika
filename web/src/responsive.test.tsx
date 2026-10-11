@@ -2,17 +2,31 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { MetricCard } from "@/components/blocks/MetricCard";
+import { HorizonStrip } from "@/components/blocks/OtherBlocks";
 import { AppShell } from "@/components/layout/AppShell";
 import { DataTable } from "@/components/ui/DataTable";
 import { Tabs } from "@/components/ui/Tabs";
 import { buttonClasses } from "@/components/ui/Button";
 import { DEFAULT_CAPABILITIES } from "@/config/capabilities";
 import type { MetricBlock } from "@/domain";
+import { ScenariosPage } from "@/features/ScenariosPage";
 import { expectNoAxeViolations } from "@/test/axe";
 
 // jsdom has no layout, so these pin the classes that make the narrow-width
 // behaviour (about 360px) rather than measure it. docs/web/FRONTEND.md lists
 // what still needs a real browser.
+vi.mock("@/api/services/scenarioService", () => ({
+  listScenarios: () =>
+    Promise.resolve({
+      items: [
+        {
+          scenario_id: "a".repeat(64), kind: "reform", title: "A".repeat(120), description: "",
+          runs: 1, created_at: "2026-10-01T00:00:00Z", latest_run_id: null,
+        },
+      ],
+      total: 1,
+    }),
+}));
 vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
 vi.mock("@/components/layout/MetaProvider", () => ({
   MetaProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -85,5 +99,22 @@ describe("narrow-width structure", () => {
     expect(region).toHaveAttribute("tabindex", "0");
     expect(classes(region)).toContain("overflow-x-auto");
     expect(region.querySelector("svg")!.getAttribute("class")).toContain("min-w-[36rem]");
+  });
+
+  it("the horizon strip is a focusable, named scroll region", () => {
+    render(
+      <HorizonStrip
+        block={{ type: "horizon", id: "years", title: "Years", years: [{ label: "2026-27", modelled: true, note: "Modelled." }] }}
+      />,
+    );
+    const region = screen.getByRole("region", { name: "Years (scrollable)" });
+    expect(region).toHaveAttribute("tabindex", "0");
+    expect(classes(region)).toContain("overflow-x-auto");
+  });
+
+  it("a long scenario title wraps instead of widening the list", async () => {
+    render(<ScenariosPage />);
+    const title = await screen.findByText("A".repeat(120));
+    expect(classes(title)).toEqual(expect.arrayContaining(["min-w-0", "break-words"]));
   });
 });
