@@ -74,7 +74,16 @@ container platform runs the image unchanged.
    - `POLTIKA_ACCESS_PASSWORD`: a long random password (use a password
      manager). Mark it secret.
    - `POLTIKA_ACCESS_USER` (optional): the username, if not `pilot`.
-4. Health check path: `/healthz`.
+   - `POLTIKA_DATABASE_URL`: the connection URL of a Render PostgreSQL
+     database in the same workspace and region (use its internal URL; a
+     plain `postgresql://` URL works, see below). Mark it secret. Without
+     it the service still calculates, but stored scenarios and runs answer
+     503 and nothing survives a restart. The container applies the
+     migrations itself at start.
+   Pete sets these in the Render dashboard; the values are never committed,
+   pasted into chat or sent through a session.
+4. Health check path: `/healthz`. It only confirms the process is up, not
+   that the database is reachable.
 5. Create the service. The first build takes a few minutes. Open the
    `https://…onrender.com/analyst` address it gives, and sign in.
 

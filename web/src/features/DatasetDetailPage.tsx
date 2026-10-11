@@ -3,15 +3,25 @@
 import Link from "next/link";
 
 import { ApiError } from "@/api/errors";
-import { getDataset } from "@/api/services/dataService";
-import { ErrorState, Loading } from "@/components/states";
+import { getDataset, listDatasets } from "@/api/services/dataService";
+import { ErrorState, Loading, Unavailable } from "@/components/states";
 import { Section } from "@/components/ui/Card";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { DataTable } from "@/components/ui/DataTable";
 import { PageHeader } from "@/components/ui/PageHeader";
 import type { DatasetDetail } from "@/domain";
+import { periodWords } from "@/lib/labels";
 import { useAsync } from "@/lib/useAsync";
 import { useRouteIds } from "@/lib/useRouteIds";
+
+/** The same field the catalogue page reads: `preserved_sources` (ADR-0022). */
+function SourceArchive() {
+  const state = useAsync(listDatasets, "datasets");
+  if (state.status === "loading") return <Loading label="Loading Source Archive state" />;
+  if (state.status === "error") return <ErrorState error={state.error} onRetry={state.reload} />;
+  const { exposed, note } = state.data.preserved_sources;
+  return exposed ? <p className="text-sm">{note}</p> : <Unavailable title="Not yet exposed" reason={note} />;
+}
 
 function Detail({ detail }: { detail: DatasetDetail }) {
   const first = detail.snapshots[0];
@@ -32,6 +42,13 @@ function Detail({ detail }: { detail: DatasetDetail }) {
             { key: "version", header: "Version", numeric: true, render: (s) => s.raw_snapshot_version },
             { key: "vintage", header: "Vintage", render: (s) => s.vintage },
             { key: "retrieved", header: "Retrieved", render: (s) => <span className="num whitespace-nowrap">{s.retrieval_date}</span> },
+            {
+              key: "coverage",
+              header: "Coverage",
+              render: (s) => (
+                <span className="num">{periodWords(s.observation_reference_period)}</span>
+              ),
+            },
             { key: "method", header: "Method", render: (s) => s.retrieval_method },
             {
               key: "sha",
@@ -55,6 +72,28 @@ function Detail({ detail }: { detail: DatasetDetail }) {
               ),
             },
           ]}
+        />
+      </Section>
+
+      <Section title="Source and scope" id="source">
+        <DataTable
+          caption="Source, units and population by snapshot"
+          rows={detail.snapshots}
+          rowKey={(s) => `${s.raw_snapshot_version}`}
+          columns={[
+            { key: "version", header: "Version", numeric: true, render: (s) => s.raw_snapshot_version },
+            { key: "publisher", header: "Publisher", render: (s) => s.source_organisation },
+            { key: "source", header: "Source", render: (s) => <span className="break-all">{s.source_url_or_identifier}</span> },
+            { key: "units", header: "Units", render: (s) => s.units },
+            { key: "population", header: "Geography and population", render: (s) => s.geography_population },
+          ]}
+        />
+      </Section>
+
+      <Section title="Used by" id="used-by">
+        <Unavailable
+          title="Not recorded"
+          reason="No model or scenario declares which datasets it reads, so Poltika cannot list what uses this dataset."
         />
       </Section>
 
@@ -91,6 +130,10 @@ function Detail({ detail }: { detail: DatasetDetail }) {
 
       <Section title="Raw bytes" id="raw-bytes">
         <p className="text-sm">{detail.raw_bytes_note}</p>
+      </Section>
+
+      <Section title="Source Archive snapshots" id="source-archive">
+        <SourceArchive />
       </Section>
     </div>
   );

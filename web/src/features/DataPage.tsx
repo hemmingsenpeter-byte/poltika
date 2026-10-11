@@ -8,6 +8,7 @@ import { Card, Section } from "@/components/ui/Card";
 import { Definition } from "@/components/ui/DataTable";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Pill } from "@/components/ui/Pill";
+import { periodWords } from "@/lib/labels";
 import { useAsync } from "@/lib/useAsync";
 
 export function DataPage() {
@@ -40,9 +41,7 @@ export function DataPage() {
                             <span className="num">{d.latest_retrieval_date}</span>
                           </Definition>
                           <Definition term="Coverage">
-                            <span className="num">
-                              {d.observation_reference_period.from} to {d.observation_reference_period.to}
-                            </span>
+                            <span className="num">{periodWords(d.observation_reference_period)}</span>
                           </Definition>
                           <Definition term="Snapshots">
                             <span className="num">{d.snapshots}</span>

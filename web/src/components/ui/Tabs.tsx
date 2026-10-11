@@ -41,6 +41,8 @@ export function Tabs({
 
   return (
     <div>
+      {/* Focus is on the tab buttons (roving tabindex), not the tablist. */}
+      {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
       <div role="tablist" aria-label={label} onKeyDown={onKeyDown} className="flex overflow-x-auto border-b border-border">
         {tabs.map((t) => {
           const active = t.id === selected;
