@@ -24,6 +24,8 @@ concurrency:
 
 jobs:
   test:
+    # Fork pull requests never reach the self-hosted runner (audit A1).
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, poltika]
     env:
       # Fail, rather than skip to green, if the PostgreSQL binaries are missing.
@@ -86,6 +88,8 @@ jobs:
     # Task B0.1.3 (ADR-0023): the web app's own checks, on the self-hosted
     # runner (D21): install, lint, types, tests, the static export, and that
     # the generated API types still match the Pydantic models.
+    # Fork pull requests never reach the self-hosted runner (audit A1).
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, poltika]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -131,7 +135,8 @@ jobs:
     # Whether a pull request changes anything the pilot image is built from
     # (the Dockerfile's COPY lines, plus this workflow's smoke test). Keep
     # the list in step with the Dockerfile.
-    if: github.event_name == 'pull_request'
+    # Fork pull requests never reach the self-hosted runner (audit A1).
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, poltika]
     outputs:
       changed: ${{ steps.diff.outputs.changed }}
