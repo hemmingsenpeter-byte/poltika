@@ -4,6 +4,7 @@ real PostgreSQL server. Storage and comparison only: no statutory value."""
 from __future__ import annotations
 
 import os
+import shutil
 from dataclasses import replace
 from datetime import date
 from pathlib import Path
@@ -15,7 +16,9 @@ from fastapi.testclient import TestClient
 from poltika.api.household import running_code_identity
 from poltika.api.main import app
 from poltika.api.microsim import AS_POLICY_DIR, WFF_POLICY_DIR
-from poltika.scenarios import store as store_module
+from poltika.scenarios.microsim.reform import Reform
+from poltika.scenarios.microsim.runner import run_population
+from poltika.scenarios.reform_manifest import ReformVerification, verify_manifest
 from poltika.scenarios.reform_record import reform_run_id, results_sha256
 from poltika.scenarios.store import ScenarioStore
 from poltika.semantics.population import PopulationDataset
@@ -98,37 +101,112 @@ def test_verify_is_identical_for_unchanged_inputs(database_url: str) -> None:
     assert (result.status, result.changed) == ("identical", ())
 
 
-def test_verify_names_a_changed_policy_artifact(
-    database_url: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_verify_names_a_changed_policy_file(database_url: str, tmp_path: Path) -> None:
     created = _run(_create("Policy drift", "60005")["scenario_id"])
-    real = store_module.run_population
-    name = created["manifest"]["options"][0]["policy_artifacts"][0]["name"]
-
-    def drifted(*args: Any, **kwargs: Any) -> Any:
-        run = real(*args, **kwargs)
-        artifacts = tuple((n, "0" * 64 if n == name else s) for n, s in run.policy_artifacts)
-        return replace(run, policy_artifacts=artifacts)
-
-    monkeypatch.setattr(store_module, "run_population", drifted)
-    result = _verify(database_url, created["run_id"])
+    # A real change to a copy of the WFF policy directory: a trailing YAML comment.
+    wff = tmp_path / "wff"
+    shutil.copytree(WFF_POLICY_DIR, wff)
+    with (wff / "policy.yaml").open("a") as f:
+        f.write("\n# edited after the run\n")
+    result = _store(database_url).verify_reform_run(
+        created["run_id"], _population(), wff, AS_POLICY_DIR, code=running_code_identity()
+    )
     assert result.status == "drifted"
-    assert result.changed == (f"option[0].policy_artifact:{name}",)
+    assert result.changed
+    assert all(c.startswith("option[0].policy_artifact:") for c in result.changed)
 
 
-def test_verify_names_a_changed_population(
-    database_url: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_verify_names_exactly_a_changed_population_version(database_url: str) -> None:
     created = _run(_create("Population drift", "60006")["scenario_id"])
-    real = store_module.run_population
-
-    def drifted(*args: Any, **kwargs: Any) -> Any:
-        return replace(real(*args, **kwargs), population_sha256="f" * 64)
-
-    monkeypatch.setattr(store_module, "run_population", drifted)
-    result = _verify(database_url, created["run_id"])
+    store = _store(database_url)
+    changed = _population().model_copy(update={"version": _population().version + 1})
+    result = store.verify_reform_run(
+        created["run_id"], changed, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
+    )
     assert result.status == "drifted"
-    assert "option[0].population_sha256" in result.changed
+    # The content hash covers the version, so both change; nothing else does.
+    assert sorted(result.changed) == [
+        "option[0].population_sha256",
+        "option[0].population_version",
+    ]
+
+
+def test_verify_names_exactly_a_changed_population_id(database_url: str) -> None:
+    created = _run(_create("Population id drift", "60009")["scenario_id"])
+    changed = _population().model_copy(update={"population_id": "another_population"})
+    result = _store(database_url).verify_reform_run(
+        created["run_id"], changed, WFF_POLICY_DIR, AS_POLICY_DIR, code=running_code_identity()
+    )
+    assert result.status == "drifted"
+    assert sorted(result.changed) == [
+        "option[0].population_population_id",  # sic: the key is prefixed twice in verify_manifest
+        "option[0].population_sha256",
+    ]
+
+
+def test_verify_names_a_changed_code_identity(database_url: str) -> None:
+    created = _run(_create("Code drift", "60010")["scenario_id"])
+    code = replace(running_code_identity(), source_commit="a" * 40)
+    result = _store(database_url).verify_reform_run(
+        created["run_id"], _population(), WFF_POLICY_DIR, AS_POLICY_DIR, code=code
+    )
+    assert result.status == "drifted"
+    assert "option[0].code" in result.changed
+
+
+def _rerun(database_url: str, created: dict[str, Any]) -> tuple[dict[str, Any], list[Any]]:
+    """The stored manifest and a fresh run of the same options."""
+    store = _store(database_url)
+    row = store.get_reform_run(created["run_id"])
+    assert row is not None and row.manifest is not None
+    scenario = store.get_reform_scenario(row.scenario_id)
+    assert scenario is not None
+    runs = [
+        run_population(
+            _population(),
+            Reform.model_validate(option["reform"]),
+            WFF_POLICY_DIR,
+            AS_POLICY_DIR,
+            code=running_code_identity(),
+        )
+        for option in scenario.definition["options"]
+    ]
+    return row.manifest, runs
+
+
+def test_an_option_count_mismatch_is_drift_in_options(database_url: str) -> None:
+    created = _run(_create("Count", "60011")["scenario_id"])
+    manifest, runs = _rerun(database_url, created)
+    assert verify_manifest(manifest, runs).status == "identical"
+    extra = {**manifest, "options": [*manifest["options"], manifest["options"][0]]}
+    assert verify_manifest(extra, runs) == ReformVerification("drifted", ("options",))
+    assert verify_manifest({**manifest, "options": []}, runs) == ReformVerification(
+        "drifted", ("options",)
+    )
+
+
+def test_results_alone_changing_is_reported_as_results(database_url: str) -> None:
+    created = _run(_create("Results", "60012")["scenario_id"])
+    manifest, runs = _rerun(database_url, created)
+    stale = {
+        **manifest,
+        "options": [{**manifest["options"][0], "option_results_sha256": "0" * 64}],
+    }
+    assert verify_manifest(stale, runs) == ReformVerification("drifted", ("option[0].results",))
+
+
+def test_results_are_not_added_when_a_named_input_already_explains_the_drift(
+    database_url: str,
+) -> None:
+    created = _run(_create("No results double count", "60013")["scenario_id"])
+    manifest, runs = _rerun(database_url, created)
+    option = {
+        **manifest["options"][0],
+        "option_results_sha256": "0" * 64,
+        "reform_sha256": "1" * 64,
+    }
+    result = verify_manifest({**manifest, "options": [option]}, runs)
+    assert result.changed == ("option[0].reform_sha256",)
 
 
 def test_a_legacy_row_is_not_retained_and_never_backfilled(
