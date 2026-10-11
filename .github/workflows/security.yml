@@ -46,3 +46,21 @@ jobs:
         # resolved again. --strict fails if a package cannot be audited.
         run: |
           uvx --from pip-audit@2.9.0 python -m pip_audit -r requirements-audit.txt --no-deps --disable-pip --strict
+
+  npm-audit:
+    # Task B0.1.3 (ADR-0023): the web app's runtime dependencies, which
+    # pip-audit does not cover. Development tools are not shipped, so only
+    # the production tree is audited.
+    name: npm audit
+    runs-on: [self-hosted, poltika]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Node version
+        run: node --version
+
+      - name: Audit the production dependencies
+        working-directory: web
+        run: npm audit --omit=dev --audit-level=high
