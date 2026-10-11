@@ -30,7 +30,7 @@ function Header({ onMenu }: { onMenu: () => void }) {
       <Button variant="ghost" size="sm" className="size-11 md:hidden" onClick={onMenu} aria-label="Open navigation">
         <Menu aria-hidden="true" className="size-4" />
       </Button>
-      <Link href="/" className="font-semibold tracking-[0.18em] text-ink no-underline">
+      <Link href="/" className="inline-flex min-h-[28px] items-center font-semibold tracking-[0.18em] text-ink no-underline">
         POLTIKA
       </Link>
       <span className="rounded-sm border border-border-strong bg-surface-muted px-2 py-0.5 text-xs text-ink">

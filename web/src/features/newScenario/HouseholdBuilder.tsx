@@ -97,7 +97,7 @@ export function HouseholdBuilder({ navigate, initial }: { navigate: (href: strin
                       setSelectedId(e.id);
                       setError(null);
                     }}
-                    className="mt-1"
+                    className="size-[24px] shrink-0"
                   />
                   <span>{e.description || e.id}</span>
                 </label>

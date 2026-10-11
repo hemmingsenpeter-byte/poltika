@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { MetricCard } from "@/components/blocks/MetricCard";
-import { HorizonStrip } from "@/components/blocks/OtherBlocks";
+import { HorizonStrip, ModelReferences } from "@/components/blocks/OtherBlocks";
 import { AppShell } from "@/components/layout/AppShell";
 import { DataTable } from "@/components/ui/DataTable";
 import { Tabs } from "@/components/ui/Tabs";
@@ -116,5 +116,23 @@ describe("narrow-width structure", () => {
     render(<ScenariosPage />);
     const title = await screen.findByText("A".repeat(120));
     expect(classes(title)).toEqual(expect.arrayContaining(["min-w-0", "break-words"]));
+  });
+
+  // WCAG 2.2 SC 2.5.8: targets at least 24 CSS px (class-pinned; jsdom has no layout).
+  it("standalone targets are at least 24px: header link, provenance chips, model links", () => {
+    render(<AppShell>content</AppShell>);
+    expect(classes(screen.getByRole("link", { name: "POLTIKA" }))).toEqual(expect.arrayContaining(["inline-flex", "min-h-[28px]"]));
+    const block: MetricBlock = {
+      type: "metric", id: "m", title: null, label: "Change",
+      unit: { label: "NZD per tax year", currency: "NZD", period: "tax_year", basis: "nominal", per: "population" },
+      values: [{ option: "A", value: "10", outcome: "calculated" }],
+      precision: "population_estimate", evidence_class: "Model output", context: "",
+      provenance: [{ tab: "fiscal", block_id: "fiscal_table" }],
+    };
+    const { unmount } = render(<MetricCard block={block} />);
+    expect(classes(screen.getByRole("button", { name: /Fiscal/ }))).toContain("min-h-[24px]");
+    unmount();
+    render(<ModelReferences block={{ type: "model_ref", id: "r", title: null, models: [{ id: "wff_engine", name: "WFF engine", version: "0.1.0", label: "spec_validated" }] } as never} />);
+    expect(classes(screen.getByRole("link", { name: "WFF engine" }))).toContain("min-h-[24px]");
   });
 });
