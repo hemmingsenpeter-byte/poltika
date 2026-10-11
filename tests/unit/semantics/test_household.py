@@ -37,7 +37,7 @@ WEEK = AssessmentWeek(start=date(2026, 6, 1), end=date(2026, 6, 8))
 WEEK_PERIOD = DatePeriod(start=WEEK.start, end=WEEK.end)
 
 
-def _household(**overrides: object) -> Household:
+def _household(children_complete: Assertion = Assertion.UNKNOWN, **overrides: object) -> Household:
     fields: dict[str, object] = {
         "household_id": "h1",
         "persons": (
@@ -51,6 +51,7 @@ def _household(**overrides: object) -> Household:
                 partner_status=hh.FamilyPartnerStatus.PARTNERED,
                 partner_id="p",
                 dependent_child_ids=("c1",),
+                dependent_children_complete=children_complete,
             ),
         ),
     }
@@ -184,7 +185,7 @@ def test_semantics_enums_match_the_engines_by_value() -> None:
 
 
 def test_unknown_facts_stay_unknown_through_both_mappings() -> None:
-    household = _household()
+    household = _household(Assertion.VERIFIED)
     wff = to_wff(household, YEAR)
     assert isinstance(wff, WffScenario)
     assert wff.household_eligibility is FactStatus.UNKNOWN
@@ -197,13 +198,14 @@ def test_unknown_facts_stay_unknown_through_both_mappings() -> None:
     assert as_.household_eligibility is FactStatus.UNKNOWN
     assert as_.claimant_category is None
     assert as_.partner_status is None  # partnered, arrangement not recorded
-    assert as_.dependent_children_count is None  # child list not verified complete
+    assert as_.dependent_children_count is None  # the child's AS status is unknown
     assert as_.weekly_income is None
     assert as_.weekly_accommodation_costs is None
 
 
 def test_a_missing_partner_income_is_not_a_zero() -> None:
     household = _household(
+        Assertion.VERIFIED,
         income_spells=(
             _spell(
                 "a",
@@ -225,7 +227,7 @@ def test_a_missing_partner_income_is_not_a_zero() -> None:
 def test_earnings_by_type_do_not_become_family_scheme_income() -> None:
     # WFF-02: family scheme income needs the subpart MB adjustments, which are
     # not derived from spells. The mapping leaves it unverified.
-    household = _household(income_spells=(_spell("a", YEAR.start, YEAR.end, "50000"),))
+    household = _household(Assertion.VERIFIED, income_spells=(_spell("a", YEAR.start, YEAR.end, "50000"),))
     wff = to_wff(household, YEAR)
     assert isinstance(wff, WffScenario)
     assert wff.family_scheme_income is None
@@ -233,6 +235,7 @@ def test_earnings_by_type_do_not_become_family_scheme_income() -> None:
 
 def test_a_partner_figure_without_the_claimants_is_refused() -> None:
     household = _household(
+        Assertion.VERIFIED,
         income_spells=(
             _spell(
                 "p",
@@ -253,6 +256,7 @@ def test_a_partner_figure_without_the_claimants_is_refused() -> None:
 
 def test_a_negative_income_is_refused_not_clamped() -> None:
     household = _household(
+        Assertion.VERIFIED,
         income_spells=(
             _spell(
                 "a",
@@ -265,6 +269,24 @@ def test_a_negative_income_is_refused_not_clamped() -> None:
         )
     )
     assert isinstance(to_wff(household, YEAR), MappingRefusal)
+
+
+def test_wff_needs_a_child_list_asserted_complete() -> None:
+    # WFF reads its children list as complete, so an incomplete list is not a
+    # known count: not a calculation on the children listed, and not
+    # WFF_NO_DEPENDENT_CHILD for an empty list.
+    for household in (
+        _household(),
+        _household(
+            persons=(hh.Person(person_id="a", role=PersonRole.CLAIMANT),),
+            families=(hh.Family(claimant_id="a", partner_status=hh.FamilyPartnerStatus.SINGLE),),
+        ),
+    ):
+        refusal = to_wff(household, YEAR)
+        assert isinstance(refusal, MappingRefusal)
+        assert refusal.outcome == "needs_review"
+        assert refusal.code == "HOUSEHOLD_CHILD_LIST_INCOMPLETE"
+        assert refusal.missing_facts == ("dependent_children_complete",)
 
 
 # --- the AS mapping: benefit spells, week view, children ---------------------------
@@ -342,10 +364,13 @@ def test_dependent_child_count_applies_the_as_definition_per_child() -> None:
 
 
 def test_to_combined_carries_the_claimant_link_fact() -> None:
-    household = _household(asserted_facts={"combined.as_claimant_is_wff_claimant_or_partner": Assertion.VERIFIED})
+    household = _household(
+        Assertion.VERIFIED,
+        asserted_facts={"combined.as_claimant_is_wff_claimant_or_partner": Assertion.VERIFIED},
+    )
     combined = to_combined(household, YEAR, WEEK)
     assert not isinstance(combined, MappingRefusal)
     assert combined.as_claimant_is_wff_claimant_or_partner is FactStatus.VERIFIED
-    unlinked = to_combined(_household(), YEAR, WEEK)
+    unlinked = to_combined(_household(Assertion.VERIFIED), YEAR, WEEK)
     assert not isinstance(unlinked, MappingRefusal)
     assert unlinked.as_claimant_is_wff_claimant_or_partner is FactStatus.UNKNOWN

@@ -170,6 +170,17 @@ def to_wff(household: Household, tax_year: DatePeriod) -> WffScenario | MappingR
         for c in children
     ]
 
+    # WFF reads its `children` list as complete. A household whose child list
+    # may be incomplete cannot supply it: a missing child is never a known count.
+    if family.dependent_children_complete is not Assertion.VERIFIED:
+        return MappingRefusal(
+            "needs_review",
+            "HOUSEHOLD_CHILD_LIST_INCOMPLETE",
+            "the household's dependent-child list is not asserted complete, and WFF reads its children "
+            "list as the complete list",
+            ("dependent_children_complete",),
+        )
+
     people = tuple(p for p in (family.claimant_id, family.partner_id) if p is not None)
     mismatch = _q10_refusal(household, people, tax_year, _WFF_BASES)
     if mismatch is not None:
@@ -442,8 +453,9 @@ def _household_from(
         count = len(wff_children)
         if as_count is not None and as_count > count:
             raise AdapterRefused(f"dependent children: WFF lists {count}, AS asserts {as_count} (more than WFF lists)")
-        if as_count is not None:
-            complete = Assertion.VERIFIED
+        # The WFF request's `children` is the caller's complete list: the engine
+        # reads an empty list as no dependent child (WFF_NO_DEPENDENT_CHILD).
+        complete = Assertion.VERIFIED
     elif as_count is not None:
         count = as_count
         complete = Assertion.VERIFIED
