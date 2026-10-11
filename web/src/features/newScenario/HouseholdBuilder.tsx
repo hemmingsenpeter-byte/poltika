@@ -78,7 +78,7 @@ export function HouseholdBuilder({ navigate, initial }: { navigate: (href: strin
         }} />
         {parsingError ? <><p className="text-sm text-bad-fg" role="alert">{parsingError}</p><Button disabled>Save & calculate</Button></> : null}
       </div> : list.length === 0 ? (
-        <Empty title="No examples are available" />
+        <Empty title="No examples are available">There are no example households to start from on this server.</Empty>
       ) : (
         <fieldset>
           <legend className="mb-2 text-sm font-medium">Choose an example household</legend>

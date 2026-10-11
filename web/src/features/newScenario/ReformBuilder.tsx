@@ -21,7 +21,7 @@ const OPERATIONS: { value: Operation; label: string }[] = [
 
 type OptionForm = { label: string; instrumentId: string; parameterId: string; operation: Operation; value: string; reformId?: string; reformDescription?: string };
 
-const INPUT = "h-9 w-full rounded-md border border-border-strong bg-surface px-2 text-sm";
+const INPUT = "h-10 w-full md:h-9 rounded-md border border-border-strong bg-surface px-2 text-sm";
 
 function Field({ id, label, hint, error, children }: { id: string; label: string; hint?: string; error?: string | null; children: React.ReactNode }) {
   return (

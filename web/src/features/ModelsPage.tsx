@@ -28,7 +28,7 @@ export function ModelsPage() {
       />
       {state.status === "loading" ? <Loading label="Loading models" /> : null}
       {state.status === "error" ? <ErrorState error={state.error} onRetry={state.reload} /> : null}
-      {state.status === "ready" && state.data.models.length === 0 ? <Empty title="No models are registered" /> : null}
+      {state.status === "ready" && state.data.models.length === 0 ? <Empty title="No models are registered">The catalogue on this server is empty.</Empty> : null}
       {state.status === "ready"
         ? groupByKind(state.data.models).map(([kind, models]) => (
             <section key={kind} aria-labelledby={`kind-${kind}`} className="mb-8">

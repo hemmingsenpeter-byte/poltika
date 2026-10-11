@@ -136,9 +136,26 @@ capability and render nothing until `/api/v1/meta` switches that capability on.
 
 ## Accessibility checks and their limits
 
-`eslint-plugin-jsx-a11y`'s recommended rules run on `src/**`, and axe runs in
-Vitest on the Models, Data and scenario pages. jsdom has no layout, so axe's
-colour-contrast rule is off there and nothing automated checks contrast or how
-the chart's SVG patterns render; check both once in a real browser (Chrome,
-Safari, greyscale print) before B0.1.6 is accepted. The responsive and
-empty-state pass and axe on Home remain B0.1.6 work.
+`eslint-plugin-jsx-a11y`'s recommended rules run on `src/**`. axe runs in
+Vitest on Home (at rest and while searching), Models, Data, the dataset and
+model pages, the scenario list, New scenario (every template), the workspace
+(every tab) and the chart. `src/features/statesA11y.test.tsx` adds the
+loading, empty, error and unavailable states of the catalogue and scenario
+pages. The empty states all use the shared `Empty` component and say what is
+empty and, where there is a next step, what it is.
+
+`src/responsive.test.tsx` pins the narrow-width structure (about 360px) by
+class, because jsdom has no layout: the header wraps instead of overflowing;
+the sidebar is hidden and the drawer is capped at 85% of the viewport; main
+content can shrink; `DataTable`, the workspace tabs and the chart scroll
+sideways inside their own container (the chart has a 36rem minimum so labels
+stay legible); buttons, tabs, selects and inputs are about 40px tall on touch
+widths. Scrollable regions are keyboard-focusable and named.
+
+jsdom limits: axe's colour-contrast rule is off, and nothing automated
+measures real widths, overflow, wrapping, touch-target size or how the chart's
+SVG patterns render. Check these once in a real browser before B0.1.6 is
+accepted: at 360px wide (Chrome device mode and Safari) there is no horizontal
+page scroll outside tables, the chart region and the tab list; the drawer, the
+workspace tabs, the confirmation panel and long identifiers and titles stay
+usable; colour contrast; and the chart in greyscale print.

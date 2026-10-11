@@ -7,13 +7,15 @@ import { useMeta } from "@/components/layout/MetaProvider";
 import { isActive, visibleNavigation } from "@/config/navigation";
 import { cn } from "@/lib/cn";
 
-export function NavList({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
+/** `label` differs in the mobile drawer so the two navigation landmarks are
+ *  distinguishable (axe: landmark-unique) wherever both are in the DOM. */
+export function NavList({ collapsed = false, onNavigate, label = "Primary" }: { collapsed?: boolean; onNavigate?: () => void; label?: string }) {
   const pathname = usePathname();
   const { capabilities } = useMeta();
   const items = visibleNavigation(capabilities);
 
   return (
-    <nav aria-label="Primary">
+    <nav aria-label={label}>
       <ul className="flex flex-col gap-0.5">
         {items.map((item) => {
           const active = isActive(item, pathname);
@@ -26,7 +28,7 @@ export function NavList({ collapsed = false, onNavigate }: { collapsed?: boolean
                 aria-current={active ? "page" : undefined}
                 title={collapsed ? item.label : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm no-underline",
+                  "flex items-center gap-2.5 rounded-md px-2.5 py-2.5 text-sm md:py-2 no-underline",
                   active ? "bg-accent-soft font-medium text-accent" : "text-ink hover:bg-surface-muted",
                   collapsed && "justify-center",
                 )}

@@ -60,7 +60,7 @@ export function Tabs({
               tabIndex={active ? 0 : -1}
               onClick={() => onSelect(t.id)}
               className={cn(
-                "shrink-0 border-b-2 px-4 py-2 text-sm whitespace-nowrap",
+                "min-h-11 shrink-0 border-b-2 px-4 py-2 text-sm whitespace-nowrap md:min-h-0",
                 active ? "border-accent font-medium text-ink" : "border-transparent text-muted hover:text-ink",
               )}
             >

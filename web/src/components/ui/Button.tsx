@@ -12,7 +12,8 @@ const button = cva(
         secondary: "border-border-strong bg-surface text-ink hover:bg-surface-muted",
         ghost: "border-transparent bg-transparent text-ink hover:bg-surface-muted",
       },
-      size: { sm: "h-8 px-2.5", md: "h-9 px-3.5" },
+      // Taller on touch widths (about 40px) and compact from md up.
+      size: { sm: "h-9 px-2.5 md:h-8", md: "h-10 px-3.5 md:h-9" },
     },
     defaultVariants: { variant: "secondary", size: "md" },
   },
