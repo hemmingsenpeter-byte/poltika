@@ -2,8 +2,10 @@
 
 A hosted deployment restarts (a deploy, a platform restart). The scenario store
 is PostgreSQL only (`scenarios/store.py`), so a run's deep link must resolve
-after the app is torn down and started again against the same database. The
-lifespan cycle below stands in for that restart; the database is the throwaway
+after the app is torn down and started again against the same database. Two
+app lifespans stand in for that restart, with the cached store (engine and
+connection pool) dropped between them so nothing but the database carries over.
+It is one Python process, not an operating-system restart. The database is the throwaway
 PostgreSQL server from `tests/conftest.py`, so the test skips when no server
 binaries are installed and fails under `POLTIKA_REQUIRE_POSTGRES=1`.
 """
@@ -16,6 +18,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from poltika.api.main import app
+from poltika.api.v1_scenarios import _store_for
 from tests.unit.api.test_workbench_api import _reform, configured  # noqa: F401 (fixture)
 
 
@@ -33,7 +36,8 @@ def test_a_stored_run_and_its_deep_link_survive_an_app_restart(stored: None) -> 
     # database is shared across the session.
     body = {"title": "Restart check", "options": [{"label": "Option A", "reform": _reform("52500")}]}
 
-    with TestClient(app) as before:  # first process
+    _store_for.cache_clear()
+    with TestClient(app) as before:  # first app instance
         created = before.post("/api/v1/scenarios", json=body)
         assert created.status_code == 201, created.text
         scenario_id = created.json()["scenario_id"]
@@ -44,7 +48,8 @@ def test_a_stored_run_and_its_deep_link_survive_an_app_restart(stored: None) -> 
             f"/api/v1/scenarios/{scenario_id}/runs/{run_id}"
         ).json()
 
-    with TestClient(app) as after:  # second process, same database
+    _store_for.cache_clear()  # a new store and engine, as after a restart
+    with TestClient(app) as after:  # second app instance, same database
         listed = after.get("/api/v1/scenarios").json()
         assert scenario_id in {item["scenario_id"] for item in listed["items"]}
         deep_link = after.get(f"/api/v1/scenarios/{scenario_id}/runs/{run_id}")
