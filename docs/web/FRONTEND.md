@@ -2,8 +2,8 @@
 
 Architecture and operating guide for the web app (ADR-0023, Task B0.1). The
 commands and file-level conventions live in [web/README.md](../../web/README.md);
-this page is the map above them. It describes what is on `main` today. Pages
-that arrive with B0.1.4 or B0.1.5 are named as such and not described.
+this page is the map above them. It describes what is on `main` once B0.1.5
+and B0.1.6's first slice merge; B0.1.4 (#189) is already there.
 
 ## Architecture
 
@@ -40,9 +40,16 @@ Layout of `web/src`:
 The first screen carries the answer and its units. Assumptions, sources and
 versions are one step further, technical and audit detail deepest. Nothing that
 is missing is hidden: an unavailable figure states that it is unavailable and
-why. The seven-tab scenario workspace that applies this to a run lands with
-B0.1.4; until then `features/ScenarioWorkspacePage.tsx` shows only the scenario
-and run ids a URL names, so deep links can be checked.
+why. The scenario workspace applies this to a run:
+`features/workspace/WorkspaceView.tsx` renders the seven deep-linkable tabs
+(overview, fiscal, distribution, evidence, assumptions, technical, audit) that
+the run workspace response returns, and each tab's blocks go through the block
+registry in `components/blocks/BlockRenderer.tsx`. An unknown block type renders
+as an explicit unsupported block. A metric block with two or more calculated
+options also shows `components/charts/MetricChart.tsx`, loaded lazily: an SVG
+bar per calculated option, labelled with the API value, with unit, period and
+source caption, a text summary, a table alternative and fill patterns, so
+meaning never rests on colour (decision log D31).
 
 ## Local development
 
@@ -114,16 +121,24 @@ capability and render nothing until `/api/v1/meta` switches that capability on.
   `lib/useRouteIds.ts` and `_UI_ROUTES` in `src/poltika/api/web.py`, with a test
   in `tests/unit/api/test_web_static.py`. Step-by-step: web/README.md, "Adding
   things".
-- **A workspace tab inside a scenario run** (the seven-tab view): lands with
-  B0.1.4. The backend already returns the tabs in the run workspace response;
-  how the page renders them is not described here until that code is on `main`.
+- **A workspace tab or block inside a scenario run.** Tabs come from the run
+  workspace response; the tab id must be added to `TAB_IDS` in
+  `features/workspace/WorkspaceView.tsx`. A new block type needs its backend
+  block model, the regenerated schema, a component registered in `REGISTRY` in
+  `components/blocks/BlockRenderer.tsx`, a Vitest test and an axe check
+  (`expectNoAxeViolations` from `src/test/axe.ts`). Blocks only format API
+  values; they never calculate one.
 - **A model type or dataset type.** Add the registry entry on the backend
   (`model_registry/registry.yaml`, a dataset manifest under
   `data/metadata/datasets`); the generic catalogue pages list it. A new field
   needs the Pydantic response model, regenerated schema, zod schema and the
   generic page; never a model-specific component.
 
-## Not on `main` yet
+## Accessibility checks and their limits
 
-Charts and accessibility work (B0.1.5/B0.1.6), the scenario workspace page
-(B0.1.4) and any screen using them. Update this file when they land.
+`eslint-plugin-jsx-a11y`'s recommended rules run on `src/**`, and axe runs in
+Vitest on the Models, Data and scenario pages. jsdom has no layout, so axe's
+colour-contrast rule is off there and nothing automated checks contrast or how
+the chart's SVG patterns render; check both once in a real browser (Chrome,
+Safari, greyscale print) before B0.1.6 is accepted. The responsive and
+empty-state pass and axe on Home remain B0.1.6 work.
