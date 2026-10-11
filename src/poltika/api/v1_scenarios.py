@@ -158,9 +158,19 @@ def _storage() -> Iterator[None]:
                 "message": "Scenario storage cannot be reached or is not migrated.",
             },
         ) from exc
+
+
+@contextmanager
+def _retained_data() -> Iterator[None]:
+    """Retained data that no longer satisfies a current contract, as a coded error.
+
+    Wrap only the code that re-validates stored data. A pydantic error anywhere
+    else is a defect and must stay visible rather than read as a storage fault.
+    Request validation is RequestValidationError, a different class.
+    """
+    try:
+        yield
     except ValidationError:
-        # Retained data that no longer satisfies a current contract. Request
-        # validation is RequestValidationError, a different class.
         _fail(503, "scenario_storage_unavailable", "Stored scenario data no longer validates.")
 
 
@@ -261,11 +271,12 @@ def scenario_definition(scenario_id: ScenarioId) -> CreateScenario:
         scenario = _store().get_reform_scenario(scenario_id)
         if scenario is None:
             _fail(404, "scenario_not_found", "No reform scenario has this id.")
-        return CreateScenario(
-            title=scenario.title,
-            description=scenario.description,
-            options=scenario.definition["options"],
-        )
+        with _retained_data():
+            return CreateScenario(
+                title=scenario.title,
+                description=scenario.description,
+                options=scenario.definition["options"],
+            )
 
 
 @router.get(
@@ -285,23 +296,24 @@ def household_definition(
         if stored.scenario_id != scenario_id:
             _fail(404, "run_not_found", "No run with this id belongs to the scenario.")
         record = stored.record
-        return HouseholdCalculationRequest.model_validate(
-            {
-                "wff": {
-                    **asdict(record.household.wff),
-                    "modelled_date": record.wff_lookup_date,
-                    "requested_policy_version": record.requested_wff_policy_version,
-                },
-                "accommodation_supplement": {
-                    **asdict(record.household.accommodation_supplement),
-                    "modelled_date": record.as_lookup_date,
-                    "assessment_week_start": record.assessment_week.start,
-                    "assessment_week_end": record.assessment_week.end,
-                    "requested_policy_version": record.requested_as_policy_version,
-                },
-                "as_claimant_is_wff_claimant_or_partner": record.household.as_claimant_is_wff_claimant_or_partner,
-            }
-        )
+        with _retained_data():
+            return HouseholdCalculationRequest.model_validate(
+                {
+                    "wff": {
+                        **asdict(record.household.wff),
+                        "modelled_date": record.wff_lookup_date,
+                        "requested_policy_version": record.requested_wff_policy_version,
+                    },
+                    "accommodation_supplement": {
+                        **asdict(record.household.accommodation_supplement),
+                        "modelled_date": record.as_lookup_date,
+                        "assessment_week_start": record.assessment_week.start,
+                        "assessment_week_end": record.assessment_week.end,
+                        "requested_policy_version": record.requested_as_policy_version,
+                    },
+                    "as_claimant_is_wff_claimant_or_partner": record.household.as_claimant_is_wff_claimant_or_partner,
+                }
+            )
 
 
 def _retained_reform_run(scenario_id: str, run_id: str) -> ReformRun:
@@ -456,13 +468,13 @@ def _plain(value: Any) -> Any:
 
 @router.get("/{scenario_id}", response_model=Workspace, responses=_ERRORS)
 def workspace(scenario_id: ScenarioId) -> Workspace:
-    with _storage():
+    with _storage(), _retained_data():
         return _workspace(scenario_id, None)
 
 
 @router.get("/{scenario_id}/runs/{run_id}", response_model=Workspace, responses=_ERRORS)
 def run_workspace(scenario_id: ScenarioId, run_id: ScenarioId) -> Workspace:
-    with _storage():
+    with _storage(), _retained_data():
         return _workspace(scenario_id, run_id)
 
 
