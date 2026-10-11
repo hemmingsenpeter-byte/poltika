@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased (web accessibility and responsive polish, 11 October 2026)
+
+- Task B0.1.6: axe checks over Home and the empty, loading, error and
+  unavailable states; the drawer's navigation landmark is named "Primary menu";
+  larger touch targets below `md`, a wrapping header, a capped drawer and a
+  scrollable chart region named after its metric (decision log D34); one-line
+  explanations on empty states. No API, Python or calculated-amount change.
+
 ## Unreleased (CI fork guard and runner isolation runbook, 11 October 2026)
 
 - Audit #191 A1: self-hosted CI jobs skip pull requests from forks, and a new
