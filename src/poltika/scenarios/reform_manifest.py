@@ -91,9 +91,13 @@ def verify_manifest(
         if stored["reform_sha256"] != now["reform_sha256"]:
             changed.append(p + "reform_sha256")
         if stored["population"] != now["population"]:
-            for key in ("population_id", "version", "sha256"):
+            for key, label in (
+                ("population_id", "population_id"),
+                ("version", "population_version"),
+                ("sha256", "population_sha256"),
+            ):
                 if stored["population"].get(key) != now["population"][key]:
-                    changed.append(p + f"population_{key}")
+                    changed.append(p + label)
         if canonical_json(stored["code"]) != canonical_json(now["code"]):
             changed.append(p + "code")
         old = {a["name"]: a["sha256"] for a in stored["policy_artifacts"]}

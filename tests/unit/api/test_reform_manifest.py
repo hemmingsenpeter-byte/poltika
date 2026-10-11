@@ -139,7 +139,7 @@ def test_verify_names_exactly_a_changed_population_id(database_url: str) -> None
     )
     assert result.status == "drifted"
     assert sorted(result.changed) == [
-        "option[0].population_population_id",  # sic: the key is prefixed twice in verify_manifest
+        "option[0].population_id",
         "option[0].population_sha256",
     ]
 
