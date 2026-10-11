@@ -1,0 +1,43 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { useMeta } from "@/components/layout/MetaProvider";
+import { isActive, visibleNavigation } from "@/config/navigation";
+import { cn } from "@/lib/cn";
+
+export function NavList({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
+  const pathname = usePathname();
+  const { capabilities } = useMeta();
+  const items = visibleNavigation(capabilities);
+
+  return (
+    <nav aria-label="Primary">
+      <ul className="flex flex-col gap-0.5">
+        {items.map((item) => {
+          const active = isActive(item, pathname);
+          const Icon = item.icon;
+          return (
+            <li key={item.id}>
+              <Link
+                href={item.href}
+                onClick={onNavigate}
+                aria-current={active ? "page" : undefined}
+                title={collapsed ? item.label : undefined}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm no-underline",
+                  active ? "bg-accent-soft font-medium text-accent" : "text-ink hover:bg-surface-muted",
+                  collapsed && "justify-center",
+                )}
+              >
+                <Icon aria-hidden="true" className="size-4 shrink-0" />
+                <span className={collapsed ? "sr-only" : undefined}>{item.label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}

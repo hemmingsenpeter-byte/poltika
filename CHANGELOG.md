@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased (web scenario experience, 10 October 2026)
+
+- Task B0.1.4: the public OpenAPI request-body schema names for the legacy
+  `/scenarios`, `/wff/calculate` and `/household/calculate` endpoints change to
+  Pydantic's `*-Input` variants (`Reform-Input`, `Override-Input`,
+  `OptionRequest-Input`, `CreateScenario-Input`, `WffCalculationRequest-Input`,
+  `AsCalculationRequest-Input`, `HouseholdCalculationRequest-Input` and
+  `VerifiedIncomeRequest-Input`), because `Reform` is now also returned. Request
+  shapes are unchanged: each `-Input` schema equals the previous one once the
+  names are normalised. No calculated amount changes.
+
+## Unreleased (Dependabot paused, 10 October 2026)
+
+- `.github/dependabot.yml`: `open-pull-requests-limit: 0` for all three
+  ecosystems, at Pete's instruction (decision log D27). Version-update PRs stop
+  until the limits are restored. Tooling only; no calculated amount changes.
+
 ## Unreleased (campaign-policy and NZ Budget analysis roadmap, 9 October 2026)
 
 - Documentation-only product-scope refinement under the sole ADR-0021 master
@@ -12,6 +29,21 @@
 - Updated ROADMAP, PROGRAMME_STATUS, frontend supporting plan, architecture,
   repo map, README and decision record. No engine, source value, database
   migration, API or runtime capability changed; no release/pilot gate is met.
+
+## Unreleased (web shell, 7 October 2026)
+
+- Task B0.1.3 (ADR-0023): `web/`, the first web frontend. Next.js (App Router,
+  TypeScript strict, Tailwind) built as a static export and served by FastAPI
+  from the same image (`api/web.py`, `POLTIKA_WEB_DIR`): Home with a search over
+  the supported analyses, Scenarios, Models and Data pages, declarative
+  navigation behind capabilities, central formatters and shared loading, error,
+  empty and unavailable states. Types are generated from the API's OpenAPI
+  document (`scripts/development/dump_openapi.py`); CI fails on drift. The
+  Dockerfile gains a Node build stage, CI a `web` job, `security.yml` an
+  `npm audit` and Dependabot the npm ecosystem. A `GET` is answered with a page
+  only when its `Accept` header prefers `text/html` on a declared UI route; API
+  clients and every existing route are unchanged. No calculated amount, protected
+  value or result identity changes.
 
 ## Unreleased (passive source-preservation archive, 6 October 2026)
 

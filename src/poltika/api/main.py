@@ -46,6 +46,7 @@ from poltika.api.microsim_page import router as microsim_page_router
 from poltika.api.scenarios import router as scenarios_router
 from poltika.api.v1 import router as v1_router
 from poltika.api.v1_scenarios import router as v1_scenarios_router
+from poltika.api.web import WebAppMiddleware
 from poltika.api.wff import WFF_POLICY_DIR
 from poltika.api.wff import router as wff_router
 from poltika.api.workbench import router as workbench_router
@@ -113,7 +114,9 @@ app.include_router(microsim_page_router)
 app.include_router(workbench_router)
 app.include_router(v1_router)
 app.include_router(v1_scenarios_router)
-# The last added runs first: headers go on every response, 401 and 413 too.
+# The last added runs first: headers go on every response, 401 and 413 too, and
+# the web app (B0.1.3) is added first so it runs inside the password check.
+app.add_middleware(WebAppMiddleware)
 app.add_middleware(BasicAuthMiddleware)
 app.add_middleware(BodyLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
