@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { ApiError } from "@/api/errors";
 import type { ModelCatalogue } from "@/domain";
+import { expectNoAxeViolations } from "@/test/axe";
 
 import { ModelsPage } from "./ModelsPage";
 
@@ -72,5 +73,12 @@ describe("ModelsPage", () => {
     service.listModels = () => Promise.resolve({ validation_levels: [], models: [] });
     render(<ModelsPage />);
     expect(await screen.findByText("No models are registered")).toBeInTheDocument();
+  });
+
+  it("has no axe violations", async () => {
+    service.listModels = () => Promise.resolve(CATALOGUE);
+    const { container } = render(<ModelsPage />);
+    await screen.findByText("Working for Families engine");
+    await expectNoAxeViolations(container);
   });
 });

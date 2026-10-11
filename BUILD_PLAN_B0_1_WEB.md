@@ -86,6 +86,15 @@ Evidence, Assurance and Admin are declared behind capabilities that are off.
 The scenario workspace tabs are Overview, Fiscal, Distribution, Evidence,
 Assumptions, Technical and Audit.
 
+**Future campaign-policy and Budget uses (not B0.1 scope):** the approved
+[use-case overlays](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md) C14a/D16a/F24a/I29a and public O 51
+must consume this same scenario/workspace UI, API calculations, evidence,
+assumptions, provenance and exports. A later bounded PR may add feature-gated
+navigation or claim/Budget-specific views only after their backend support
+and source review. This plan neither adds an enabled feature nor asks B0.1
+to ingest political statements or simulate a Budget. No second frontend,
+early natural-language calculation or change to B0.1's acceptance gate.
+
 ## Subtasks
 
 - **B0.1.0 — Claude Code. Plan and governance.** This file, ADR-0023, the

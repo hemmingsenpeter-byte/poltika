@@ -33,6 +33,19 @@ Assurance validates sources, models, runs and outputs throughout.
 
 The active execution order is [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md)
 (ADR-0021). Complete analytical vertical slices earn shared infrastructure.
+
+**Source-led campaign and Budget analysis** is an overlay on that same path,
+not a new engine or separate app. Preserve the attributed proposal or
+Budget-document snapshot and its publication/legal status; independently
+verify candidate parameters and map supported measures into the existing
+counterfactual scenario contract. Deterministic simulations and economist
+reports operate only on reviewed model scope. A recurring NZ Budget release
+adds a documented initiative/coverage register and comparable official
+estimate checks; historical replay retains what was known as-of each date.
+The public policy/Budget explorer is later, behind Phase O's trust and access
+gate. See [the use-case specification](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md) (C14a, D16a,
+F24a, I29a and O 51). No source-archive-to-policy promotion bypass, party
+ranking, or LLM numerical authority is introduced.
 Current source catalogues, policy specifications, calculation traces and
 benchmarks support the household work without a general evidence graph.
 Discovery, Hypothesis and AI are later capabilities above the modelling

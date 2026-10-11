@@ -18,6 +18,11 @@ It is a deterministic simulator: every rate, threshold and rule comes from a cit
 8. `doctrine/` and accepted `adr/` records — governing constraints and decisions.
 
 [ROADMAP.md](ROADMAP.md) summarises direction; it sets no separate backlog.
+The [campaign-policy and NZ Budget use-case plan](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md) maps
+bounded evidence-reviewed proposal intake, optional example-household
+pilot, recurring Budget analysis and historical replay to existing programme
+gates; **none is implemented merely by this plan**. A public explorer remains
+a later, separately gated Phase O capability.
 [BUILD_PLAN.md](BUILD_PLAN.md) is the frozen v0.1 record, retained for substantive
 doctrine and existing anchors. [docs/archive/](docs/archive/README.md) contains
 historical planning and cannot determine current work.

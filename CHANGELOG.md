@@ -10,6 +10,36 @@
   (Q20). Verification of A1–A7: `reviews/2026-10-11-audit-191-verification.md`.
   No calculated amount changes.
 
+## Unreleased (household semantics and shared household model, 11 October 2026)
+
+- Task 5: `semantics/unit_binding.py` binds every unit and period that a
+  `policy.yaml` declares to the semantics registries, enforced by a test over
+  every policy. `UnboundPolicyUnitError` names an unregistered unit or a
+  cross-period use.
+- Task 6 (ADR-0017 1.1–1.3): `semantics/household.py` and
+  `scenarios/household_mappings.py`, a household with facts held once and dated
+  spells, mapped to the existing WFF and AS scenarios. A spell is never scaled
+  across periods. A round trip over the golden households and spec cases gives
+  identical results and result ids.
+- Task 12: a WFF/AS conformance matrix and 27 non-numeric API conformance tests.
+- Review records for #193 (independent source review) and #195. No calculated
+  amount, protected value or result identity changes.
+
+## Unreleased (web Models/Data, accessibility, charts and deploy prep, 11 October 2026)
+
+- Task B0.1.5: dataset detail pages show coverage (half-open period wording),
+  units, geography and source; "used by" reads Not recorded because no model
+  declares its datasets; the Source Archive state comes from the API
+  (ADR-0022). Model detail gains a Status row. Both catalogues and both detail
+  pages are tested.
+- Task B0.1.6 (partial): full `jsx-a11y` lint, axe checks in Vitest on the
+  Models, Data and scenario pages (colour contrast is not checked in jsdom),
+  and an accessible SVG metric chart for calculated options (decision log
+  D31). New dev dependencies: `axe-core`, `eslint-plugin-jsx-a11y`.
+- Task B0.1.7 prep: `docs/web/FRONTEND.md`, the `POLTIKA_DATABASE_URL` step in
+  `docs/pilot/HOSTING.md`, and a PostgreSQL restart-persistence test. No
+  deployment. No calculated amount, protected value or result identity changes.
+
 ## Unreleased (web scenario experience, 10 October 2026)
 
 - Task B0.1.4: the public OpenAPI request-body schema names for the legacy
@@ -26,6 +56,19 @@
 - `.github/dependabot.yml`: `open-pull-requests-limit: 0` for all three
   ecosystems, at Pete's instruction (decision log D27). Version-update PRs stop
   until the limits are restored. Tooling only; no calculated amount changes.
+
+## Unreleased (campaign-policy and NZ Budget analysis roadmap, 9 October 2026)
+
+- Documentation-only product-scope refinement under the sole ADR-0021 master
+  programme: C14a verified claim-to-scenario intake, optional D16a
+  campaign-policy household pilot, F24a repeatable NZ Budget analysis using
+  validated representative fiscal/distributional reporting, and I29a
+  historical Budget as-of replay. Public/research presentation stays at
+  O 51; no party/plan ranking, automatic statutory promotion or LLM numerical
+  authority. See [use-case specification](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
+- Updated ROADMAP, PROGRAMME_STATUS, frontend supporting plan, architecture,
+  repo map, README and decision record. No engine, source value, database
+  migration, API or runtime capability changed; no release/pilot gate is met.
 
 ## Unreleased (web shell, 7 October 2026)
 

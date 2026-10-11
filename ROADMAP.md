@@ -2,7 +2,7 @@
 
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
-**Direction approved:** 3 October 2026, [ADR-0021](adr/0021-economist-first-pilot-programme.md).
+**Direction approved:** 3 October 2026, [ADR-0021](adr/0021-economist-first-pilot-programme.md). **Use-case overlays:** 9 October 2026 (campaign policy and NZ Budget analysis; no changed capability gate).
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md) is the single active
 master build order. This roadmap explains the direction; detailed tasks,
 dependencies and gates belong in that programme. Live evidence, owners and
@@ -45,6 +45,14 @@ supported household-reform question, inspect evidence and reproduce/export
 results. It tests usefulness, speed, comprehension, auditability and workflow
 friction. National population estimates are not required for this pilot.
 
+An early **policy-claim intake** use case (C14a) maps source-preserved,
+independently checked public policy proposals into *supported* household
+scenarios through the same Analyst Workbench. An optional campaign-policy
+pilot (D16a) can demonstrate example-household consequences without treating
+party announcements as enacted rules or claiming national costs, full
+manifesto coverage or comparative party scores. These overlays do not delay
+Pilot 1 or create a separate product.
+
 Next, harden the existing PopulationDataset, batch runner, weighting and
 calibration against representative inputs and authoritative aggregates.
 Existing synthetic development results remain labelled synthetic and are
@@ -60,6 +68,14 @@ those population estimates, understands their limitations and finds the
 workflow useful alongside existing Excel/R/Python practice. Record workflow,
 reproduction and feedback evidence; expansion follows real analytical demand.
 
+After validated national distributional and direct fiscal reporting (E/F),
+the **Budget analysis runner** (F24a) should accept each newly published NZ
+Budget as a versioned set of official sources and initiatives, reuse
+validated models to analyse supported measures, compare methodologically
+compatible estimates and publish explicit coverage and gaps. It is a
+repeatable analyst workflow, not a promise to simulate an entire Budget on
+release day or a prerequisite for Pilot 2.
+
 ## Medium term
 
 `Demand-driven statutory coverage → historical validation → causal/behavioural
@@ -68,6 +84,10 @@ models → formal uncertainty → dynamic state and national baseline → domain
 Add statutory domains according to pilot/use-case pull and their maintenance
 cost. Build retained historical policy/data states, as-of execution, replay
 and a prediction/model-error ledger before sophisticated forecasting claims.
+Historical Budget as-of replay (I29a) uses these capabilities to keep the
+information available at announcement separate from later outcomes.
+Budget claims about multi-year GDP, employment, inflation or debt wait
+for separately validated behavioural, fiscal and macroeconomic models.
 Add empirically sourced behavioural mechanisms individually, keeping
 mechanical and behaviour-adjusted results separate and propagating uncertainty.
 
@@ -94,7 +114,9 @@ is an operational claim only after the programme's M validation gate.
 Decision intelligence calculates cost-of-delay, value-of-information,
 feasible policy search and Pareto trade-offs for objectives/constraints
 people specify. Public/research interfaces need sufficient trust, permission
-and governance. AI comes above verified results and validated models:
+and governance. The public campaign-policy and Budget explorer is Phase O
+(Task 51), while its bounded, non-public analytical workflows arrive earlier
+in C/D/F/I. No political party/manifesto ranking or policy endorsement. AI comes above verified results and validated models:
 translation, explanation, orchestration, hypothesis generation and a
 human-gated research loop. It never supplies statutory/numerical ground truth.
 
