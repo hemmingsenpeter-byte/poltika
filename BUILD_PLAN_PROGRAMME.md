@@ -111,6 +111,25 @@ infrastructure O depends on trust and permission. Both retain explicit
 phases without making speculative coverage or public deployment a
 prerequisite for the first useful analyst workflow.
 
+### Recurring policy-analysis use cases (overlays, not new critical-path gates)
+
+| Overlay | Earliest delivery | Dependence and truthful output |
+| --- | --- | --- |
+| C14a — Proposed-policy claim intake | C 14–15 | Source-preserved, manually verified proposal-to-scenario mapping for supported household instruments; not a full manifesto model |
+| D16a — Campaign-policy pilot | D 16, optional | One or two sourced supported proposals tested on example households; no representative national costing or party ranking |
+| F24a — New Zealand Budget analysis runner | After E 17–21 and F 22–24 | Repeatable Budget source register, measure coverage, supported fiscal/distributional analysis and reconciliation to *comparable* official figures; unmodelled initiatives explicit |
+| I29a — Historical Budget as-of replay | I 27–29 (30 for predictive tracking) | Preserve announcement, policy, data and information vintages; compare modelled and subsequently observed outcomes without hindsight leakage |
+| O 51 — Public policy/Budget explorer | O trust/publication gate | Public presentation of validated analyses only, not a requirement for analyst pilots |
+
+These IDs are subordinate additions to the existing A–P tasks, not a 35th
+critical-path milestone, release promise, parallel app or authorisation to
+implement unsupported models. Limited provenance/source preparation may be
+researched earlier; implementation follows normal bounded PRs and the active
+B/C/D/E/F sequence. Detail and acceptance criteria: [docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
+A published party assertion is a *claim to be examined*, not statutory
+authority or model input until its proposed parameters are independently
+reviewed; a Budget announcement is not itself enacted law.
+
 ## What is retained and what is deferred
 
 Reuse WFF and Accommodation Supplement calculations, sources, traces,
@@ -249,6 +268,20 @@ parallel product stack.
 14. **Counterfactual scenario contract.** Claude Code implements; GPT/Codex reviews.
     Done when baseline, reform, household/population, assumptions, dates,
     policy/data/code artifacts and comparisons are explicit, retained and replayable.
+**C14a. Proposed-policy claim intake (bounded use-case overlay).**
+GPT/Codex prepares independent source/parameter checks; Claude Code
+implements only after C 14's scenario identity and B's supported policy
+contracts are available. Preserve the exact primary announcement and
+retrieval/version metadata; record speaker/publisher, dates, proposed-versus-
+enacted status, effective period, extracted measure and manual review.
+Map only verified and supported parameters into a proposed reform through
+the existing scenario contract. Expose unsupported/ambiguous components,
+the difference between quoted claims and calculated consequences, and the
+review trail. No LLM or UI generates policy rates or numerical conclusions.
+Done when a documented proposal can be traced from original evidence to
+an independently checked, replayable supported household scenario (or a
+refusal with reasons), with no party/plan ranking. [docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
+
 15. **Complete the Analyst Workbench workflow.** Claude Code implements;
     GPT/Codex reviews; Pete retains ADR-0018's design-acceptance question.
     Done when an analyst can define/check a reform, run supported cases,
@@ -277,6 +310,17 @@ feedback, missing features and usefulness assessment. Test speed,
 comprehension, reproducibility, auditability and workflow friction. Classify
 findings under the review doctrine, with owners/dispositions and follow-up
 PRs. Reuse `docs/pilot/` scripts/findings and retain their historical entries.
+
+**D16a. Campaign-policy pilot extension (optional, non-blocking).**
+Pete selects a public proposed household measure and consenting analyst;
+Claude Code facilitates and GPT/Codex independently inspects the source
+mapping. Reuse Task 16's workflow and evidence record to compare supported
+household examples with the dated status quo. Record unsupported provisions,
+uncertainty and mismatched assumptions. A separate campaign session may
+serve as an additional product test but is not a condition of Gate D; it
+cannot claim population costs before E/F or produce a party score.
+Done when the proposal-to-result trail is reproducible and feedback and
+limitations are recorded. [docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
 
 **Gate D:** an external user demonstrates that the workflow solves a real
 analytical problem. Author smoke tests and populated templates do not meet
@@ -343,6 +387,25 @@ Static mechanical entitlement effects are not automatically forecasts of
 cash expenditure, take-up or behavioural effects. Resolve D8/D9 where needed;
 otherwise preserve separate units and clearly restrict the claims.
 
+**F24a. Recurring NZ Budget analysis runner (bounded overlay after F).**
+Claude Code implements a reusable Budget-release workflow over C's scenario
+contract and F's independently reviewed fiscal/report outputs; GPT/Codex
+separately verifies official Budget source/measure mapping and comparators.
+Ingest or register immutable official release documents and tables, identify
+initiatives and classify each as supported, partially supported, unsupported
+or not a microsimulation question; preserve announcement, financial year,
+legislation/effective dates and data vintages. For supported slices produce
+baseline/reform results, explicitly period-and-basis-aligned comparisons
+against relevant published estimates, differences, uncertainty and a
+coverage ledger; never sum appropriations, fiscal forecasts and modelled
+entitlements as if interchangeable. The runner must work for later releases
+without a new one-off engine. Early source-preservation/rehearsal work may
+proceed without implying complete Budget costing.
+Done when a selected published Budget is analysed and independently
+reproduced for its declared coverage, with mismatches and exclusions visible.
+This does not block G/Pilot 2 and does not promise whole-of-Budget modelling.
+[docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
+
 **Gate F:** Poltika produces independently challengeable economist-grade
 static policy analysis for its supported scope. It does not require full
 national accounts, long-run debt trajectories or a universal state engine.
@@ -390,6 +453,16 @@ justify a bounded coverage slice earlier; record its priority decision.
 29. **Historical replay.** Claude Code implements; GPT/Codex validates.
     Done when retained historical builds/artifacts replay and observed/modelled
     discrepancies are classified, reproducible and explained.
+**I29a. Historical Budget as-of replay (use-case overlay).**
+Reuse I 27–29 for a selected prior Budget, distinguishing what was known
+when published from retrospectively observed information. Preserve
+document/data/policy/code vintages and historical gaps, rerun supported
+measures and attribute discrepancies where evidence allows. Only genuine
+prospective forecasts registered before their resolution enter I 30's
+prediction/model-error ledger; retrospective reproductions do not become
+prediction-track-record evidence. Done when an analyst can independently
+inspect and reproduce an as-of comparison. [docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
+
 30. **Prediction/model-error ledger.** Claude Code implements; Pete chooses
     genuine predictive targets and timestamping/publication boundaries (P7).
     Done when predictions are registered before resolution, compared when
@@ -495,7 +568,11 @@ a plan “wins”; validation scores are monitored, never optimisation targets.
 50. **Research APIs.** Claude Code implements; done when authorised users can
     reproduce supported analyses with appropriate provenance and access boundaries.
 51. **Policy-analysis interfaces.** Claude Code implements; done when validated
-    policy proposals are explainable without normative scoring.
+    policy proposals, campaign-claim provenance and supported Budget analyses
+    can be explored with coverage, evidence, assumptions and comparisons,
+    without normative scoring. This public/research surface builds on
+    C14a/D16a/F24a/I29a and remains gated by O's trust/access decisions; it
+    must not be mistaken for their first analyst implementation.
 52. **Futures laboratory.** Claude Code implements; done when supported trajectories
     are exposed with assumptions, uncertainty and validation status.
 53. **Scenario/negotiation tools.** Claude Code implements; done when user-stated
