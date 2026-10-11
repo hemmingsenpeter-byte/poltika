@@ -32,6 +32,19 @@
   ecosystems, at Pete's instruction (decision log D27). Version-update PRs stop
   until the limits are restored. Tooling only; no calculated amount changes.
 
+## Unreleased (campaign-policy and NZ Budget analysis roadmap, 9 October 2026)
+
+- Documentation-only product-scope refinement under the sole ADR-0021 master
+  programme: C14a verified claim-to-scenario intake, optional D16a
+  campaign-policy household pilot, F24a repeatable NZ Budget analysis using
+  validated representative fiscal/distributional reporting, and I29a
+  historical Budget as-of replay. Public/research presentation stays at
+  O 51; no party/plan ranking, automatic statutory promotion or LLM numerical
+  authority. See [use-case specification](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
+- Updated ROADMAP, PROGRAMME_STATUS, frontend supporting plan, architecture,
+  repo map, README and decision record. No engine, source value, database
+  migration, API or runtime capability changed; no release/pilot gate is met.
+
 ## Unreleased (web shell, 7 October 2026)
 
 - Task B0.1.3 (ADR-0023): `web/`, the first web frontend. Next.js (App Router,

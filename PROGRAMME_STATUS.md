@@ -5,7 +5,8 @@
 **As of:** 10 October 2026. **Baseline:** `origin/main` after #188
 (`9a79a2e`), reconciled against live GitHub
 state for this closeout. This refresh records existing work and claims no new
-capability acceptance.
+capability acceptance. Campaign-policy and NZ Budget overlay planning rows
+(C14a, D16a, F24a, I29a) were added by #196 and are planning only.
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), under
 [ADR-0021](adr/0021-economist-first-pilot-programme.md), is the single active
 master build order. [ADR-0020](adr/0020-delegated-acceptance.md) remains the
@@ -137,6 +138,7 @@ packets can still say “open” historically and do not override current record
 | 12 | Legislation conformance | Not started | Claude Code matrix; GPT/Codex independent cases | Existing tests reuse | Build per-rule matrix alongside B; P6 only for publication | Existing Spec/Benchmark/Regression, goldens, value guard | Step 5; v0.3 Tier 1 matrix |
 | 13 | Model/benchmark validation | Not started | Claude Code; GPT/Codex independent checks | #117, #114 reuse | B models and bounded validation contract; P18 tolerances | Existing cases and cross-validation reused | 6.1–6.3; Step 5 |
 | 14 | Counterfactual scenario contract | Not started | Claude Code; GPT/Codex reviews | #60, #63, #64, #65, #68, #94–#95 reuse | Complete retained baseline/reform/comparison contract with 15 | Household persistence/replay and population reform identities exist separately | 8.5; Step 15 core split |
+| C14a | Proposed-policy claim intake (bounded overlay) | Not started (plan only) | GPT/Codex sources/mapping checks; Claude Code implements | None (documentation plan only) | B approved supported slice and C 14; original claim, dates/status and reviewer-gated mapping; [use-case spec](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md) | Existing source/provenance/scenario IDs can be reused; no campaign claim ingestion or analysis implemented | New overlay (9 Oct 2026) |
 | 15 | End-to-end Analyst Workbench | Not started | Claude Code; GPT/Codex review; Pete ADR-0018 | #133 backend reuse | Usable UI/workflow, 12–14; separate ADR-0018 acceptance | Backend/CSV/Excel reviewed; no completed workbench UI evidence | P8; ADR-0018; Steps 4/28/32 reuse |
 
 ## Phase D — Pilot 1
@@ -144,6 +146,7 @@ packets can still say “open” historically and do not override current record
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 16 | Real household analyst pilot | Pete | Pete user; Claude Code facilitates; GPT/Codex evidence | #85, #89, #124, #132 reuse | Name external user/question; B/C workflow; record session/feedback | Existing scripts/template/hardening; external-user field blank | v0.1.5 8.2–8.5; new pilot gate |
+| D16a | Campaign-policy example-household pilot (optional) | Not started (plan only) | Pete chooses user/question; Claude Code facilitates; GPT/Codex sources review | None (documentation plan only) | C14a; actual supported proposal; Task 16 evidence; optional and does not block Gate D | Pilot templates and Workbench can be reused; no political-policy pilot evidenced | New overlay (9 Oct 2026) |
 
 ## Phase E — Representative population microsimulation
 
@@ -162,6 +165,7 @@ packets can still say “open” historically and do not override current record
 | 22 | Direct fiscal accounting | Not started | GPT/Codex mappings; Claude Code | #96 reuse | Sourced classifications/period methods; D8 annualisation unresolved | Separate-unit/component static entitlement totals exist | Step 8 narrow; 8.1, 8.4, 8.7 |
 | 23 | Fiscal/distributional reconciliation | Not started | Claude Code; GPT/Codex review | #96, #133 reuse | 21–22; same scenario/run and explicit coverage | Existing generic table blocks and component totals | Step 8; v0.2 8.1–8.5 |
 | 24 | Economist-grade report package | Not started | Claude Code; GPT/Codex independent challenge | #97, #133 reuse | 21–23; verified minimum-content report and reproduction | Existing explanations/CSV/Excel blocks; no full national report | New gate; Steps 4/8 output reuse |
+| F24a | Recurring NZ Budget release analysis (bounded overlay) | Not started (plan only) | GPT/Codex checks official sources/comparators; Claude Code implements; Pete scope/publication | None (documentation plan only) | E 17–21 and F 22–24 for supported measures; release/initiative inventory, coverage ledger, comparable fiscal reporting; not a Gate G blocker | Existing source preservation, model and report contracts can be reused; no whole-Budget runner or estimate validated | New overlay (9 Oct 2026) |
 
 ## Phase G — Pilot 2
 
@@ -182,6 +186,7 @@ packets can still say “open” historically and do not override current record
 | 27 | Historical policy/data states | Not started | GPT/Codex sources; Claude Code; Pete P11 | Existing snapshots reuse | P11 historical horizon at start; sourced retained periods | DataContext/vintages and immutable datasets already exist | Step 9; maintenance historical years |
 | 28 | As-of execution | Not started | Claude Code; GPT/Codex review | None | 27; distinct policy validity/data observation/information vintage | Existing DataContext vintage lookup | 9.3; Step 13 |
 | 29 | Historical replay | Not started | Claude Code; GPT/Codex validation | #63, #64, #65, #68 code replay reuse | 27–28; historical comparator/diagnosis contract | Household stored-run/code replay exists | Step 13; Step 9 |
+| I29a | Historical Budget as-of replay (bounded overlay) | Not started (plan only) | GPT/Codex historical sources; Claude Code replay; Pete P11 horizon | None (documentation plan only) | I 27–29; dated information vintages and comparable historical sources; I 30 required only for real prediction tracking | Existing code replay and archived snapshots reuse; no past-Budget as-of test accepted | New overlay (9 Oct 2026) |
 | 30 | Prediction/model-error ledger | Not started | Claude Code; Pete targets/timestamps; GPT/Codex review | None | P7 genuine predictions/timestamping; forecast-resolution calendar | No predictive ledger evidenced | 6.4–6.5; Step 13 |
 
 ## Phase J — Behaviour and causality
@@ -233,7 +238,7 @@ packets can still say “open” historically and do not override current record
 | Task | Capability | Status | Owner | PR | Blocker / next action | Evidence / reuse | Old mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 50 | Research APIs | Not started | Claude Code; Pete public/access decisions | Existing FastAPI reuse | Trust/security/licensing/access gate; validated supported scope | Internal/password-protected routes exist | Step 28 public/institutional split |
-| 51 | Policy-analysis interfaces | Not started | Claude Code; Pete publication | None | Validated models, trust/permission, no normative scoring | Existing analyst interfaces reused | Step 26 |
+| 51 | Policy-analysis interfaces | Not started | Claude Code; Pete publication | None | Gate O, trust/permission and validated proposals/Budget results from C14a, F24a and I29a; no normative scoring | Existing analyst Workbench reused; not the first campaign/Budget analytical implementation | Step 26; late public surface |
 | 52 | Futures laboratory | Not started | Claude Code; Pete publication | None | Validated trajectories and trust/permission | No public futures laboratory | Step 25 |
 | 53 | Scenario/negotiation tools | Not started | Claude Code; Pete constraints/publication | None | Validated scenarios and user objectives/access | Current reforms are not a negotiation sandbox | Step 27 |
 
