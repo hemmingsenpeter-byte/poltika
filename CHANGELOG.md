@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased (household semantics and shared household model, 11 October 2026)
+
+- Task 5: `semantics/unit_binding.py` binds every unit and period that a
+  `policy.yaml` declares to the semantics registries, enforced by a test over
+  every policy. `UnboundPolicyUnitError` names an unregistered unit or a
+  cross-period use.
+- Task 6 (ADR-0017 1.1–1.3): `semantics/household.py` and
+  `scenarios/household_mappings.py`, a household with facts held once and dated
+  spells, mapped to the existing WFF and AS scenarios. A spell is never scaled
+  across periods. A round trip over the golden households and spec cases gives
+  identical results and result ids.
+- Task 12: a WFF/AS conformance matrix and 27 non-numeric API conformance tests.
+- Review records for #193 (independent source review) and #195. No calculated
+  amount, protected value or result identity changes.
+
 ## Unreleased (web scenario experience, 10 October 2026)
 
 - Task B0.1.4: the public OpenAPI request-body schema names for the legacy
