@@ -372,6 +372,7 @@ def retained_reform(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
         created_at=created_at,
         results=results,
         results_sha256="e" * 64,
+        manifest=None,  # a run stored before migration 0003
     )
     store = SimpleNamespace(
         get_reform_scenario=lambda sid: scenario if sid == RETAINED_SID else None,

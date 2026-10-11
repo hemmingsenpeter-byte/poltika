@@ -61,7 +61,7 @@ def test_run_id_hash_inputs_are_unchanged() -> None:
 def test_the_run_id_is_recomputable_without_the_manifest(
     database_url: str
 ) -> None:
-    created = _run(_create("Pin")["scenario_id"])
+    created = _run(_create("Pin", "60001")["scenario_id"])
     row = _store(database_url).get_reform_run(created["run_id"])
     assert row is not None and row.manifest is not None
     assert created["run_id"] == reform_run_id(
@@ -73,7 +73,7 @@ def test_the_run_id_is_recomputable_without_the_manifest(
 def test_the_manifest_round_trips_and_uses_only_run_values(
     database_url: str
 ) -> None:
-    created = _run(_create("Round trip")["scenario_id"])
+    created = _run(_create("Round trip", "60002")["scenario_id"])
     assert created["manifest_persisted"] is True
     row = _store(database_url).get_reform_run(created["run_id"])
     assert row is not None and row.manifest == created["manifest"]
@@ -88,12 +88,12 @@ def test_the_manifest_round_trips_and_uses_only_run_values(
 
 
 def test_the_same_run_twice_is_stored_once() -> None:
-    sid = _create("Twice")["scenario_id"]
+    sid = _create("Twice", "60003")["scenario_id"]
     assert _run(sid)["run_id"] == _run(sid)["run_id"]
 
 
 def test_verify_is_identical_for_unchanged_inputs(database_url: str) -> None:
-    created = _run(_create("Identical")["scenario_id"])
+    created = _run(_create("Identical", "60004")["scenario_id"])
     result = _verify(database_url, created["run_id"])
     assert (result.status, result.changed) == ("identical", ())
 
@@ -101,7 +101,7 @@ def test_verify_is_identical_for_unchanged_inputs(database_url: str) -> None:
 def test_verify_names_a_changed_policy_artifact(
     database_url: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    created = _run(_create("Policy drift")["scenario_id"])
+    created = _run(_create("Policy drift", "60005")["scenario_id"])
     real = store_module.run_population
     name = created["manifest"]["options"][0]["policy_artifacts"][0]["name"]
 
@@ -119,7 +119,7 @@ def test_verify_names_a_changed_policy_artifact(
 def test_verify_names_a_changed_population(
     database_url: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    created = _run(_create("Population drift")["scenario_id"])
+    created = _run(_create("Population drift", "60006")["scenario_id"])
     real = store_module.run_population
 
     def drifted(*args: Any, **kwargs: Any) -> Any:
@@ -134,7 +134,7 @@ def test_verify_names_a_changed_population(
 def test_a_legacy_row_is_not_retained_and_never_backfilled(
     database_url: str
 ) -> None:
-    sid = _create("Legacy")["scenario_id"]
+    sid = _create("Legacy", "60007")["scenario_id"]
     fresh = _run(sid)
     store = _store(database_url)
     row = store.get_reform_run(fresh["run_id"])
@@ -155,7 +155,7 @@ def test_a_legacy_row_is_not_retained_and_never_backfilled(
 
 
 def test_the_audit_tab_states_whether_the_manifest_is_persisted() -> None:
-    sid = _create("Audit")["scenario_id"]
+    sid = _create("Audit", "60008")["scenario_id"]
     run = _run(sid)
     workspace = client.get(f"/api/v1/scenarios/{sid}/runs/{run['run_id']}").json()
     block = _blocks(workspace, "audit")["manifest"]
