@@ -255,7 +255,7 @@ export const HouseholdExamplesSchema = z.array(
 /** `POST /scenarios`: only the identifiers the web app navigates with. */
 export const HouseholdCreatedSchema = z.object({ scenario_id: z.string(), result_id: z.string() });
 
-export const RunCreatedSchema = z.object({ scenario_id: z.string(), run_id: z.string() }) satisfies z.ZodType<S["RunCreated"]>;
+export const RunCreatedSchema = z.object({ scenario_id: z.string(), run_id: z.string(), manifest_persisted: z.boolean(), manifest: z.record(z.string(), z.unknown()) }) satisfies z.ZodType<S["RunCreated"]>;
 
 const TabId = z.enum(["overview", "fiscal", "distribution", "evidence", "assumptions", "technical", "audit"]);
 const BlockFields = { id: z.string(), title: z.string().nullable().optional() };

@@ -3099,6 +3099,15 @@
       },
       "RunCreated": {
         "properties": {
+          "manifest": {
+            "additionalProperties": true,
+            "title": "Manifest",
+            "type": "object"
+          },
+          "manifest_persisted": {
+            "title": "Manifest Persisted",
+            "type": "boolean"
+          },
           "run_id": {
             "title": "Run Id",
             "type": "string"
@@ -3110,7 +3119,9 @@
         },
         "required": [
           "scenario_id",
-          "run_id"
+          "run_id",
+          "manifest_persisted",
+          "manifest"
         ],
         "title": "RunCreated",
         "type": "object"

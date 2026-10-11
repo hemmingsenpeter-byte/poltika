@@ -192,6 +192,9 @@ poltika/
 │   │                        record.py (Task 30: scenario records, artifact
 │   │                        manifests, canonical identity, code identity,
 │   │                        record_from_plain);
+│   │                        reform_manifest.py (Task 14: the typed reform run
+│   │                        manifest, kept in reform_run.manifest_json by
+│   │                        migration 0003, and the replay check);
 │   │                        reform_record.py (Task B0.1.2: reform scenario
 │   │                        and run identities; store.py keeps them in the
 │   │                        reform_scenario and reform_run tables, migration 0002);
