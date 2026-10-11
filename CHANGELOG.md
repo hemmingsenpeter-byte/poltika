@@ -12,7 +12,7 @@
   backfilled). `POST` run responses carry the manifest and the audit tab shows
   it. The reform `run_id` hash inputs are unchanged (pinned by a test). No
   calculated amount changes. Parked questions: PETE_QUEUE Q21, Q22.
-=======
+
 ## Unreleased (web accessibility and responsive polish, 11 October 2026)
 
 - Task B0.1.6: axe checks over Home and the empty, loading, error and
@@ -20,7 +20,6 @@
   larger touch targets below `md`, a wrapping header, a capped drawer and a
   scrollable chart region named after its metric (decision log D34); one-line
   explanations on empty states. No API, Python or calculated-amount change.
->>>>>>> origin/main
 
 ## Unreleased (CI fork guard and runner isolation runbook, 11 October 2026)
 
