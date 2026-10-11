@@ -66,8 +66,8 @@ Inputs: single claimant, 52 verified full-time-earner weeks, ME 3 attestation tr
 net family scheme income: (a) 36,603; (b) 36,603.99.
 
 Sources: `minimum_family_prescribed_amount` 36,604 (`wff-tax-credit-order-2025`, cl 5; ITA s ME 1(3)(a)).
-Specification step 4 (lines 297-310 region): the all-52-week amount is the positive difference between 36,604 and net
-income; at or above gives no top-up; no rounding is introduced in the calculation core (line 291-296).
+Specification step 4 (Scoped full-year calculation sequence): the all-52-week amount is the positive difference between 36,604 and net
+income; at or above gives no top-up; no rounding is introduced in the calculation core (the paragraph after step 5).
 
 Derivation: (a) 36,604 - 36,603 = **1**. (b) 36,604 - 36,603.99 = **0.01**.
 
@@ -106,7 +106,7 @@ are derivable from recorded sources. The part-hundred rows (2,799.99 and 5,499.9
 reading s 423(3) "every $100 of cash assets over" as complete steps. `specification.md` 124-140 says that is "an
 inference from the wording, not a quotation of an explicit 'complete hundreds' rule" and asks a fresh-context reviewer
 to re-read s 423(3) before it is treated as settled; `sources.yaml` `task_22_check` (lines 28-41) says the same, and
-`task_24_1_independent_check` (lines 71-84 region) confirmed the amounts ($5,400, $2,700, $100, $1) but not the
+`task_24_1_independent_check` confirmed the amounts ($5,400, $2,700, $100, $1) but not the
 part-hundred reading. **Source ambiguous: flag it.** Do not promote the part-hundred rows until that re-read is
 recorded.
 
@@ -139,7 +139,7 @@ Status: derivable from recorded sources. Existing cases cover 87.5 and 74.90 onl
 
 ## Questions for Pete
 
-- **Q1 (all WFF cases, cases 3-4 cents):** the repository does not state whether a verified income or net income carries
+- **Q1 (cases 1-3, the sub-dollar rows):** the repository does not state whether a verified income or net income carries
   cents. Cases 1-3 use cents (44,900.99, 79,000.99, 36,603.99) to test the complete-dollar rule at its edge. If inputs
   are whole dollars by contract, drop the sub-dollar rows. `policy_specs/working_for_families/policy.yaml` defines
   `verified_amount` with no precision, and the Act's complete-dollar text is recorded only as a summary in
