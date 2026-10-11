@@ -46,6 +46,12 @@ job. The steps below are the interim, no-cost option.
    binaries (`/Applications/Postgres.app/...` is world-executable; no data
    directory of Pete's is used because tests start a throwaway server under
    `RUNNER_TEMP`).
+   Two choices for Pete, not made here: a login LaunchAgent runs only while
+   `poltika-ci` has a session, so the runner needs either automatic login for
+   that user or a session kept open (fast user switching), each with its own
+   exposure; and step 4's `umask 077` lasts only for that shell, so the
+   service does not inherit it unless it is set in the LaunchAgent plist
+   (`Umask` key) or the runner's `.env`.
 6. Remove the old runner registration in GitHub Settings once the new one
    is online and idle.
 7. Optional hygiene: a weekly job or manual step deleting
