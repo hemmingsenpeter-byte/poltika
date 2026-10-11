@@ -200,7 +200,10 @@ def test_a_spell_longer_than_the_policy_period_is_refused_not_scaled() -> None:
         amount=Decimal(100000),
         basis=hh.IncomeBasis.WFF_FAMILY_SCHEME,
     )
-    longer = base.model_copy(update={"income_spells": (long_year,)})
+    # The AS-only household asserts no WFF child list; assert one so that the
+    # period check, not the child-list check, is what refuses.
+    wff_family = base.family.model_copy(update={"wff_children_complete": hh.Assertion.VERIFIED})
+    longer = base.model_copy(update={"income_spells": (long_year,), "families": (wff_family,)})
     wff = to_wff(longer, TAX_YEAR)
     assert isinstance(wff, MappingRefusal) and "Q10" in wff.reason
     annual = long_year.model_copy(

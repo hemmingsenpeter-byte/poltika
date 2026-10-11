@@ -172,13 +172,13 @@ def to_wff(household: Household, tax_year: DatePeriod) -> WffScenario | MappingR
 
     # WFF reads its `children` list as complete. A household whose child list
     # may be incomplete cannot supply it: a missing child is never a known count.
-    if family.dependent_children_complete is not Assertion.VERIFIED:
+    if family.wff_children_complete is not Assertion.VERIFIED:
         return MappingRefusal(
             "needs_review",
             "HOUSEHOLD_CHILD_LIST_INCOMPLETE",
-            "the household's dependent-child list is not asserted complete, and WFF reads its children "
-            "list as the complete list",
-            ("dependent_children_complete",),
+            "the household's dependent-child list is not asserted complete under the WFF definition, "
+            "and WFF reads its children list as the complete list",
+            ("wff_children_complete",),
         )
 
     people = tuple(p for p in (family.claimant_id, family.partner_id) if p is not None)
@@ -301,7 +301,7 @@ def to_as(household: Household, assessment_week: AssessmentWeek) -> AsScenario |
     # The count is verified only when the child list is complete and every
     # listed child is verified or excluded under the AS definition.
     dependent_children_count: int | None = None
-    if family.dependent_children_complete is Assertion.VERIFIED:
+    if family.as_children_complete is Assertion.VERIFIED:
         statuses = []
         for child_id in family.dependent_child_ids:
             facts = household.person(child_id).child_facts
@@ -448,17 +448,17 @@ def _household_from(
     # N > M is not: the household would need children WFF has no facts for.
     wff_children = None if wff is None else wff.children
     as_count = None if as_ is None else as_.dependent_children_count
-    complete = Assertion.UNKNOWN
+    # The WFF request's `children` is the caller's complete WFF list (the engine
+    # reads an empty list as no dependent child, WFF_NO_DEPENDENT_CHILD); an AS
+    # count is complete only under the AS definition.
+    wff_complete = Assertion.VERIFIED if wff_children is not None else Assertion.UNKNOWN
+    as_complete = Assertion.VERIFIED if as_count is not None else Assertion.UNKNOWN
     if wff_children is not None:
         count = len(wff_children)
         if as_count is not None and as_count > count:
             raise AdapterRefused(f"dependent children: WFF lists {count}, AS asserts {as_count} (more than WFF lists)")
-        # The WFF request's `children` is the caller's complete list: the engine
-        # reads an empty list as no dependent child (WFF_NO_DEPENDENT_CHILD).
-        complete = Assertion.VERIFIED
     elif as_count is not None:
         count = as_count
-        complete = Assertion.VERIFIED
     else:
         count = 0
     child_ids: list[str] = []
@@ -556,7 +556,8 @@ def _household_from(
                 partner_status=status,
                 partner_id="partner" if status is hh.FamilyPartnerStatus.PARTNERED else None,
                 dependent_child_ids=tuple(child_ids),
-                dependent_children_complete=complete,
+                wff_children_complete=wff_complete,
+                as_children_complete=as_complete,
             ),
         ),
         housing=housing,

@@ -232,10 +232,13 @@ class Family(BaseModel):
     partner_status: FamilyPartnerStatus = FamilyPartnerStatus.UNKNOWN
     partner_id: str | None = None
     dependent_child_ids: tuple[str, ...] = ()
-    # VERIFIED: `dependent_child_ids` is the complete set, so a count of it is
-    # a verified count (including zero). UNKNOWN: it may be incomplete, so no
-    # count is verified. A missing fact is never zero.
-    dependent_children_complete: Assertion = Assertion.UNKNOWN
+    # Whether `dependent_child_ids` holds every dependent child under each
+    # policy's own definition: WFF's and AS's are separate facts (ADR-0017), so
+    # completeness is asserted per definition. VERIFIED: complete under that
+    # definition, so a count is verified (including zero). UNKNOWN: it may be
+    # incomplete, so no count is verified. A missing fact is never zero.
+    wff_children_complete: Assertion = Assertion.UNKNOWN
+    as_children_complete: Assertion = Assertion.UNKNOWN
 
     @model_validator(mode="after")
     def _consistent(self) -> Family:
@@ -243,8 +246,8 @@ class Family(BaseModel):
             raise ValueError("a partnered family names its partner")
         if self.partner_status is not FamilyPartnerStatus.PARTNERED and self.partner_id is not None:
             raise ValueError("only a partnered family has a partner id")
-        if self.dependent_children_complete is Assertion.EXCLUDED:
-            raise ValueError("dependent_children_complete is verified or unknown")
+        if Assertion.EXCLUDED in (self.wff_children_complete, self.as_children_complete):
+            raise ValueError("child-list completeness is verified or unknown")
         return self
 
 

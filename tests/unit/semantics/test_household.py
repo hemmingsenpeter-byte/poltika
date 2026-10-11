@@ -51,7 +51,8 @@ def _household(children_complete: Assertion = Assertion.UNKNOWN, **overrides: ob
                 partner_status=hh.FamilyPartnerStatus.PARTNERED,
                 partner_id="p",
                 dependent_child_ids=("c1",),
-                dependent_children_complete=children_complete,
+                wff_children_complete=children_complete,
+                as_children_complete=children_complete,
             ),
         ),
     }
@@ -286,7 +287,29 @@ def test_wff_needs_a_child_list_asserted_complete() -> None:
         assert isinstance(refusal, MappingRefusal)
         assert refusal.outcome == "needs_review"
         assert refusal.code == "HOUSEHOLD_CHILD_LIST_INCOMPLETE"
-        assert refusal.missing_facts == ("dependent_children_complete",)
+        assert refusal.missing_facts == ("wff_children_complete",)
+
+
+
+def test_an_as_complete_child_list_is_not_a_complete_wff_list() -> None:
+    # The two definitions are separate facts: an AS-only household with no AS
+    # dependent children says nothing about WFF's children.
+    household = _household(
+        persons=(hh.Person(person_id="a", role=PersonRole.CLAIMANT),),
+        families=(
+            hh.Family(
+                claimant_id="a",
+                partner_status=hh.FamilyPartnerStatus.SINGLE,
+                as_children_complete=Assertion.VERIFIED,
+            ),
+        ),
+    )
+    refusal = to_wff(household, YEAR)
+    assert isinstance(refusal, MappingRefusal)
+    assert refusal.code == "HOUSEHOLD_CHILD_LIST_INCOMPLETE"
+    as_ = to_as(household, WEEK)
+    assert not isinstance(as_, MappingRefusal)
+    assert as_.dependent_children_count == 0
 
 
 # --- the AS mapping: benefit spells, week view, children ---------------------------
@@ -351,7 +374,7 @@ def test_dependent_child_count_applies_the_as_definition_per_child() -> None:
                     claimant_id="a",
                     partner_status=hh.FamilyPartnerStatus.SINGLE,
                     dependent_child_ids=("c1", "c2"),
-                    dependent_children_complete=complete,
+                    as_children_complete=complete,
                 ),
             ),
         )
