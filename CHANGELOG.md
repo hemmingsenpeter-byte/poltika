@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased (CI fork guard and runner isolation runbook, 11 October 2026)
+
+- Audit #191 A1: self-hosted CI jobs skip pull requests from forks, and a new
+  hosted `fork-pr-gate` job fails them (decision log D33). Required check names
+  are unchanged. `docs/programme/RUNNER_ISOLATION_RUNBOOK.md` describes moving
+  the runner to a dedicated macOS user (Pete's action, Q13), and
+  `docs/pilot/HOSTING.md` states what data the shared-login pilot may hold
+  (Q20). Verification of A1–A7: `reviews/2026-10-11-audit-191-verification.md`.
+  No calculated amount changes.
+
 ## Unreleased (web scenario experience, 10 October 2026)
 
 - Task B0.1.4: the public OpenAPI request-body schema names for the legacy
