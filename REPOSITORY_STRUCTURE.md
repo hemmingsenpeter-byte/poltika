@@ -88,12 +88,13 @@ poltika/
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
 ├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map, the v0.2 population methodology and RELEASE_CHECKLIST.md (the gate-based release steps, ending in a PETE_QUEUE.md tagging request)
-├── docs/programme/    — repository reconciliation/reference audits and EXECUTION.md (agent roles, bounded cycles, current handoff; PROGRAMME_STATUS remains the task tracker)
+├── docs/programme/    — repository reconciliation/reference audits, EXECUTION.md (agent roles/bounded cycles) and POLICY_CLAIMS_BUDGET_WORKFLOWS.md (C14a/D16a/F24a/I29a use-case specification; not a second master)
 ├── docs/archive/      — superseded planning snapshots, never an implementation authority
 │   ├── programmes/    — ADR-0019 programme and W1–W10 realignment history
 │   ├── roadmaps/      — dated roadmap snapshots
 │   ├── status/        — dated programme-status snapshots
 │   └── build-plans/   — historical bounded release plans, including v0.1.5
+├── docs/web/          — FRONTEND.md: web frontend architecture, build, deployment, environment and extension guide (B0.1.7)
 ├── docs/pilot/        — v0.1.5 pilot guide, hosting guide (HOSTING.md), and the pilot findings
 ├── docs/demo/v0_1/    — Task 35.3 demo: walkthrough, request, stored-run summary and
 │                         provenance report for the v0.1 demo question

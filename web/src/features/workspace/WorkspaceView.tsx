@@ -213,6 +213,7 @@ export function WorkspaceView({ workspace, navigate }: { workspace: Workspace; n
             <Empty title="Nothing to show">{tab.note}</Empty>
           ) : (
             <div>
+              <h2 className="sr-only">{tab.title}</h2>
               {tab.note ? <p className="mb-4 text-sm text-muted">{tab.note}</p> : null}
               {tab.blocks.map((block) => (
                 <BlockRenderer key={block.id} block={block} onOpen={openBlock} />

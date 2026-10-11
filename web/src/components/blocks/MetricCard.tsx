@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { lazy, Suspense } from "react";
 
 import { Card } from "@/components/ui/Card";
 import { Pill } from "@/components/ui/Pill";
@@ -7,6 +8,9 @@ import { formatCount, formatMoney } from "@/format";
 import { humanise } from "@/lib/labels";
 
 import { OutcomeMarker } from "./Outcome";
+
+// Loaded on demand: only metrics with two or more calculated options draw a chart.
+const MetricChart = lazy(() => import("@/components/charts/MetricChart"));
 
 export type OpenBlock = (tab: string, blockId: string) => void;
 
@@ -41,6 +45,11 @@ export function MetricCard({ block, onOpen }: { block: MetricBlock; onOpen?: Ope
         ))}
       </ul>
       <p className="mt-3 text-xs text-muted">{block.context}</p>
+      {block.values.filter((v) => v.outcome === "calculated" && v.value !== null).length >= 2 ? (
+        <Suspense fallback={<p role="status" className="mt-4 text-xs text-muted">Loading chart…</p>}>
+          <MetricChart block={block} />
+        </Suspense>
+      ) : null}
       {block.provenance.length > 0 ? (
         <ul className="mt-3 flex flex-wrap gap-2" aria-label="Where this comes from">
           {block.provenance.map((p) => (
