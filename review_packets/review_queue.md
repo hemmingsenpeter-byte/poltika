@@ -129,6 +129,12 @@ were independently reviewed by Claude Code with no blocking findings
 | #112 | v0.3 | Codex-authored fixes F1-F3 for #109 and the catalogue wording review | Scenarios, policy_specs | Medium | reviewed (Claude Code, PR #112 comment) |
 | #187 | programme | Task B0.1.2: durable reform scenarios and the web workspace view (which stored amounts appear, in which units, and how not-calculated values read) | API, scenarios store, migration 0002 | Medium | reviewed ([reviews/2026-10-08-pr187.md](../reviews/2026-10-08-pr187.md)); Claude-authored `278ef3d` reviewed by Codex, Codex fixes independently Claude-reviewed through implementation head `199ba20`; no unresolved P1/P2. Final-head CI remains required |
 
+## Open PRs awaiting pre-merge review (not merged review debt)
+
+| PR | Release | Scope | Touches | Risk | Status |
+| --- | --- | --- | --- | --- | --- |
+| #193 | programme | Task 7: 2026–27 ordinary salary/wage source-linked specification, IT-01–IT-08; GPT/Codex authored | policy_specs, source/decision records | High | open, unmerged — independent Claude primary-source/spec review done (`reviews/2026-10-09-pr193-source-recheck.md`; fresh-context pass https://github.com/hemmingsenpeter-byte/poltika/pull/193#issuecomment-6093912718); GPT/Codex queue clearance and Pete Q16–Q18 pending; Bill 344-1 authority and precision stay `needs_review`; packet: [income_tax_salary_wages_spec_preflight.md](income_tax_salary_wages_spec_preflight.md) |
+
 ## Plan and decision PRs (not counted against the cap)
 
 | PR | Scope | Status |
