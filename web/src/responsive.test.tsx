@@ -74,7 +74,7 @@ describe("narrow-width structure", () => {
       precision: "population_estimate", evidence_class: "Model output", context: "", provenance: [],
     };
     render(<MetricCard block={block} />);
-    const region = await screen.findByRole("region", { name: "Chart (scrollable)" });
+    const region = await screen.findByRole("region", { name: "Change (scrollable chart)" });
     expect(region).toHaveAttribute("tabindex", "0");
     expect(classes(region)).toContain("overflow-x-auto");
     expect(region.querySelector("svg")!.getAttribute("class")).toContain("min-w-[36rem]");
