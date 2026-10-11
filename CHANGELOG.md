@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased (Task 14 reform run manifest and replay check, 12 October 2026)
+
+- Task 14, first increment: `scenarios/reform_manifest.py` builds a typed
+  manifest for each reform run (law baseline date, per-option reform and
+  population identity, code identity, policy artifact hashes, overridden
+  assumptions, units, limitations). Migration 0003 adds a nullable
+  `reform_run.manifest_json`; `ScenarioStore.save_reform_run` stores it and
+  `verify_reform_run` reruns the options and reports `identical`, `drifted`
+  (naming what changed) or `not_retained` (a run stored before 0003; never
+  backfilled). `POST` run responses carry the manifest and the audit tab shows
+  it. The reform `run_id` hash inputs are unchanged (pinned by a test). No
+  calculated amount changes. Parked questions: PETE_QUEUE Q21, Q22.
+
 ## Unreleased (web accessibility and responsive polish, 11 October 2026)
 
 - Task B0.1.6: axe checks over Home and the empty, loading, error and

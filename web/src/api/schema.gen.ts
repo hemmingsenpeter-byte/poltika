@@ -1920,6 +1920,12 @@ export interface components {
         };
         /** RunCreated */
         RunCreated: {
+            /** Manifest */
+            manifest: {
+                [key: string]: unknown;
+            };
+            /** Manifest Persisted */
+            manifest_persisted: boolean;
             /** Run Id */
             run_id: string;
             /** Scenario Id */

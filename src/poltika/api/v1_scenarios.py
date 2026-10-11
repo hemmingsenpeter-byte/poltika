@@ -20,6 +20,7 @@ from __future__ import annotations
 from collections.abc import Callable, Coroutine, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import asdict
+from datetime import date
 from functools import lru_cache
 from typing import Annotated, Any, Literal, NoReturn
 
@@ -73,6 +74,8 @@ from poltika.api.workbench_export import table_csv, to_xlsx
 from poltika.api.workbench_tables import NOT_CALCULATED, distribution_tables
 from poltika.common.errors import ImmutableRecordError, StoredRunNotFoundError, StoreError
 from poltika.scenarios.microsim.reform import Reform
+from poltika.scenarios.record import canonical_json
+from poltika.scenarios.reform_manifest import build_manifest
 from poltika.scenarios.reform_record import (
     reform_definition,
     reform_run_id,
@@ -197,6 +200,9 @@ class ScenarioList(BaseModel):
 class RunCreated(BaseModel):
     scenario_id: str
     run_id: str
+    # Task 14: the manifest stored beside the run (it is not part of run_id).
+    manifest_persisted: bool
+    manifest: dict[str, Any]
 
 
 # --- routes ------------------------------------------------------------------------------
@@ -406,9 +412,20 @@ def create_run(scenario_id: ScenarioId) -> RunCreated:
     }
     option_run_ids = tuple(run.run_id for _, _, run in labelled)
     run_id = reform_run_id(scenario_id, option_run_ids, results_sha256=results_sha256(stored))
+    manifest = build_manifest(
+        date.fromisoformat(scenario.definition["law_baseline_date"]),
+        [(label, run) for label, _, run in labelled],
+        units=sorted({item["unit"] for item in payload["headline"]}),
+        limitations=config.LIMITATIONS,
+    )
     with _storage():
-        store.save_reform_run(run_id, scenario_id, option_run_ids, stored)
-    return RunCreated(scenario_id=scenario_id, run_id=run_id)
+        saved = store.save_reform_run(run_id, scenario_id, option_run_ids, stored, manifest)
+    return RunCreated(
+        scenario_id=scenario_id,
+        run_id=run_id,
+        manifest_persisted=saved.manifest is not None,
+        manifest=saved.manifest or manifest,
+    )
 
 
 def _coded(exc: HTTPException) -> NoReturn:
@@ -641,6 +658,7 @@ def _reform_workspace(s: ReformScenario, run: ReformRun | None, refs: list[RunRe
                         ),
                     ],
                 ),
+                _manifest_block(run.manifest),
                 assumptions["run_identity"],
                 assumptions["policy_artifacts"],
                 Notice(
@@ -668,6 +686,48 @@ def _reform_workspace(s: ReformScenario, run: ReformRun | None, refs: list[RunRe
         ),
         tabs=workspace_tabs,
     )
+
+
+def _manifest_block(manifest: dict[str, Any] | None) -> AuditRecordBlock:
+    """Task 14: the stored run manifest, read-only. A run stored before
+    migration 0003 has none, and says so."""
+    if manifest is None:
+        return AuditRecordBlock(
+            id="manifest",
+            title="Run manifest",
+            fields=[
+                AuditField(
+                    label="Manifest persisted",
+                    value="no",
+                    note="This run was stored before manifests were kept. It is not "
+                    "reconstructed.",
+                )
+            ],
+        )
+    fields = [
+        AuditField(label="Manifest persisted", value="yes"),
+        AuditField(label="Law baseline date", value=manifest["law_baseline_date"]),
+        AuditField(label="Units", value="; ".join(manifest["units"])),
+    ]
+    for i, option in enumerate(manifest["options"]):
+        pop = option["population"]
+        fields.append(
+            AuditField(
+                label=f"{option['label']}: population",
+                value=f"{pop['population_id']} v{pop['version']}"
+                + (" (synthetic)" if option["synthetic"] else ""),
+                note=f"SHA-256 {pop['sha256']}",
+            )
+        )
+        fields.append(
+            AuditField(
+                label=f"{option['label']}: reform",
+                value=option["reform_id"],
+                note=f"SHA-256 {option['reform_sha256']}; option run {option['option_run_id']}",
+            )
+        )
+    fields.append(AuditField(label="Manifest (JSON)", value=canonical_json(manifest)))
+    return AuditRecordBlock(id="manifest", title="Run manifest", fields=fields)
 
 
 def _overview(payload: dict[str, Any], assumptions: dict[str, dict[str, Any]]) -> list[Any]:

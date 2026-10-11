@@ -59,6 +59,8 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from poltika.common.errors import ImmutableRecordError, StoredRunNotFoundError, StoreError
 from poltika.engines.assurance.provenance import build_combined_provenance_report
+from poltika.scenarios.microsim.reform import Reform
+from poltika.scenarios.microsim.runner import run_population
 from poltika.scenarios.record import (
     CodeIdentity,
     ScenarioRecord,
@@ -70,7 +72,9 @@ from poltika.scenarios.record import (
     run_scenario,
     scenario_id,
 )
+from poltika.scenarios.reform_manifest import ReformVerification, verify_manifest
 from poltika.scenarios.reform_record import results_sha256
+from poltika.semantics.population import PopulationDataset
 
 metadata = MetaData()
 scenario_table = Table(
@@ -119,6 +123,7 @@ reform_run_table = Table(
     Column("results_json", Text, nullable=False),
     Column("results_sha256", String(64), nullable=False),
     Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    Column("manifest_json", Text, nullable=True),
 )
 
 
@@ -184,6 +189,8 @@ class ReformRun:
     results: dict[str, Any]
     results_sha256: str
     created_at: datetime
+    # Task 14: None for a run stored before migration 0003 ("not retained").
+    manifest: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -403,22 +410,29 @@ class ScenarioStore:
         scenario_id: str,
         option_run_ids: tuple[str, ...],
         results: dict[str, Any],
+        manifest: dict[str, Any] | None = None,
     ) -> ReformRun:
         """Store a run's results payload verbatim (append-only). The same run
-        id with different results raises `ImmutableRecordError`."""
+        id with different results raises `ImmutableRecordError`. The manifest
+        (Task 14) is kept beside the results and is not part of the run id;
+        a row stored without one keeps NULL and is never backfilled."""
         results_json = canonical_json(results)
+        columns: dict[str, Any] = {
+            "scenario_id": scenario_id,
+            "option_run_ids_json": canonical_json(list(option_run_ids)),
+            "results_json": results_json,
+            "results_sha256": results_sha256(results),
+            "manifest_json": None if manifest is None else canonical_json(manifest),
+        }
         with self._engine.begin() as conn:
             _insert_once(
                 conn,
                 reform_run_table,
                 "run_id",
                 run_id,
-                {
-                    "scenario_id": scenario_id,
-                    "option_run_ids_json": canonical_json(list(option_run_ids)),
-                    "results_json": results_json,
-                    "results_sha256": results_sha256(results),
-                },
+                columns,
+                # A legacy NULL manifest is never filled in afterwards.
+                equivalent={"manifest_json": lambda stored, new: stored is None or stored == new},
             )
         stored = self.get_reform_run(run_id)
         assert stored is not None
@@ -441,7 +455,40 @@ class ScenarioStore:
             results=results,
             results_sha256=row.results_sha256,
             created_at=row.created_at,
+            manifest=None if row.manifest_json is None else json.loads(row.manifest_json),
         )
+
+    def verify_reform_run(
+        self,
+        run_id: str,
+        population: PopulationDataset,
+        wff_policy_dir: Path,
+        as_policy_dir: Path,
+        *,
+        code: CodeIdentity,
+    ) -> ReformVerification:
+        """Re-run a stored reform run's options against the given population
+        and policy files and compare with its manifest (Task 14). Reads only:
+        nothing is stored or changed. A run without a manifest is
+        `not_retained`."""
+        run = self.get_reform_run(run_id)
+        if run is None:
+            raise StoredRunNotFoundError(f"no stored reform run {run_id}")
+        if run.manifest is None:
+            return ReformVerification("not_retained")
+        scenario = self.get_reform_scenario(run.scenario_id)
+        assert scenario is not None
+        rerun = [
+            run_population(
+                population,
+                Reform.model_validate(option["reform"]),
+                wff_policy_dir,
+                as_policy_dir,
+                code=code,
+            )
+            for option in scenario.definition["options"]
+        ]
+        return verify_manifest(run.manifest, rerun)
 
     def runs_of(self, scenario_id: str) -> list[RunListing]:
         """A scenario's runs, newest first (runs stored before 0002 last)."""
