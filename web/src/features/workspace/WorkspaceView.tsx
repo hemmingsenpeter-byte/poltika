@@ -183,7 +183,7 @@ export function WorkspaceView({ workspace, navigate }: { workspace: Workspace; n
               id="run-select"
               value={run?.run_id ?? ""}
               onChange={(e) => navigate(`/scenarios/${scenario.scenario_id}/runs/${e.target.value}`)}
-              className="h-9 rounded-md border border-border-strong bg-surface px-2 font-mono text-xs"
+              className="h-10 max-w-full rounded-md border md:h-9 border-border-strong bg-surface px-2 font-mono text-xs"
             >
               {runs.map((r) => (
                 <option key={r.run_id} value={r.run_id}>

@@ -26,8 +26,8 @@ function PolicyVersions() {
 
 function Header({ onMenu }: { onMenu: () => void }) {
   return (
-    <header className="flex h-12 shrink-0 items-center gap-3 border-b border-border bg-surface px-3">
-      <Button variant="ghost" size="sm" className="md:hidden" onClick={onMenu} aria-label="Open navigation">
+    <header className="flex min-h-12 shrink-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-surface px-3 py-1">
+      <Button variant="ghost" size="sm" className="size-11 md:hidden" onClick={onMenu} aria-label="Open navigation">
         <Menu aria-hidden="true" className="size-4" />
       </Button>
       <Link href="/" className="font-semibold tracking-[0.18em] text-ink no-underline">
@@ -95,11 +95,11 @@ function NavDrawer({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
       <button type="button" aria-label="Close navigation" tabIndex={-1} className="absolute inset-0 bg-ink/40" onClick={onClose} />
-      <div ref={panel} className="absolute inset-y-0 left-0 w-64 border-r border-border bg-surface p-3 shadow-card">
-        <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close navigation" className="mb-2">
+      <div ref={panel} className="absolute inset-y-0 left-0 w-64 max-w-[85vw] overflow-y-auto border-r border-border bg-surface p-3 shadow-card">
+        <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close navigation" className="mb-2 size-11">
           <X aria-hidden="true" className="size-4" />
         </Button>
-        <NavList onNavigate={onClose} />
+        <NavList onNavigate={onClose} label="Primary menu" />
       </div>
     </div>
   );
