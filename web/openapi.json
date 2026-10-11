@@ -83,7 +83,7 @@
         "title": "Area",
         "type": "string"
       },
-      "AsCalculationRequest": {
+      "AsCalculationRequest-Input": {
         "additionalProperties": false,
         "description": "Mirrors `AsScenario`'s own fields; see this module's docstring.",
         "properties": {
@@ -211,6 +211,143 @@
                 "minimum": 0.0,
                 "type": "number"
               },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Income"
+          }
+        },
+        "required": [
+          "modelled_date",
+          "assessment_week_start",
+          "assessment_week_end",
+          "requested_policy_version",
+          "household_eligibility"
+        ],
+        "title": "AsCalculationRequest",
+        "type": "object"
+      },
+      "AsCalculationRequest-Output": {
+        "additionalProperties": false,
+        "description": "Mirrors `AsScenario`'s own fields; see this module's docstring.",
+        "properties": {
+          "assessment_week_end": {
+            "format": "date",
+            "title": "Assessment Week End",
+            "type": "string"
+          },
+          "assessment_week_start": {
+            "format": "date",
+            "title": "Assessment Week Start",
+            "type": "string"
+          },
+          "cash_assets": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Assets"
+          },
+          "claimant_category": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ClaimantCategory"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dependent_children_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dependent Children Count"
+          },
+          "eldest_dependent_child_under_16": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "exempt_cash_asset_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "household_eligibility": {
+            "$ref": "#/components/schemas/FactStatus"
+          },
+          "modelled_date": {
+            "format": "date",
+            "title": "Modelled Date",
+            "type": "string"
+          },
+          "ordinary_rate_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "partner_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PartnerType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "requested_policy_version": {
+            "title": "Requested Policy Version",
+            "type": "string"
+          },
+          "statistical_area_unit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Area"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tenure_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TenureType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "weekly_accommodation_costs": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekly Accommodation Costs"
+          },
+          "weekly_income": {
+            "anyOf": [
               {
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
                 "type": "string"
@@ -742,7 +879,7 @@
         "additionalProperties": false,
         "properties": {
           "reform": {
-            "$ref": "#/components/schemas/Reform"
+            "$ref": "#/components/schemas/Reform-Input"
           }
         },
         "required": [
@@ -814,6 +951,15 @@
           },
           "label": {
             "title": "Label",
+            "type": "string"
+          },
+          "precision": {
+            "default": "household_rule",
+            "enum": [
+              "household_rule",
+              "population_estimate"
+            ],
+            "title": "Precision",
             "type": "string"
           }
         },
@@ -945,7 +1091,7 @@
         "title": "Context",
         "type": "object"
       },
-      "CreateScenario": {
+      "CreateScenario-Input": {
         "additionalProperties": false,
         "properties": {
           "description": {
@@ -956,7 +1102,39 @@
           },
           "options": {
             "items": {
-              "$ref": "#/components/schemas/OptionRequest"
+              "$ref": "#/components/schemas/OptionRequest-Input"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Options",
+            "type": "array"
+          },
+          "title": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "options"
+        ],
+        "title": "CreateScenario",
+        "type": "object"
+      },
+      "CreateScenario-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Description",
+            "type": "string"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/OptionRequest-Output"
             },
             "maxItems": 2,
             "minItems": 1,
@@ -1474,18 +1652,39 @@
         "title": "HorizonYear",
         "type": "object"
       },
-      "HouseholdCalculationRequest": {
+      "HouseholdCalculationRequest-Input": {
         "additionalProperties": false,
         "properties": {
           "accommodation_supplement": {
-            "$ref": "#/components/schemas/AsCalculationRequest"
+            "$ref": "#/components/schemas/AsCalculationRequest-Input"
           },
           "as_claimant_is_wff_claimant_or_partner": {
             "$ref": "#/components/schemas/FactStatus",
             "default": "unknown"
           },
           "wff": {
-            "$ref": "#/components/schemas/WffCalculationRequest"
+            "$ref": "#/components/schemas/WffCalculationRequest-Input"
+          }
+        },
+        "required": [
+          "wff",
+          "accommodation_supplement"
+        ],
+        "title": "HouseholdCalculationRequest",
+        "type": "object"
+      },
+      "HouseholdCalculationRequest-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "accommodation_supplement": {
+            "$ref": "#/components/schemas/AsCalculationRequest-Output"
+          },
+          "as_claimant_is_wff_claimant_or_partner": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "wff": {
+            "$ref": "#/components/schemas/WffCalculationRequest-Output"
           }
         },
         "required": [
@@ -1619,7 +1818,7 @@
             "type": "array"
           },
           "household": {
-            "$ref": "#/components/schemas/HouseholdCalculationRequest"
+            "$ref": "#/components/schemas/HouseholdCalculationRequest-Input"
           }
         },
         "required": [
@@ -2247,7 +2446,7 @@
         "title": "Operation",
         "type": "string"
       },
-      "OptionRequest": {
+      "OptionRequest-Input": {
         "additionalProperties": false,
         "properties": {
           "label": {
@@ -2257,7 +2456,7 @@
             "type": "string"
           },
           "reform": {
-            "$ref": "#/components/schemas/Reform"
+            "$ref": "#/components/schemas/Reform-Input"
           }
         },
         "required": [
@@ -2267,7 +2466,27 @@
         "title": "OptionRequest",
         "type": "object"
       },
-      "Override": {
+      "OptionRequest-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "reform": {
+            "$ref": "#/components/schemas/Reform-Output"
+          }
+        },
+        "required": [
+          "label",
+          "reform"
+        ],
+        "title": "OptionRequest",
+        "type": "object"
+      },
+      "Override-Input": {
         "additionalProperties": false,
         "properties": {
           "operation": {
@@ -2292,6 +2511,35 @@
               }
             ],
             "title": "Value"
+          }
+        },
+        "required": [
+          "policy_id",
+          "parameter_id",
+          "operation",
+          "value"
+        ],
+        "title": "Override",
+        "type": "object"
+      },
+      "Override-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "operation": {
+            "$ref": "#/components/schemas/Operation"
+          },
+          "parameter_id": {
+            "title": "Parameter Id",
+            "type": "string"
+          },
+          "policy_id": {
+            "title": "Policy Id",
+            "type": "string"
+          },
+          "value": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Value",
+            "type": "string"
           }
         },
         "required": [
@@ -2623,7 +2871,7 @@
         "title": "ProvenanceRef",
         "type": "object"
       },
-      "Reform": {
+      "Reform-Input": {
         "additionalProperties": false,
         "properties": {
           "description": {
@@ -2633,7 +2881,36 @@
           },
           "overrides": {
             "items": {
-              "$ref": "#/components/schemas/Override"
+              "$ref": "#/components/schemas/Override-Input"
+            },
+            "minItems": 1,
+            "title": "Overrides",
+            "type": "array"
+          },
+          "reform_id": {
+            "minLength": 1,
+            "title": "Reform Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reform_id",
+          "overrides"
+        ],
+        "title": "Reform",
+        "type": "object"
+      },
+      "Reform-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "overrides": {
+            "items": {
+              "$ref": "#/components/schemas/Override-Output"
             },
             "minItems": 1,
             "title": "Overrides",
@@ -2777,7 +3054,7 @@
         "properties": {
           "options": {
             "items": {
-              "$ref": "#/components/schemas/OptionRequest"
+              "$ref": "#/components/schemas/OptionRequest-Input"
             },
             "maxItems": 2,
             "minItems": 1,
@@ -2914,7 +3191,7 @@
             "type": "array"
           },
           "reform": {
-            "$ref": "#/components/schemas/Reform"
+            "$ref": "#/components/schemas/Reform-Input"
           }
         },
         "required": [
@@ -3752,7 +4029,7 @@
         "title": "Variable",
         "type": "object"
       },
-      "VerifiedIncomeRequest": {
+      "VerifiedIncomeRequest-Input": {
         "additionalProperties": false,
         "properties": {
           "claimant_amount": {
@@ -3791,7 +4068,34 @@
         "title": "VerifiedIncomeRequest",
         "type": "object"
       },
-      "WffCalculationRequest": {
+      "VerifiedIncomeRequest-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "claimant_amount": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Claimant Amount",
+            "type": "string"
+          },
+          "partner_amount": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partner Amount"
+          }
+        },
+        "required": [
+          "claimant_amount"
+        ],
+        "title": "VerifiedIncomeRequest",
+        "type": "object"
+      },
+      "WffCalculationRequest-Input": {
         "additionalProperties": false,
         "description": "Mirrors `WffScenario`'s own fields; see this module's docstring.",
         "properties": {
@@ -3816,7 +4120,7 @@
           "family_scheme_income": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/VerifiedIncomeRequest"
+                "$ref": "#/components/schemas/VerifiedIncomeRequest-Input"
               },
               {
                 "type": "null"
@@ -3857,6 +4161,102 @@
                 "minimum": 0.0,
                 "type": "number"
               },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Family Scheme Income"
+          },
+          "net_family_scheme_income_me3_attested": {
+            "default": false,
+            "title": "Net Family Scheme Income Me3 Attested",
+            "type": "boolean"
+          },
+          "partner_status": {
+            "$ref": "#/components/schemas/PartnerStatus",
+            "default": "unknown"
+          },
+          "requested_policy_version": {
+            "title": "Requested Policy Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "modelled_date",
+          "requested_policy_version",
+          "household_eligibility",
+          "extra_instalment_status",
+          "children"
+        ],
+        "title": "WffCalculationRequest",
+        "type": "object"
+      },
+      "WffCalculationRequest-Output": {
+        "additionalProperties": false,
+        "description": "Mirrors `WffScenario`'s own fields; see this module's docstring.",
+        "properties": {
+          "best_start_no_shared_care": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "best_start_protected_credit": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/ChildFactsRequest"
+            },
+            "title": "Children",
+            "type": "array"
+          },
+          "extra_instalment_status": {
+            "$ref": "#/components/schemas/FactStatus"
+          },
+          "family_scheme_income": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifiedIncomeRequest-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ftc_iwtc_protected_or_direct_abatement": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "household_eligibility": {
+            "$ref": "#/components/schemas/FactStatus"
+          },
+          "in_work_eligibility": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "mc6a_veterans_payment": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "mc6b_disqualifying_payment": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "minimum_family_full_time_earner_weeks": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "modelled_date": {
+            "format": "date",
+            "title": "Modelled Date",
+            "type": "string"
+          },
+          "net_family_scheme_income": {
+            "anyOf": [
               {
                 "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
                 "type": "string"
@@ -4013,7 +4413,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AsCalculationRequest"
+                "$ref": "#/components/schemas/AsCalculationRequest-Input"
               }
             }
           },
@@ -4582,7 +4982,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateScenario"
+                "$ref": "#/components/schemas/CreateScenario-Input"
               }
             }
           },
@@ -4734,6 +5134,90 @@
           }
         },
         "summary": "Workspace",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/definition": {
+      "get": {
+        "description": "Copy the retained reform settings into a new, independently checked draft.",
+        "operationId": "scenario_definition_api_v1_scenarios__scenario_id__definition_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateScenario-Output"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Scenario Definition",
         "tags": [
           "scenarios"
         ]
@@ -4915,6 +5399,299 @@
         ]
       }
     },
+    "/api/v1/scenarios/{scenario_id}/runs/{run_id}/definition": {
+      "get": {
+        "description": "Copy stored facts, dates and requested versions without filling missing facts.",
+        "operationId": "household_definition_api_v1_scenarios__scenario_id__runs__run_id__definition_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HouseholdCalculationRequest-Output"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Household Definition",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/runs/{run_id}/export.xlsx": {
+      "get": {
+        "description": "Use the existing writer on retained results; no rerun or live policy lookup.",
+        "operationId": "stored_workbook_api_v1_scenarios__scenario_id__runs__run_id__export_xlsx_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Stored Workbook",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/runs/{run_id}/export/{table_id}.csv": {
+      "get": {
+        "operationId": "stored_table_api_v1_scenarios__scenario_id__runs__run_id__export__table_id__csv_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "table_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9_]+$",
+              "title": "Table Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Stored Table",
+        "tags": [
+          "scenarios"
+        ]
+      }
+    },
     "/household/calculate": {
       "post": {
         "description": "Calculate WFF and Accommodation Supplement for one household.\n\n**This is a conditional simulation, not a verified entitlement\ndetermination.** Each policy is reported in its own period, and there is\nno combined total. A structural error (such as a policy-version\nmismatch) maps to 409 or 500 through the app-level handlers.\n\nWhen a component is waiting for a fact, `resolution` adds what can be\nsaid without it (ADR-0016): the household rerun for each admissible\nanswer, with ranges and the most useful next question. Each branch is\nan ordinary engine run; nothing conditional is labelled `calculated`.",
@@ -4923,7 +5700,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/HouseholdCalculationRequest"
+                "$ref": "#/components/schemas/HouseholdCalculationRequest-Input"
               }
             }
           },
@@ -5163,7 +5940,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/HouseholdCalculationRequest"
+                "$ref": "#/components/schemas/HouseholdCalculationRequest-Input"
               }
             }
           },
@@ -5334,7 +6111,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/WffCalculationRequest"
+                "$ref": "#/components/schemas/WffCalculationRequest-Input"
               }
             }
           },
