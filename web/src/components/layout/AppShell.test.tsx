@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_CAPABILITIES } from "@/config/capabilities";
 
-import { AppShell } from "./AppShell";
+import { AppShell, DATA_NOTICE } from "./AppShell";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
 vi.mock("./MetaProvider", () => ({
@@ -65,5 +65,13 @@ describe("AppShell mobile navigation drawer", () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+});
+
+describe("AppShell pilot data notice (PETE_QUEUE Q20)", () => {
+  it("tells every visitor the pilot holds synthetic or public non-personal data only", () => {
+    render(<AppShell>content</AppShell>);
+    expect(screen.getByText(DATA_NOTICE)).toBeInTheDocument();
+    expect(DATA_NOTICE).toContain("synthetic or public non-personal data only");
   });
 });

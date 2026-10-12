@@ -107,7 +107,8 @@ environment variable.
 
 ## Data allowed on the hosted pilot
 
-Synthetic or public non-personal data only. The pilot has one shared login
+Synthetic or public non-personal data only; a notice under the web app's
+header says so on every page (PETE_QUEUE Q20). The pilot has one shared login
 (HTTP Basic, one username and password) and no per-user or per-workspace
 ownership: anyone holding the password can list every stored scenario
 (`GET /api/v1/scenarios`) and open any stored run by its identifier

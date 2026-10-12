@@ -43,6 +43,17 @@ function Header({ onMenu }: { onMenu: () => void }) {
   );
 }
 
+// PETE_QUEUE Q20 (1), docs/pilot/HOSTING.md: the pilot has one shared login
+// and no per-user ownership, so every visitor is told what may be entered.
+export const DATA_NOTICE =
+  "Shared pilot: enter synthetic or public non-personal data only. Anyone with the pilot login can see every stored scenario.";
+
+function DataNotice() {
+  return (
+    <p className="shrink-0 border-b border-border bg-surface-muted px-3 py-1 text-xs text-ink">{DATA_NOTICE}</p>
+  );
+}
+
 const FOCUSABLE = "a[href], button:not([disabled])";
 
 // Modal behaviour for the mobile drawer: focus moves in, Tab stays inside, Escape
@@ -116,6 +127,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </a>
       <div className="flex min-h-screen flex-col">
         <Header onMenu={() => setDrawerOpen(true)} />
+        <DataNotice />
         <div className="flex min-h-0 flex-1">
           <aside
             aria-label="Sidebar"
