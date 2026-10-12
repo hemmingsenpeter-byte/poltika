@@ -461,9 +461,13 @@ def to_combined(
 # ADR-0017 section 4: the pair checks (`combined.SHARED_FACT_CHECKS`) a household
 # can still fail, restated on its facts. In-work eligibility and MC 6(b) are
 # refused by `to_wff` against any main-benefit spell in the year (Q19 (5));
-# the others flag every component as the pair checks do.
+# the others flag every component as the pair checks do. Partner status is
+# kept, narrowed: both policies read the one family's partner status, but a
+# single family can still record a mixed-benefit couple benefit in the week
+# (an AS input the AS engine itself takes, and returns `unsupported`).
 HOUSEHOLD_CHECKS: tuple[str, ...] = (
     "AS assessment week inside the WFF year",
+    "partner status",
     "main benefit vs WFF in-work eligibility",
     "main benefit vs WFF MC 6(b)",
     "main benefit vs WFF MD 14/15 protected family tax credit",
@@ -474,10 +478,6 @@ HOUSEHOLD_CHECKS: tuple[str, ...] = (
 RETIRED_FOR_HOUSEHOLD: dict[str, str] = {
     "precondition: AS claimant is the WFF claimant or their partner": (
         "both mappings read the one family's claimant"
-    ),
-    "partner status": (
-        "both mappings read the one family's partner status, and a mixed-benefit couple spell needs a "
-        "family that is not single"
     ),
     "dependent children count": (
         "both mappings read the one child list; each child's AS status is its own fact, so a different "
@@ -514,6 +514,16 @@ def _household_contradictions(
             f"year [{wff_period[0]}, {wff_period[1]})"
         )
     family = household.family
+    if family.partner_status is hh.FamilyPartnerStatus.SINGLE and any(
+        s.person_id == family.claimant_id
+        and s.benefit is hh.BenefitKind.MIXED_BENEFIT_COUPLE
+        and s.start < week.end
+        and s.end > week.start
+        for s in household.benefit_spells
+    ):
+        found.append(
+            "partner status: the family is single, the claimant's benefit in the week is a mixed-benefit couple's"
+        )
     people = (family.claimant_id, family.partner_id)
     in_year = [
         s
@@ -697,15 +707,6 @@ def _household_from(
     assessment_week: AssessmentWeek | None,
 ) -> Household:
     status, arrangement = _merge_partner(wff, as_)
-    if (
-        status is hh.FamilyPartnerStatus.SINGLE
-        and as_ is not None
-        and as_.claimant_category is ClaimantCategory.MIXED_BENEFIT_COUPLE
-    ):
-        raise AdapterRefused(
-            "partner status: the family is single but AS asserts a mixed-benefit couple; one household holds "
-            "one partner fact"
-        )
 
     persons: list[hh.Person] = [hh.Person(person_id="claimant", role=PersonRole.CLAIMANT)]
     if status is hh.FamilyPartnerStatus.PARTNERED:

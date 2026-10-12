@@ -26,7 +26,6 @@ from poltika.scenarios.household_mappings import (
     LINK_FACT,
     RELATIONSHIP_FACT,
     RETIRED_FOR_HOUSEHOLD,
-    AdapterRefused,
     HouseholdResult,
     MappingRefusal,
     household_from_combined,
@@ -157,42 +156,47 @@ def _households_over_partner_and_benefit() -> list[Household]:
     return built
 
 
-def test_partner_and_link_checks_cannot_fire_and_a_child_count_difference_is_definitional() -> None:
-    # The pair checks run over every mapped household: none can produce a
-    # partner-status or claimant-link contradiction, and a different child
-    # count only ever means a child excluded under the AS definition.
+def test_the_link_cannot_fire_partner_status_only_via_a_mixed_couple_and_child_count_is_definitional() -> None:
+    # The pair checks run over every mapped household. None can produce a
+    # claimant-link contradiction; the only partner-status one is a single
+    # family whose claimant has a mixed-benefit couple benefit (kept, narrowed);
+    # a different child count only ever means a child excluded under AS.
     households = _households_over_partner_and_benefit()
     assert len(households) > 50
     for household in households:
         mapped = to_combined(household, TAX_YEAR, WEEK)
         assert not isinstance(mapped, MappingRefusal), household
         found = shared_fact_contradictions(mapped, (TAX_YEAR.start, TAX_YEAR.end), WEEK)
-        assert not [c for c in found if c.startswith(("partner status", "precondition"))], (household, found)
+        assert not [c for c in found if c.startswith("precondition")], (household, found)
+        mixed_on_single = household.family.partner_status is hh.FamilyPartnerStatus.SINGLE and any(
+            s.benefit is hh.BenefitKind.MIXED_BENEFIT_COUPLE for s in household.benefit_spells
+        )
+        assert bool([c for c in found if c.startswith("partner status")]) == mixed_on_single, (household, found)
         count = mapped.accommodation_supplement.dependent_children_count
         if count is not None and count != len(mapped.wff.children):
             child = household.person("child_1").child_facts
             assert child is not None and child.as_dependent_child is Assertion.EXCLUDED
 
 
-def test_a_mixed_benefit_couple_on_a_single_family_cannot_be_held() -> None:
-    household = _household()
-    spell = hh.BenefitSpell(
-        person_id="claimant", benefit=hh.BenefitKind.MIXED_BENEFIT_COUPLE, start=WEEK.start, end=WEEK.end
-    )
-    with pytest.raises(ValidationError, match="mixed-benefit couple"):
-        _with(household, benefit_spells=(spell,))
-    # The pair format can assert it; the adapter refuses it rather than build
-    # a household the pair checks would flag (test_combined flags the pair).
+def test_a_mixed_benefit_couple_on_a_single_family_is_flagged_as_the_pair_is() -> None:
+    # The AS spec case mixed_benefit_couple_is_unsupported is such a household,
+    # so it must stay representable (ADR-0017 section 3's round trip).
     pair = CombinedHouseholdScenario(
         wff=_wff(),
         accommodation_supplement=_as(claimant_category=ClaimantCategory.MIXED_BENEFIT_COUPLE),
         as_claimant_is_wff_claimant_or_partner=FactStatus.VERIFIED,
     )
-    assert any(c.startswith("partner status") for c in shared_fact_contradictions(
-        pair, (TAX_YEAR.start, TAX_YEAR.end), WEEK
-    ))
-    with pytest.raises(AdapterRefused, match="mixed-benefit couple"):
-        household_from_combined(pair, household_id="h1", tax_year=TAX_YEAR, assessment_week=WEEK)
+    pair_result = _pair_run(pair)
+    assert any(c.startswith("partner status") for c in pair_result.contradictions)
+    result = _run(_household(claimant_category=ClaimantCategory.MIXED_BENEFIT_COUPLE))
+    assert isinstance(result, HouseholdResult)
+    assert result.combined.contradictions == (
+        "partner status: the family is single, the claimant's benefit in the week is a mixed-benefit couple's",
+    )
+    assert result.combined.original_wff == pair_result.original_wff
+    assert result.combined.original_accommodation_supplement == pair_result.original_accommodation_supplement
+    for component, original in zip(_components(result), _originals(result), strict=True):
+        assert component.outcome == ("unsupported" if original.outcome == "unsupported" else "needs_review")
 
 
 # ---------------------------------------------------------------- run_household

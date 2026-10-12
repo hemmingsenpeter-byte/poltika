@@ -15,10 +15,13 @@ rationale, so the author section below was not written blind.
   Q19 (4), (6), (7) (D36); [13 October record](../docs/programme/2026-10-13-pete-approvals.md)
   Q19 (5) (D38). Engineering choices: D39.
 - Commands (worktree `.venv`, `uv run --extra dev`):
-  - `pytest -q tests/unit/scenarios/test_household_run.py tests/unit/semantics`: 138 passed.
+  - `pytest -q tests/unit/scenarios/test_household_run.py tests/unit/scenarios/test_household_roundtrip.py
+    tests/unit/scenarios/test_combined.py tests/unit/semantics`: 241 passed.
   - `ruff check src tests`: pass. `mypy --strict src`: no issues in 107 files.
   - `git diff --check 19128cb..HEAD`: clean.
-  - Broad run (`tests/unit/semantics tests/unit/scenarios tests/regression`): see the PR description.
+  - Broad run at `9137244` (`pytest -m "not postgres" tests/unit/semantics tests/unit/scenarios
+    tests/regression tests/acceptance`): 756 passed, 9 skipped, 20 deselected (PostgreSQL; CI runs them).
+    An earlier broad run caught the mixed-couple round-trip break listed below.
 
 ## Independent review
 
@@ -29,9 +32,9 @@ rationale, so the author section below was not written blind.
   week inside the WFF year; main benefit against in-work eligibility and
   MC 6(b) (refused, Q19 (5)); main benefit against the MD 14/15 and MG 4
   protected months (flagged, conservative).
-- Claimant link, partner status and child count are retired for households.
-  Partner status and the link cannot be constructed; a child-count
-  difference is definitional and reported, not flagged.
+- Claimant link and child count are retired for households: the link cannot
+  be constructed; a child-count difference is definitional and reported.
+  Partner status is retired only if no household can make it fire.
 - Q19 (7): a verified relationship change in the WFF year is `unsupported`,
   ahead of any `needs_review`.
 - Q19 (6) applies once the household is canonical; not in this change.
@@ -45,6 +48,7 @@ rationale, so the author section below was not written blind.
 | R2: an unknown relationship fact changes nothing, and an excluded one refuses AS too | INTERPRETATION_AMBIGUITY (P3) | Not a defect; both choices recorded in D39 for Pete to reverse if he wishes |
 | R3: `tax_year` was checked only after a run, so a refusal could hide a wrong year | CODE_ERROR (P3) | Fixed: checked against `policy.yaml`'s reference period before anything runs; tested with and without a refusal |
 | R4: the "cannot be constructed" test name overstated the child-count case | TEST_ERROR (P3) | Renamed; the mixed-benefit couple case has its own test |
+| Author, broad suite: the validator refusing a mixed-benefit couple on a single family broke the AS-only round trip of spec case `mixed_benefit_couple_is_unsupported` (ADR-0017 section 3) | CODE_ERROR (caught by the round-trip test) | Validator and adapter refusal removed; partner status is kept for households, narrowed to that case, and flagged as the pair path flags it |
 
 No P1 or P2 remains.
 
@@ -54,8 +58,9 @@ The protected-month flags now fire on a claimant or partner main-benefit
 spell anywhere in the WFF year, a superset of the pair's AS-week trigger;
 they only withhold amounts. A household refusal does not run AS, where the
 pair format flags both results: every `run_household` refusal is a whole-run
-refusal. The pair adapter now refuses a single-family pair with a
-mixed-benefit couple claimant; no production code calls the adapter.
+refusal. Partner status cannot be retired outright: AS takes a single claimant with
+the mixed-benefit couple category (and returns `unsupported`), so a
+household must hold it. The kept check is narrowed to that case.
 
 ## Not verified
 
@@ -67,7 +72,7 @@ mixed-benefit couple claimant; no production code calls the adapter.
 ## Deferred Codex audit
 
 Recheck the final head for: the retired-check ledger (`HOUSEHOLD_CHECKS`,
-`RETIRED_FOR_HOUSEHOLD`) against ADR-0017 section 4; whether the
-enumeration test supports "cannot be constructed" for partner status and the
-claimant link; the widened protected-month flag (D39 (a)); and Q19 (7)'s
+`RETIRED_FOR_HOUSEHOLD`) against ADR-0017 section 4, including partner status kept rather than retired; whether the
+enumeration test supports "cannot be constructed" for the claimant link and
+"only via a mixed couple" for partner status; the widened protected-month flag (D39 (a)); and Q19 (7)'s
 household-fact form (D39 (c)).
