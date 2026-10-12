@@ -188,7 +188,7 @@ Routes: `POST /wff/calculate`, `POST /accommodation-supplement/calculate`,
 `POST /household/calculate`, `/analyst` (page, examples, pilot cases,
 evidence), `/microsim/*` (population, parameters and runs), `/analyst/microsim`
 (page), `/workbench/*` (backend registry, reform checks, result blocks for up to
-two options and Excel/CSV exports; ADR-0018 is proposed), and `/scenarios` (stored runs; these need
+two options and Excel/CSV exports; ADR-0018 accepted 12 October 2026), and `/scenarios` (stored runs; these need
 `POLTIKA_DATABASE_URL` and return 503 without it). `docs/pilot/GUIDE.md` runs it in Docker.
 
 The demo household through the API, with no server needed:

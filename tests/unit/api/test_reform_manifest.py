@@ -175,6 +175,27 @@ def test_a_code_change_that_alters_results_is_drifted_and_flagged(database_url: 
     )
 
 
+def test_a_population_change_with_a_code_change_names_the_population(
+    database_url: str,
+) -> None:
+    created = _run(_create("Code and population", "60014")["scenario_id"])
+    manifest, runs = _rerun(database_url, created)
+    option = manifest["options"][0]
+    stale = {
+        **manifest,
+        "options": [
+            {
+                **option,
+                "code": {**option["code"], "source_commit": "a" * 40},
+                "population": {**option["population"], "sha256": "0" * 64},
+            }
+        ],
+    }
+    assert verify_manifest(stale, runs) == ReformVerification(
+        "drifted", ("option[0].population_sha256",), code_changed=True
+    )
+
+
 def _rerun(database_url: str, created: dict[str, Any]) -> tuple[dict[str, Any], list[Any]]:
     """The stored manifest and a fresh run of the same options."""
     store = _store(database_url)
