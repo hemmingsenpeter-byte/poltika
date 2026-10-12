@@ -270,7 +270,9 @@ models:
       period, and compares the shared facts under the Task 28.3 interaction
       contract. There is no combined total and no income coupling. A shared-fact
       contradiction makes each non-unsupported component needs_review; existing
-      unsupported outcomes are preserved.
+      unsupported outcomes are preserved. A Household input (ADR-0017 Task 1.4,
+      D36 (4), D39) passes its own restated checks through the runner's `checks`
+      argument; the pair format always keeps the Task 28.3 checks.
     entry_points:
       - {module: poltika.scenarios.combined, function: run_combined_household}
     depends_on: [wff_engine, as_engine]
@@ -294,6 +296,7 @@ models:
         - {kind: golden_snapshot, path: tests/fixtures/golden_results_v0_1.json, count: 9}
       tests:
         - tests/unit/scenarios/test_combined.py
+        - tests/unit/scenarios/test_household_run.py
         - tests/unit/scenarios/test_interaction_spec_cases.py
         - tests/unit/scenarios/test_golden_households.py
         - tests/regression/test_wff_as_interaction_leaks.py
@@ -474,6 +477,14 @@ not_engines:
   - module: poltika.scenarios.record
     function: run_scenario
     reason: Runs one ScenarioRecord through run_combined_household and adds run identity. No second calculation path.
+    wraps: combined_runner
+  - module: poltika.scenarios.household_mappings
+    function: run_household
+    reason: >-
+      Maps one Household to the WFF and AS inputs (to_wff, to_as) and runs them
+      through run_combined_household with the household's restated checks
+      (ADR-0017 Task 1.4, D39). No second calculation path; mapping refusals are
+      returned before any run.
     wraps: combined_runner
   - module: poltika.scenarios.microsim.worked_examples
     function: run_examples

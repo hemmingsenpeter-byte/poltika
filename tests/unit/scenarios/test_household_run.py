@@ -229,26 +229,65 @@ def test_the_claimant_link_is_structural_and_a_carried_link_is_honoured() -> Non
     assert (excluded.outcome, excluded.code) == ("unsupported", "HOUSEHOLD_PAIR_LINK_EXCLUDED")
 
 
-def test_a_definitional_child_difference_is_reported_not_flagged() -> None:
-    # Two WFF children, one of them excluded under the AS definition. The pair
-    # format flags the count; the household records each child's status, so
-    # nothing disagrees and every component keeps its own result.
+def _two_listed_one_counted() -> tuple[object, Household]:
+    """Two WFF list entries, an AS count of one: the pair, and the household
+    the adapter builds from it (AS statuses derived from the count)."""
     wff = replace(_wff(), children=[*_wff().children, *_wff().children])
     pair = CombinedHouseholdScenario(
         wff=wff, accommodation_supplement=_as(), as_claimant_is_wff_claimant_or_partner=FactStatus.VERIFIED
     )
-    assert any(c.startswith("dependent children") for c in _pair_run(pair).contradictions)
+    return pair, _household(wff=wff)
 
-    result = _run(_household(wff=wff))
+
+def test_a_count_derived_child_difference_keeps_the_pair_gate() -> None:
+    # Codex #218 R1: the adapter's first-N marking is not membership (Q19 (2),
+    # D38), so the household path flags it exactly as the pair path does.
+    pair, household = _two_listed_one_counted()
+    assert household.family.as_child_statuses_from_count
+    pair_result = _pair_run(pair)  # type: ignore[arg-type]
+    result = _run(household)
+    assert isinstance(result, HouseholdResult)
+    assert result.combined.contradictions == ("dependent children: WFF lists 2, AS asserts 1",)
+    assert result.definitional_differences == ()
+    assert [c.outcome for c in _components(result)] == [
+        *(getattr(pair_result.wff, f.name).outcome for f in fields(WffResult)),
+        pair_result.accommodation_supplement.outcome,
+    ]
+    assert not [c for c in _components(result) if c.outcome == "calculated"]
+
+
+def test_a_supplied_per_child_difference_is_reported_not_flagged() -> None:
+    # The same facts with each child's AS status supplied by the caller: nothing
+    # disagrees, so every component keeps its own result.
+    _, adapted = _two_listed_one_counted()
+    family = adapted.family.model_copy(update={"as_child_statuses_from_count": False})
+    result = _run(_with(adapted, families=(family,)))
     assert isinstance(result, HouseholdResult)
     assert result.combined.contradictions == ()
     assert _components(result) == _originals(result)
     assert result.definitional_differences == (
         (
-            "dependent children: 2 under the WFF definition, 1 under the AS definition (each child's status is "
-            "recorded under each definition)"
+            "dependent children: 2 entries in the WFF child list (whole-year qualification verified for 2), "
+            "1 counted under the AS definition; the household records each child's status under each definition"
         ),
     )
+
+
+def test_the_difference_does_not_present_unverified_entries_as_children() -> None:
+    # Codex #218 R4: an entry whose whole-year qualification is unknown is
+    # counted as an entry, not as an established WFF child.
+    _, adapted = _two_listed_one_counted()
+    persons = tuple(
+        p.model_copy(update={"child_facts": p.child_facts.model_copy(update={"qualifies_whole_year": Assertion.UNKNOWN})})
+        if p.person_id == "child_2" and p.child_facts is not None
+        else p
+        for p in adapted.persons
+    )
+    family = adapted.family.model_copy(update={"as_child_statuses_from_count": False})
+    result = _run(_with(adapted, persons=persons, families=(family,)))
+    assert isinstance(result, HouseholdResult)
+    assert "whole-year qualification verified for 1" in result.definitional_differences[0]
+    assert result.combined.wff.family_tax_credit.outcome == "needs_review"
 
 
 def test_a_week_outside_the_year_is_still_flagged() -> None:
@@ -379,3 +418,39 @@ def test_a_relationship_change_outranks_a_carried_unknown_link() -> None:
     refusal = _run(both)
     assert isinstance(refusal, MappingRefusal)
     assert (refusal.outcome, refusal.code) == ("unsupported", "HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR")
+
+
+def test_the_named_evidence_does_not_depend_on_spell_order() -> None:
+    # Codex #218 R3: the same household (same content hash) listed in another
+    # order names the same spell.
+    pair = CombinedHouseholdScenario(
+        wff=replace(
+            _wff(),
+            partner_status=PartnerStatus.PARTNERED,
+            in_work_eligibility=FactStatus.UNKNOWN,
+            mc6b_disqualifying_payment=FactStatus.UNKNOWN,
+        ),
+        accommodation_supplement=_as(partner_status=None),
+        as_claimant_is_wff_claimant_or_partner=FactStatus.VERIFIED,
+    )
+    base = household_from_combined(pair, household_id="h1", tax_year=TAX_YEAR, assessment_week=WEEK)
+    facts = {k: v for k, v in base.asserted_facts.items() if k != LINK_FACT}
+    spells = (
+        hh.BenefitSpell(
+            person_id="claimant", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=date(2026, 9, 7), end=date(2026, 9, 14)
+        ),
+        hh.BenefitSpell(
+            person_id="partner",
+            benefit=hh.BenefitKind.SUPPORTED_LIVING_PAYMENT,
+            start=date(2026, 10, 5),
+            end=date(2026, 10, 12),
+        ),
+    )
+    forward = _with(base, asserted_facts=facts, benefit_spells=spells)
+    reverse = _with(base, asserted_facts=facts, benefit_spells=spells[::-1])
+    assert forward.content_sha256() == reverse.content_sha256()
+    first, second = _run(forward), _run(reverse)
+    assert isinstance(first, HouseholdResult) and isinstance(second, HouseholdResult)
+    assert first.combined.contradictions == second.combined.contradictions
+    assert "'claimant' has jobseeker_support" in first.combined.contradictions[0]
+    assert _components(first) == _components(second)

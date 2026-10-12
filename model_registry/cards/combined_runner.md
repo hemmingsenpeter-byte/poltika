@@ -11,7 +11,7 @@ Generated from `model_registry/registry.yaml` by
 
 ## Purpose
 
-Runs one household through both module entry points, each for its own period, and compares the shared facts under the Task 28.3 interaction contract. There is no combined total and no income coupling. A shared-fact contradiction makes each non-unsupported component needs_review; existing unsupported outcomes are preserved.
+Runs one household through both module entry points, each for its own period, and compares the shared facts under the Task 28.3 interaction contract. There is no combined total and no income coupling. A shared-fact contradiction makes each non-unsupported component needs_review; existing unsupported outcomes are preserved. A Household input (ADR-0017 Task 1.4, D36 (4), D39) passes its own restated checks through the runner's `checks` argument; the pair format always keeps the Task 28.3 checks.
 
 ## Methods
 
@@ -38,6 +38,7 @@ Validation cases:
 Tests:
 
 - `tests/unit/scenarios/test_combined.py`
+- `tests/unit/scenarios/test_household_run.py`
 - `tests/unit/scenarios/test_interaction_spec_cases.py`
 - `tests/unit/scenarios/test_golden_households.py`
 - `tests/regression/test_wff_as_interaction_leaks.py`

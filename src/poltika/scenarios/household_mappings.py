@@ -187,6 +187,12 @@ _WFF_MAIN_BENEFITS = frozenset(
 _WFF_NO_MAIN_BENEFIT_FACTS = ("wff.in_work_eligibility", "wff.mc6b_disqualifying_payment")
 
 
+def _spell_order(spell: hh.BenefitSpell) -> tuple[date, date, str, str]:
+    # The canonical order (`Household.content_sha256` sorts spells), so the
+    # evidence a message names never depends on the order spells were listed.
+    return (spell.start, spell.end, spell.person_id, spell.benefit.value)
+
+
 def _main_benefit_in_year(
     household: Household, person_ids: tuple[str, ...], tax_year: DatePeriod, pair_week: AssessmentWeek | None
 ) -> MappingRefusal | None:
@@ -204,7 +210,7 @@ def _main_benefit_in_year(
     if not asserted:
         return None
     claimant_id = household.family.claimant_id
-    for spell in household.benefit_spells:
+    for spell in sorted(household.benefit_spells, key=_spell_order):
         if (
             pair_week is not None
             and spell.person_id == claimant_id
@@ -464,10 +470,15 @@ def to_combined(
 # the others flag every component as the pair checks do. Partner status is
 # kept, narrowed: both policies read the one family's partner status, but a
 # single family can still record a mixed-benefit couple benefit in the week
-# (an AS input the AS engine itself takes, and returns `unsupported`).
+# (an AS input the AS engine itself takes, and returns `unsupported`). The
+# child count is kept where the AS statuses came from a count alone
+# (`Family.as_child_statuses_from_count`, Q19 (2)); with per-child statuses
+# the caller supplied, a different count is a definitional difference,
+# reported in `HouseholdResult.definitional_differences`, not flagged.
 HOUSEHOLD_CHECKS: tuple[str, ...] = (
     "AS assessment week inside the WFF year",
     "partner status",
+    "dependent children count",
     "main benefit vs WFF in-work eligibility",
     "main benefit vs WFF MC 6(b)",
     "main benefit vs WFF MD 14/15 protected family tax credit",
@@ -478,10 +489,6 @@ HOUSEHOLD_CHECKS: tuple[str, ...] = (
 RETIRED_FOR_HOUSEHOLD: dict[str, str] = {
     "precondition: AS claimant is the WFF claimant or their partner": (
         "both mappings read the one family's claimant"
-    ),
-    "dependent children count": (
-        "both mappings read the one child list; each child's AS status is its own fact, so a different "
-        "count is a definitional difference, reported in `HouseholdResult.definitional_differences`"
     ),
 }
 # WFF assertions that no protected month applies, flagged against any
@@ -504,7 +511,7 @@ class HouseholdResult:
 
 
 def _household_contradictions(
-    household: Household, wff_period: tuple[date, date], week: AssessmentWeek
+    household: Household, scenario: CombinedHouseholdScenario, wff_period: tuple[date, date], week: AssessmentWeek
 ) -> tuple[str, ...]:
     """The kept checks of `HOUSEHOLD_CHECKS` that flag components."""
     found: list[str] = []
@@ -524,10 +531,16 @@ def _household_contradictions(
         found.append(
             "partner status: the family is single, the claimant's benefit in the week is a mixed-benefit couple's"
         )
+    listed = len(scenario.wff.children)
+    as_count = scenario.accommodation_supplement.dependent_children_count
+    if family.as_child_statuses_from_count and as_count is not None and as_count != listed:
+        # The pair check's own words: which listed children the AS count
+        # covers is not known, so this is no definitional difference.
+        found.append(f"dependent children: WFF lists {listed}, AS asserts {as_count}")
     people = (family.claimant_id, family.partner_id)
     in_year = [
         s
-        for s in household.benefit_spells
+        for s in sorted(household.benefit_spells, key=_spell_order)
         if s.person_id in people
         and s.benefit in _WFF_MAIN_BENEFITS
         and s.start < wff_period[1]
@@ -596,9 +609,9 @@ def run_household(
         return as_
 
     def checks(
-        _scenario: CombinedHouseholdScenario, wff_period: tuple[date, date], week: AssessmentWeek
+        scenario: CombinedHouseholdScenario, wff_period: tuple[date, date], week: AssessmentWeek
     ) -> tuple[str, ...]:
-        return _household_contradictions(household, wff_period, week)
+        return _household_contradictions(household, scenario, wff_period, week)
 
     combined = run_combined_household(
         wff_policy_dir,
@@ -616,12 +629,16 @@ def run_household(
         checks=checks,
     )
     differences: tuple[str, ...] = ()
-    if as_.dependent_children_count is not None and as_.dependent_children_count != len(wff.children):
+    as_count = as_.dependent_children_count
+    if not household.family.as_child_statuses_from_count and as_count is not None and as_count != len(wff.children):
+        # Entries, not established WFF children: a listed child's whole-year
+        # qualification may be unverified, which WFF's own result shows.
+        verified = sum(c.qualifies_whole_year is FactStatus.VERIFIED for c in wff.children)
         differences = (
             (
-                f"dependent children: {len(wff.children)} under the WFF definition, "
-                f"{as_.dependent_children_count} under the AS definition (each child's status is recorded "
-                "under each definition)"
+                f"dependent children: {len(wff.children)} entries in the WFF child list (whole-year "
+                f"qualification verified for {verified}), {as_count} counted under the AS definition; the "
+                "household records each child's status under each definition"
             ),
         )
     return HouseholdResult(combined=combined, definitional_differences=differences)
@@ -832,6 +849,7 @@ def _household_from(
                 dependent_child_ids=tuple(child_ids),
                 wff_children_complete=wff_complete,
                 as_children_complete=as_complete,
+                as_child_statuses_from_count=as_count is not None,
             ),
         ),
         housing=housing,

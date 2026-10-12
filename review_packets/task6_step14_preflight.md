@@ -50,7 +50,18 @@ rationale, so the author section below was not written blind.
 | R4: the "cannot be constructed" test name overstated the child-count case | TEST_ERROR (P3) | Renamed; the mixed-benefit couple case has its own test |
 | Author, broad suite: the validator refusing a mixed-benefit couple on a single family broke the AS-only round trip of spec case `mixed_benefit_couple_is_unsupported` (ADR-0017 section 3) | CODE_ERROR (caught by the round-trip test) | Validator and adapter refusal removed; partner status is kept for households, narrowed to that case, and flagged as the pair path flags it |
 
-No P1 or P2 remains.
+No P1 or P2 remains from the author preflight.
+
+### GPT/Codex review at `e9fa1ec` (13 October 2026)
+
+[Independent mapping review](https://github.com/hemmingsenpeter-byte/poltika/pull/218#pullrequestreview-5495644121): blocked, no P1.
+
+| Finding | Classification | Fix |
+|---|---|---|
+| R1 P2: adapter first-N AS markers (Q19 (2): not membership) were treated as per-child facts, clearing the child-count gate; two WFF entries / AS count one gave calculated FTC, MFTC and AS | CODE_ERROR | `Family.as_child_statuses_from_count`, set by the adapter; `run_household` keeps the pair's child-count gate for it and reports a definitional difference only for caller-supplied statuses. "dependent children count" moves from retired to kept (narrowed). Tests for both origins |
+| R2 P2: `run_household` unclassified in the model registry; three registry tests failed | CODE_ERROR | Listed as a `combined_runner` wrapper; the runner's purpose and tests record the `checks` hook; card regenerated. Registry suite: 22 passed |
+| R3 P3: the named benefit evidence followed tuple order, not the canonical order the content hash uses | CODE_ERROR | Spells are read in canonical order in both the protected-month flag and the Q19 (5) refusal; shuffled-spell test |
+| R4 P3: the difference message called unverified WFF entries children "under the WFF definition" | CODE_ERROR | Message counts list entries and how many have verified whole-year qualification; test with an unknown entry |
 
 ## Author response
 
@@ -71,7 +82,7 @@ household must hold it. The kept check is narrowed to that case.
 
 ## Deferred Codex audit
 
-Recheck the final head for: the retired-check ledger (`HOUSEHOLD_CHECKS`,
+Recheck the final head (after the #216 rebase) for R1–R4 above, and for: the retired-check ledger (`HOUSEHOLD_CHECKS`,
 `RETIRED_FOR_HOUSEHOLD`) against ADR-0017 section 4, including partner status kept rather than retired; whether the
 enumeration test supports "cannot be constructed" for the claimant link and
 "only via a mixed couple" for partner status; the widened protected-month flag (D39 (a)); and Q19 (7)'s
