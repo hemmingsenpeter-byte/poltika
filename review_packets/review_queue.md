@@ -138,7 +138,7 @@ were independently reviewed by Claude Code with no blocking findings
 
 | PR | Release | Scope | Touches | Risk | Status |
 | --- | --- | --- | --- | --- | --- |
-| delivery PR pending (Codex research batch) | programme | Tasks 1–4: two independent reviews and Q19/Q2/Q3 primary-source research, batched under D28 | `reviews/`, `docs/research/`, queue only | Medium | open — GPT/Codex authored documentation awaits Claude review and Pete's Tier C decisions; no code, policy specifications, protected values, test cases or regression pins changed |
+| [#215](https://github.com/hemmingsenpeter-byte/poltika/pull/215) | programme | Tasks 1–4: two independent reviews and Q19/Q2/Q3 primary-source research, batched under D28 | `reviews/`, `docs/research/`, queue only | Medium | open — GPT/Codex authored documentation awaits Claude review and Pete's Tier C decisions; no code, policy specifications, protected values, test cases or regression pins changed |
 
 ## Plan and decision PRs (not counted against the cap)
 
