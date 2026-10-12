@@ -144,14 +144,35 @@ def test_verify_names_exactly_a_changed_population_id(database_url: str) -> None
     ]
 
 
-def test_verify_names_a_changed_code_identity(database_url: str) -> None:
+def test_a_changed_code_identity_alone_is_identical_and_flagged(database_url: str) -> None:
+    """PETE_QUEUE Q21 (d): code identity is information, not drift."""
     created = _run(_create("Code drift", "60010")["scenario_id"])
     code = replace(running_code_identity(), source_commit="a" * 40)
     result = _store(database_url).verify_reform_run(
         created["run_id"], _population(), WFF_POLICY_DIR, AS_POLICY_DIR, code=code
     )
-    assert result.status == "drifted"
-    assert "option[0].code" in result.changed
+    assert result == ReformVerification("identical", (), code_changed=True)
+    unchanged = _verify(database_url, created["run_id"])
+    assert unchanged == ReformVerification("identical", (), code_changed=False)
+
+
+def test_a_code_change_that_alters_results_is_drifted_and_flagged(database_url: str) -> None:
+    created = _run(_create("Code and results", "60013")["scenario_id"])
+    manifest, runs = _rerun(database_url, created)
+    option = manifest["options"][0]
+    stale = {
+        **manifest,
+        "options": [
+            {
+                **option,
+                "code": {**option["code"], "source_commit": "a" * 40},
+                "option_results_sha256": "0" * 64,
+            }
+        ],
+    }
+    assert verify_manifest(stale, runs) == ReformVerification(
+        "drifted", ("option[0].results",), code_changed=True
+    )
 
 
 def _rerun(database_url: str, created: dict[str, Any]) -> tuple[dict[str, Any], list[Any]]:
