@@ -5,7 +5,7 @@ not its implementation changes. No value here is approved for a test.
 
 ## Review inputs and evidence labels
 
-**Fact (repository observation):** #211's head was
+**AI hypothesis — Fact candidate (repository observation):** #211's head was
 `f7313bedb52c747433b86daf2b5d72b6a7e44f5e`, merged as
 `ac08ecc1d65342884b4b82d3cd0a688799959c77`. The proposal is unchanged between
 that merge and the reviewed `origin/main` snapshot
@@ -15,7 +15,7 @@ Contracts: [WFF specification](../policy_specs/working_for_families/specificatio
 and [AS specification](../policy_specs/accommodation_supplement/specification.md),
 including AS DEC-001 and the policy 0.1.1 selector repair.
 
-**Fact (method record):** this root pass was not fully blind. A headings scan
+**AI hypothesis — Fact candidate (method record):** this root pass was not fully blind. A headings scan
 unexpectedly displayed several proposed values, and input extraction included
 source/spec summaries. Primary-source derivations were recorded before reading
 the full rationale. A separate input-only derivation is recorded below; it
@@ -26,7 +26,7 @@ must not be described as a blind root review.
 Scenarios and the cited rule candidates. New legal readings and review findings
 are **AI hypothesis**, with intended promotion class **Rule** where they state
 law, pending independent review/Pete's interpretation gate. Bibliographic and
-git observations are **Fact**. Labels do not turn an attestation into an
+git observations are **AI hypothesis**, with intended promotion class **Fact**. Labels do not turn an attestation into an
 independently verified household fact. Test-expectation classification remains
 deferred under constitution Decision 1; nothing is promoted here.
 
@@ -35,7 +35,7 @@ deferred under constitution Decision 1; nothing is promoted here.
 All were retrieved on 12 October 2026. Official legislation HTML was downloaded
 directly with a browser user agent after browser retrieval failed. S1–S4 are
 rule candidates (current evidence class **AI hypothesis**, intended **Rule**);
-the titles, displayed version dates and passage locations are **Fact**.
+the titles, displayed version dates and passage locations are **AI hypothesis**, intended **Fact**.
 
 | ID / URL | Version / locator | What the retrieved passage supports |
 | --- | --- | --- |
@@ -46,9 +46,9 @@ the titles, displayed version dates and passage locations are **Fact**.
 | S5 [MSD non-beneficiary thresholds](https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/non-beneficiaries-current-01.html) | Table explicitly at 1 April 2026; single and couple-with-children rent/board rows | Weekly entry thresholds $93 and $205; Area 1 caps $165 and $305. Candidate **Rule** from agency rates, currently **AI hypothesis** pending this document's review. |
 | S6 [MSD non-beneficiary income cut-outs](https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/income-cut-out-points-for-non-beneficiaries-curren.html) | Table explicitly at 1 April 2026; Area 1 income-threshold column | Weekly thresholds $693 for single and $1,117 for couple with children. Candidate **Rule**, currently **AI hypothesis**. No inversion from a rounded cut-out is used. |
 | S7 [MSD Jobseeker AS thresholds](https://map.workandincome.govt.nz/map/deskfile/extra-help-information/accommodation-supplement-tables/jobseeker-support-current-01.html) | Table explicitly at 1 April 2026; ordinary single and couple-with-children rent/board rows | $93 and $205 entry thresholds; the protected woman-alone row differs. Candidate **Rule**, currently **AI hypothesis**. |
-| S8 [MSD non-beneficiary assets](https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/assets-non-beneficiaries-01.html), [asset example](https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/example-calculating-income-from-assets-non-benefic-01.html) | Live guidance as retrieved 12 October 2026; no revision date shown. Opening asset paragraphs, SWIFTT process; example calculation | **Fact:** MSD repeats the $100 wording and illustrates an exact $400 excess producing $4 weekly income. It supplies no fractional-block example. It cannot settle the disputed rows. |
+| S8 [MSD non-beneficiary assets](https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/assets-non-beneficiaries-01.html), [asset example](https://map.workandincome.govt.nz/map/income-support/extra-help/accommodation-supplement/example-calculating-income-from-assets-non-benefic-01.html) | Live guidance as retrieved 12 October 2026; no revision date shown. Opening asset paragraphs, SWIFTT process; example calculation | **AI hypothesis — Fact candidate:** MSD repeats the $100 wording and illustrates an exact $400 excess producing $4 weekly income. It supplies no fractional-block example. It cannot settle the disputed rows. |
 
-**Fact:** IRD guidance was checked separately: [FTC](https://www.ird.govt.nz/working-for-families/types/family-tax-credit),
+**AI hypothesis — Fact candidate:** IRD guidance was checked separately: [FTC](https://www.ird.govt.nz/working-for-families/types/family-tax-credit),
 [MFTC](https://www.ird.govt.nz/working-for-families/types/minimum-family-tax-credit),
 [Best Start](https://www.ird.govt.nz/best-start), live pages labelled last updated
 25 February 2026. Locators: FTC calculation/weekly or fortnightly payments;
@@ -109,19 +109,19 @@ The relevant queue scope remains gated against promotion of those values.
 
 ## Verification and limits
 
-**Fact (method):** checked dated primary HTML, separately retrieved agency
+**AI hypothesis — Fact candidate (method):** checked dated primary HTML, separately retrieved agency
 guidance, compared the unchanged proposal at the pinned merge/main snapshots,
 and performed exact arithmetic outside the production engine. No protected
 file, production source, test case or regression pin was changed. No external
 policy engine was read. Future 2027 rules, payment execution and administrative
 income-input precision were not verified by this review.
 
-**Fact (method correction):** the root extraction initially missed the couple variant's
+**AI hypothesis — Fact candidate (method correction):** the root extraction initially missed the couple variant's
 separate cost 401 and scratch arithmetic used 400. The displayed derivation
 has been corrected to the proposal's actual Scenario; that scratch value is
 not a finding against the author.
 
-**Fact (input-only cross-check):** a fresh Codex agent received only the six
+**AI hypothesis — Fact candidate (input-only cross-check):** a fresh Codex agent received only the six
 Scenario descriptions, primary-source locations and existing scope decisions.
 It recorded exact arithmetic before opening the proposal or this root review.
 That independent derivation agrees with every displayed conditional amount,
@@ -131,7 +131,7 @@ found no additional material defect in this review. This supplies an input-first
 derivation of Claude's proposal; it is a same-model supporting check of the
 new Codex-authored review document, not Claude's required review of this PR.
 
-**Fact (REVIEWER_ERROR correction):** the fresh agent initially described
+**AI hypothesis — Fact candidate (REVIEWER_ERROR correction):** the fresh agent initially described
 failed asset eligibility as “no entitlement / zero”. After comparison with
 the accepted Poltika contract it recorded the correction explicitly:
 `unsupported`, no numeric value. The proposal's case 5 is correct. The frozen
