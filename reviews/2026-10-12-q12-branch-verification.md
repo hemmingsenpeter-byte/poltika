@@ -2,8 +2,8 @@
 
 Pete approved deleting the merged remote branches on 12 October 2026
 ([record](../docs/programme/2026-10-12-pete-approvals.md), Q12). Claude Code
-checked the list against `origin` that day; the classifier in the Claude Code
-session would not run the deletion, so Pete runs it (command below).
+checked the list against `origin` that day, re-checked that no tip had moved,
+and deleted all 91 branches on 12 October with the command below.
 
 - **87 branches from the 7 October list** (`reviews/2026-10-07-closeout.md`):
   every tip still equals `refs/pull/N/head` of its squash-merged PR, so each PR
@@ -19,7 +19,7 @@ session would not run the deletion, so Pete runs it (command below).
   record.
 - **`feat/b016-responsive-20261011`** was already deleted when #209 merged.
 
-To delete the 91 branches, from a checkout:
+The command that deleted them, run from a checkout:
 
 ```sh
 git fetch --prune origin

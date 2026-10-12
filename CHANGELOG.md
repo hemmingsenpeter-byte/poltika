@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased (pilot data notice, research briefs, #213 review follow-ups)
+
+- Web: a notice under the header on every page says the shared pilot holds
+  synthetic or public non-personal data only, and that anyone with the login
+  can see every stored scenario (PETE_QUEUE Q20; `docs/pilot/HOSTING.md`).
+- `review_packets/research_briefs_20261012.md`: GPT/Codex briefs for Q2 (Māori
+  data governance), Q3 (IDI access route) and Q19 parts 1, 2 and 5 (household
+  mapping readings). They ask for sourced readings only, with no outreach or
+  application.
+- Q12 done: 91 merged remote branches were deleted after re-checking their
+  tips, and 12 clean merged local worktrees were removed. PETE_QUEUE and the
+  dated record now show what is done and what remains, including the Render
+  setup found for Q15.
+- #213 review P3s: current-state docs now show ADR-0018 as accepted, and a
+  test covers a code change together with a population change. No
+  calculated amount changes.
+
 ## Unreleased (Pete's 12 October 2026 decisions recorded; replay code identity)
 
 - Pete's decisions on Q2–Q5, Q7 and Q9–Q22 are recorded in
