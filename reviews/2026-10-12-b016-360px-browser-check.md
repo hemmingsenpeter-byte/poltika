@@ -58,3 +58,24 @@ app state above. Web lint, typecheck and vitest: 157 passed.
 - Follow-up on small targets, same branch: header link 83x22-23 to 83x28; provenance buttons 21 to 24px tall; Technical-tab model links 19 to 24px; the household example radios (radios, not checkboxes) 12-13px to 24x24. Chromium 360px re-measure.
 - **Open for Pete: a human check on a real phone** (iOS Safari and Android Chrome): the drawer, tab strip swiping,
   scroll regions with a finger, and the browser address-bar resize.
+
+## Re-measure after #210 and #211, 12 October 2026
+
+Reviewer: Claude Code. Basis: branch `fix/followups-2-20261012` (on #211's head `f7313be`, which includes #210's
+Task 14 audit-tab manifest). Same setup as above: a static export served by the real FastAPI app against a throwaway
+PostgreSQL with the synthetic population, one stored run, viewport 360x740, scale 2, touch on; Playwright 1.49 with
+Chromium 1148 and Playwright 1.40 with WebKit 17.4. Every visible link, button, radio, checkbox, tab, select and
+`summary` was measured on Home, Scenarios, New scenario (household and policy change), Models, Data and all seven
+workspace tabs (13 states per engine). Headless engines, not a phone.
+
+- The #211 targets hold in both engines: header link 28px tall, provenance buttons, Technical-tab links, source links
+  and household radios 24px or more.
+- Found and fixed here: the Audit tab scrolled sideways (document 475px wide) because the run manifest's notes carry a
+  64-character SHA-256 that could not wrap; the note line now has `break-words`. #210 added that block after the
+  first check above.
+- Found and fixed here: `summary` toggles below 24px: "Check evidence" on the Evidence tab (15px) and "Sources and
+  assumptions" on Data (18-19px); "Original settings" on an edited scenario gets the same `min-h-[24px]` (not measured:
+  it appears only when editing a stored scenario).
+- After the fixes, both engines: no horizontal page scroll in any of the 13 states, and no target under 24px except
+  the inline "classic calculator" link inside a sentence (107x16), which SC 2.5.8's inline exception covers.
+- Still open for Pete: the real-phone check in the item above.

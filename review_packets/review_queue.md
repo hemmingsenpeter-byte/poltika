@@ -129,6 +129,7 @@ were independently reviewed by Claude Code with no blocking findings
 | #113 | v0.2 | Synthetic development population derived from #111 (`calibration.py`, `calibrate_cli.py`, spec); fresh same-model check in the PR comment, A10-A11 named in the release-docs PR | Scenarios, data boundary | Medium | reviewed (GPT/Codex; Pete confirmed 27 Sep 2026) |
 | #112 | v0.3 | Codex-authored fixes F1-F3 for #109 and the catalogue wording review | Scenarios, policy_specs | Medium | reviewed (Claude Code, PR #112 comment) |
 | #187 | programme | Task B0.1.2: durable reform scenarios and the web workspace view (which stored amounts appear, in which units, and how not-calculated values read) | API, scenarios store, migration 0002 | Medium | reviewed ([reviews/2026-10-08-pr187.md](../reviews/2026-10-08-pr187.md)); Claude-authored `278ef3d` reviewed by Codex, Codex fixes independently Claude-reviewed through implementation head `199ba20`; no unresolved P1/P2. Final-head CI remains required |
+| #211 (boundary proposal only) | programme | Six WFF and AS boundary cases, proposed by Claude Code ([proposal](wff_as_boundary_cases_proposal.md)); a proposal, not test values | `review_packets/` only | Low | open — GPT/Codex review owed: re-derive each case from its cited primary source before any becomes a test. Promoting a case to a protected expected value follows `doctrine/test-doctrine.md` and needs Pete. The rest of #211 changes no amount and needs no row |
 
 ## Open PRs awaiting pre-merge review (not merged review debt)
 

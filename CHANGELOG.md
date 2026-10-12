@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased (#211 review follow-ups and 360px re-measure, 12 October 2026)
+
+- `POST /api/v1/scenarios/{id}/runs` maps a stored reform that no longer
+  validates to the coded 503 `scenario_storage_unavailable` (it was a bare
+  500), like the other retained-data sites; regression test added.
+- Web, from a Chromium and WebKit re-measure at 360px: the Audit tab's run
+  manifest notes wrap (a SHA-256 widened the page to 475px), and `summary`
+  toggles are at least 24px tall. A source-link 24px test is added.
+  `review_packets/review_queue.md` gains a GPT/Codex row for the WFF/AS
+  boundary proposal. No calculated amount changes.
+
 ## Unreleased (batched follow-ups to #209 and #210, 12 October 2026)
 
 - Task 14 follow-ups: tests for real-input drift, code-identity drift, an

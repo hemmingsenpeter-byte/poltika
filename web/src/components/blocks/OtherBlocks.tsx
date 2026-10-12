@@ -102,7 +102,7 @@ export function SourcesList({ block }: { block: BlockOf<"sources"> }) {
             ) : null}
             {s.check_evidence.length > 0 ? (
               <details className="mt-2 text-xs">
-                <summary className="cursor-pointer">Check evidence</summary>
+                <summary className="min-h-[24px] cursor-pointer">Check evidence</summary>
                 <ul className="mt-1 list-disc space-y-1 pl-5 text-muted">
                   {s.check_evidence.map((e, i) => (
                     <li key={i}>{e}</li>
@@ -132,7 +132,7 @@ export function AuditRecord({ block }: { block: BlockOf<"audit_record"> }) {
                 <CopyButton text={f.value} label={`Copy ${f.label}`} />
               </span>
             )}
-            {f.note ? <span className="mt-0.5 block text-xs text-muted">{f.note}</span> : null}
+            {f.note ? <span className="mt-0.5 block break-words text-xs text-muted">{f.note}</span> : null}
           </dd>
         </div>
       ))}

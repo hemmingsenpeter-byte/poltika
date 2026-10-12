@@ -422,6 +422,15 @@ def test_retained_definition_that_no_longer_validates_is_a_coded_503(
     assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
 
 
+def test_a_new_run_of_a_retained_reform_that_no_longer_validates_is_a_coded_503(
+    retained_reform: SimpleNamespace,
+) -> None:
+    retained_reform.scenario.definition["options"] = [{"label": "Option A", "reform": {}}]
+    response = client.post(f"/api/v1/scenarios/{RETAINED_SID}/runs")
+    assert response.status_code == 503
+    assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
+
+
 def test_validation_error_outside_retained_data_is_not_a_storage_fault(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

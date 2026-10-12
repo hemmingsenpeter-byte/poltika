@@ -192,7 +192,7 @@ export function ReformBuilder({
   )) {
     return <div className="space-y-4">
       <Unavailable title="These settings cannot be edited here" reason="This form supports one parameter per option, for up to two options from the current supported policies. The original settings are shown below." />
-      <details><summary className="cursor-pointer text-sm">Original settings</summary><pre className="mt-2 overflow-auto text-xs">{JSON.stringify(initial, null, 2)}</pre></details>
+      <details><summary className="min-h-[24px] cursor-pointer text-sm">Original settings</summary><pre className="mt-2 overflow-auto text-xs">{JSON.stringify(initial, null, 2)}</pre></details>
     </div>;
   }
   return <ReformForm registry={registry.data} compare={compare} navigate={navigate} initial={initial} />;
