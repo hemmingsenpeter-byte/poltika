@@ -14,6 +14,9 @@ then.
   scope, selected under Pete's 24 September "resolve and proceed" delegation.
 - [DEC-003-msd-paid-wff-income-exclusion.md](DEC-003-msd-paid-wff-income-exclusion.md):
   identified statutory WFF income exclusion independent of IRD/MSD payer.
+- [DEC-004-asset-imputation-complete-steps.md](DEC-004-asset-imputation-complete-steps.md):
+  s 423(3) imputes income only for complete $100 steps of cash assets over the
+  threshold (Pete, 13 October 2026, after the B4 escalation).
 
 These decisions do not approve unreviewed implementation or numeric
 parameters. See each artifact's status and residual uncertainty.
