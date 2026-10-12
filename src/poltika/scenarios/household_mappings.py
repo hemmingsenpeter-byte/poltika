@@ -63,7 +63,7 @@ from poltika.engines.simulator.wff import (
     VerifiedIncome,
     WffScenario,
 )
-from poltika.policy.loader import PolicyParameterSet
+from poltika.policy.loader import PolicyParameterSet, load_policy_spec
 from poltika.scenarios.combined import (
     CombinedHouseholdScenario,
     CombinedResult,
@@ -159,6 +159,17 @@ def _q10_refusal(
     return None
 
 
+def _relationship_refusal(household: Household) -> MappingRefusal | None:
+    if _status(household, RELATIONSHIP_FACT) is not FactStatus.EXCLUDED:
+        return None
+    return MappingRefusal(
+        "unsupported",
+        "HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR",
+        "the claimant's relationship changed during the WFF year; WFF covers a whole year with one "
+        "relationship period only (Q19 (7), D36)",
+    )
+
+
 def _invalid(reason: str) -> MappingRefusal:
     return MappingRefusal("needs_review", "HOUSEHOLD_MAPPING_INVALID_FACTS", reason)
 
@@ -229,14 +240,10 @@ def _to_wff(
     household: Household, tax_year: DatePeriod, pair_week: AssessmentWeek | None
 ) -> WffScenario | MappingRefusal:
     family = household.family
-    if _status(household, RELATIONSHIP_FACT) is FactStatus.EXCLUDED:
-        # First: unsupported outranks every needs_review gate below.
-        return MappingRefusal(
-            "unsupported",
-            "HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR",
-            "the claimant's relationship changed during the WFF year; WFF covers a whole year with one "
-            "relationship period only (Q19 (7), D36)",
-        )
+    # First: unsupported outranks every needs_review gate below.
+    changed = _relationship_refusal(household)
+    if changed is not None:
+        return changed
     children = tuple(household.person(child_id) for child_id in family.dependent_child_ids)
 
     # policy.yaml `children`; WFF-01 (dependent child, whole-year care),
@@ -543,6 +550,16 @@ def run_household(
     """Both policies for a household input (ADR-0017 Task 1.4, D36 (4)).
     `tax_year` must be the WFF policy's assessed year. A refusal is
     returned, never a partial run."""
+    reference = load_policy_spec(wff_policy_dir / "policy.yaml").reference_period
+    if (tax_year.start, tax_year.end) != (reference.from_, reference.to):
+        raise ValueError(
+            f"tax_year [{tax_year.start}, {tax_year.end}) is not the WFF policy's assessed year "
+            f"[{reference.from_}, {reference.to})"
+        )
+    # unsupported outranks the link's needs_review below.
+    changed = _relationship_refusal(household)
+    if changed is not None:
+        return changed
     # A household needs no claimant link: its one family supplies it. A link
     # fact the household does carry (an adapter copies it from a pair) is
     # honoured: anything but verified is not this household's fact to drop.
@@ -588,11 +605,6 @@ def run_household(
         as_parameters=as_parameters,
         checks=checks,
     )
-    if combined.wff_period != (tax_year.start, tax_year.end):
-        raise ValueError(
-            f"tax_year [{tax_year.start}, {tax_year.end}) is not the WFF policy's assessed year "
-            f"[{combined.wff_period[0]}, {combined.wff_period[1]})"
-        )
     differences: tuple[str, ...] = ()
     if as_.dependent_children_count is not None and as_.dependent_children_count != len(wff.children):
         differences = (

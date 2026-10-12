@@ -157,7 +157,7 @@ def _households_over_partner_and_benefit() -> list[Household]:
     return built
 
 
-def test_retired_checks_cannot_be_constructed_from_a_household() -> None:
+def test_partner_and_link_checks_cannot_fire_and_a_child_count_difference_is_definitional() -> None:
     # The pair checks run over every mapped household: none can produce a
     # partner-status or claimant-link contradiction, and a different child
     # count only ever means a child excluded under the AS definition.
@@ -319,10 +319,15 @@ def test_a_benefit_spell_in_the_year_flags_a_verified_no_protected_month(fact: s
     assert isinstance(quiet, HouseholdResult) and quiet.combined.contradictions == ()
 
 
-def test_the_tax_year_must_be_the_policy_year() -> None:
+@pytest.mark.parametrize("refused", [False, True])
+def test_the_tax_year_must_be_the_policy_year(refused: bool) -> None:
+    # Checked before anything runs, so a refusal cannot hide a wrong year.
+    household = _household()
+    if refused:
+        household = _with(household, asserted_facts={**household.asserted_facts, RELATIONSHIP_FACT: "excluded"})
     with pytest.raises(ValueError, match="not the WFF policy's assessed year"):
         run_household(
-            _household(),
+            household,
             tax_year=DatePeriod(start=date(2025, 4, 1), end=date(2026, 4, 1)),
             assessment_week=WEEK,
             wff_policy_dir=WFF_POLICY_DIR,
@@ -359,3 +364,14 @@ def test_an_unchanged_or_unknown_relationship_changes_no_mapping(value: str) -> 
     household = _household()
     stated = _with(household, asserted_facts={**household.asserted_facts, RELATIONSHIP_FACT: value})
     assert to_wff(stated, TAX_YEAR) == to_wff(household, TAX_YEAR)
+
+
+def test_a_relationship_change_outranks_a_carried_unknown_link() -> None:
+    household = _household()
+    both = _with(
+        household,
+        asserted_facts={**household.asserted_facts, RELATIONSHIP_FACT: "excluded", LINK_FACT: "unknown"},
+    )
+    refusal = _run(both)
+    assert isinstance(refusal, MappingRefusal)
+    assert (refusal.outcome, refusal.code) == ("unsupported", "HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR")
