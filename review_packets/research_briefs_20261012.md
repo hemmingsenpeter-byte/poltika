@@ -14,6 +14,9 @@ Pete reviews each result and decides.
   what the passage actually supports.
 - **Model memory is not authority.** A claim with no retrieved source is
   marked unverified (`CLAUDE.md`, "Ground truth").
+  The frameworks, Acts and publications these briefs name are starting points
+  suggested by Claude Code from memory, not sourced facts. Confirm each one,
+  its title, its owner and its current version, or drop it.
 - **Evidence classes:** classify every claim with the eight classes in
   `doctrine/epistemic-constitution.md`. Where sources conflict or are
   ambiguous, set out the competing readings and do not choose between them
@@ -83,15 +86,15 @@ place before applying?
 
 **Questions.**
 
-1. **Stock amounts in the Accommodation Supplement.** Is each stock amount
+- **Q19 (1): stock amounts in the Accommodation Supplement.** Is each stock amount
    (`NZD`) measured at a point in time or for the assessment week? This covers
    the cash-asset limits, the imputation thresholds and `cash_assets`. When is
    it measured?
-2. **Dependent child.** Compare the dependent-child definitions in Working for
+- **Q19 (2): dependent child.** Compare the dependent-child definitions in Working for
    Families and in the Accommodation Supplement, and say how they differ.
    Should `ChildFacts` hold one fact or two? What is the governing source on
    the AS side?
-3. **Main benefit and the WFF tax year.** For the restated main-benefit check,
+- **Q19 (5): main benefit and the WFF tax year.** For the restated main-benefit check,
    how does a weekly main-benefit spell relate to the WFF tax year? Which
    provisions govern how a main benefit affects each WFF component during part
    of a year?

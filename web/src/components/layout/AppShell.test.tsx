@@ -71,7 +71,9 @@ describe("AppShell mobile navigation drawer", () => {
 describe("AppShell pilot data notice (PETE_QUEUE Q20)", () => {
   it("tells every visitor the pilot holds synthetic or public non-personal data only", () => {
     render(<AppShell>content</AppShell>);
-    expect(screen.getByText(DATA_NOTICE)).toBeInTheDocument();
-    expect(DATA_NOTICE).toContain("synthetic or public non-personal data only");
+    const notice = screen.getByText(/synthetic or public non-personal data only/);
+    expect(notice).toHaveTextContent(DATA_NOTICE);
+    // Directly under the header, so it is the first thing after the brand on every page.
+    expect(screen.getByRole("banner").nextElementSibling).toBe(notice);
   });
 });
