@@ -78,7 +78,7 @@ export function SourcesList({ block }: { block: BlockOf<"sources"> }) {
           <li key={s.id} className="rounded-md border border-border bg-surface p-3 text-sm">
             <p className="font-medium">
               {s.url && isWebUrl(s.url) ? (
-                <a href={s.url} rel="noreferrer" target="_blank" className="underline underline-offset-2">
+                <a href={s.url} rel="noreferrer" target="_blank" className="inline-flex min-h-[24px] items-center underline underline-offset-2">
                   {s.title ?? s.id}
                 </a>
               ) : (
@@ -180,7 +180,7 @@ export function ModelReferences({ block }: { block: BlockOf<"model_ref"> }) {
     <ul className="space-y-2">
       {block.models.map((m) => (
         <li key={m.id} className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-surface p-3 text-sm">
-          <Link href={`/models/${m.id}`} className="font-medium underline underline-offset-2">
+          <Link href={`/models/${m.id}`} className="inline-flex min-h-[24px] items-center font-medium underline underline-offset-2">
             {m.name}
           </Link>
           <span className="text-xs text-muted">version {m.version}</span>

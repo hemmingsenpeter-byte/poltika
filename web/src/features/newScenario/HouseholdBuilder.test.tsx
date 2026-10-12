@@ -40,6 +40,11 @@ async function choose(navigate = vi.fn()) {
 }
 
 describe("HouseholdBuilder", () => {
+  it("example radios are at least 24px (WCAG 2.2 SC 2.5.8)", async () => {
+    render(<HouseholdBuilder navigate={vi.fn()} />);
+    expect(await screen.findByRole("radio", { name: "Example household" })).toHaveClass("size-[24px]");
+  });
+
   it("confirms the actual periods, household facts, sources and limitations before saving", async () => {
     service.create.mockResolvedValue({ scenario_id: "s", result_id: "r" });
     const { navigate } = await choose();

@@ -14,11 +14,13 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 from openpyxl import load_workbook
+from pydantic import ValidationError
 
 from poltika.api import v1_scenarios
 from poltika.api.household import HouseholdCalculationRequest, record_from_request
 from poltika.api.main import app
 from poltika.api.v1_blocks import CalculationChainBlock, ModelRefBlock, Notice
+from poltika.api.v1_scenarios import ScenarioItem
 from poltika.engines.assurance.provenance import build_combined_provenance_report
 from poltika.scenarios.record import CodeIdentity, canonical_json, result_payload, run_scenario
 from poltika.scenarios.store import StoredRun
@@ -272,7 +274,10 @@ def _retained_list(block_id: str) -> dict[str, Any]:
 
 @pytest.fixture
 def retained_reform(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
-    first = {**_reform("1234.567", "retained_reform-first"), "description": "First retained_reform option."}
+    first = {
+        **_reform("1234.567", "retained_reform-first"),
+        "description": "First retained_reform option.",
+    }
     first["overrides"].append(
         {
             "policy_id": "accommodation_supplement",
@@ -281,7 +286,10 @@ def retained_reform(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
             "value": "2.345",
         }
     )
-    second = {**_reform("1.2345", "retained_reform-second"), "description": "Second retained_reform option."}
+    second = {
+        **_reform("1.2345", "retained_reform-second"),
+        "description": "Second retained_reform option.",
+    }
     second["overrides"][0]["operation"] = "multiply"
     options = [{"label": "Retained A", "reform": first}, {"label": "Retained B", "reform": second}]
     definition = {"law_baseline_date": "2000-01-01", "options": options}
@@ -414,6 +422,20 @@ def test_retained_definition_that_no_longer_validates_is_a_coded_503(
     assert response.json()["detail"]["code"] == "scenario_storage_unavailable"
 
 
+def test_validation_error_outside_retained_data_is_not_a_storage_fault(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Only the sites that re-validate stored data may report a coded 503."""
+
+    class _Store:
+        def list_scenarios(self, *_: object) -> None:
+            ScenarioItem.model_validate({})
+
+    monkeypatch.setattr(v1_scenarios, "_store", lambda: _Store())
+    with pytest.raises(ValidationError):
+        TestClient(app, raise_server_exceptions=True).get("/api/v1/scenarios")
+
+
 def test_unknown_definition_is_a_coded_404(retained_reform: SimpleNamespace) -> None:
     response = client.get(f"/api/v1/scenarios/{RETAINED_UNKNOWN_ID}/definition")
     assert response.status_code == 404
@@ -453,7 +475,9 @@ def test_exports_read_retained_values_without_computing(
 
 
 @pytest.mark.parametrize("suffix", ["export.xlsx", "export/fiscal_components.csv"])
-@pytest.mark.parametrize("sid,rid", [(RETAINED_UNKNOWN_ID, RETAINED_RID), (RETAINED_SID, RETAINED_UNKNOWN_ID)])
+@pytest.mark.parametrize(
+    "sid,rid", [(RETAINED_UNKNOWN_ID, RETAINED_RID), (RETAINED_SID, RETAINED_UNKNOWN_ID)]
+)
 def test_exports_require_run_ownership(
     retained_reform: SimpleNamespace, suffix: str, sid: str, rid: str
 ) -> None:
@@ -482,12 +506,16 @@ def test_workspace_of_a_run_without_workbench_results_is_coded(
 
 
 def test_a_missing_stored_table_is_a_coded_404(retained_reform: SimpleNamespace) -> None:
-    response = client.get(f"/api/v1/scenarios/{RETAINED_SID}/runs/{RETAINED_RID}/export/missing_table.csv")
+    response = client.get(
+        f"/api/v1/scenarios/{RETAINED_SID}/runs/{RETAINED_RID}/export/missing_table.csv"
+    )
     assert response.status_code == 404
     assert response.json()["detail"]["code"] == "table_not_found"
 
 
-def test_population_precision_changes_only_aggregate_metadata(retained_reform: SimpleNamespace) -> None:
+def test_population_precision_changes_only_aggregate_metadata(
+    retained_reform: SimpleNamespace,
+) -> None:
     response = client.get(f"/api/v1/scenarios/{RETAINED_SID}/runs/{RETAINED_RID}")
     assert response.status_code == 200, response.text
     workspace = response.json()

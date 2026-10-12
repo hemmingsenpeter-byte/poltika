@@ -54,6 +54,7 @@ app state above. Web lint, typecheck and vitest: 157 passed.
   provenance buttons (21px tall), the Technical-tab model links (19px), and the household form's checkboxes (12-13px,
   default size, labelled). WCAG 2.2 AA's 24px minimum is borderline for the first and failed on the provenance buttons
   and links unless their spacing exempts them. Nothing here is a layout break, so I did not restyle.
-- The 404 page has no title, `lang`, landmark or heading (axe: 5 findings, both engines); it comes from the Next export.
+- Correction (follow-up branch `fix/web-a11y-targets-20261012`): the "404 page" measured above was FastAPI's JSON 404 for an unknown path, not a Next page. `api/web.py` falls unknown paths through to the API, so a Next `not-found.tsx` would not be served without a Python change. Skipped; a decision for the owner of `api/web.py`.
+- Follow-up on small targets, same branch: header link 83x22-23 to 83x28; provenance buttons 21 to 24px tall; Technical-tab model links 19 to 24px; the household example radios (radios, not checkboxes) 12-13px to 24x24. Chromium 360px re-measure.
 - **Open for Pete: a human check on a real phone** (iOS Safari and Android Chrome): the drawer, tab strip swiping,
   scroll regions with a finger, and the browser address-bar resize.

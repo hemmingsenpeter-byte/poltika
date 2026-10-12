@@ -57,7 +57,7 @@ export function MetricCard({ block, onOpen }: { block: MetricBlock; onOpen?: Ope
               <button
                 type="button"
                 onClick={() => onOpen?.(p.tab, p.block_id)}
-                className="inline-flex items-center gap-1 rounded-sm border border-border-strong px-2 py-0.5 text-xs hover:bg-surface-muted"
+                className="inline-flex min-h-[24px] items-center gap-1 rounded-sm border border-border-strong px-2 py-0.5 text-xs hover:bg-surface-muted"
               >
                 {humanise(p.tab)}: {humanise(p.block_id)}
                 <ArrowUpRight aria-hidden="true" className="size-3" />

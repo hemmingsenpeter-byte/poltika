@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased (batched follow-ups to #209 and #210, 12 October 2026)
+
+- Task 14 follow-ups: tests for real-input drift, code-identity drift, an
+  option-count mismatch, the results fallback and migration 0003 down/up over
+  a 0002 row; a population id change is labelled `population_id` (it was
+  `population_population_id`). `api/v1_scenarios.py` maps `ValidationError`
+  to 503 only where retained data is re-validated (`_retained_data()`), with
+  a regression test. Web: WCAG 2.2 SC 2.5.8 24px targets for the header link,
+  provenance buttons, Technical-tab links and household radios, plus #209
+  review tests. `review_packets/wff_as_boundary_cases_proposal.md` is an
+  unreviewed proposal that adds no protected values. No calculated amount
+  changes. Parked question: PETE_QUEUE Q21 (d).
+
 ## Unreleased (Task 14 reform run manifest and replay check, 12 October 2026)
 
 - Task 14, first increment: `scenarios/reform_manifest.py` builds a typed
