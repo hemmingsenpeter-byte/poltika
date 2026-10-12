@@ -181,6 +181,7 @@ def _main_benefit_in_year(
         if (
             pair_week is not None
             and spell.person_id == claimant_id
+            and spell.benefit in _WFF_MAIN_BENEFITS
             and spell.start <= pair_week.start
             and spell.end >= pair_week.end
         ):

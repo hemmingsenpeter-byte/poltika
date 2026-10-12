@@ -26,8 +26,10 @@ the text does not settle it and escalated it.
 
 ## Evidence considered
 
-- s 423(3) as at 1 April and 4 September 2026 (legislation.govt.nz), read
-  directly by both reviews: "every $100", with no partial-step wording.
+- s 423(3) (legislation.govt.nz): read for the Task 22 contract on 22
+  September 2026, and in its versions as at 1 April and 4 September 2026 by
+  the GPT/Codex review of 12 October 2026. Both found "every $100", with no
+  partial-step wording.
 - MSD's non-beneficiary asset guidance and worked example (`as-msd-assets`;
   retrieved 12 October 2026): an exact $400 excess imputes $4. It has no
   fractional example, so it cannot distinguish the readings.

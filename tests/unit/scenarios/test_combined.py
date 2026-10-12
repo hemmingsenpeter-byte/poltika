@@ -273,3 +273,67 @@ def test_structural_errors_propagate() -> None:
             requested_wff_policy_version=WFF_VERSION,
             requested_as_policy_version="0.1.0",
         )
+
+
+# --- Q19 (5), D38: the household path leaves the assessment-week spell to these checks ---
+
+
+def test_household_main_benefit_set_matches_the_pair_check() -> None:
+    """The household mapping skips the claimant's assessment-week spell only
+    because these checks flag the same benefits; the two sets must agree."""
+    from poltika.scenarios import combined as combined_module
+    from poltika.scenarios import household_mappings as hm
+
+    mapped = {hm._CATEGORY_BY_BENEFIT[kind] for kind in hm._WFF_MAIN_BENEFITS}
+    assert mapped == combined_module._MAIN_BENEFIT_CATEGORIES
+
+
+@pytest.mark.parametrize(
+    "category",
+    [ClaimantCategory.JOBSEEKER_SUPPORT, ClaimantCategory.SOLE_PARENT_SUPPORT, ClaimantCategory.SUPPORTED_LIVING_PAYMENT],
+)
+def test_household_path_flags_the_skipped_week_spell_on_every_component(category: ClaimantCategory) -> None:
+    from poltika.scenarios.household_mappings import (
+        MappingRefusal,
+        household_from_combined,
+        to_combined,
+    )
+    from poltika.semantics.household import DatePeriod
+
+    tax_year = DatePeriod(start=date(2026, 4, 1), end=date(2027, 4, 1))
+    pair = CombinedHouseholdScenario(
+        wff=_wff(), accommodation_supplement=_as(claimant_category=category, weekly_income=None),
+        as_claimant_is_wff_claimant_or_partner=FactStatus.VERIFIED,
+    )
+    household = household_from_combined(pair, household_id="h1", tax_year=tax_year, assessment_week=WEEK)
+    mapped = to_combined(household, tax_year, WEEK)
+    assert not isinstance(mapped, MappingRefusal)
+    combined = _run(wff=mapped.wff, as_=mapped.accommodation_supplement)
+    assert any("main benefit" in c for c in combined.contradictions)
+    originals = [*_wff_components(combined.original_wff), combined.original_accommodation_supplement]
+    for component, original in zip([*_wff_components(combined.wff), combined.accommodation_supplement], originals):
+        assert component.outcome == ("unsupported" if original.outcome == "unsupported" else "needs_review")
+
+
+def test_household_path_week_outside_the_year_is_still_flagged() -> None:
+    from poltika.scenarios.combined import shared_fact_contradictions
+    from poltika.scenarios.household_mappings import (
+        MappingRefusal,
+        household_from_combined,
+        to_combined,
+    )
+    from poltika.semantics.household import DatePeriod
+
+    tax_year = DatePeriod(start=date(2026, 4, 1), end=date(2027, 4, 1))
+    week = AssessmentWeek(start=date(2026, 3, 2), end=date(2026, 3, 9))
+    pair = CombinedHouseholdScenario(
+        wff=_wff(),
+        accommodation_supplement=_as(claimant_category=ClaimantCategory.JOBSEEKER_SUPPORT, weekly_income=None),
+        as_claimant_is_wff_claimant_or_partner=FactStatus.VERIFIED,
+    )
+    household = household_from_combined(pair, household_id="h1", tax_year=tax_year, assessment_week=week)
+    mapped = to_combined(household, tax_year, week)
+    assert not isinstance(mapped, MappingRefusal)
+    found = shared_fact_contradictions(mapped, (tax_year.start, tax_year.end), week)
+    assert any("not inside the WFF year" in c for c in found)
+    assert any("main benefit" in c for c in found)
