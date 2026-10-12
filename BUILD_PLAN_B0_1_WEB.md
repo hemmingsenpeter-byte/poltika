@@ -235,13 +235,13 @@ the audit/provenance record; and browse the supported models and datasets.
 Every number shown must trace to an API value, and every unavailable figure
 must say so.
 
-Meeting this gate does not meet Gate C, does not accept ADR-0018 and is not
-evidence of an external pilot.
+Meeting this gate does not meet Gate C and is not evidence of an external
+pilot. (Pete accepted ADR-0018 separately, on 12 October 2026.)
 
 ## Open decisions for Pete
 
-- **ADR-0018 design acceptance (PETE_QUEUE Q9)** stays open. The web app
-  renders its blocks without accepting its design.
+- **ADR-0018 design acceptance (PETE_QUEUE Q9)**: accepted by Pete on
+  12 October 2026 ([record](docs/programme/2026-10-12-pete-approvals.md)).
 - **Making `web` a required check** in the repository ruleset, unless that
   settings change is delegated (PETE_QUEUE Q15).
 - **Render PostgreSQL plan/size and the access password** at deployment

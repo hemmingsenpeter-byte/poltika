@@ -205,8 +205,8 @@ Sourcing and supported-slice decisions precede implementation. Complete
 household semantics only to the extent required by these models.
 
 **B0.1. Web frontend: the single product surface.** Claude Code implements;
-GPT/Codex reviews which amounts are shown; Pete owns hosting, access and
-ADR-0018 acceptance. Detailed lane: [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md)
+GPT/Codex reviews which amounts are shown; Pete owns hosting and access
+(ADR-0018 accepted 12 October 2026). Detailed lane: [BUILD_PLAN_B0_1_WEB.md](BUILD_PLAN_B0_1_WEB.md)
 ([ADR-0023](adr/0023-web-frontend-product-surface.md)).
 Done when a password-protected user at `poltika.onrender.com` can start
 or open a scenario and move from its headline result through fiscal,
@@ -283,7 +283,7 @@ an independently checked, replayable supported household scenario (or a
 refusal with reasons), with no party/plan ranking. [docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md).
 
 15. **Complete the Analyst Workbench workflow.** Claude Code implements;
-    GPT/Codex reviews; Pete retains ADR-0018's design-acceptance question.
+    GPT/Codex reviews; ADR-0018 accepted by Pete on 12 October 2026.
     Done when an analyst can define/check a reform, run supported cases,
     inspect comparisons/evidence/traces and export matching screen/CSV/Excel/report blocks.
 
@@ -670,7 +670,7 @@ questions. ADR-0020's tiers continue to override general engineering delegation.
 | P5 | Interim no ethnicity/iwi-disaggregated output remains; Pete agrees Māori data governance before affected claims/data use. |
 | P6 | Publication of an independent conformance standard remains Pete's, C 12; does not block internal conformance. |
 | P7 | Genuine predictive targets/timestamping remain Pete's, I 30; no longer block C's benchmark validation. |
-| P8 | Strategic first-product choice resolved by this instruction: Analyst Workbench, C 15. ADR-0018 design acceptance remains separate. |
+| P8 | Strategic first-product choice resolved by this instruction: Analyst Workbench, C 15. ADR-0018 design acceptance was separate; Pete accepted it on 12 October 2026. |
 | P9 | Fixed future statutory order superseded by demonstrated analytical demand in H; original choice preserved historically. |
 | P10 | Technical batch-engine decision remains delegated by ADR-0020; profile existing implementation in E 18 before choosing. |
 | P11 | Historical horizon still unresolved, Pete's decision for I 27 and historical maintenance; old M1 urgency removed. |
@@ -688,8 +688,7 @@ questions. ADR-0020's tiers continue to override general engineering delegation.
 
 Keep ADR-0014's static microsimulation decision and its produced code;
 ADR-0015 stays historical context; ADR-0017 remains operative. ADR-0018
-is still proposed despite implemented/reviewed backend: PETE_QUEUE records
-the minimum acceptance decision. ADR-0019's architectural principles remain
+was accepted by Pete on 12 October 2026 (PETE_QUEUE Q9). ADR-0019's architectural principles remain
 except where explicitly superseded; its historical body is not rewritten.
 
 ## Releases, maintenance and next work
