@@ -47,7 +47,8 @@ Spell semantics (documented once, here):
   bases may.
 - A person's benefit spells may not overlap at all. Each records the one
   benefit status (a kind, or verified `NO_BENEFIT`) over its dates, so two
-  overlapping spells contradict each other or duplicate one.
+  overlapping spells contradict each other or duplicate one. A
+  `MIXED_BENEFIT_COUPLE` spell needs a family that is not single.
 """
 
 from __future__ import annotations
@@ -402,6 +403,12 @@ class Household(BaseModel):
             for earlier_benefit, later_benefit in pairwise(ordered_benefits):
                 if later_benefit.start < earlier_benefit.end:
                     raise ValueError(f"benefit spells for {person_id} overlap")
+        # A mixed-benefit couple is a couple: on a single family it would
+        # contradict the family's one partner fact (ADR-0017 section 4).
+        if family.partner_status is FamilyPartnerStatus.SINGLE and any(
+            s.benefit is BenefitKind.MIXED_BENEFIT_COUPLE for s in self.benefit_spells
+        ):
+            raise ValueError("a mixed-benefit couple spell needs a family that is not single")
         return self
 
     @property

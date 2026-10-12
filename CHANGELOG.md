@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased (Task 6 step 1.4: household runs; Q19 (7))
+
+- `run_household()` runs WFF and AS for a `Household` input (ADR-0017
+  Task 1.4, D36 (4)). It keeps only the pair checks a household can still
+  fail, restated on its facts: the AS week inside the WFF year, in-work
+  eligibility and MC 6(b) (refused by `to_wff`, Q19 (5)), and the MD 14/15
+  and MG 4 protected-month flags, now raised by a claimant or partner
+  main-benefit spell anywhere in the year. The claimant-link, partner-status
+  and child-count checks are retired for households, each with a test that
+  its contradiction cannot be constructed. A different WFF and AS child count
+  is reported as a definitional difference, not flagged. The pair format and
+  every caller are unchanged (D39).
+- A mixed-benefit couple spell on a single family is refused by household
+  validation, and by the pair adapter.
+- Q19 (7): the household fact `wff.relationship_unchanged_in_year`, when
+  excluded, makes WFF `unsupported` (`HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR`).
+  No engine input, scenario id or calculated amount changes.
+
 ## Unreleased (B0.1.6 third real-browser pass; status refresh)
 
 - Web: four disclosure toggles under 24px tall ("Advanced settings" on the

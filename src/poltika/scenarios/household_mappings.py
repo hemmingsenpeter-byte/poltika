@@ -16,6 +16,11 @@ mappings between the canonical `Household` and each policy's input type.
   existing request formats enter the household path through them. They
   raise `AdapterRefused` where the scenario pair cannot be held as one set
   of facts (see each rule below).
+- `run_household()` (Task 1.4) runs both policies for a `Household` input.
+  It keeps only the pair checks a household can still fail, restated on its
+  facts (`HOUSEHOLD_CHECKS`); the ones it makes impossible are retired for
+  it (`RETIRED_FOR_HOUSEHOLD`, D36 (4)). The pair format is unchanged and
+  keeps every check.
 
 Where the mapping and the adapters meet, the convention is fixed here:
 
@@ -38,6 +43,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from typing import Literal
 
 from poltika.common.errors import PoltikaError
@@ -57,7 +63,12 @@ from poltika.engines.simulator.wff import (
     VerifiedIncome,
     WffScenario,
 )
-from poltika.scenarios.combined import CombinedHouseholdScenario
+from poltika.policy.loader import PolicyParameterSet
+from poltika.scenarios.combined import (
+    CombinedHouseholdScenario,
+    CombinedResult,
+    run_combined_household,
+)
 from poltika.scenarios.record import ScenarioRecord
 from poltika.semantics import household as hh
 from poltika.semantics.household import Assertion, DatePeriod, Household
@@ -82,6 +93,11 @@ AS_FACTS: tuple[str, ...] = (
     "eldest_dependent_child_under_16",
 )
 LINK_FACT = "combined.as_claimant_is_wff_claimant_or_partner"
+# Q19 (7), D36: whether the claimant's relationship stayed the same for the
+# whole WFF year. A gate, like the engine facts: EXCLUDED (it changed) is
+# outside WFF's whole-year domain, so `unsupported`; UNKNOWN changes nothing
+# (the engine's `household_eligibility` bundle still gates it).
+RELATIONSHIP_FACT = "wff.relationship_unchanged_in_year"
 
 
 @dataclass(frozen=True)
@@ -213,6 +229,14 @@ def _to_wff(
     household: Household, tax_year: DatePeriod, pair_week: AssessmentWeek | None
 ) -> WffScenario | MappingRefusal:
     family = household.family
+    if _status(household, RELATIONSHIP_FACT) is FactStatus.EXCLUDED:
+        # First: unsupported outranks every needs_review gate below.
+        return MappingRefusal(
+            "unsupported",
+            "HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR",
+            "the claimant's relationship changed during the WFF year; WFF covers a whole year with one "
+            "relationship period only (Q19 (7), D36)",
+        )
     children = tuple(household.person(child_id) for child_id in family.dependent_child_ids)
 
     # policy.yaml `children`; WFF-01 (dependent child, whole-year care),
@@ -409,9 +433,9 @@ def to_as(household: Household, assessment_week: AssessmentWeek) -> AsScenario |
 def to_combined(
     household: Household, tax_year: DatePeriod, assessment_week: AssessmentWeek
 ) -> CombinedHouseholdScenario | MappingRefusal:
-    """The pair the combined runner takes. The claimant link is the
-    household's asserted fact: Task 1.4 retires the pairwise checks, this
-    task keeps them (backlog P2-HH-02)."""
+    """The pair the combined runner takes, with the pair format's checks.
+    The claimant link is the household's asserted fact. A household input
+    runs through `run_household()` instead (Task 1.4)."""
     wff = _to_wff(household, tax_year, assessment_week)
     if isinstance(wff, MappingRefusal):
         return wff
@@ -423,6 +447,162 @@ def to_combined(
         accommodation_supplement=as_,
         as_claimant_is_wff_claimant_or_partner=_status(household, LINK_FACT),
     )
+
+
+# ---------------------------------------------------------------- household runs (Task 1.4)
+
+# ADR-0017 section 4: the pair checks (`combined.SHARED_FACT_CHECKS`) a household
+# can still fail, restated on its facts. In-work eligibility and MC 6(b) are
+# refused by `to_wff` against any main-benefit spell in the year (Q19 (5));
+# the others flag every component as the pair checks do.
+HOUSEHOLD_CHECKS: tuple[str, ...] = (
+    "AS assessment week inside the WFF year",
+    "main benefit vs WFF in-work eligibility",
+    "main benefit vs WFF MC 6(b)",
+    "main benefit vs WFF MD 14/15 protected family tax credit",
+    "main benefit vs WFF MG 4 protected Best Start",
+)
+# The pair checks a household makes impossible, and why (D36 (4)). Each
+# has a test showing its contradiction can no longer be constructed.
+RETIRED_FOR_HOUSEHOLD: dict[str, str] = {
+    "precondition: AS claimant is the WFF claimant or their partner": (
+        "both mappings read the one family's claimant"
+    ),
+    "partner status": (
+        "both mappings read the one family's partner status, and a mixed-benefit couple spell needs a "
+        "family that is not single"
+    ),
+    "dependent children count": (
+        "both mappings read the one child list; each child's AS status is its own fact, so a different "
+        "count is a definitional difference, reported in `HouseholdResult.definitional_differences`"
+    ),
+}
+# WFF assertions that no protected month applies, flagged against any
+# main-benefit spell in the year: a benefit spell alone does not establish
+# or rule out a protected month (MD 14, MG 4), so the flag stays conservative.
+_WFF_NO_PROTECTED_MONTH_FACTS = (
+    ("wff.ftc_iwtc_protected_or_direct_abatement", "no MD 14/15 protected family tax credit month"),
+    ("wff.best_start_protected_credit", "no MG 4 protected Best Start month"),
+)
+
+
+@dataclass(frozen=True)
+class HouseholdResult:
+    """A household run: both policies' results, as for the pair format,
+    plus where two policies' definitions of one concept give different
+    figures. A definitional difference is reported, never a disagreement."""
+
+    combined: CombinedResult
+    definitional_differences: tuple[str, ...] = ()
+
+
+def _household_contradictions(
+    household: Household, wff_period: tuple[date, date], week: AssessmentWeek
+) -> tuple[str, ...]:
+    """The kept checks of `HOUSEHOLD_CHECKS` that flag components."""
+    found: list[str] = []
+    if week.start < wff_period[0] or week.end > wff_period[1]:
+        found.append(
+            f"AS assessment week [{week.start}, {week.end}) is not inside the WFF "
+            f"year [{wff_period[0]}, {wff_period[1]})"
+        )
+    family = household.family
+    people = (family.claimant_id, family.partner_id)
+    in_year = [
+        s
+        for s in household.benefit_spells
+        if s.person_id in people
+        and s.benefit in _WFF_MAIN_BENEFITS
+        and s.start < wff_period[1]
+        and s.end > wff_period[0]
+    ]
+    for key, label in _WFF_NO_PROTECTED_MONTH_FACTS:
+        if in_year and _status(household, key) is FactStatus.VERIFIED:
+            spell = in_year[0]
+            found.append(
+                f"main benefit: '{spell.person_id}' has {spell.benefit.value} recorded for "
+                f"[{spell.start}, {spell.end}) inside the WFF year, WFF asserts {label} verified"
+            )
+    return tuple(found)
+
+
+def run_household(
+    household: Household,
+    *,
+    tax_year: DatePeriod,
+    assessment_week: AssessmentWeek,
+    wff_policy_dir: Path,
+    as_policy_dir: Path,
+    wff_lookup_date: date,
+    as_lookup_date: date,
+    requested_wff_policy_version: str,
+    requested_as_policy_version: str,
+    wff_parameters: PolicyParameterSet | None = None,
+    as_parameters: PolicyParameterSet | None = None,
+) -> HouseholdResult | MappingRefusal:
+    """Both policies for a household input (ADR-0017 Task 1.4, D36 (4)).
+    `tax_year` must be the WFF policy's assessed year. A refusal is
+    returned, never a partial run."""
+    # A household needs no claimant link: its one family supplies it. A link
+    # fact the household does carry (an adapter copies it from a pair) is
+    # honoured: anything but verified is not this household's fact to drop.
+    link = household.asserted_facts.get(LINK_FACT)
+    if link is Assertion.EXCLUDED:
+        return MappingRefusal(
+            "unsupported",
+            "HOUSEHOLD_PAIR_LINK_EXCLUDED",
+            "the household carries the pair format's claimant link as excluded: the AS claimant is not "
+            "the WFF claimant or their partner, which one family cannot hold",
+        )
+    if link is Assertion.UNKNOWN:
+        return MappingRefusal(
+            "needs_review",
+            "HOUSEHOLD_PAIR_LINK_UNVERIFIED",
+            "the household carries the pair format's claimant link as unknown",
+            (LINK_FACT,),
+        )
+    wff = _to_wff(household, tax_year, None)
+    if isinstance(wff, MappingRefusal):
+        return wff
+    as_ = to_as(household, assessment_week)
+    if isinstance(as_, MappingRefusal):
+        return as_
+
+    def checks(
+        _scenario: CombinedHouseholdScenario, wff_period: tuple[date, date], week: AssessmentWeek
+    ) -> tuple[str, ...]:
+        return _household_contradictions(household, wff_period, week)
+
+    combined = run_combined_household(
+        wff_policy_dir,
+        as_policy_dir,
+        CombinedHouseholdScenario(
+            wff=wff, accommodation_supplement=as_, as_claimant_is_wff_claimant_or_partner=FactStatus.VERIFIED
+        ),
+        wff_lookup_date=wff_lookup_date,
+        as_lookup_date=as_lookup_date,
+        assessment_week=assessment_week,
+        requested_wff_policy_version=requested_wff_policy_version,
+        requested_as_policy_version=requested_as_policy_version,
+        wff_parameters=wff_parameters,
+        as_parameters=as_parameters,
+        checks=checks,
+    )
+    if combined.wff_period != (tax_year.start, tax_year.end):
+        raise ValueError(
+            f"tax_year [{tax_year.start}, {tax_year.end}) is not the WFF policy's assessed year "
+            f"[{combined.wff_period[0]}, {combined.wff_period[1]})"
+        )
+    differences: tuple[str, ...] = ()
+    if as_.dependent_children_count is not None and as_.dependent_children_count != len(wff.children):
+        differences = (
+            (
+                f"dependent children: {len(wff.children)} under the WFF definition, "
+                f"{as_.dependent_children_count} under the AS definition (each child's status is recorded "
+                "under each definition)"
+            ),
+        )
+    return HouseholdResult(combined=combined, definitional_differences=differences)
 
 
 # ---------------------------------------------------------------- adapters
@@ -505,6 +685,15 @@ def _household_from(
     assessment_week: AssessmentWeek | None,
 ) -> Household:
     status, arrangement = _merge_partner(wff, as_)
+    if (
+        status is hh.FamilyPartnerStatus.SINGLE
+        and as_ is not None
+        and as_.claimant_category is ClaimantCategory.MIXED_BENEFIT_COUPLE
+    ):
+        raise AdapterRefused(
+            "partner status: the family is single but AS asserts a mixed-benefit couple; one household holds "
+            "one partner fact"
+        )
 
     persons: list[hh.Person] = [hh.Person(person_id="claimant", role=PersonRole.CLAIMANT)]
     if status is hh.FamilyPartnerStatus.PARTNERED:
@@ -654,15 +843,20 @@ def _spell(person_id: str, period: DatePeriod | AssessmentWeek, amount: Decimal,
 
 __all__ = [
     "AS_FACTS",
+    "HOUSEHOLD_CHECKS",
     "LINK_FACT",
+    "RELATIONSHIP_FACT",
+    "RETIRED_FOR_HOUSEHOLD",
     "WFF_FACTS",
     "AdapterRefused",
+    "HouseholdResult",
     "MappingRefusal",
     "household_from_as",
     "household_from_combined",
     "household_from_record",
     "household_from_wff",
     "refusal_result",
+    "run_household",
     "to_as",
     "to_combined",
     "to_wff",
