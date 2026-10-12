@@ -45,6 +45,9 @@ Spell semantics (documented once, here):
   figures the caller already resolved, with their own basis. Spells of the
   same person, income type and basis may not overlap; spells of different
   bases may.
+- A person's benefit spells may not overlap at all. Each records the one
+  benefit status (a kind, or verified `NO_BENEFIT`) over its dates, so two
+  overlapping spells contradict each other or duplicate one.
 """
 
 from __future__ import annotations
@@ -389,6 +392,14 @@ class Household(BaseModel):
             for earlier, later in pairwise(ordered):
                 if later.start < earlier.end:
                     raise ValueError(f"income spells for {key[0]}/{key[1].value}/{key[2].value} overlap")
+        benefits: dict[str, list[BenefitSpell]] = {}
+        for benefit_spell in self.benefit_spells:
+            benefits.setdefault(benefit_spell.person_id, []).append(benefit_spell)
+        for person_id, benefit_group in benefits.items():
+            ordered_benefits = sorted(benefit_group, key=lambda s: s.start)
+            for earlier_benefit, later_benefit in pairwise(ordered_benefits):
+                if later_benefit.start < earlier_benefit.end:
+                    raise ValueError(f"benefit spells for {person_id} overlap")
         return self
 
     @property

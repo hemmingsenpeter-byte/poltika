@@ -340,7 +340,53 @@ def test_no_benefit_spell_is_a_verified_non_beneficiary_and_conflicts_are_refuse
         none,
         hh.BenefitSpell(person_id="a", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=WEEK.start, end=WEEK.end),
     )
-    assert isinstance(to_as(_household(benefit_spells=both), WEEK), MappingRefusal)
+    with pytest.raises(ValidationError, match="benefit spells for a overlap"):
+        _household(benefit_spells=both)
+    # The mapping refuses on its own too, for a household built without validation.
+    unvalidated = _household().model_copy(update={"benefit_spells": both})
+    assert isinstance(to_as(unvalidated, WEEK), MappingRefusal)
+
+
+def test_benefit_spells_for_one_person_may_not_overlap() -> None:
+    def spell(person_id: str, kind: hh.BenefitKind, start: date, end: date) -> hh.BenefitSpell:
+        return hh.BenefitSpell(person_id=person_id, benefit=kind, start=start, end=end)
+
+    with pytest.raises(ValidationError, match="benefit spells for a overlap"):
+        _household(
+            benefit_spells=(
+                spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 5, 1), date(2026, 6, 10)),
+                spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 6, 1), date(2026, 7, 1)),
+            )
+        )
+    # Adjacent spells (end exclusive) do not overlap: a mid-week change is
+    # recorded, and the week's category stays unverified rather than picked.
+    changed = _household(
+        benefit_spells=(
+            spell("a", hh.BenefitKind.NO_BENEFIT, date(2026, 5, 1), date(2026, 6, 3)),
+            spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 6, 3), date(2026, 7, 1)),
+        )
+    )
+    as_ = to_as(changed, WEEK)
+    assert not isinstance(as_, MappingRefusal)
+    assert as_.claimant_category is None
+
+
+def test_as_mapping_refuses_a_covering_spell_beside_part_week_receipt() -> None:
+    covering = hh.BenefitSpell(person_id="a", benefit=hh.BenefitKind.NO_BENEFIT, start=WEEK.start, end=WEEK.end)
+    one_day = hh.BenefitSpell(
+        person_id="a", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=date(2026, 6, 3), end=date(2026, 6, 4)
+    )
+    unvalidated = _household().model_copy(update={"benefit_spells": (covering, one_day)})
+    refusal = to_as(unvalidated, WEEK)
+    assert isinstance(refusal, MappingRefusal)
+    assert refusal.code == "HOUSEHOLD_MAPPING_INVALID_FACTS"
+    # A spell outside the week is not receipt in it.
+    later = hh.BenefitSpell(
+        person_id="a", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=WEEK.end, end=date(2026, 7, 1)
+    )
+    as_ = to_as(_household(benefit_spells=(covering, later)), WEEK)
+    assert not isinstance(as_, MappingRefusal)
+    assert as_.claimant_category is ClaimantCategory.NON_BENEFICIARY
 
 
 def test_partner_arrangement_gives_the_as_partner_type() -> None:

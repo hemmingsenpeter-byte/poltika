@@ -274,15 +274,19 @@ def to_as(household: Household, assessment_week: AssessmentWeek) -> AsScenario |
     # claimant categories of `ClaimantCategory`: the claimant's benefit
     # receipt over the whole assessment week. One spell must cover the whole
     # week; a week not wholly covered is not a verified category (`None`).
-    # Two different benefits covering the week is a contradiction, not a pick.
-    categories = {
-        s.benefit
+    # Every spell touching the week is checked, not only covering ones: a
+    # covering spell beside any other receipt in the week (r 17 "being paid")
+    # is a contradiction, not a pick (MAP-01). Household validation already
+    # refuses overlapping benefit spells; this keeps the mapping safe alone.
+    in_week = [
+        s
         for s in household.benefit_spells
-        if s.person_id == family.claimant_id and s.start <= week.start and s.end >= week.end
-    }
-    if len(categories) > 1:
-        return _invalid("the claimant has different benefits recorded for the whole assessment week")
-    claimant_category = _CATEGORY_BY_BENEFIT[next(iter(categories))] if categories else None
+        if s.person_id == family.claimant_id and s.start < week.end and s.end > week.start
+    ]
+    covering = [s for s in in_week if s.start <= week.start and s.end >= week.end]
+    if covering and len(in_week) > 1:
+        return _invalid("the claimant has more than one benefit status recorded in the assessment week")
+    claimant_category = _CATEGORY_BY_BENEFIT[covering[0].benefit] if covering else None
 
     # Schedule 4 Part 7 cl 1-3 household categories, AS-09 couple types: a
     # single family is SINGLE; a partnered family takes the recorded

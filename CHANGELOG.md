@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased (MAP-01: overlapping benefit spells refused)
+
+- Household validation rejects overlapping benefit spells for one person,
+  and the AS mapping refuses a week where a covering spell sits beside any
+  other receipt (MAP-01, P2 from the #207 mapping review; decision log
+  D37). Previously a whole-week `NO_BENEFIT` spell plus a one-day Jobseeker
+  Support spell mapped to `NON_BENEFICIARY`. No fixture or calculated amount
+  changes; a mid-week change of benefit still leaves the category unknown.
+
 ## Unreleased (pilot data notice, research briefs, #213 review follow-ups)
 
 - Web: a notice under the header on every page says the shared pilot holds
