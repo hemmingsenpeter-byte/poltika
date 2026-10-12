@@ -39,7 +39,7 @@ As verified on 3 October 2026, evidence/explanation and hosted-pilot capabilitie
 are implemented, but v0.1.5 is untagged and its external-user gate is outstanding.
 The Workbench registry, reform checks, result blocks and CSV/Excel exports exist
 as a backend; a complete analyst Workbench interface remains to be built
-(ADR-0018 remains proposed).
+(ADR-0018 accepted 12 October 2026).
 
 v0.2 (static population microsimulation) is built and its independent review is
 recorded in the review queue; Pete’s `v0.2.0` tag is outstanding. It runs the same two engines over a synthetic development population derived from Stats NZ tables (`docs/releases/V0_2_POPULATION_METHODOLOGY.md`), compares its baseline with Inland Revenue and MSD figures (`docs/releases/V0_2_CROSS_VALIDATION.md`), and labels every population result as not an estimate for New Zealand (`docs/releases/V0_2_LIMITATIONS.md`).

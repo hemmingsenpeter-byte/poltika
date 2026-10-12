@@ -94,7 +94,7 @@ that each release or external-user gate has passed.
 | Population simulation | Canonical `PopulationDataset`, synthetic generator, weighting statistics, baseline/reform runner, grouped analysis, per-policy withdrawal paths and published-aggregate comparisons |
 | Population limits | Synthetic development population explicitly labelled as not an estimate for New Zealand; independent marginals and equal weights do not establish representativeness or robust calibration |
 | Analyst interfaces | HTML analyst and microsimulation pages served by FastAPI; intake questions and conditional answers |
-| Analyst Workbench | Spec-derived instrument registry, reform checks, tabular results and CSV/XLSX export backend; complete workbench UI remains to be delivered; ADR-0018 acceptance remains a recorded decision gate |
+| Analyst Workbench | Spec-derived instrument registry, reform checks, tabular results and CSV/XLSX export backend; complete workbench UI remains to be delivered; ADR-0018 accepted by Pete, 12 October 2026 |
 | Pilot deployment | Docker/Compose, password protection, security headers, request limits and CI image smoke test; deployment readiness is separate from evidence of an external pilot |
 | Quality | Ruff, strict mypy, pytest/Hypothesis, evidence coverage, PostgreSQL, installed-artifact and retained-code replay checks; statutory-value visibility and immutable-snapshot guards |
 

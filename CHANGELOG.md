@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased (Pete's 12 October 2026 decisions recorded; replay code identity)
+
+- Pete's decisions on Q2–Q5, Q7 and Q9–Q22 are recorded in
+  `docs/programme/2026-10-12-pete-approvals.md` and decision log D35–D36.
+  Nine questions move to Done, ten carry their decision and the remaining
+  action, and Q23 tracks the real-phone check of B0.1.6. ADR-0018 is
+  accepted.
+- Task 14 replay (Q21 (d)): `verify_manifest` decides `identical` or
+  `drifted` from inputs and results only, and reports a different code
+  identity as `ReformVerification.code_changed`. A new commit that reproduces
+  every amount is `identical`. No calculated amount changes.
+- `reviews/2026-10-12-q12-branch-verification.md` lists the 91 verified
+  branches approved for deletion, with their tip SHAs.
+
 ## Unreleased (#211 review follow-ups and 360px re-measure, 12 October 2026)
 
 - `POST /api/v1/scenarios/{id}/runs` maps a stored reform that no longer

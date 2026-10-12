@@ -13,6 +13,11 @@ never backfilled.
 
 `verify_manifest` compares a stored manifest with a fresh run of the same
 options against the current population and policy files. It reads only.
+Inputs (options, reform, population, policy artifacts) and results decide
+`identical` or `drifted`. A different code identity is reported separately
+as `code_changed`, so a new commit that reproduces every amount is still
+`identical`, and one that alters an amount is `drifted` with its results
+named (Pete, 12 October 2026: PETE_QUEUE Q21 (d)).
 """
 
 from __future__ import annotations
@@ -73,9 +78,12 @@ VerificationStatus = Literal["identical", "drifted", "not_retained"]
 class ReformVerification:
     status: VerificationStatus
     # What differs, by name: "option[0].population_sha256",
-    # "option[0].policy_artifact:<name>", "option[0].code", ... Empty unless
-    # drifted.
+    # "option[0].policy_artifact:<name>", "option[0].results", ... Empty
+    # unless drifted.
     changed: tuple[str, ...] = ()
+    # The code identity differs for at least one option. Information only:
+    # it never makes a run drifted by itself.
+    code_changed: bool = False
 
 
 def verify_manifest(
@@ -85,6 +93,7 @@ def verify_manifest(
     if len(stored_options) != len(rerun):
         return ReformVerification("drifted", ("options",))
     changed: list[str] = []
+    code_changed = False
     for i, (stored, run) in enumerate(zip(stored_options, rerun, strict=True)):
         now = _option(stored["label"], run)
         p = f"option[{i}]."
@@ -99,7 +108,7 @@ def verify_manifest(
                 if stored["population"].get(key) != now["population"][key]:
                     changed.append(p + label)
         if canonical_json(stored["code"]) != canonical_json(now["code"]):
-            changed.append(p + "code")
+            code_changed = True
         old = {a["name"]: a["sha256"] for a in stored["policy_artifacts"]}
         new = {a["name"]: a["sha256"] for a in now["policy_artifacts"]}
         for name in sorted(old.keys() | new.keys()):
@@ -108,4 +117,6 @@ def verify_manifest(
         unexplained = not any(c.startswith(p) for c in changed)
         if unexplained and stored["option_results_sha256"] != now["option_results_sha256"]:
             changed.append(p + "results")
-    return ReformVerification("drifted" if changed else "identical", tuple(changed))
+    return ReformVerification(
+        "drifted" if changed else "identical", tuple(changed), code_changed
+    )

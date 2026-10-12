@@ -1,8 +1,10 @@
 # ADR-0018: The analyst workbench is driven by the specs, and shows generic blocks
 
 **Date:** 28 September 2026
-**Status:** proposed. Drafted by Claude Code from Pete's front-end brief of
-28 September 2026; for Pete's acceptance.
+**Status:** accepted by Pete, 12 October 2026, as built (PETE_QUEUE Q9;
+[record](../docs/programme/2026-10-12-pete-approvals.md)). Drafted by Claude
+Code from Pete's front-end brief of 28 September 2026. Later changes to this
+design go through new ADRs.
 
 ## Context
 

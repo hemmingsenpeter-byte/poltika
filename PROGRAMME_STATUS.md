@@ -105,7 +105,7 @@ packets can still say “open” historically and do not override current record
 | Household analyst page / pilot scripts | #85, #87, #89 | Existing `/analyst`, case pack and findings template; external user/session not recorded. |
 | Fact catalogues, conditional branches and intake | #109, #112, #121, #125–#128 | Reviewed questions, finite/ranged branches, intake API/page, population ranges; #128 independently reviewed, fixes merged (#150, #152); source-based monotone/candidate declarations pending. |
 | Hosted pilot protection/hardening | #124, #132 | Password-required image, security headers, body/concurrency limits; deployment/resource actions not completed by this migration. |
-| Workbench backend / export | #133; ADR-0018 proposed | Registry, checks, generic blocks, worked examples, CSV/Excel export reviewed; completed workbench UI and ADR acceptance not evidenced. |
+| Workbench backend / export | #133; ADR-0018 accepted (Pete, 12 October 2026) | Registry, checks, generic blocks, worked examples, CSV/Excel export reviewed; completed workbench UI not evidenced. |
 | Epistemic constitution | #136, #137, Pete approval 2 October | Eight classes and seven decisions are approved; preserve them while re-scoping implementation. |
 | Source currency | #92 | Existing report/workflow; statutory new-year parameters still require dated primary sources. |
 
@@ -139,7 +139,7 @@ packets can still say “open” historically and do not override current record
 | 13 | Model/benchmark validation | Not started | Claude Code; GPT/Codex independent checks | #117, #114 reuse | B models and bounded validation contract; P18 tolerances | Existing cases and cross-validation reused | 6.1–6.3; Step 5 |
 | 14 | Counterfactual scenario contract | In progress (first increment: reform run manifest, migration 0003, `verify_reform_run`, audit-tab block; PR pending) | Claude Code; GPT/Codex reviews | #60, #63, #64, #65, #68, #94–#95 reuse | Complete retained baseline/reform/comparison contract with 15 | Household persistence/replay and population reform identities exist separately | 8.5; Step 15 core split |
 | C14a | Proposed-policy claim intake (bounded overlay) | Not started (plan only) | GPT/Codex sources/mapping checks; Claude Code implements | None (documentation plan only) | B approved supported slice and C 14; original claim, dates/status and reviewer-gated mapping; [use-case spec](docs/programme/POLICY_CLAIMS_BUDGET_WORKFLOWS.md) | Existing source/provenance/scenario IDs can be reused; no campaign claim ingestion or analysis implemented | New overlay (9 Oct 2026) |
-| 15 | End-to-end Analyst Workbench | Not started | Claude Code; GPT/Codex review; Pete ADR-0018 | #133 backend reuse | Usable UI/workflow, 12–14; separate ADR-0018 acceptance | Backend/CSV/Excel reviewed; no completed workbench UI evidence | P8; ADR-0018; Steps 4/28/32 reuse |
+| 15 | End-to-end Analyst Workbench | Not started | Claude Code; GPT/Codex review | #133 backend reuse | Usable UI/workflow, 12–14 (ADR-0018 accepted 12 October 2026) | Backend/CSV/Excel reviewed; no completed workbench UI evidence | P8; ADR-0018; Steps 4/28/32 reuse |
 
 ## Phase D — Pilot 1
 
@@ -281,7 +281,7 @@ applicable, not unrelated deterministic household sourcing. IDI access
 belongs to later E/M work. P11 historical horizon, P7 prediction targets,
 P13 domain priority, P14 search credibility, P18 tolerances and P20 national
 scenarios remain unresolved at their new phases; P8's strategic workbench
-choice is resolved, while ADR-0018's acceptance remains open. D8/D9 remain
+choice is resolved, and Pete accepted ADR-0018 on 12 October 2026. D8/D9 remain
 explicit unresolved period/income-method dependencies for B/F.
 
 The [pre-migration status snapshot](docs/archive/status/2026-10-03-programme-status-adr0019.md)
