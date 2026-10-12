@@ -358,6 +358,24 @@ def test_benefit_spells_for_one_person_may_not_overlap() -> None:
                 spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 6, 1), date(2026, 7, 1)),
             )
         )
+    # Order of input does not matter.
+    with pytest.raises(ValidationError, match="benefit spells for a overlap"):
+        _household(
+            benefit_spells=(
+                spell("a", hh.BenefitKind.NO_BENEFIT, date(2026, 6, 3), date(2026, 6, 4)),
+                spell("a", hh.BenefitKind.SOLE_PARENT_SUPPORT, date(2026, 8, 1), date(2026, 9, 1)),
+                spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 6, 1), date(2026, 6, 8)),
+            )
+        )
+    # Different people may hold spells on the same dates, and the same
+    # benefit may continue in adjacent spells.
+    _household(
+        benefit_spells=(
+            spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, WEEK.start, WEEK.end),
+            spell("p", hh.BenefitKind.NO_BENEFIT, WEEK.start, WEEK.end),
+            spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, WEEK.end, date(2026, 7, 1)),
+        )
+    )
     # Adjacent spells (end exclusive) do not overlap: a mid-week change is
     # recorded, and the week's category stays unverified rather than picked.
     changed = _household(
