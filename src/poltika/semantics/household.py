@@ -263,6 +263,8 @@ class Housing(BaseModel):
     weekly_housing_costs: Decimal | None = Field(default=None, ge=0)
     partner_arrangement: PartnerArrangement | None = None
     area: AsArea | None = None
+    # Q19 (1), D38: a stock, not a flow. The balance the caller asserts for
+    # the AS assessment week; no snapshot date is chosen and nothing is averaged.
     cash_assets: Decimal | None = Field(default=None, ge=0)
 
 
