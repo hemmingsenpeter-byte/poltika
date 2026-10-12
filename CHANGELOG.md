@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased (WFF threshold reform scenario pinned, 13 October 2026)
+
+- `tests/acceptance/test_wff_threshold_reform_scenario.py` pins the
+  12 October WFF threshold +$10,000 scenario: four couples with two children
+  at $40,000-$100,000. It covers family tax credit with approved parameters,
+  the FTC + IWTC subtotal under a full-year in-work base assumption, the
+  phase-out points, gains at each boundary including fractional incomes, the
+  assumption labels in the trace and an unchanged minimum family tax credit.
+  The figures are model outputs under stated assumptions, not protected
+  statutory values, and are checked against a hand formula from the
+  specification. No calculated amount changes.
+
 ## Unreleased (pilot data notice, research briefs, #213 review follow-ups)
 
 - Web: a notice under the header on every page says the shared pilot holds
