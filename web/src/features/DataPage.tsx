@@ -74,7 +74,7 @@ export function DataPage() {
                         version {p.version} · {p.households} households
                       </p>
                       <details className="mt-2 text-sm">
-                        <summary className="cursor-pointer text-accent">
+                        <summary className="min-h-[24px] cursor-pointer text-accent">
                           Sources and assumptions (<span className="num">{p.sources.length}</span>)
                         </summary>
                         <ul className="mt-2 list-disc space-y-1 pl-5">

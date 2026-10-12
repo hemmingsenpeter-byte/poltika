@@ -405,9 +405,11 @@ def create_run(scenario_id: ScenarioId) -> RunCreated:
         scenario = store.get_reform_scenario(scenario_id)
     if scenario is None:
         _fail(404, "scenario_not_found", "No reform scenario has this id.")
-    options = [
-        (o["label"], Reform.model_validate(o["reform"])) for o in scenario.definition["options"]
-    ]
+    with _retained_data():
+        options = [
+            (o["label"], Reform.model_validate(o["reform"]))
+            for o in scenario.definition["options"]
+        ]
     try:
         labelled = []
         for label, reform in options:

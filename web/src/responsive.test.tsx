@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { MetricCard } from "@/components/blocks/MetricCard";
-import { HorizonStrip, ModelReferences } from "@/components/blocks/OtherBlocks";
+import { AuditRecord, HorizonStrip, ModelReferences, SourcesList } from "@/components/blocks/OtherBlocks";
 import { AppShell } from "@/components/layout/AppShell";
 import { DataTable } from "@/components/ui/DataTable";
 import { Tabs } from "@/components/ui/Tabs";
@@ -11,6 +11,7 @@ import { DEFAULT_CAPABILITIES } from "@/config/capabilities";
 import type { MetricBlock } from "@/domain";
 import { ScenariosPage } from "@/features/ScenariosPage";
 import { expectNoAxeViolations } from "@/test/axe";
+import { BLOCKS } from "@/test/fixtures/workspace";
 
 // jsdom has no layout, so these pin the classes that make the narrow-width
 // behaviour (about 360px) rather than measure it. docs/web/FRONTEND.md lists
@@ -134,5 +135,24 @@ describe("narrow-width structure", () => {
     unmount();
     render(<ModelReferences block={{ type: "model_ref", id: "r", title: null, models: [{ id: "wff_engine", name: "WFF engine", version: "0.1.0", label: "spec_validated" }] } as never} />);
     expect(classes(screen.getByRole("link", { name: "WFF engine" }))).toContain("min-h-[24px]");
+  });
+
+  it("a source link is at least 24px", () => {
+    const sources = BLOCKS.find((b) => b.type === "sources") as Parameters<typeof SourcesList>[0]["block"];
+    render(<SourcesList block={sources} />);
+    expect(classes(screen.getByRole("link", { name: "IRD Family Tax Credit" }))).toEqual(
+      expect.arrayContaining(["inline-flex", "min-h-[24px]"]),
+    );
+    expect(classes(screen.getByText("Check evidence"))).toContain("min-h-[24px]");
+  });
+
+  it("an audit note carrying a SHA-256 wraps instead of widening the page", () => {
+    const sha = "1aed1c4d".repeat(8);
+    render(
+      <AuditRecord
+        block={{ type: "audit_record", id: "manifest", title: null, fields: [{ label: "Population", value: "synthetic v1", note: `SHA-256 ${sha}` }] } as never}
+      />,
+    );
+    expect(classes(screen.getByText(`SHA-256 ${sha}`))).toContain("break-words");
   });
 });
