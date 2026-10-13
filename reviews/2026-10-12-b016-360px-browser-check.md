@@ -79,3 +79,32 @@ workspace tabs (13 states per engine). Headless engines, not a phone.
 - After the fixes, both engines: no horizontal page scroll in any of the 13 states, and no target under 24px except
   the inline "classic calculator" link inside a sentence (107x16), which SC 2.5.8's inline exception covers.
 - Still open for Pete: the real-phone check in the item above.
+
+## Third pass on main, 13 October 2026
+
+Reviewer: Claude Code. Basis: `main` at `7342e52` (after #216), static export served by the real FastAPI app against a
+throwaway PostgreSQL 16 with the synthetic population; Playwright 1.49 with **Chromium 131** (build 1148) and
+Playwright 1.45 with **WebKit 18.2** (macOS 12's frozen build `webkit_mac12_special-2009`; Playwright 1.49's protocol
+does not drive it). Viewport 360x740, scale 2, touch on in Chromium (WebKit's build rejects touch emulation, so plain
+360px there). Headless engines, not a phone.
+
+States, both engines: Home, Models, a model page, Data, a dataset page, Scenarios, New scenario, the drawer, the
+confirmation panel (policy change with a 72-character title), a stored run's workspace and all seven tabs, and a
+two-option WFF compare run whose Overview draws the chart.
+
+- Found and fixed: four `summary` toggles below 24px that the 12 October re-measure's 13 states did not reach:
+  "Advanced settings" on the confirmation panel (18-19px, both engines), "Household facts" and "Current parameter
+  sources and locators" on the household builder, and the chart's "Show as a table". All four get `min-h-[24px]`, and
+  `responsive.test.tsx` now fails if any `<summary>` in `web/src` lacks it (shown to fail before the fix).
+- After the fix, both engines, every state: no horizontal page scroll, no element outside the viewport except inside
+  a scroller, axe colour-contrast zero violations, no target under 24px. Drawer panel 240px (cap 306px).
+- Chart in greyscale print, both engines: solid and diagonal-hatch bars distinguishable; each bar prints its value
+  and unit ("$73.3M per tax year", "-$63.1M per tax year"); the chart scrolls inside its region (298px of 540px) while
+  the page stays 360px.
+- Observation, not fixed (P3, for the owner of `api/web.py`): client-side navigation prefetches the export's RSC
+  payload (`<route>.txt?_rsc=`). `WebAppMiddleware` serves `.txt` only at the top level, so `/scenarios/new.txt`
+  falls through to the scenario API route (422) and `/models/<id>.txt`, `/data/<id>.txt` 404 (the export holds
+  `models/_.txt`). Next falls back to a full page load, so every navigation tested still worked; the cost is a
+  failed request and a reload per navigation, plus console errors. Serving the matching export `.txt` would likely
+  restore soft navigation (pages read ids from the pathname), but that changes serving and needs its own tests.
+- Still open for Pete, unchanged: a human check on a real phone (iOS Safari, Android Chrome).

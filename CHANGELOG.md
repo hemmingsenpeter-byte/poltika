@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased (B0.1.6 third real-browser pass; status refresh)
+
+- Web: four disclosure toggles under 24px tall ("Advanced settings" on the
+  confirmation panel, two on the household builder, the chart's "Show as a
+  table") now have the 24px minimum, and `responsive.test.tsx` fails if any
+  `<summary>` lacks it. Found by a third headless Chromium and WebKit pass at
+  360px on `main`; every page, the drawer, the confirmation panel and all
+  seven workspace tabs now pass ([record](reviews/2026-10-12-b016-360px-browser-check.md)).
+  A P3 on RSC prefetch fallbacks in `api/web.py` is recorded, not fixed.
+- `PROGRAMME_STATUS.md` refreshed to 13 October: the B0.1 row and the review-debt
+  line. No calculated amount changes.
+
 ## Unreleased (MAP-01 fix; Pete's 13 October decisions on B4, Q19, Q2 and Q3)
 
 - Household validation rejects overlapping benefit spells for one person,

@@ -134,7 +134,7 @@ export function HouseholdBuilder({ navigate, initial }: { navigate: (href: strin
             conditional calculation, not a determination of entitlement.
           </p>
           <details className="text-sm">
-            <summary className="cursor-pointer">Household facts</summary>
+            <summary className="min-h-[24px] cursor-pointer">Household facts</summary>
             <div className="mt-2 space-y-3">
               {Object.entries(selected.request).map(([group, value]) => <div key={group}>
                 <p className="font-medium">{humanise(group)}</p>
@@ -145,7 +145,7 @@ export function HouseholdBuilder({ navigate, initial }: { navigate: (href: strin
             </div>
           </details>
           <details className="text-sm">
-            <summary className="cursor-pointer">Current parameter sources and locators</summary>
+            <summary className="min-h-[24px] cursor-pointer">Current parameter sources and locators</summary>
             <p className="mt-2 text-muted">These sources describe the currently deployed policies. The request keeps its stated versions and dates, which may differ.</p>
             <ul className="mt-2 space-y-1">
               {registry.data.instruments.flatMap((i) => i.valid && i.runnable ? i.parameters.map((p) => <li key={`${i.id}:${p.id}`}>
