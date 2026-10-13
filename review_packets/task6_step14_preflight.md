@@ -6,8 +6,9 @@ rationale, so the author section below was not written blind.
 
 ## Review inputs
 
-- Branch `feat/task6-step14-pairwise-retire-20261013`, stacked on #216
-  (base `19128cb`, #216's head). Review only the commits after `19128cb`.
+- Branch `feat/task6-step14-pairwise-retire-20261013`, first stacked on #216
+  (base `19128cb`), rebased onto `main` after #216 merged as `7342e52`;
+  the code is unchanged by the rebase.
 - Task: `BUILD_PLAN_v0_3.md` Phase 1 Task 1.4; [ADR-0017](../adr/0017-shared-household-model.md)
   section 4 (which checks retire, which are kept; "a check is retired only
   when a test shows its contradiction can no longer be constructed").
