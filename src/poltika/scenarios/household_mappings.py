@@ -147,12 +147,71 @@ def _invalid(reason: str) -> MappingRefusal:
     return MappingRefusal("needs_review", "HOUSEHOLD_MAPPING_INVALID_FACTS", reason)
 
 
+# The main benefits `scenarios/combined.py` checks against WFF's whole-year
+# no-benefit assertions. NZ Super/Veterans' Pension and the AS mixed-benefit
+# couple label are not, by themselves, a main-benefit spell for WFF (Q19 (5)).
+_WFF_MAIN_BENEFITS = frozenset(
+    {hh.BenefitKind.JOBSEEKER_SUPPORT, hh.BenefitKind.SOLE_PARENT_SUPPORT, hh.BenefitKind.SUPPORTED_LIVING_PAYMENT}
+)
+# WFF assertions that say no main benefit was received in the year (combined.py:
+# in-work eligibility, MC 6(b)). The protected-credit assertions stay with
+# combined.py's conservative pair check: a benefit week alone does not
+# establish a protected month (MD 14, MG 4).
+_WFF_NO_MAIN_BENEFIT_FACTS = ("wff.in_work_eligibility", "wff.mc6b_disqualifying_payment")
+
+
+def _main_benefit_in_year(
+    household: Household, person_ids: tuple[str, ...], tax_year: DatePeriod, pair_week: AssessmentWeek | None
+) -> MappingRefusal | None:
+    """Q19 (5), decided 13 October 2026 (D38): a main-benefit spell of the
+    claimant or partner inside the tax year contradicts a verified whole-year
+    assertion that no main benefit was received. The check compares dates
+    only: nothing is apportioned (Q10, D32), and no part-year entitlement is
+    derived. Without such an assertion the spell changes nothing here.
+
+    For a combined pair (`pair_week`), the claimant's spell covering the AS
+    week becomes the AS claimant category, and `scenarios/combined.py` flags
+    that same contradiction on every component; it is left to that check so
+    the pair's result is unchanged. Any other spell is still refused."""
+    asserted = [key for key in _WFF_NO_MAIN_BENEFIT_FACTS if _status(household, key) is FactStatus.VERIFIED]
+    if not asserted:
+        return None
+    claimant_id = household.family.claimant_id
+    for spell in household.benefit_spells:
+        if (
+            pair_week is not None
+            and spell.person_id == claimant_id
+            and spell.benefit in _WFF_MAIN_BENEFITS
+            and spell.start <= pair_week.start
+            and spell.end >= pair_week.end
+        ):
+            continue
+        if (
+            spell.person_id in person_ids
+            and spell.benefit in _WFF_MAIN_BENEFITS
+            and spell.start < tax_year.end
+            and spell.end > tax_year.start
+        ):
+            return _invalid(
+                f"'{spell.person_id}' has {spell.benefit.value} recorded for [{spell.start}, {spell.end}) inside "
+                f"the WFF year [{tax_year.start}, {tax_year.end}), but {', '.join(asserted)} asserts no main "
+                "benefit in the year"
+            )
+    return None
+
+
 # ---------------------------------------------------------------- WFF
 
 
 def to_wff(household: Household, tax_year: DatePeriod) -> WffScenario | MappingRefusal:
     """The household as WFF's input for `tax_year` (the reviewed WFF
     assessment period, passed explicitly: no default period)."""
+    return _to_wff(household, tax_year, None)
+
+
+def _to_wff(
+    household: Household, tax_year: DatePeriod, pair_week: AssessmentWeek | None
+) -> WffScenario | MappingRefusal:
     family = household.family
     children = tuple(household.person(child_id) for child_id in family.dependent_child_ids)
 
@@ -185,6 +244,9 @@ def to_wff(household: Household, tax_year: DatePeriod) -> WffScenario | MappingR
     mismatch = _q10_refusal(household, people, tax_year, _WFF_BASES)
     if mismatch is not None:
         return mismatch
+    contradiction = _main_benefit_in_year(household, people, tax_year, pair_week)
+    if contradiction is not None:
+        return contradiction
 
     # WFF-01/02 domain: a stable partner status. Unknown stays unknown.
     partner_status = PartnerStatus(family.partner_status.value)
@@ -274,15 +336,19 @@ def to_as(household: Household, assessment_week: AssessmentWeek) -> AsScenario |
     # claimant categories of `ClaimantCategory`: the claimant's benefit
     # receipt over the whole assessment week. One spell must cover the whole
     # week; a week not wholly covered is not a verified category (`None`).
-    # Two different benefits covering the week is a contradiction, not a pick.
-    categories = {
-        s.benefit
+    # Every spell touching the week is checked, not only covering ones: a
+    # covering spell beside any other receipt in the week (r 17 "being paid")
+    # is a contradiction, not a pick (MAP-01). Household validation already
+    # refuses overlapping benefit spells; this keeps the mapping safe alone.
+    in_week = [
+        s
         for s in household.benefit_spells
-        if s.person_id == family.claimant_id and s.start <= week.start and s.end >= week.end
-    }
-    if len(categories) > 1:
-        return _invalid("the claimant has different benefits recorded for the whole assessment week")
-    claimant_category = _CATEGORY_BY_BENEFIT[next(iter(categories))] if categories else None
+        if s.person_id == family.claimant_id and s.start < week.end and s.end > week.start
+    ]
+    covering = [s for s in in_week if s.start <= week.start and s.end >= week.end]
+    if covering and len(in_week) > 1:
+        return _invalid("the claimant has more than one benefit status recorded in the assessment week")
+    claimant_category = _CATEGORY_BY_BENEFIT[covering[0].benefit] if covering else None
 
     # Schedule 4 Part 7 cl 1-3 household categories, AS-09 couple types: a
     # single family is SINGLE; a partnered family takes the recorded
@@ -328,6 +394,8 @@ def to_as(household: Household, assessment_week: AssessmentWeek) -> AsScenario |
             statistical_area_unit=None if housing.area is None else Area(housing.area.value),
             weekly_accommodation_costs=housing.weekly_housing_costs,
             dependent_children_count=dependent_children_count,
+            # Q19 (1), D38: the balance the caller asserts for this assessment
+            # week; Poltika picks no snapshot date and averages nothing.
             cash_assets=housing.cash_assets,
             exempt_cash_asset_status=_status(household, "as.exempt_cash_asset_status"),
             weekly_income=weekly_income,
@@ -344,7 +412,7 @@ def to_combined(
     """The pair the combined runner takes. The claimant link is the
     household's asserted fact: Task 1.4 retires the pairwise checks, this
     task keeps them (backlog P2-HH-02)."""
-    wff = to_wff(household, tax_year)
+    wff = _to_wff(household, tax_year, assessment_week)
     if isinstance(wff, MappingRefusal):
         return wff
     as_ = to_as(household, assessment_week)
@@ -446,6 +514,10 @@ def _household_from(
     # children under two definitions. N AS children among M WFF children
     # (N <= M) is representable (M - N are excluded under the AS definition);
     # N > M is not: the household would need children WFF has no facts for.
+    # Q19 (2), D38: marking the first N synthetic children as the AS ones is
+    # an engineering device for an unchanged aggregate round trip, not child
+    # membership. The counts carry no identities, so which real children are
+    # AS children is unknown; nothing may read these ids as that fact.
     wff_children = None if wff is None else wff.children
     as_count = None if as_ is None else as_.dependent_children_count
     # The WFF request's `children` is the caller's complete WFF list (the engine

@@ -9,10 +9,11 @@ optional qualifier. It performs no conversion: a binding names a period but
 never turns an annual amount into a weekly one (`periods.convert_amount` and
 `units.convert` still refuse).
 
-A period is `None` when the unit has no period (a rate), and is marked
-`PERIOD_UNRESOLVED` where the repository's sources do not settle which period
-a stock amount belongs to. An unresolved period is never guessed; a use under
-any period is accepted only because the binding says so explicitly.
+A period is `None` when the unit has no period (a rate, a count or a stock
+amount such as an asset ceiling), and `UNRESOLVED` would mark a unit whose
+period the repository's sources do not settle. An unresolved period is never
+guessed; a use under any period is accepted only because the binding says so
+explicitly.
 """
 
 from __future__ import annotations
@@ -30,7 +31,7 @@ from poltika.semantics.units import get_unit
 
 
 class PeriodStatus(str, Enum):
-    NONE = "none"  # a rate or count: no period belongs to the unit
+    NONE = "none"  # a rate, count or stock: no period belongs to the unit
     BOUND = "bound"  # the unit's own name states the period
     UNRESOLVED = "unresolved"  # sources do not settle the period; escalated
 
@@ -90,9 +91,10 @@ _BINDINGS: tuple[UnitBinding, ...] = (
     _b(ParameterUnit.NZD_PER_COMPLETE_NZD_ABOVE_THRESHOLD, "ratio", None, PeriodStatus.NONE,
        "A rate of reduction per complete dollar above a threshold. Whether the "
        "dollar is floored is calculator logic.", qualifier="per_complete_nzd_above_threshold"),
-    _b(ParameterUnit.NZD, "nzd", None, PeriodStatus.UNRESOLVED,
-       "AS stock amount (asset ceilings, imputation thresholds, step size). "
-       "No source in the repository states the period of a stock; ESCALATED."),
+    _b(ParameterUnit.NZD, "nzd", None, PeriodStatus.NONE,
+       "AS stock amount (asset ceilings, imputation thresholds, step size): an "
+       "amount held, not a flow (Q19 (1), D38). A parameter applies over its "
+       "validity dates; a household balance is the caller's for the assessment week."),
     _b(ParameterUnit.NZD_PER_WEEK, "nzd", PeriodType.ASSESSMENT_WEEK, PeriodStatus.BOUND,
        "AS weekly amount: the explicit 7-day assessment week (policy 0.1.1)."),
     _b(ParameterUnit.FRACTION, "ratio", None, PeriodStatus.NONE, "A dimensionless fraction."),

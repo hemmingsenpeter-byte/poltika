@@ -123,10 +123,11 @@ def test_bindings_pin_qualifiers() -> None:
     assert bind_unit("NZD_per_tax_year_after_tax").qualifier == "after_tax"
 
 
-def test_asset_stock_period_is_unresolved_not_guessed() -> None:
+def test_asset_stock_has_no_period() -> None:
+    # Q19 (1), D38: a stock is held, not received over a period.
     nzd = bind_unit("NZD")
     assert nzd.period is None
-    assert nzd.period_status is PeriodStatus.UNRESOLVED
+    assert nzd.period_status is PeriodStatus.NONE
 
 
 def test_no_hidden_conversion() -> None:

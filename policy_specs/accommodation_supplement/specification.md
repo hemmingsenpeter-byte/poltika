@@ -98,6 +98,7 @@ recalculation before it becomes a protected benchmark.
 - Resolve the fractional-income discrepancy above against operative law and
   agency practice before setting a rounding fixture. Also verify whether
   s 423(3)'s $100 asset steps mean complete or partial hundreds in practice.
+  (Decided 13 October 2026: complete steps, DEC-004.)
 - Confirm the statutory basis and treatment of MSD-paid WFF components before
   any combined-policy scenario relies on that route.
 - Select a supported household/tenure/benefit domain. Unsupported student,
@@ -139,7 +140,11 @@ hundreds" rule -- it matches the same complete-unit floor discipline WFF's
 MD 13(3)(a)/MG 3(2)(a) already established for this project
 (`_complete_dollar_excess()` in `wff.py`) by analogy, not a new invention,
 but a fresh-context reviewer should independently re-read s 423(3) before
-this is treated as settled rather than author-asserted.
+this is treated as settled rather than author-asserted. **Update, 13
+October 2026:** the independent GPT/Codex re-read (B4) found the text does not
+settle partial hundreds; Pete decided the complete-steps reading
+([DEC-004](decisions/DEC-004-asset-imputation-complete-steps.md)). The engine
+is unchanged.
 
 **Regulation 18(2)'s income-excess rounding -- escalated to Pete, now
 decided (DEC-001, 22 September 2026).** Checked r 18(2) directly: "That

@@ -38,6 +38,8 @@ Written after the author's own preflight. The author wrote the rationale, so it 
 | `NZD_per_week` | `nzd` | `assessment_week` | none | AS `membership_period: assessment_week`; the explicit 7-day week (policy 0.1.1) |
 | `NZD` | `nzd` | UNRESOLVED | none | AS asset ceilings, imputation thresholds and step size (`policy.yaml` 230-258); `cash_assets` input |
 
+**Update, 13 October 2026:** Q19 (1) was decided (D38): `NZD` is a stock and is now bound with no period (`PeriodStatus.NONE`); `cash_assets` is the caller's balance for the assessment week. The row above is this packet's state at review.
+
 Input `period:` values: `full_tax_year` and `tax_year` map to `tax_year`; `assessment_week` maps to `assessment_week`; `day` maps to `point_in_time`.
 
 Enforced by `tests/unit/semantics/test_unit_binding.py`. An unregistered unit, an unregistered period, a parameter or input whose unit period differs from the policy's `membership_period`, or a unit-bearing input with no period all fail. A spec directory with no `policy.yaml` fails unless it is in an explicit not-yet-executable set. No conversion is added: `periods.convert_amount`, `units.convert` and `units.rescale` still refuse.

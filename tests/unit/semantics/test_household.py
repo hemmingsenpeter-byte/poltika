@@ -340,7 +340,71 @@ def test_no_benefit_spell_is_a_verified_non_beneficiary_and_conflicts_are_refuse
         none,
         hh.BenefitSpell(person_id="a", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=WEEK.start, end=WEEK.end),
     )
-    assert isinstance(to_as(_household(benefit_spells=both), WEEK), MappingRefusal)
+    with pytest.raises(ValidationError, match="benefit spells for a overlap"):
+        _household(benefit_spells=both)
+    # The mapping refuses on its own too, for a household built without validation.
+    unvalidated = _household().model_copy(update={"benefit_spells": both})
+    assert isinstance(to_as(unvalidated, WEEK), MappingRefusal)
+
+
+def test_benefit_spells_for_one_person_may_not_overlap() -> None:
+    def spell(person_id: str, kind: hh.BenefitKind, start: date, end: date) -> hh.BenefitSpell:
+        return hh.BenefitSpell(person_id=person_id, benefit=kind, start=start, end=end)
+
+    with pytest.raises(ValidationError, match="benefit spells for a overlap"):
+        _household(
+            benefit_spells=(
+                spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 5, 1), date(2026, 6, 10)),
+                spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 6, 1), date(2026, 7, 1)),
+            )
+        )
+    # Order of input does not matter.
+    with pytest.raises(ValidationError, match="benefit spells for a overlap"):
+        _household(
+            benefit_spells=(
+                spell("a", hh.BenefitKind.NO_BENEFIT, date(2026, 6, 3), date(2026, 6, 4)),
+                spell("a", hh.BenefitKind.SOLE_PARENT_SUPPORT, date(2026, 8, 1), date(2026, 9, 1)),
+                spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 6, 1), date(2026, 6, 8)),
+            )
+        )
+    # Different people may hold spells on the same dates, and the same
+    # benefit may continue in adjacent spells.
+    _household(
+        benefit_spells=(
+            spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, WEEK.start, WEEK.end),
+            spell("p", hh.BenefitKind.NO_BENEFIT, WEEK.start, WEEK.end),
+            spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, WEEK.end, date(2026, 7, 1)),
+        )
+    )
+    # Adjacent spells (end exclusive) do not overlap: a mid-week change is
+    # recorded, and the week's category stays unverified rather than picked.
+    changed = _household(
+        benefit_spells=(
+            spell("a", hh.BenefitKind.NO_BENEFIT, date(2026, 5, 1), date(2026, 6, 3)),
+            spell("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 6, 3), date(2026, 7, 1)),
+        )
+    )
+    as_ = to_as(changed, WEEK)
+    assert not isinstance(as_, MappingRefusal)
+    assert as_.claimant_category is None
+
+
+def test_as_mapping_refuses_a_covering_spell_beside_part_week_receipt() -> None:
+    covering = hh.BenefitSpell(person_id="a", benefit=hh.BenefitKind.NO_BENEFIT, start=WEEK.start, end=WEEK.end)
+    one_day = hh.BenefitSpell(
+        person_id="a", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=date(2026, 6, 3), end=date(2026, 6, 4)
+    )
+    unvalidated = _household().model_copy(update={"benefit_spells": (covering, one_day)})
+    refusal = to_as(unvalidated, WEEK)
+    assert isinstance(refusal, MappingRefusal)
+    assert refusal.code == "HOUSEHOLD_MAPPING_INVALID_FACTS"
+    # A spell outside the week is not receipt in it.
+    later = hh.BenefitSpell(
+        person_id="a", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=WEEK.end, end=date(2026, 7, 1)
+    )
+    as_ = to_as(_household(benefit_spells=(covering, later)), WEEK)
+    assert not isinstance(as_, MappingRefusal)
+    assert as_.claimant_category is ClaimantCategory.NON_BENEFICIARY
 
 
 def test_partner_arrangement_gives_the_as_partner_type() -> None:
@@ -397,3 +461,62 @@ def test_to_combined_carries_the_claimant_link_fact() -> None:
     unlinked = to_combined(_household(Assertion.VERIFIED), YEAR, WEEK)
     assert not isinstance(unlinked, MappingRefusal)
     assert unlinked.as_claimant_is_wff_claimant_or_partner is FactStatus.UNKNOWN
+
+
+# --- Q19 (5): a main-benefit spell against WFF's whole-year assertions -------------
+
+
+def _benefit(person_id: str, kind: hh.BenefitKind, start: date, end: date) -> hh.BenefitSpell:
+    return hh.BenefitSpell(person_id=person_id, benefit=kind, start=start, end=end)
+
+
+@pytest.mark.parametrize("fact", ["wff.in_work_eligibility", "wff.mc6b_disqualifying_payment"])
+@pytest.mark.parametrize("person_id", ["a", "p"])
+def test_main_benefit_in_the_year_contradicts_a_verified_no_benefit_assertion(fact: str, person_id: str) -> None:
+    household = _household(
+        Assertion.VERIFIED,
+        asserted_facts={fact: Assertion.VERIFIED},
+        benefit_spells=(_benefit(person_id, hh.BenefitKind.JOBSEEKER_SUPPORT, WEEK.start, WEEK.end),),
+    )
+    refusal = to_wff(household, YEAR)
+    assert isinstance(refusal, MappingRefusal)
+    assert refusal.code == "HOUSEHOLD_MAPPING_INVALID_FACTS"
+    assert fact in refusal.reason
+
+
+def test_main_benefit_check_compares_dates_only() -> None:
+    verified = {"wff.in_work_eligibility": Assertion.VERIFIED}
+    allowed = [
+        # No whole-year assertion: the spell changes nothing.
+        ({}, _benefit("a", hh.BenefitKind.SOLE_PARENT_SUPPORT, WEEK.start, WEEK.end)),
+        # Not a main-benefit spell for WFF by itself.
+        (verified, _benefit("a", hh.BenefitKind.NZ_SUPER_OR_VETERANS_PENSION, WEEK.start, WEEK.end)),
+        (verified, _benefit("a", hh.BenefitKind.NO_BENEFIT, YEAR.start, YEAR.end)),
+        # Outside the year, end exclusive.
+        (verified, _benefit("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 3, 1), YEAR.start)),
+        (verified, _benefit("a", hh.BenefitKind.JOBSEEKER_SUPPORT, YEAR.end, date(2027, 5, 1))),
+    ]
+    for facts, spell in allowed:
+        wff = to_wff(_household(Assertion.VERIFIED, asserted_facts=facts, benefit_spells=(spell,)), YEAR)
+        assert not isinstance(wff, MappingRefusal), (facts, spell)
+    # A spell straddling the year's start still overlaps it: no apportionment is
+    # needed to see the contradiction.
+    straddling = _benefit("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 3, 1), date(2026, 4, 8))
+    household = _household(Assertion.VERIFIED, asserted_facts=verified, benefit_spells=(straddling,))
+    assert isinstance(to_wff(household, YEAR), MappingRefusal)
+
+
+def test_combined_pair_leaves_the_assessment_week_spell_to_the_pair_check() -> None:
+    facts = {"wff.in_work_eligibility": Assertion.VERIFIED}
+    week_spell = _benefit("a", hh.BenefitKind.JOBSEEKER_SUPPORT, WEEK.start, WEEK.end)
+    household = _household(Assertion.VERIFIED, asserted_facts=facts, benefit_spells=(week_spell,))
+    # combined.py flags this pair on every component; the mapping must not
+    # pre-empt it with a refusal of its own.
+    assert not isinstance(to_combined(household, YEAR, WEEK), MappingRefusal)
+    # Another spell in the year, or the partner's, is not seen by the pair check.
+    for other in (
+        _benefit("a", hh.BenefitKind.JOBSEEKER_SUPPORT, date(2026, 9, 1), date(2026, 9, 8)),
+        _benefit("p", hh.BenefitKind.JOBSEEKER_SUPPORT, WEEK.start, WEEK.end),
+    ):
+        both = _household(Assertion.VERIFIED, asserted_facts=facts, benefit_spells=(week_spell, other))
+        assert isinstance(to_combined(both, YEAR, WEEK), MappingRefusal), other

@@ -73,6 +73,10 @@ Derivation: (a) 36,604 - 36,603 = **1**. (b) 36,604 - 36,603.99 = **0.01**.
 
 Status: derivable from recorded sources. Only the "zero at the prescribed amount" case exists today.
 
+These are isolated, caller-asserted formula scenarios (B2, Codex review 12 October 2026). The 30,000 family scheme
+income and the larger attested net figures are not a coherent ME 3 construction for a real claimant, and none is
+derived here: the rows test the ME 1 arithmetic at the prescribed amount, not an entitlement benchmark.
+
 ## Case 4: AS asset-income imputation step edges (A-08)
 
 Inputs (all): non-beneficiary, single, no dependent children, Area 1, rent or board, `ordinary_rate_status` verified,
@@ -102,13 +106,18 @@ cost 401, weekly income 1,121, threshold 205, income level 1,117, cap 305, imput
 | 5,500 | 1 | 1,122 | 5 | 1.25 | 135.95 | **136** |
 
 Status: the rows at exactly one full step over the threshold (2,800 and 5,500) and at the threshold (2,700, 5,400)
-are derivable from recorded sources. The part-hundred rows (2,799.99 and 5,499.99) and the ceiling row depend on
-reading s 423(3) "every $100 of cash assets over" as complete steps. `specification.md` 124-140 says that is "an
+are derivable from recorded sources. So is the ceiling row (8,100): its excess over 2,700 is exactly 5,400, which is
+54 steps under every reading (B1, Codex review 12 October 2026). Only the part-hundred rows (2,799.99 and 5,499.99)
+depend on reading s 423(3) "every $100 of cash assets over" as complete steps. `specification.md` 124-140 says that is "an
 inference from the wording, not a quotation of an explicit 'complete hundreds' rule" and asks a fresh-context reviewer
 to re-read s 423(3) before it is treated as settled; `sources.yaml` `task_22_check` (lines 28-41) says the same, and
 `task_24_1_independent_check` confirmed the amounts ($5,400, $2,700, $100, $1) but not the
 part-hundred reading. **Source ambiguous: flag it.** Do not promote the part-hundred rows until that re-read is
 recorded.
+
+**Decided 13 October 2026:** the independent re-read (Codex, B4) found the text does not settle it, and Pete decided
+the complete-steps reading ([DEC-004](../policy_specs/accommodation_supplement/decisions/DEC-004-asset-imputation-complete-steps.md)).
+The part-hundred rows are no longer blocked by the interpretation; they still go through the test-doctrine process.
 
 ## Case 5: AS asset ceiling for a couple or a household with dependent children (A-09)
 
@@ -128,6 +137,10 @@ Status: derivable from recorded sources. Mirrors the existing single-person case
 ## Case 6: AS r 19 rounding at an integer and just above (A-10)
 
 Inputs: Jobseeker Support, single, no dependent children, Area 1, assets 1,000, weekly cost: (a) 103; (b) 103.01.
+Every other input is stated (B3, Codex review 12 October 2026): `household_eligibility` verified, tenure rent or
+board, `ordinary_rate_status` verified (the ordinary single row, not the protected woman-alone row in the same table),
+`exempt_cash_asset_status` verified, `eldest_dependent_child_under_16` not applicable (no child), no `weekly_income`
+(a beneficiary has no separate income test, AS-08).
 
 Sources: Jobseeker single threshold 93 (`as-msd-jobseeker-rates-2026`); subsidy 0.7; cap 165; r 19 "rounded up to the
 complete dollar" (`as-social-security-regulations`; DEC-001 records it governs only the final amount;

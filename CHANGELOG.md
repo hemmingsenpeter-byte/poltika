@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased (MAP-01 fix; Pete's 13 October decisions on B4, Q19, Q2 and Q3)
+
+- Household validation rejects overlapping benefit spells for one person,
+  and the AS mapping refuses a week where a covering spell sits beside any
+  other receipt (MAP-01, P2 from the #207 mapping review; decision log
+  D37). Previously a whole-week `NO_BENEFIT` spell plus a one-day Jobseeker
+  Support spell mapped to `NON_BENEFICIARY`. No fixture or calculated amount
+  changes; a mid-week change of benefit still leaves the category unknown.
+- Q19 (5): `to_wff` refuses a claimant or partner main-benefit spell inside
+  the tax year when a whole-year no-benefit assertion (in-work eligibility,
+  MC 6(b)) is verified. Dates only, nothing apportioned. In a combined pair the
+  assessment-week spell stays with the existing per-component check, so every
+  fixture result is unchanged.
+- Q19 (1): the AS stock unit `NZD` has no period; `cash_assets` is the
+  caller's balance for the assessment week. Q19 (2): the adapter's first-N AS
+  child marking is labelled a round-trip device, not membership.
+- B4: AS DEC-004 records that s 423(3) counts complete $100 steps, as the
+  engine already does. The boundary proposal's B1–B3 notes are fixed.
+- Pete's 13 October decisions are recorded (`docs/programme/2026-10-13-pete-approvals.md`,
+  D38): Q19 and B4 move to Done; Q2 and Q3 stay parked with named triggers.
+  No calculated amount changes.
+
 ## Unreleased (pilot data notice, research briefs, #213 review follow-ups)
 
 - Web: a notice under the header on every page says the shared pilot holds
