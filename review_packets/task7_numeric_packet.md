@@ -42,6 +42,11 @@ The catalogue scope extension permits parsing this draft. No runtime engine,
 resolver or intake registration is added. The unit-binding discovery test now
 checks income tax's `policy.yaml` rather than listing it as absent.
 
+The shipped-catalogue wording gate now explicitly skips an unbuilt draft
+policy with a named reason. Already modelled catalogues still fail on
+unreviewed wording, even if their policy status is changed to draft (negative
+probe). This adds an unmet-gate skip; it does not declare Phase B accepted.
+
 ## Evidence and remaining gates
 
 The official current ITA index still identifies 4 September 2026; Schedule 1
