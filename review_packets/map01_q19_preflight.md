@@ -68,6 +68,22 @@ binding.
   cited Codex review and specification.
 - The full suite was not run in a clean environment locally; CI is the check.
 
+## Final-head evidence (13 October 2026)
+
+- **Fresh same-model check** (Claude Code, a different session from the
+  author) of the delta after this packet's commits, `c846295..19128cb`:
+  `1c28692` (this packet and the queue rows, documentation only) and
+  `19128cb` (one line: `test_provenance.py` lists AS DEC-004 among the hashed
+  decision artifacts, which the new decision file requires). No source or
+  calculation change; no finding. Not an independent review.
+- **Independent GPT/Codex review** at final head `19128cb`
+  ([review](https://github.com/hemmingsenpeter-byte/poltika/pull/216#pullrequestreview-5497205526)): no P1/P2; MAP-01 verified fixed. One nonblocking P3: the
+  Q19 (5) refusal names the first matching spell in tuple order, so
+  reversing `benefit_spells` (same content hash) changes which person the
+  diagnostic names. Carried to #218, which reads spells in canonical order
+  and adds the reversed-order test.
+- CI at `19128cb`: green (`test`, `web`, `pilot-image` and the guards).
+
 ## Deferred Codex audit
 
 Recheck the final head for: MAP-01 (`ec360cd`, `268a2ea`), clearing #207's
