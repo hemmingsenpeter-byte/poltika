@@ -73,7 +73,8 @@ poltika/
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
 │   ├── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
-│                       specification, parameters and implementation remain separately gated
+│                       draft numeric spec, candidate parameters, facts and hand cases;
+│                       official benchmark, approval and implementation remain gated
 │   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue only
 │   ├── sole_parent_support/ — source catalogue only; separate specification/value gates
 │   └── supported_living_payment/ — source catalogue only; separate specification/value gates

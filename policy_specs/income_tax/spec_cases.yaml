@@ -1,0 +1,190 @@
+# Hand arithmetic written before any income-tax implementation. Candidate
+# values are Model outputs from the cited table, not independent benchmarks.
+# No code produced these expectations. A separate Decimal check is validation.
+status: draft_pending_review
+policy_id: income_tax
+policy_version: null
+reference_period: {from: 2026-04-01, to: 2027-04-01}
+source_id: it-income-tax-act-basic-rates
+locator: Schedule 1 Part A clause1/Table1 and BC6(1)-(2)
+arithmetic_status: candidate_pending_independent_review_and_protected_value_approval
+current_gates: [annual_authority, full_period_amendment_coverage, policy_approval, final_output_precision]
+spec_cases:
+  - id: known_zero_stays_gated
+    scenario: &ordinary
+      individual_status: verified
+      residence_scope: whole_year_ordinary_nz_resident
+      tax_year_basis: standard_2026_27
+      income_composition: ordinary_salary_wages_only
+      no_deductions_status: verified
+      no_available_losses_status: verified
+      general_basic_rate_status: verified
+      taxable_income_basis_attestation: true
+      annual_taxable_income: '0'
+    conditional_arithmetic: {value: '0', derivation: 'BC6(2) zero path; all band counts are0. No division by zero.'}
+    expected: &pending {basic_annual_income_tax: {outcome: needs_review}}
+  - id: first_dollar
+    scenario: {<<: *ordinary, annual_taxable_income: '1'}
+    conditional_arithmetic: {value: '0.105', derivation: '1 × .105 = .105; final output rounding unverified.'}
+    expected: *pending
+  - id: band_1_minus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '15599'}
+    conditional_arithmetic: {value: '1637.895', derivation: '15,599 × .105 = 1,637.895.'}
+    expected: *pending
+  - id: band_1_exact
+    scenario: {<<: *ordinary, annual_taxable_income: '15600'}
+    conditional_arithmetic: {value: '1638.000', derivation: '15,600 × .105 = 1,638.'}
+    expected: *pending
+  - id: band_1_plus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '15601'}
+    conditional_arithmetic: {value: '1638.175', derivation: '1,638 + 1 × .175 = 1,638.175.'}
+    expected: *pending
+  - id: whole_dollar_subcent_tie_candidate
+    scenario: {<<: *ordinary, annual_taxable_income: '15603'}
+    conditional_arithmetic: {value: '1638.525', derivation: '1,638 + 3 × .175 = 1,638.525. Q17 does not decide half-cent output treatment.'}
+    expected: *pending
+  - id: band_2_minus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '53499'}
+    conditional_arithmetic: {value: '8270.325', derivation: '1,638 + 37,899 × .175 = 1,638 + 6,632.325 = 8,270.325.'}
+    expected: *pending
+  - id: band_2_exact
+    scenario: {<<: *ordinary, annual_taxable_income: '53500'}
+    conditional_arithmetic: {value: '8270.500', derivation: '1,638 + 37,900 × .175 = 1,638 + 6,632.50 = 8,270.50.'}
+    expected: *pending
+  - id: band_2_plus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '53501'}
+    conditional_arithmetic: {value: '8270.800', derivation: '8,270.50 + 1 × .300 = 8,270.80.'}
+    expected: *pending
+  - id: band_3_minus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '78099'}
+    conditional_arithmetic: {value: '15650.200', derivation: '8,270.50 + 24,599 × .300 = 8,270.50 + 7,379.70 = 15,650.20.'}
+    expected: *pending
+  - id: band_3_exact
+    scenario: {<<: *ordinary, annual_taxable_income: '78100'}
+    conditional_arithmetic: {value: '15650.500', derivation: '8,270.50 + 24,600 × .300 = 15,650.50.'}
+    expected: *pending
+  - id: band_3_plus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '78101'}
+    conditional_arithmetic: {value: '15650.830', derivation: '15,650.50 + 1 × .330 = 15,650.83; use the statute, not the excluded IR3G threshold.'}
+    expected: *pending
+  - id: band_4_minus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '179999'}
+    conditional_arithmetic: {value: '49277.170', derivation: '15,650.50 + 101,899 × .330 = 15,650.50 + 33,626.67 = 49,277.17.'}
+    expected: *pending
+  - id: band_4_exact
+    scenario: {<<: *ordinary, annual_taxable_income: '180000'}
+    conditional_arithmetic: {value: '49277.500', derivation: '15,650.50 + 101,900 × .330 = 15,650.50 + 33,627 = 49,277.50.'}
+    expected: *pending
+  - id: band_4_plus_one
+    scenario: {<<: *ordinary, annual_taxable_income: '180001'}
+    conditional_arithmetic: {value: '49277.890', derivation: '49,277.50 + 1 × .390 = 49,277.89.'}
+    expected: *pending
+  - id: high_income_top_band
+    scenario: {<<: *ordinary, annual_taxable_income: '200000'}
+    conditional_arithmetic: {value: '57077.500', derivation: '49,277.50 + 20,000 × .390 = 57,077.50.'}
+    expected: *pending
+  # Missing required assertions/amounts remain unknown; policy gates also apply.
+  - id: unknown_income_is_not_zero
+    scenario: {<<: *ordinary, annual_taxable_income: null}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [annual_taxable_income]}}
+  - id: unknown_individual
+    scenario: {<<: *ordinary, individual_status: unknown}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [individual_status]}}
+  - id: unknown_residence
+    scenario: {<<: *ordinary, residence_scope: null}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [residence_scope]}}
+  - id: unknown_year_basis
+    scenario: {<<: *ordinary, tax_year_basis: null}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [tax_year_basis]}}
+  - id: unknown_composition
+    scenario: {<<: *ordinary, income_composition: null}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [income_composition]}}
+  - id: unknown_deductions
+    scenario: {<<: *ordinary, no_deductions_status: unknown}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [no_deductions_status]}}
+  - id: unknown_losses
+    scenario: {<<: *ordinary, no_available_losses_status: unknown}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [no_available_losses_status]}}
+  - id: unknown_rate_category
+    scenario: {<<: *ordinary, general_basic_rate_status: unknown}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [general_basic_rate_status]}}
+  - id: missing_taxable_basis_attestation
+    scenario: {<<: *ordinary, taxable_income_basis_attestation: null}
+    expected: {basic_annual_income_tax: {outcome: needs_review, missing_facts: [taxable_income_basis_attestation]}}
+  - id: false_taxable_basis_attestation
+    scenario: {<<: *ordinary, taxable_income_basis_attestation: false}
+    expected: *pending
+  # These outcomes are project scope refusals, not findings of no tax liability.
+  - id: fractional_positive_Q17
+    scenario: {<<: *ordinary, annual_taxable_income: '15600.01'}
+    expected: &unsupported {basic_annual_income_tax: {outcome: unsupported, category: not_modelled}}
+  - id: fractional_below_first_dollar_Q17
+    scenario: {<<: *ordinary, annual_taxable_income: '0.99'}
+    expected: *unsupported
+  - id: negative_income_outside_slice
+    scenario: {<<: *ordinary, annual_taxable_income: '-1'}
+    expected: *unsupported
+  - id: whole_dollar_decimal_transport
+    scenario: {<<: *ordinary, annual_taxable_income: '15600.00'}
+    conditional_arithmetic: {value: '1638.000', derivation: '15,600.00 is integral; 15,600 × .105 = 1,638.'}
+    expected: *pending
+  - id: household_company_or_trust_entity
+    scenario: {<<: *ordinary, individual_status: excluded}
+    expected: *unsupported
+  - id: non_resident
+    scenario: {<<: *ordinary, residence_scope: non_resident}
+    expected: *unsupported
+  - id: changing_residence
+    scenario: {<<: *ordinary, residence_scope: changing_residence}
+    expected: *unsupported
+  - id: special_residence_regime
+    scenario: {<<: *ordinary, residence_scope: special_residence_regime}
+    expected: *unsupported
+  - id: non_standard_year
+    scenario: {<<: *ordinary, tax_year_basis: non_standard_year}
+    expected: *unsupported
+  - id: other_standard_year
+    scenario: {<<: *ordinary, tax_year_basis: other_standard_year}
+    expected: *unsupported
+  - id: main_benefit_income_deferred
+    scenario: {<<: *ordinary, income_composition: main_benefit}
+    expected: *unsupported
+  - id: business_or_self_employment
+    scenario: {<<: *ordinary, income_composition: business_self_employment}
+    expected: *unsupported
+  - id: investment_or_rent
+    scenario: {<<: *ordinary, income_composition: investment_or_rent}
+    expected: *unsupported
+  - id: foreign_income
+    scenario: {<<: *ordinary, income_composition: foreign_income}
+    expected: *unsupported
+  - id: unusual_employment_items
+    scenario: {<<: *ordinary, income_composition: unusual_employment_items}
+    expected: *unsupported
+  - id: schedular_or_pie
+    scenario: {<<: *ordinary, income_composition: schedular_or_pie}
+    expected: *unsupported
+  - id: other_or_mixed_income
+    scenario: {<<: *ordinary, income_composition: other_or_mixed_income}
+    expected: *unsupported
+  - id: deductions_apply
+    scenario: {<<: *ordinary, no_deductions_status: excluded}
+    expected: *unsupported
+  - id: losses_apply
+    scenario: {<<: *ordinary, no_available_losses_status: excluded}
+    expected: *unsupported
+  - id: special_basic_rate
+    scenario: {<<: *ordinary, general_basic_rate_status: excluded}
+    expected: *unsupported
+  - id: unsupported_precedes_missing_income_and_authority
+    scenario: {<<: *ordinary, income_composition: main_benefit, annual_taxable_income: null}
+    expected: *unsupported
+implementation_regression_handoff:
+  # Server-owned states, not facts callers can assert to bypass review.
+  - Unknown authority and a known-zero amount must remain needs_review without a value.
+  - Candidate parameter values must never produce calculated merely because arithmetic is available.
+  - Refuse requests outside [2026-04-01,2027-04-01) and mismatched policy identity/version.
+  - Reject malformed/non-finite/binary-float numeric transport at request validation.
+  - Require complete applicable candidate intervals; missing/overlapping rates never become zero/current defaults.
+  - Trace individual, year, assertions, parameter intervals/review status, sources, Q16-Q18 and DEC004.
+  - PAYE, ACC, credit, terminal-tax and household-conversion requests are separate unsupported components, never basic_tax aliases.

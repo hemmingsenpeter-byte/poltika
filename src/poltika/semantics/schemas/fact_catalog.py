@@ -35,7 +35,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-Scope = Literal["wff", "accommodation_supplement", "household"]
+Scope = Literal["wff", "accommodation_supplement", "household", "income_tax"]
 Kind = Literal["fact_status", "enum", "money", "count", "attestation"]
 
 _RULE = re.compile(r"^[A-Z]+-\d+$|^Task \d+(\.\d+)?|^DEC-\d+")
