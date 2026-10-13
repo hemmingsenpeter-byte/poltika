@@ -1,12 +1,13 @@
 # DEC-002 — SPS weekly income, deduction and output precision
 
-**Policy:** Sole Parent Support, ordinary weekly-agreement sub-slice.  
-**Date raised / source check:** 13 October 2026.  
-**Decision owner:** Pete. **Decision date:** none.  
-**Status:** open; `needs_review`. **Raised by:** GPT/Codex.  
+**Policy:** Sole Parent Support, ordinary weekly-agreement sub-slice.
+**Date:** 2026-10-13 (raised / source check).
+**Decision owner:** Pete. **Decision date:** none.
+**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
+**Class:** AI hypothesis.
 **Classification:** `MISSING_SOURCE`; any provisional convention is a Tier C choice.
 
-## Ambiguity and missing authority
+## Ambiguity
 
 The bounded source reading did not establish a complete SPS procedure for
 fractional income, intermediate deductions, final statutory/gross amounts

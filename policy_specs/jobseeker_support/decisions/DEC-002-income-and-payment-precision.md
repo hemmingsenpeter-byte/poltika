@@ -1,12 +1,19 @@
 # DEC-002 — Jobseeker income preparation and payment precision
 
 **Policy:** Jobseeker Support, D11 single 25+ established-grant slice.
-**Raised:** 2026-10-13, GPT/Codex. **Decision owner:** Pete.
+**Date:** 2026-10-13
+**Raised by:** GPT/Codex
+**Decision owner:** Pete
 **Decision date:** none. **Status:** open; `needs_review`.
 **Class:** AI hypothesis. Discrepancy: `MISSING_SOURCE` for final/intermediate
 precision and nil boundaries; interpretation review for income preparation.
 
-## Ambiguity and evidence
+## Ambiguity
+
+The commissioned gross output requires a complete sourced income-preparation,
+conversion and precision method; this bounded check has not established it.
+
+## Evidence considered
 
 [Act Schedule 2 Income Test 3(b)](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/)
 states $0.70 reduction for each $1 above $160 weekly. The scoped text does

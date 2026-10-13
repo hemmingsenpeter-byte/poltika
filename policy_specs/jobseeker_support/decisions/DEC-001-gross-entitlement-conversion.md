@@ -1,13 +1,20 @@
 # DEC-001 — Jobseeker gross entitlement after income abatement
 
 **Policy:** Jobseeker Support, D11 single 25+ established-grant slice.
-**Raised:** 2026-10-13, GPT/Codex. **Decision owner:** Pete.
+**Date:** 2026-10-13
+**Raised by:** GPT/Codex
+**Decision owner:** Pete
 **Decision date:** none. **Status:** open; `needs_review`.
 **Class:** AI hypothesis; discrepancy `MISSING_SOURCE` for the complete
 gross-conversion method. A later sourced interpretation is a Rule; an
 explicit convention where law is silent must be labelled Assumption.
 
-## Ambiguity and evidence
+## Ambiguity
+
+The commissioned gross output requires a complete sourced income-preparation,
+conversion and precision method; this bounded check has not established it.
+
+## Evidence considered
 
 D11 commissions gross weekly entitlement, not a net-payment component.
 The [Act s 17 and Schedule 4 Part 1 cl 1(d)](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/)

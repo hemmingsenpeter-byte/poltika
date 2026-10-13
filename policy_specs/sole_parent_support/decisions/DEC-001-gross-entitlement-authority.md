@@ -1,12 +1,13 @@
 # DEC-001 — gross SPS entitlement and statutory-side abatement
 
-**Policy:** Sole Parent Support, D11 single established-grant slice.  
-**Date raised / source check:** 13 October 2026.  
-**Decision owner:** Pete. **Decision date:** none.  
-**Status:** open; `needs_review`. **Raised by:** GPT/Codex.  
+**Policy:** Sole Parent Support, D11 single established-grant slice.
+**Date:** 2026-10-13 (raised / source check).
+**Decision owner:** Pete. **Decision date:** none.
+**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
+**Class:** AI hypothesis.
 **Classification:** `MISSING_SOURCE`; scope/meaning choice also requires Pete.
 
-## Ambiguity and missing authority
+## Ambiguity
 
 The accepted output is gross weekly entitlement. The statutory SPS table
 contains an amount that the official operational tables label after tax at M.

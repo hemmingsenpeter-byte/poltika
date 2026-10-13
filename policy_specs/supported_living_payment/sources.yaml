@@ -22,7 +22,7 @@ source_scope_history:
       Original source-only inventory; claims scoped to law operative on 3 October 2026.
       Original entries and their checked_on dates remain intact below. No policy values were adopted.
 specification_check:
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   status: draft_pending_review
   specification: specification.md
   unresolved_decision: decisions/DEC-001-gross-entitlement-and-precision.md
@@ -216,7 +216,7 @@ sources:
   title: Social Security Act 2018 — current SLP specification check
   url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/
   version_as_at: '2026-09-26'
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   locator: >-
     ss 16-18, 34-42, 349-351; Schedule 2 Income Test 1 and income;
     Schedule 3 cls 2-14; Schedule 4 Part 3 cl 1(a)-(h) and trailing paragraph.
@@ -241,7 +241,7 @@ sources:
   kind: agency_guidance_and_examples
   title: MSD MAP — Supported Living Payment personal earnings exemptions
   url: https://map.workandincome.govt.nz/map/income-support/main-benefits/supported-living-payment/personal-earnings-exemptions-01.html
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   locator: Personal earnings definition; disregard paragraphs; Example 1; Schedule 4 Part 3 cross-reference.
   finding: >-
     Distinguishes own-effort income from other classes and carer/blindness rules. Example 1 takes
@@ -254,7 +254,7 @@ sources:
   kind: agency_guidance_and_examples
   title: MSD MAP — Supported Living Payment weekly income example
   url: https://map.workandincome.govt.nz/map/income-support/main-benefits/supported-living-payment/weekly-income-example-01.html
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   locator: Example 1 personal earnings exemption; Example 2 no personal earnings exemption.
   finding: >-
     Example 1 uses 450 gross earnings, 20 exemption and reduction 27 plus 126 equals 153.
@@ -268,7 +268,7 @@ sources:
   title: MSD — Supported Living Payment single 18+ deduction tables
   url: https://www.workandincome.govt.nz/on-a-benefit/tell-us/income/deduction-tables/supported-living-payment
   page_updated_on: '2026-06-12'
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   locator: Your deductions; calculation steps 1-3; estimate warning; after-tax deduction column heading.
   finding: >-
     Separates income before tax from deduction from benefit payment after tax; sets out the Test 1
@@ -281,7 +281,7 @@ sources:
   title: MSD MAP — Supported Living Payment cut-out points at 1 April 2026
   url: https://map.workandincome.govt.nz/map/deskfile/main-benefits-cut-out-points/supported-living-payment-cut-out-points-current.html
   published_rate_date: '2026-04-01'
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   locator: Net-M/weekly-rounding introduction; single 18+ row.
   finding: >-
     Net weekly benefit is after tax at M. Weekly income cut-outs are rounded to the nearest dollar;
@@ -293,7 +293,7 @@ sources:
   kind: agency_guidance
   title: MSD MAP — Supported Living Payment taxation
   url: https://map.workandincome.govt.nz/map/income-support/main-benefits/supported-living-payment/changes-and-reviews-supported-living-payment/taxation-01.html
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   locator: Opening taxable-benefit/net-payment paragraph; Legislation, tax on benefits ss 349-352.
   finding: >-
     Supported Living Payment is taxable; MSD makes net payments after tax and passes tax to IRD.
@@ -305,7 +305,7 @@ sources:
   title: Income Tax Act 2007 — main-benefit tax determination
   url: https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/sections/DLM1519963/
   version_as_at: '2026-09-04'
-  checked_on: '2026-10-13'
+  checked_on: 2026-10-13
   locator: RD 11(3), especially (a), overriding RD 10(1).
   finding: >-
     Main-benefit PAYE tax must be determined by the Commissioner in consultation with the
