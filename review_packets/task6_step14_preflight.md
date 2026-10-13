@@ -61,6 +61,7 @@ No P1 or P2 remains from the author preflight.
 | R1 P2: adapter first-N AS markers (Q19 (2): not membership) were treated as per-child facts, clearing the child-count gate; two WFF entries / AS count one gave calculated FTC, MFTC and AS | CODE_ERROR | `Family.as_child_statuses_from_count`, set by the adapter; `run_household` keeps the pair's child-count gate for it and reports a definitional difference only for caller-supplied statuses. "dependent children count" moves from retired to kept (narrowed). Tests for both origins |
 | R2 P2: `run_household` unclassified in the model registry; three registry tests failed | CODE_ERROR | Listed as a `combined_runner` wrapper; the runner's purpose and tests record the `checks` hook; card regenerated. Registry suite: 22 passed |
 | R3 P3: the named benefit evidence followed tuple order, not the canonical order the content hash uses | CODE_ERROR | Spells are read in canonical order in both the protected-month flag and the Q19 (5) refusal; shuffled-spell test |
+| #216 P3 (Codex at `19128cb`, carried here): the Q19 (5) refusal named the first matching spell in tuple order | CODE_ERROR | Covered by R3's canonical order; reversed-order `to_wff` test added, shown to fail without the sort |
 | R4 P3: the difference message called unverified WFF entries children "under the WFF definition" | CODE_ERROR | Message counts list entries and how many have verified whole-year qualification; test with an unknown entry |
 
 ## Author response

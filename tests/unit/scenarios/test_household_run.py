@@ -454,3 +454,33 @@ def test_the_named_evidence_does_not_depend_on_spell_order() -> None:
     assert first.combined.contradictions == second.combined.contradictions
     assert "'claimant' has jobseeker_support" in first.combined.contradictions[0]
     assert _components(first) == _components(second)
+
+
+def test_the_q19_5_refusal_does_not_depend_on_spell_order() -> None:
+    # Codex #216 P3: a claimant Jobseeker week and a partner SLP week with
+    # verified in-work eligibility; reversing the spells (same content hash)
+    # names the same spell.
+    pair = CombinedHouseholdScenario(
+        wff=replace(_wff(), partner_status=PartnerStatus.PARTNERED),
+        accommodation_supplement=_as(partner_status=None),
+        as_claimant_is_wff_claimant_or_partner=FactStatus.VERIFIED,
+    )
+    base = household_from_combined(pair, household_id="h1", tax_year=TAX_YEAR, assessment_week=WEEK)
+    spells = (
+        hh.BenefitSpell(
+            person_id="claimant", benefit=hh.BenefitKind.JOBSEEKER_SUPPORT, start=date(2026, 6, 1), end=date(2026, 6, 8)
+        ),
+        hh.BenefitSpell(
+            person_id="partner",
+            benefit=hh.BenefitKind.SUPPORTED_LIVING_PAYMENT,
+            start=date(2026, 9, 1),
+            end=date(2026, 9, 8),
+        ),
+    )
+    forward = _with(base, benefit_spells=spells)
+    reverse = _with(base, benefit_spells=spells[::-1])
+    assert forward.content_sha256() == reverse.content_sha256()
+    first, second = to_wff(forward, TAX_YEAR), to_wff(reverse, TAX_YEAR)
+    assert isinstance(first, MappingRefusal) and first == second
+    assert first.code == "HOUSEHOLD_MAPPING_INVALID_FACTS"
+    assert first.reason.startswith("'claimant' has jobseeker_support")
