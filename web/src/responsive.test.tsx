@@ -152,8 +152,8 @@ describe("narrow-width structure", () => {
     // 18-19px. Pinned over the source, since most sit behind async state.
     const sources = import.meta.glob("./**/*.tsx", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
     const missing = Object.entries(sources)
-      .filter(([file]) => !file.includes(".test."))
-      .flatMap(([file, text]) => (text.match(/<summary\b[^>]*>/g) ?? []).filter((tag) => !tag.includes("min-h-[24px]")).map((tag) => `${file}: ${tag}`));
+      .filter(([file]) => !file.includes(".test.") && !file.startsWith("./test/"))
+      .flatMap(([file, text]) => (text.match(/<summary\b(?:=>|[^>])*>/g) ?? []).filter((tag) => !tag.includes("min-h-[24px]")).map((tag) => `${file}: ${tag}`));
     expect(missing).toEqual([]);
   });
 

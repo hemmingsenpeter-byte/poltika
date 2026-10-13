@@ -3,8 +3,9 @@
 <!-- poltika:master-build-order=BUILD_PLAN_PROGRAMME.md -->
 
 **As of:** 13 October 2026. **Baseline:** `origin/main` after #216
-(`7342e52`), reconciled against live GitHub state; rows owned by open PRs
-(#217 for Task 7, #218 for Task 6) are left for those PRs. This refresh records existing work and claims no new
+(`7342e52`), reconciled against live GitHub state; rows owned by open
+PRs (#217 for Task 7, #218 for Task 6) are left for those PRs. This
+refresh records existing work and claims no new
 capability acceptance. Campaign-policy and NZ Budget overlay planning rows
 (C14a, D16a, F24a, I29a) were added by #196 and are planning only.
 [BUILD_PLAN_PROGRAMME.md](BUILD_PLAN_PROGRAMME.md), under
