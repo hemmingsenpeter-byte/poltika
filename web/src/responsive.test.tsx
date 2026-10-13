@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -144,6 +145,16 @@ describe("narrow-width structure", () => {
       expect.arrayContaining(["inline-flex", "min-h-[24px]"]),
     );
     expect(classes(screen.getByText("Check evidence"))).toContain("min-h-[24px]");
+  });
+
+  it("every disclosure summary is at least 24px tall", () => {
+    // B0.1.6 real-browser check (13 October 2026): four summaries rendered at
+    // 18-19px. Pinned over the source, since most sit behind async state.
+    const sources = import.meta.glob("./**/*.tsx", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+    const missing = Object.entries(sources)
+      .filter(([file]) => !file.includes(".test."))
+      .flatMap(([file, text]) => (text.match(/<summary\b[^>]*>/g) ?? []).filter((tag) => !tag.includes("min-h-[24px]")).map((tag) => `${file}: ${tag}`));
+    expect(missing).toEqual([]);
   });
 
   it("an audit note carrying a SHA-256 wraps instead of widening the page", () => {
