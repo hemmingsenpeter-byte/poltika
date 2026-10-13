@@ -74,9 +74,12 @@ poltika/
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
 │   ├── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
 │                       specification, parameters and implementation remain separately gated
-│   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue only
-│   ├── sole_parent_support/ — source catalogue only; separate specification/value gates
-│   └── supported_living_payment/ — source catalogue only; separate specification/value gates
+│   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue,
+│   │                       draft specification and decisions; values/engine gated
+│   ├── sole_parent_support/ — source catalogue, draft specification and decisions;
+│   │                         separate sequencing, source and values gates
+│   └── supported_living_payment/ — source catalogue, draft specification and decisions;
+│                                 separate sequencing, source and values gates
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
 │                         holds the scripts that produced its recorded results (review evidence,
 │                         run by hand from the repository root; not production code, and not

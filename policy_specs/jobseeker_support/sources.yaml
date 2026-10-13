@@ -1,12 +1,28 @@
 # Author source draft; approval and independent review remain pending.
 as_of: '2026-10-03'
-status: task_0_2_source_scope_draft_pending_review
+status: draft_pending_review
+policy_version: null
+initial_status: task_0_2_source_scope_draft_pending_review
 programme_task: 8
-detailed_plan_task: v0.3 local 0.2; 0.3 interaction locators only
-scope_note: Source-only inventory. No approved policy specification, parameters, protected cases or runtime
-  support. Pete D1 and separate source review remain pending.
+detailed_plan_task: v0.3 local 0.2 / 3.1.1; 0.3 interaction locators only
+scope_note: Source inventory and draft specification for Pete D11's single existing-grant 25+ no-dependent-child
+  gross weekly slice. No approved specification, parameters, protected cases or runtime support. Independent
+  review, gross conversion, precision and whole-period currency gates remain pending.
 assessment_period_note: Claims scoped to law operative on 3 October 2026; no full-year or historical eligibility
   coverage asserted.
+specification_observation:
+  checked_on: '2026-10-13'
+  assessment_week: {from: '2026-10-05', to: '2026-10-12'}
+  review_window: {from: '2026-09-26', to: '2026-11-02'}
+  window_meaning: Proposed first-slice coverage limit, not statutory expiry of a rate or guarantee against future amendments.
+  period_currency: Completed week precedes this check; whole-week legal and rate coverage awaits independent review.
+  authority: Pete D11, 5 October 2026; D36, 12 October 2026; D38 existing period/mapping decisions preserved.
+  approval_record: ../../docs/programme/2026-10-06-pete-approvals.md
+  prior_independent_review: ../../reviews/2026-10-06-pr151.md
+  review_state: New author observations and interpretations pending independent source/specification review.
+  historical_fields: Top-level as_of and original checked_on fields preserve the 3/5 October inventory history.
+  retrieval_method: Official legislation HTML fetched directly with browser user agent after web tool failure; MSD MAP independently retrieved.
+  gates: [gross_entitlement_conversion, income_and_payment_precision, matching_gross_benchmark, whole_week_currency]
 retrieval_note: Dated legislation read directly via official HTML with a browser user agent after web
   retrieval failed; MSD/IRD current pages retrieved independently. Live pages do not prove historical
   applicability.
@@ -49,6 +65,14 @@ sources:
   limitation: Income exemptions in Schedule 8 and exceptional administration routes are not exhaustively
     scoped; guidance does not approve selection of an assessment basis.
   checked_on: '2026-10-03'
+  specification_check:
+    checked_on: '2026-10-13'
+    version_as_at: '2026-09-04'
+    index_observation: Official page labels this the latest version.
+    locator: r 205(1)-(3); Schedule 6 items 1-2; Schedule 1 cl 25(1)-(4).
+    finding: Ordinary JS uses the one-week item 2. The specified pre-1 July 2025 annual-charge transition ends per grant at the end of the 52 weeks specified in cl 25(1)(b).
+    limitation: Caller supplies independently resolved policy-week income and charging basis; no allocation, historical grant transition or partial-week calculation is implemented.
+    review_state: Author check pending independent review.
 - id: jobseeker-support-rates-order-2026
   kind: regulations
   title: Social Security (Rates of Benefits and Allowances) Order 2026
@@ -62,6 +86,13 @@ sources:
   limitation: Rates were located, not transcribed. No approved values, end date, gross/net conversion
     or rounding method is established by this source-only inventory.
   checked_on: '2026-10-03'
+  specification_check:
+    checked_on: '2026-10-13'
+    locator: cls 2-5; Schedule 1 Part 1, Schedule 4 Part 1 cl 1(d) amendment row.
+    documentary_candidate: {old_amount_nzd: '361.32', new_amount_nzd: '372.55', unit: NZD_per_week}
+    finding: Order adjusts statutory rate to 372.55 and applies to benefits payable from 1 April 2026; this matches MSD net M, not its separate gross column.
+    limitation: No gross rate, arbitrary-income gross conversion, complete precision rule or unbounded end date is supplied by this Order.
+    review_state: Documentary observation only; value and interpretation adoption pending.
 - id: jobseeker-support-income-tax-act-interactions
   kind: legislation
   title: Income Tax Act 2007 — main-benefit interactions
@@ -112,6 +143,14 @@ sources:
     AS categories require a fresh cross-policy review; SPS/SLP implications
     are not assumed absent. Detailed post-commencement mapping remains pending.
   checked_on: '2026-10-05'
+  specification_check:
+    checked_on: '2026-10-13'
+    stable_url: https://www.legislation.govt.nz/act/public/2026/54/en/2026-09-03/
+    version_as_at: '2026-09-03'
+    locator: s 2(1)-(2); s 4.
+    finding: Part 1 commences on 2 November 2026, including the new s 20(ca) parental-income requirement; Part 2 commences on 1 April 2027.
+    limitation: Selected week is before commencement. Adult age does not justify adopting unreviewed post-commencement shared income/definition rules.
+    review_state: Author check pending independent review.
 - id: jobseeker-support-msd-overview
   kind: agency_guidance
   title: MSD — Jobseeker Support
@@ -137,6 +176,12 @@ sources:
     statutory check; current ordinary JS charging uses r 205/Schedule 6.
   limitation: Live guidance has no published version date on the retrieved page. Use the dated Act and
     regulations for legal timing; amounts are not adopted.
+  specification_check:
+    checked_on: '2026-10-13'
+    locator: Single clients and couples; Sole parents and grandparented clients before 30 June 2026; Legislation.
+    finding: Single-client guidance corroborates Test 3's 160 gross weekly threshold and 70 cents reduction. The summary says all JS clients moved to weekly charging by 30 June 2026.
+    limitation: Summary does not replace Schedule 1 cl 25's per-grant statutory transition; no live-page historical version is verified.
+    review_state: Author observation pending independent review.
 - id: jobseeker-support-msd-rates-2026
   kind: agency_rates
   title: MSD — Jobseeker Support rates at 1 April 2026
@@ -148,3 +193,63 @@ sources:
     columns are distinct.
   limitation: Category and date check only. No numerical values, boundary cut-outs, tax-code conversion,
     rounding or future end date is approved.
+  specification_check:
+    checked_on: '2026-10-13'
+    published_rate_date: '2026-04-01'
+    locator: Single, 25+ years row; introductory net-after-M-tax statement.
+    documentary_candidate: {net_m_nzd_per_week: '372.55', gross_nzd_per_week: '426.12'}
+    finding: Published maximum distinguishes gross from net M; the net amount matches the statutory cl 1(d) rate.
+    limitation: Not a statutory expected fixture or complete gross conversion/precision method. Whole selected week and future end date are not confirmed by the live page.
+    review_state: Documentary observation only; adoption pending.
+- id: jobseeker-support-social-security-act-20260926
+  kind: legislation
+  title: Social Security Act 2018 — current dated Jobseeker first-slice provisions
+  url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/
+  version_as_at: '2026-09-26'
+  version_label: Official latest index on 13 October; PDF version 297_0.
+  checked_on: '2026-10-13'
+  locator: ss 8, 16-28, 349-351; Schedule 2 dependent child and Income Test 3(b); Schedule 3 cls 2-14; Schedule 4 Part 1 cls 1(a)-(d), 2, 7.
+  finding: >-
+    Ordinary single 25+ without dependent children uses cl 1(d) only when the legacy 2013-transfer
+    cl 1(c) category does not apply. Statutory rate is 372.55 weekly subject to Test 3 (70 cents per
+    dollar above 160 weekly). Section 24(2) distinguishes temporary nil payment from lost entitlement;
+    s 18 is per person in their own right. Schedule 3 income is before tax with inclusions/exclusions
+    and allocation rules. Sections 349-351 establish a tax-dependent benefit gross-up relationship.
+  version_comparison: Full extracted text against 4 September showed the substantive change in Schedule 2 CYPFA order or agreement para (a), adding Oranga Tamariki Act s 283(na); the scoped JS monetary provisions were unchanged.
+  amendment_locator: Schedule 2 CYPFA order or agreement para (a), amended 26 September 2026 by Oranga Tamariki (Responding to Serious Youth Offending) Amendment Act 2026 (2026 No 65) s 60.
+  limitation: >-
+    Scoped check only, not a whole-Act eligibility audit. The 372.55 rate is the statutory rate matching
+    MSD net M, not gross 426.12. Complete income preparation, final/intermediate precision, nil-payment
+    boundary and arbitrary-income gross conversion remain gated. No post-2 November coverage
+    or full-year assurance is claimed; the selected completed week awaits independent review.
+  review_state: Author observation and draft interpretation pending independent review and Pete's decision gates.
+- id: jobseeker-support-msd-period-charging
+  kind: agency_guidance
+  title: MSD MAP — Jobseeker Support period over which to charge income
+  url: https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/period-over-which-to-charge-income.html
+  checked_on: '2026-10-13'
+  locator: Period over which to charge income; Overlapping income; Legislation.
+  finding: Guidance allocates income to earning/represented periods and distinguishes receipt timing; overlapping income is combined.
+  limitation: Live page without a verified historical version; no caller allocation algorithm, expense computation or apportionment is adopted.
+  review_state: Author observation pending independent review.
+- id: jobseeker-support-msd-calculating-rate
+  kind: agency_guidance
+  title: MSD MAP — Jobseeker Support calculating the benefit rate
+  url: https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/calculating-the-benefit-rate-01.html
+  checked_on: '2026-10-13'
+  locator: DREW Income Assessment tab estimate; note on income rounding; Legislation.
+  finding: Official page instructs income to be rounded down to the nearest dollar in the described estimation workflow.
+  limitation: Applicability to this statutory gross component and aggregation stage need review. No complete final/intermediate benefit precision or historical version is established.
+  decision: decisions/DEC-002-income-and-payment-precision.md
+  review_state: Positive operational evidence; no rounding interpretation adopted.
+- id: jobseeker-support-msd-assessment-examples
+  kind: agency_worked_examples
+  title: MSD MAP — Jobseeker Support examples of income assessment
+  url: https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/examples-of-income-assessment-01.html
+  checked_on: '2026-10-13'
+  published_rate_date: '2026-04-01'
+  locator: Example 1, gross income excluding cents and maximum benefit net; Examples 2-3.
+  finding: Examples prepare income excluding cents and subtract income reductions from net maxima; they do not subtract Test 3 reduction from the gross maximum.
+  limitation: Categories are couple/half-couple/sole-parent, not the commissioned single gross component. Not adopted benchmark expectations; no immutable historical page version or complete gross precision established.
+  decisions: [decisions/DEC-001-gross-entitlement-conversion.md, decisions/DEC-002-income-and-payment-precision.md]
+  review_state: Documentary cross-check; matching benchmark remains missing.
