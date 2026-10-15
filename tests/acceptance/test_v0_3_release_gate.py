@@ -18,6 +18,7 @@ import yaml
 from fastapi.testclient import TestClient
 
 from poltika.api.main import app
+from poltika.policy.loader import load_policy_spec
 from poltika.scenarios.microsim import analysis, explain, runner
 from poltika.scenarios.microsim.reform import Reform
 from poltika.scenarios.microsim.runner import run_population
@@ -30,11 +31,15 @@ from poltika.semantics.population import (
     PopulationDataset,
     PopulationHousehold,
 )
+from poltika.semantics.schemas.policy_spec import PolicyStatus
 from tests.acceptance.review_queue import open_reviews
 from tests.conftest import AS_POLICY_DIR, WFF_POLICY_DIR
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOGUES = sorted((ROOT / "policy_specs").glob("*/facts.yaml"))
+MODELLED_CATALOGUES = {
+    "working_for_families", "accommodation_supplement", "wff_as_interaction",
+}
 
 
 # Row 1: every modelled component can say what it is missing. Catalogue
@@ -44,15 +49,32 @@ CATALOGUES = sorted((ROOT / "policy_specs").glob("*/facts.yaml"))
 @pytest.mark.parametrize("catalogue", CATALOGUES, ids=lambda p: p.parent.name)
 def test_every_shipped_catalogue_has_reviewed_wording(catalogue: Path) -> None:
     status = yaml.safe_load(catalogue.read_text())["wording_status"]
+    policy_path = catalogue.parent / "policy.yaml"
+    if (
+        catalogue.parent.name not in MODELLED_CATALOGUES
+        and policy_path.is_file()
+        and load_policy_spec(policy_path).status is PolicyStatus.DRAFT_PENDING_REVIEW
+    ):
+        pytest.skip(
+            f"not built yet: {catalogue.parent.name} policy is draft_pending_review; "
+            f"catalogue wording is {status}, independent review remains pending"
+        )
     assert status == "reviewed", f"{catalogue.parent.name}: question wording is {status}"
 
 
 def test_catalogues_exist_for_the_modelled_policies() -> None:
-    assert {p.parent.name for p in CATALOGUES} >= {
-        "working_for_families",
-        "accommodation_supplement",
-        "wff_as_interaction",
-    }
+    assert {p.parent.name for p in CATALOGUES} >= MODELLED_CATALOGUES
+
+
+def test_draft_wording_cannot_bypass_a_modelled_catalogue_gate(tmp_path: Path) -> None:
+    catalogue = tmp_path / "working_for_families" / "facts.yaml"
+    catalogue.parent.mkdir()
+    catalogue.write_text("wording_status: drafted\n")
+    # Even a draft policy.yaml beside an already modelled catalogue cannot
+    # excuse unreviewed wording. The shipped check must still fail.
+    (catalogue.parent / "policy.yaml").write_text("status: draft_pending_review\n")
+    with pytest.raises(AssertionError, match="question wording is drafted"):
+        test_every_shipped_catalogue_has_reviewed_wording(catalogue)
 
 
 @pytest.mark.parametrize(

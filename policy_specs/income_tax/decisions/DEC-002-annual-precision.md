@@ -3,11 +3,14 @@
 **Policy:** Personal income tax, D11 salary/wage slice.
 **Date:** 2026-10-08 (record raised).
 **Decision owner:** Pete
-**Decision date:** none.
-**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
-**Class:** AI hypothesis; proposed discrepancy `MISSING_SOURCE`.
+**Decision date:** 2026-10-12 (Q17, D36).
+**Status:** decided for input scope; output precision remains separately gated.
+**Raised by:** GPT/Codex.
+**Class:** Assumption (decided input scope); residual source gap in DEC-004.
 
 ## Ambiguity
+
+Original 8 October AI-hypothesis question, retained for history:
 
 The complete annual procedure for fractional taxable dollars, intermediate
 precision, final rounding and ties remains unverified in the bounded check.
@@ -25,15 +28,17 @@ those gaps. That guide covers 2025–26, not the commissioned period.
 
 ## Decision
 
-This is a bounded negative finding, not a claim that no official rounding
-rule exists. PAYE or FBT worksheet conventions have different output scope
-and are not transferred. No floor-to-dollars, nearest-cent, truncation,
-intermediate rounding or exact-fraction convention is selected by this draft.
-Decimal arithmetic is a transport/implementation requirement, not legal
-authority for a rounding choice.
+Pete decided Q17 on 12 October: accept **whole-dollar taxable income only**;
+any non-integer input is `unsupported`. This is an **Assumption** about the
+first slice, not a rule permitting taxpayer income to be rounded, floored or
+truncated. Revisit the boundary if an official method is found. See
+[D36](../../../docs/programme/2026-10-12-pete-approvals.md).
 
-**Effect:** all numeric results remain gated, including whole-dollar and
-known-zero examples; no parameter/expected-result fixtures are supplied.
-**Smallest Pete action:** commission/identify a dated official annual basic-tax
-method or obtain authoritative clarification, then decide only after the
-source and independent review establish the procedure. See PETE_QUEUE Q17.
+The decision removes the input-scope question. It does not specify cent
+quantisation, ties or intermediate rounding. Whole-dollar income can give
+sub-cent table arithmetic: $15,603 gives $1,638 + 3 × .175 = $1,638.525.
+The new packet records exact conditional arithmetic only; adopting a final
+tax amount still requires the source/output check in
+[DEC-004](DEC-004-output-precision-and-benchmark.md). PAYE/FBT procedures
+are not transferred. All currently supported numeric cases, including zero,
+remain `needs_review` under the annual authority and review gates.
