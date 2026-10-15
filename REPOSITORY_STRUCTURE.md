@@ -199,10 +199,12 @@ poltika/
 │   │                        and run identities; store.py keeps them in the
 │   │                        reform_scenario and reform_run tables, migration 0002);
 │   │                        household_mappings.py (Pass 1, ADR-0017, v0.3
-│   │                        Tasks 1.2-1.3: to_wff/to_as/to_combined from a
+│   │                        Tasks 1.2-1.4: to_wff/to_as/to_combined from a
 │   │                        Household, with MappingRefusal where it cannot
-│   │                        supply a field; adapters from the existing
-│   │                        request formats onto a Household);
+│   │                        supply a field; run_household, the household
+│   │                        run with the restated checks (Task 1.4);
+│   │                        adapters from the existing request formats
+│   │                        onto a Household);
 │   │                        conditional.py (v0.3 Task 1b.2, ADR-0016:
 │   │                        conditional answers, i.e. branches, bounds and
 │   │                        next question for missing facts, all by engine

@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased (Task 6 step 1.4: household runs; Q19 (7))
+
+- `run_household()` runs WFF and AS for a `Household` input (ADR-0017
+  Task 1.4, D36 (4)). It keeps only the pair checks a household can still
+  fail, restated on its facts: the AS week inside the WFF year, in-work
+  eligibility and MC 6(b) (refused by `to_wff`, Q19 (5)), the MD 14/15
+  and MG 4 protected-month flags, now raised by a claimant or partner
+  main-benefit spell anywhere in the year, and partner status, narrowed to
+  the one case a household can still hold: a single family whose claimant
+  has a mixed-benefit couple benefit in the week. The claimant-link check is
+  retired for households, with a test that it cannot be constructed. A
+  different WFF and AS child count is reported as a definitional difference
+  only where the caller supplied each child's AS status; where an adapter
+  derived those statuses from an AS count (`Family.as_child_statuses_from_count`,
+  Q19 (2)) the pair's child-count gate is kept. The pair format and every
+  caller are unchanged (D39). `run_household` is classified in the model
+  registry as a `combined_runner` wrapper.
+- Q19 (7): the household fact `wff.relationship_unchanged_in_year`, when
+  excluded, makes WFF `unsupported` (`HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR`).
+  No engine input, scenario id or calculated amount changes.
+
 ## Unreleased (proprietary licence)
 
 - `LICENSE`: the repository is proprietary, all rights reserved, and public
