@@ -14,9 +14,8 @@ on:
 permissions:
   contents: read
 
-# Most jobs run on the self-hosted runner (decision log D21), which works
-# one job at a time, so a newer push to a pull request cancels the older
-# run. Pushes to main and scheduled runs are never cancelled.
+# A newer push to a pull request cancels the older run. Pushes to main and
+# scheduled runs are never cancelled.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -24,9 +23,7 @@ concurrency:
 jobs:
   bandit:
     name: Bandit (python)
-    # Fork pull requests never reach the self-hosted runner (audit A1).
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, poltika]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -35,9 +32,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Scan Python and retain every severity
-        # python -m: uv's launcher script needs realpath, which macOS 12
-        # (the self-hosted runner, D21) lacks.
-        run: uvx --python 3.12 --from bandit@1.9.4 python -m bandit -r src --exit-zero -f json -o bandit.json
+        run: uvx --python 3.12 bandit@1.9.4 -r src --exit-zero -f json -o bandit.json
       - name: Check scanner errors and medium- or high-severity findings
         run: |
           python3 - <<'PY'
@@ -66,9 +61,7 @@ jobs:
 
   zizmor:
     name: zizmor (actions)
-    # Fork pull requests never reach the self-hosted runner (audit A1).
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, poltika]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
