@@ -10,7 +10,7 @@
   unchanged. No calculated amount changes.
 - Security reports go to GitHub's private vulnerability reporting
   (`SECURITY.md`). The collaborator-visible security issue form is removed,
-  because on a public repository an issue is public. Q24 (licence) is new
+  because on a public repository an issue is public. Q26 (licence) is new
   in `PETE_QUEUE.md`; Q13 is moot.
 
 ## Unreleased (B0.1.6 third real-browser pass; status refresh)
