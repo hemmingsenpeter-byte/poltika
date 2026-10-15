@@ -270,7 +270,9 @@ models:
       period, and compares the shared facts under the Task 28.3 interaction
       contract. There is no combined total and no income coupling. A shared-fact
       contradiction makes each non-unsupported component needs_review; existing
-      unsupported outcomes are preserved.
+      unsupported outcomes are preserved. A Household input (ADR-0017 Task 1.4,
+      D36 (4), D39) passes its own restated checks through the runner's `checks`
+      argument; the pair format always keeps the Task 28.3 checks.
     entry_points:
       - {module: poltika.scenarios.combined, function: run_combined_household}
     depends_on: [wff_engine, as_engine]
@@ -294,6 +296,7 @@ models:
         - {kind: golden_snapshot, path: tests/fixtures/golden_results_v0_1.json, count: 9}
       tests:
         - tests/unit/scenarios/test_combined.py
+        - tests/unit/scenarios/test_household_run.py
         - tests/unit/scenarios/test_interaction_spec_cases.py
         - tests/unit/scenarios/test_golden_households.py
         - tests/regression/test_wff_as_interaction_leaks.py
@@ -345,6 +348,33 @@ models:
         evidence: model_registry/registry.yaml
         validation_rerun: pytest -q, including tests/unit/engines/assurance/test_model_registry.py
         approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
+      - date: "2026-10-13"
+        change: >-
+          ADR-0017 Task 1.4 (#218). run_combined_household gains a `checks` argument, defaulting
+          to the unchanged Task 28.3 pair checks; the pair format and every existing caller keep
+          them. household_mappings.run_household (a combined_runner wrapper) passes a Household's
+          restated checks instead: the AS week inside the WFF year; partner status narrowed to a
+          single family with a mixed-benefit couple claimant; the child count kept where the AS
+          statuses came from a count (Family.as_child_statuses_from_count), else reported as a
+          definitional difference; in-work eligibility and MC 6(b) refused by to_wff (Q19 (5));
+          the MD 14/15 and MG 4 protected-month flags over any claimant or partner main-benefit
+          spell in the WFF year. The claimant-link check is retired for households. Q19 (7) adds
+          wff.relationship_unchanged_in_year (excluded -> unsupported). No engine, parameter,
+          calculated amount or existing result id changes.
+        why: >-
+          BUILD_PLAN_v0_3.md Task 1.4 and ADR-0017 section 4; Pete's Q19 decisions D36 (4), (7)
+          and D38 (5); Tier B choices D39, accepted by Pete as D40.
+        evidence: >-
+          adr/0017-shared-household-model.md section 4; review_packets/task6_step14_preflight.md;
+          independent GPT/Codex review of #218 at e9fa1ec (R1-R4, fixed) and recheck at 09c7d4b
+        validation_rerun: >-
+          tests/unit/scenarios/test_household_run.py, test_household_roundtrip.py and
+          test_combined.py, tests/unit/semantics, tests/unit/engines/assurance (445 passed at
+          09c7d4b's tree); broad suite (semantics, scenarios, regression, acceptance) 756 passed
+          at 9137244; CI green at 09c7d4b
+        approval: >-
+          Pete's decisions D36, D38 and D40 (13 October 2026); merge follows ADR-0020 after the
+          GPT/Codex final-head recheck clears
 
   - id: population_runner
     name: Population runner (static microsimulation)
@@ -474,6 +504,14 @@ not_engines:
   - module: poltika.scenarios.record
     function: run_scenario
     reason: Runs one ScenarioRecord through run_combined_household and adds run identity. No second calculation path.
+    wraps: combined_runner
+  - module: poltika.scenarios.household_mappings
+    function: run_household
+    reason: >-
+      Maps one Household to the WFF and AS inputs (to_wff, to_as) and runs them
+      through run_combined_household with the household's restated checks
+      (ADR-0017 Task 1.4, D39). No second calculation path; mapping refusals are
+      returned before any run.
     wraps: combined_runner
   - module: poltika.scenarios.microsim.worked_examples
     function: run_examples

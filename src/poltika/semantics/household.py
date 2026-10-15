@@ -242,6 +242,11 @@ class Family(BaseModel):
     # incomplete, so no count is verified. A missing fact is never zero.
     wff_children_complete: Assertion = Assertion.UNKNOWN
     as_children_complete: Assertion = Assertion.UNKNOWN
+    # True when each child's `as_dependent_child` was assigned by an adapter
+    # only to reproduce an aggregate AS count (Q19 (2), D38): the count is the
+    # caller's fact, which children it covers is not, so the statuses are
+    # not membership.
+    as_child_statuses_from_count: bool = False
 
     @model_validator(mode="after")
     def _consistent(self) -> Family:
