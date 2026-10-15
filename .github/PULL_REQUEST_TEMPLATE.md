@@ -15,6 +15,7 @@
 ## Gate
 
 - [ ] The PR contains one bounded task or review handoff.
+- [ ] A changelog fragment is in `changelog.d/`; `CHANGELOG.md` is untouched.
 - [ ] The reviewer has the sources, spec, diff, and tests needed for an independent pass.
 - [ ] No implementer explanation or proposed expected behaviour is included above.
 - [ ] Any genuine interpretation ambiguity is reserved for Pete and a decision artifact.

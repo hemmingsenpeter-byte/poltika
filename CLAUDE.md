@@ -92,6 +92,12 @@ Each pull request carries a substantial piece of work. Minor additions are
 batched into the next substantial PR, not opened on their own
 (doctrine/development-doctrine.md, D28).
 
+One integration owner (the coordinating Claude Code session) updates
+branches from `main` and merges; at most two implementation lanes run at
+once; dependent PRs are a `gh stack`; a PR adds a `changelog.d/` fragment
+and never edits `CHANGELOG.md`; CodeRabbit is advisory
+(doctrine/development-doctrine.md "Integration and lanes", D43).
+
 Active lanes are BUILD_PLAN_v0_3.md (household economic kernel) and
 BUILD_PLAN_v0_1_6.md (statutory maintenance). BUILD_PLAN_v0_2.md is release
 closeout support. Archived plans never determine new work.

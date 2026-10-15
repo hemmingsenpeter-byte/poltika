@@ -1,6 +1,6 @@
 # Programme Phase B Task 7 / BUILD_PLAN_v0_3.md local 0.1.
 # A source inventory and scope proposal, not an approved executable policy.
-as_of: 2026-10-13
+as_of: 2026-10-15
 status: draft_numeric_packet_pending_review
 review_status: independent_claude_numeric_review_protected_values_and_source_gates_pending
 specification: specification.md
@@ -64,6 +64,22 @@ numeric_packet_check:
   benchmarks: missing_source_no_numeric_official_result_retained
   full_period_amendment_coverage: needs_review
   limitation: Candidate intervals and arithmetic do not approve runtime calculation or protected expected values.
+followup_source_check:
+  checked_on: 2026-10-15
+  author: GPT/Codex
+  classification: author_source_recheck_not_cross_model_clearance
+  reviewed_pr_head: a6d16675872b50944c0ee92c79564eab9131ccdd
+  packet: ../../review_packets/task7_numeric_packet.md
+  finding: >-
+    Rechecked the dated Act's general-rate table, core liability and
+    employment provisions, YE 1, the 2024 replacement/application, TAA
+    section 92A, official Bill status and the earlier-year IR3G source.
+    Candidate arithmetic and Q16-Q18 dispositions are unchanged.
+  full_period_amendment_coverage: needs_review
+  limitation: >-
+    A current consolidation date and a current Bill-stage observation do
+    not prove complete amendment/commencement coverage for the candidate
+    reference period. No parameter, expected value or output is promoted.
 sources:
   - id: it-income-tax-act-core
     kind: legislation
@@ -116,6 +132,12 @@ sources:
     locator: Schedule 1 Part A clause 1 and Table 1; cross-reference BB 1 and BC 6.
     covers: General basic-rate table, subject to the annual taxing Act and special-rate exclusions.
     verification_status: listed_provisions_author_checked_independent_review_pending
+    followup_check:
+      checked_on: 2026-10-15
+      url: https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/parts/DLM1523173/
+      locator: Schedule 1 Part A clause 1/Table 1; table replacement history note.
+      finding: The dated parts view reproduces all five candidate bands/rates and the 1 April 2025 replacement note.
+      limitation: Latest-index metadata is not a full-period amendment audit; the Act root redirects to a different part and is not itself the table.
     numeric_check:
       checked_on: 2026-10-13
       locator: Schedule 1 Part A clause 1/Table 1; BC 6(1)-(2).
@@ -228,6 +250,11 @@ sources:
       locator: Calculator scope; Go to this tool link https://myir.ird.govt.nz/tools/?LINK=CLCTAX.
       finding: Scope page retrieved; linked tool returned HTTP403 to web reader and request-verification screen to normal headless browser.
       limitation: No numeric result/PDF retained; not a benchmark expectation or rounding authority.
+    followup_check:
+      checked_on: 2026-10-15
+      locator: Gather your information; Go to this tool link https://myir.ird.govt.nz/tools/?LINK=CLCTAX.
+      finding: Scope page still requires total taxable income and excludes credits, tax already paid and ACC; linked tool remains inaccessible to the web reader.
+      limitation: No period selector, numeric result or result PDF observed; the benchmark gate remains missing_source.
     specification_check:
       checked_on: 2026-10-08
       finding: Basic yearly tax excludes credits, already-paid tax and ACC; requires taxable income.
@@ -288,6 +315,11 @@ sources:
       locator: Status as at 12 October 2026; Stage Select committee.
       finding: Royal assent not verified; retain needs_review under Q16/D36.
       limitation: Dated agency observation, not substitute enacted legal authority or whole-year coverage.
+    followup_check:
+      checked_on: 2026-10-15
+      locator: As at 12 October 2026; Stage Select committee; Bill 344-1 clause 3.
+      finding: Latest positive agency observation remains select committee as at 12 October; retrieved NZ Legislation text remains Introduction 10 September 2026, 344-1.
+      limitation: No new enactment evidence verified; retain Q16 and recheck official status and enacted text before approval.
     bill_stage_context:
       checked_on: 2026-10-05
       locator: Explanatory note, Annual rates of income tax; clause 3; clause 133(1), (3).
@@ -317,6 +349,19 @@ sources:
     locator: Progress of the Bill; Bill History; Document ID ae9d3517-66d6-4a30-c155-08df0eed0d02.
     covers: Retrieved progress shows select committee stage with no completed Royal Assent entry.
     verification_status: progress_and_history_author_checked
+    followup_check:
+      checked_on: 2026-10-15
+      locator: Progress of the Bill; Select Committee 15 Sep 2026 - Current; Bill History.
+      finding: >-
+        Web reader now reproduces the published 1 October page: Bill
+        344-1 at select committee, first reading/referral on 15 September,
+        with no completed date against Royal Assent. The introduction-date
+        difference from IRD/NZ Legislation persists.
+      limitation: >-
+        This resolves the earlier retrieval limitation for this author
+        recheck only, not independent Claude clearance or future currency.
+        The displayed 2098 submission deadline is anomalous and is not
+        used as a legislative-stage or commencement fact.
     source_conflict: >-
       Parliament records introduction 9 September 2026; IRD and NZ
       Legislation label introduction 10 September. The difference is
@@ -367,6 +412,12 @@ sources:
       classification: SOURCE_CONFLICT
       disposition: excluded_entirely_as_benchmark_statute_prevails_no_IRD_contact
       record: decisions/DEC-003-ird-worksheet-conflict.md
+    followup_check:
+      checked_on: 2026-10-15
+      locator: Cover; printed page 7 Income year; printed pages 43-44 tax table/worksheet.
+      sha256: 4b0f2ffbc831c0aa88235d2c0ce986fa80b234be8f3fb6ac17ee1ab377f71b99
+      finding: Fresh official PDF matches the previously retained copy; web text reproduces the earlier year and disputed row, also visible in the retained page rendering.
+      limitation: Q18 SOURCE_CONFLICT and complete benchmark exclusion stand; no table cell, corrected result or precision rule is adopted.
     specification_check:
       checked_on: 2026-10-08
       reference_period:

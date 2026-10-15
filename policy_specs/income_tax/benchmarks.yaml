@@ -27,3 +27,9 @@ acceptance_requires:
   - All scenario assumptions stated separately from official source facts.
   - Independent primary-source comparison and protected-value approval.
   - Any displayed rounding reconciled with an official method for this output.
+followup_research_check:
+  checked_on: 2026-10-15
+  author: GPT/Codex
+  result: The official scope page is accessible; its linked calculator remains inaccessible to the web reader. No period-matched numeric artifact retained.
+  limitation: No new local-browser execution claimed; the earlier failed browser attempt remains the 13 October observation.
+  disposition: missing_source_gate_retained_no_numeric_benchmark_added

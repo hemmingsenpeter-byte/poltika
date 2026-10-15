@@ -115,7 +115,47 @@ externally relied upon, release-critical or evidentially consequential.
   is a substantive gate on the final head; any later commit, fix, rebase or
   integration of main requires renewed author preflight and review, except a
   mechanical main update as ADR-0020 defines it (green CI and a recorded
-  delta check).
+  delta check), which since 16 October 2026 includes a conflict confined to
+  append-only records only when their exact combination and the unchanged
+  reviewed changes pass ADR-0020's record and whitespace-sensitive checks.
+
+## Integration and lanes (Pete, 16 October 2026; decision log D43)
+
+The bottleneck is the time from code written to reviewed, tested and
+merged, not how fast code is written. These rules cut it without weakening
+policy verification.
+
+- **One integration owner.** The coordinating Claude Code session alone
+  updates pull-request branches from `main`, resolves integration
+  conflicts, folds changelog fragments and merges. An implementation
+  session, Claude or GPT/Codex, pushes only to its own branch and never
+  merges `main` into another session's branch.
+- **At most two implementation lanes.** Each lane owns a disjoint set of
+  files, named when the task is assigned. Any further agent researches,
+  reviews, or writes tests on a lane's branch when asked; it does not open
+  a third implementation branch.
+- **Stacks for dependent work.** Work that builds on an unmerged pull
+  request is a stack managed with `gh stack` (GitHub's stacked pull
+  requests, `github/gh-stack`), so rebases and merge order are handled
+  together. Independent work never stacks.
+- **Changelog fragments.** A pull request adds `changelog.d/<topic>.md` and
+  never edits `CHANGELOG.md`, so two pull requests do not conflict there.
+  The integration owner folds fragments into `CHANGELOG.md` in a commit of
+  its own ([changelog.d/README.md](../changelog.d/README.md)).
+- **One review cycle per stable semantic change.** Cross-model review stays
+  required for `policy_specs/`, `engines/simulator/` and calculated amounts
+  (ADR-0020 rule 4); other pull requests get the author preflight and a
+  fresh-context `poltika-reviewer` pass. An unchanged diff, established by
+  ADR-0020's whitespace-sensitive comparison and record checks, is not
+  reviewed again; matching `git patch-id --stable` alone is insufficient.
+  CodeRabbit is advisory:
+  its findings are triaged like any reviewer's, but it is not a gate and
+  nothing waits for it. A review record rides in the pull request it
+  reviews; no pull request exists only to carry one (D28).
+- **CI by change.** `test` runs on every pull request, because tests also
+  read repository documents, with parallel workers. `web` and
+  `pilot-image` skip a pull request that changes none of their inputs and
+  always run on `main` (`.github/workflows/tests.yml`, job `changes`).
 
 ## Current sequencing (ADR-0021)
 

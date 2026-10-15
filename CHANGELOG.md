@@ -1,5 +1,72 @@
 # Changelog
 
+## Unreleased (Task 6 step 1.4: household runs; Q19 (7))
+
+- `run_household()` runs WFF and AS for a `Household` input (ADR-0017
+  Task 1.4, D36 (4)). It keeps only the pair checks a household can still
+  fail, restated on its facts: the AS week inside the WFF year, in-work
+  eligibility and MC 6(b) (refused by `to_wff`, Q19 (5)), the MD 14/15
+  and MG 4 protected-month flags, now raised by a claimant or partner
+  main-benefit spell anywhere in the year, and partner status, narrowed to
+  the one case a household can still hold: a single family whose claimant
+  has a mixed-benefit couple benefit in the week. The claimant-link check is
+  retired for households, with a test that it cannot be constructed. A
+  different WFF and AS child count is reported as a definitional difference
+  only where the caller supplied each child's AS status; where an adapter
+  derived those statuses from an AS count (`Family.as_child_statuses_from_count`,
+  Q19 (2)) the pair's child-count gate is kept. The pair format and every
+  caller are unchanged (D39). `run_household` is classified in the model
+  registry as a `combined_runner` wrapper.
+- Q19 (7): the household fact `wff.relationship_unchanged_in_year`, when
+  excluded, makes WFF `unsupported` (`HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR`).
+  No engine input, scenario id or calculated amount changes.
+
+## Unreleased (proprietary licence)
+
+- `LICENSE`: the repository is proprietary, all rights reserved, and public
+  to view only (decision log D42; Q26 done). It names the uses that need
+  written permission, takes a licence to contributions and leaves
+  third-party material on its own terms. `pyproject.toml` carries
+  `Private :: Do Not Upload` and `web/package.json` `UNLICENSED`. No
+  calculated amount changes.
+
+## Unreleased (B0.1: nested RSC payloads; live-access finding; Phase B review handoffs)
+
+- Web: client-side navigation to a nested page (`/scenarios/new`, a model, a dataset, a scenario or a run) is a
+  soft navigation again. `api/web.py` serves the page's exported RSC payload (`<route>.txt`, `RSC: 1`) instead of
+  passing it to the API, which answered 404 or 503 and made Next reload the whole page. Requests without the
+  `RSC` header are unchanged. This fixes the P3 recorded in the B0.1.6 browser check. No calculated amount changes.
+- `PETE_QUEUE.md`: Q15 records that the live service is open without a password and gives the exact Render
+  steps. Q24 asks Pete to accept #219's draft income-tax packet, and Q25 asks for the SPS and SLP
+  income-basis coverage choice (#220 R1).
+- Q15: the live service's password was set on 16 October, at Pete's
+  instruction; the database and health-check steps remain.
+
+## Unreleased (CI back on GitHub-hosted runners; public repository)
+
+- CI runs on GitHub-hosted `ubuntu-latest` again, and the repository is
+  public (decision log D41, superseding D21). The self-hosted Mac runner is
+  retired. Fork pull requests now run every check rather than skipping
+  them, so `fork-pr-gate.yml` (D33) is removed, and `pilot-image` runs on
+  every pull request and push to `main`. Required check names are
+  unchanged. No calculated amount changes.
+- Security reports go to GitHub's private vulnerability reporting
+  (`SECURITY.md`). The collaborator-visible security issue form is removed,
+  because on a public repository an issue is public. Q26 (licence) is new
+  in `PETE_QUEUE.md`; Q13 is moot.
+
+## Unreleased (B0.1.6 third real-browser pass; status refresh)
+
+- Web: four disclosure toggles under 24px tall ("Advanced settings" on the
+  confirmation panel, two on the household builder, the chart's "Show as a
+  table") now have the 24px minimum, and `responsive.test.tsx` fails if any
+  `<summary>` lacks it. Found by a third headless Chromium and WebKit pass at
+  360px on `main`; every page, the drawer, the confirmation panel and all
+  seven workspace tabs now pass ([record](reviews/2026-10-12-b016-360px-browser-check.md)).
+  A P3 on RSC prefetch fallbacks in `api/web.py` is recorded, not fixed.
+- `PROGRAMME_STATUS.md` refreshed to 13 October: the B0.1 row and the review-debt
+  line. No calculated amount changes.
+
 ## Unreleased (MAP-01 fix; Pete's 13 October decisions on B4, Q19, Q2 and Q3)
 
 - Household validation rejects overlapping benefit spells for one person,
