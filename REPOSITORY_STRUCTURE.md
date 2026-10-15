@@ -18,6 +18,7 @@ modules or empty scaffolding.
 ```text
 poltika/
 ├── README.md
+├── LICENSE             — proprietary, all rights reserved; view only (D42)
 ├── CLAUDE.md
 ├── BUILD_PLAN_PROGRAMME.md — sole active master build order: capability Phases A–P (ADR-0021)
 ├── PROGRAMME_STATUS.md   — live capability/task status, evidence, owner, PR and blocker (ADR-0020)

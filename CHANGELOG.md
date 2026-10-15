@@ -21,6 +21,15 @@
   excluded, makes WFF `unsupported` (`HOUSEHOLD_RELATIONSHIP_CHANGED_IN_YEAR`).
   No engine input, scenario id or calculated amount changes.
 
+## Unreleased (proprietary licence)
+
+- `LICENSE`: the repository is proprietary, all rights reserved, and public
+  to view only (decision log D42; Q26 done). It names the uses that need
+  written permission, takes a licence to contributions and leaves
+  third-party material on its own terms. `pyproject.toml` carries
+  `Private :: Do Not Upload` and `web/package.json` `UNLICENSED`. No
+  calculated amount changes.
+
 ## Unreleased (B0.1: nested RSC payloads; live-access finding; Phase B review handoffs)
 
 - Web: client-side navigation to a nested page (`/scenarios/new`, a model, a dataset, a scenario or a run) is a
