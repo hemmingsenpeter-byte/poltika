@@ -315,8 +315,11 @@ sources:
   limitation: >-
     Locates the previously missing determination. Complete computational application,
     continuing currency, precise IR340 edition, payment-date relation to entitlement,
-    levy treatment, inverse gross-up, fractional-income handling and rounding still
-    require source review. No complete gross benchmark or approved value is supplied.
+    fractional-income handling and rounding still require source review. SSA s 350(3)
+    already establishes the inverse gross-up relationship; the ACC Act source below
+    supports exclusion of main benefits from employee earnings for levy purposes.
+    The exact benefit-tax calculation/precision remains unverified. No complete
+    gross benchmark or approved value is supplied.
   review_state: Documentary authority candidate; no promotion or protected expected-value approval.
 - id: jobseeker-support-ird-ir340-table-candidates
   kind: agency_guidance
@@ -333,7 +336,29 @@ sources:
     ACC earners levy. DET 24/03 is benefit-tax authority, not automatic authority
     to copy the whole employee deduction or substitute annual salary tax.
   limitation: >-
-    Table edition, applicable components and benefit-specific inverse/rounding use
-    are candidates for review, not resolved conflicts or an adopted tax method.
+    Table edition and benefit-specific calculation/rounding use remain for review.
+    Main-benefit levy exclusion is supported by the ACC Act source below; it does
+    not establish a method for removing levy from a rounded employee-table amount.
     No ordinary-wage calculator or tax table result is used as a benefit benchmark.
   review_state: Located for bounded follow-up; gross method and precision remain needs_review.
+- id: jobseeker-support-acc-act-main-benefit-levy-exclusion
+  kind: legislation
+  title: Accident Compensation Act 2001 — main-benefit exclusion from employee earnings
+  url: https://www.legislation.govt.nz/act/public/2001/49/en/2026-07-10/
+  version_as_at: '2026-07-10'
+  checked_on: '2026-10-15'
+  locator: ss 9(1)-(2), 11(1)(a), 11(2), 219(1),(3), 220(1), 221(1)(a).
+  finding: >-
+    Section 11(1)(a) excludes main benefits from earnings as an employee;
+    s 11(2) adopts the ITA YA 1 meaning. Sections 219-221 establish the
+    earners-levy and employee-deduction context. This narrows the levy question:
+    the full salary/wage M deduction, which includes ACC, is not directly the
+    main-benefit income-tax amount.
+  retrieval_method: Official dated HTML and latest index fetched directly with a browser user agent after web-reader failure; latest index also identifies 10 July 2026.
+  retrieved_html_sha256: 5586132230814b404d600eebadb95a0e0af12512a6722dc01b2c4fec4dfdf527
+  limitation: >-
+    Does not supply benefit-specific tax-table selection, fractional preparation,
+    inverse-solution precision, cent/tie rules or an algorithm for subtracting
+    levy from a rounded employee deduction. No full-period currency audit,
+    gross expected amount or numerical source approval is claimed.
+  review_state: Author statutory source check; candidate pending independent Claude review and applicable Pete gates.

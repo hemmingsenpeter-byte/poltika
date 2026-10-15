@@ -240,3 +240,68 @@ Pete decisions, full gross benchmarks and protected-value review stay open.
 Next work: complete the bounded **JS** determination/table/precision pack,
 then prepare reviewed values only after its scope/source gates clear; the
 later SPS/SLP implementation stage gates remain unchanged.
+
+### JS-only gross-up follow-up, 15 October 2026
+
+Author source check after published head
+`c5ef0085827e39cbf41372d70e28e8a2d25ad929`; supporting GPT/Codex evidence,
+not independent Claude clearance. The candidate week remains
+`[2026-10-05, 2026-10-12)`. No amount, expected value or approval changes.
+
+The levy question is now narrower. [ACC Act 2001, 10 July 2026](https://www.legislation.govt.nz/act/public/2001/49/en/2026-07-10/),
+**ss 9(1)–(2), 11(1)(a),(2), 219(1),(3), 220(1), 221(1)(a)**, excludes
+main benefits from employee earnings and establishes the earnings-based
+levy/deduction context. The latest index also identifies that version.
+Direct official HTML was read after web-reader failures. This is positive
+statutory evidence for excluding the main benefit from employee-earnings
+levy treatment; levy authority must no longer be described as wholly
+missing. It does not tell us how to remove levy from an already rounded
+employee-table amount.
+The dated retrieved HTML SHA-256 is
+`5586132230814b404d600eebadb95a0e0af12512a6722dc01b2c4fec4dfdf527`;
+this identifies the observed working copy, not immutable website content.
+
+[SSA, 26 September 2026](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/),
+**ss 349–351**, already supplies the inverse relationship: s 350(3) requires
+the increased payment, after its determined tax deduction, to equal the
+source payment; s 351 treats MSD's tax payment as benefit/income. Thus
+`gross − determined tax(gross) = source payment` is source-linked. The
+remaining gap is the **complete applicable tax calculation and precision**,
+not absence of an inverse relationship.
+
+[DET 24/03](https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311),
+issued **10 July 2024**, operative printed p 1 / PDF p 2, selects the M
+weekly-table rate applying from 31 July 2024 for payments from 2 August
+2024. Background **5.2**, printed p 3 / PDF p 4, refers to the applicable
+IR340; background **3 and 6** distinguishes payment tax from final annual
+tax. Background is expressly outside the determination. These texts do not
+clearly establish permanently freezing the August 2024 booklet; neither
+that freeze nor substitution of a current employee deduction is adopted.
+The determination follows payment date; a payment date is not inferred
+from the entitlement week's endpoints.
+
+The [August 2024 IR340](https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-aug-2024.pdf?modified=20250314001644),
+cover/printed p 2, limits employee pay periods to 31 July 2024–31 March
+2025. Printed **pp 3–4** include ACC in employee PAYE; **p 9**, “Main job
+income”, instructs use of the nearest lower earnings row and warns that
+online-calculator results may differ. [April 2026 IR340](https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-apr-2026.pdf?modified=20260323203256),
+printed **p 3**, identifies the 2026–27 year and includes ACC in salary/wage
+PAYE. Those employee-table instructions are not established as the
+benefit-specific inverse/rounding procedure. [JS MAP](https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/calculating-the-benefit-rate-01.html)
+only gives its income-flooring instruction in the DREW estimate workflow.
+
+Unresolved: exact benefit-tax table/formula edition and continuing currency;
+fractional preparation/aggregation; inverse-solution precision; intermediate
+and final cent/tie treatment; payment-date mapping; and a matching official
+gross calculation. The next source request is a benefit-specific complete
+calculation method plus a fractional-income worked result. Preserve the
+existing gross/precision/benchmark gates. A narrower net-payment component
+would require Pete's explicit change of scope; it is not a gross result.
+
+Working-diff checks: `SourceCatalog` validates **17 unique JS entries**, the
+new entry ranks as legislation, draft/null policy state is preserved, and
+all **3 relative packet links** resolve. `git diff --check` passes.
+`PYTHONPATH=src /Users/peterhemmingsen/Poltika/.venv/bin/python -m pytest -q
+tests/unit/policy/test_core_benefit_source_scope.py` passes **3 tests**.
+Only the JS catalogue and this packet were edited; final-head preflight and
+independent Claude review remain required after the next source commit.
