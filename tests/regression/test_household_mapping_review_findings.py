@@ -6,6 +6,7 @@ durable, searchable name, independent of the unit tests' coverage.
 
 from __future__ import annotations
 
+import itertools
 from dataclasses import replace
 from datetime import date
 from decimal import Decimal
@@ -83,32 +84,37 @@ def test_pr218_p3_income_spell_order_does_not_change_the_refusal() -> None:
     assert "[2026-03-30, 2027-04-01)" in str(to_wff(a, TAX_YEAR))
 
 
-@pytest.mark.parametrize("reverse", [False, True])
-def test_overlap_validation_names_the_same_group_in_any_order(reverse: bool) -> None:
-    """Two people each with overlapping spells: the error names the
-    canonically first group whatever order the spells were listed in."""
-    def overlapping(person_id: str) -> tuple[hh.IncomeSpell, ...]:
-        return tuple(
-            hh.IncomeSpell(
-                person_id=person_id,
-                income_type=hh.IncomeType.EMPLOYMENT_EARNINGS,
-                start=start,
-                end=date(2026, 7, 1),
-                amount=Decimal(1),
-            )
-            for start in (date(2026, 6, 1), date(2026, 6, 15))
-        )
+def _overlap_error(**spells: tuple[object, ...]) -> str:
+    persons = (Person(person_id="claimant", role=PersonRole.CLAIMANT), Person(person_id="partner", role=PersonRole.PARTNER))
+    family = Family(claimant_id="claimant", partner_id="partner", partner_status=hh.FamilyPartnerStatus.PARTNERED)
+    with pytest.raises(ValidationError) as caught:
+        Household(household_id="probe", persons=persons, families=(family,), **spells)
+    return str(caught.value)
 
-    income = (*overlapping("partner"), *overlapping("claimant"))
-    benefits = tuple(
+
+def test_overlap_validation_names_the_same_group_in_any_order() -> None:
+    """Two people each with overlapping spells: every one of the 24 orders
+    of the four spells gives the same error, naming the canonically first
+    group (claimant), so no fixture order can pass by accident."""
+    income = [
+        hh.IncomeSpell(
+            person_id=person_id,
+            income_type=hh.IncomeType.EMPLOYMENT_EARNINGS,
+            start=start,
+            end=date(2026, 7, 1),
+            amount=Decimal(1),
+        )
+        for person_id in ("partner", "claimant")
+        for start in (date(2026, 6, 1), date(2026, 6, 15))
+    ]
+    benefits = [
         BenefitSpell(person_id=p, benefit=BenefitKind.JOBSEEKER_SUPPORT, start=s, end=date(2026, 7, 1))
         for p in ("partner", "claimant")
         for s in (date(2026, 6, 1), date(2026, 6, 15))
-    )
-    persons = (Person(person_id="claimant", role=PersonRole.CLAIMANT), Person(person_id="partner", role=PersonRole.PARTNER))
-    family = Family(claimant_id="claimant", partner_id="partner", partner_status=hh.FamilyPartnerStatus.PARTNERED)
-    order = (lambda xs: xs[::-1]) if reverse else (lambda xs: xs)
-    with pytest.raises(ValidationError, match="income spells for claimant/employment_earnings/gross overlap"):
-        Household(household_id="probe", persons=persons, families=(family,), income_spells=order(income))
-    with pytest.raises(ValidationError, match="benefit spells for claimant overlap"):
-        Household(household_id="probe", persons=persons, families=(family,), benefit_spells=order(benefits))
+    ]
+    income_errors = {_overlap_error(income_spells=order) for order in itertools.permutations(income)}
+    benefit_errors = {_overlap_error(benefit_spells=order) for order in itertools.permutations(benefits)}
+    assert len(income_errors) == 1
+    assert "income spells for claimant/employment_earnings/gross overlap" in income_errors.pop()
+    assert len(benefit_errors) == 1
+    assert "benefit spells for claimant overlap" in benefit_errors.pop()
