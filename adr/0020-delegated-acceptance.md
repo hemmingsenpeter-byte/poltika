@@ -124,8 +124,8 @@ is also mechanical only when both conditions hold:
 
 For the replay check, the old base is `git merge-base <old main>
 <reviewed head>`, and the compared paths are the union of the paths in
-`git diff --name-only <old base> <reviewed head>` and in `git diff
---name-only <new main>...<new head>`, so a file the integration changed
+`git diff --no-renames --name-only <old base> <reviewed head>` and in
+`git diff --no-renames --name-only <new main>...<new head>`, so a file the integration changed
 outside the reviewed patch is still compared. Export `git diff --no-ext-diff
 --no-textconv --no-renames --binary --full-index <old base> <reviewed head>`
 for the compared paths. In a disposable checkout at the new `main`, replay that
