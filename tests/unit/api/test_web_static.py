@@ -47,6 +47,8 @@ def web_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         page = root / name
         page.parent.mkdir(parents=True, exist_ok=True)
         page.write_text(f"<!doctype html><title>{name}</title>")
+        # The export's RSC payload beside each page (`output: "export"`).
+        page.with_suffix(".txt").write_text(f"0:rsc {name}")
     (root / "_next" / "static").mkdir(parents=True)
     (root / "_next" / "static" / "x.js").write_text("console.log(1)")
     (root / "favicon.ico").write_bytes(b"\x00\x00\x01\x00")
@@ -168,6 +170,53 @@ def test_traversal_over_http_never_leaks(client: TestClient, web_dir: Path) -> N
     assert "root:" not in response.text
 
 
+RSC = {"RSC": "1", "Accept": "*/*"}
+
+
+@pytest.mark.parametrize(
+    ("path", "payload"),
+    [
+        ("/scenarios/new.txt", "scenarios/new.html"),
+        (f"/scenarios/{ZEROS}.txt", "scenarios/_.html"),
+        (f"/scenarios/{ZEROS}/runs/{'f' * 64}.txt", "scenarios/_/runs/_.html"),
+        ("/models/wff_engine.txt", "models/_.html"),
+        ("/data/stats_nz_household_net_worth.txt", "data/_.html"),
+    ],
+)
+def test_client_navigation_gets_the_nested_rsc_payload(
+    client: TestClient, web_dir: Path, path: str, payload: str
+) -> None:
+    # Before the fix these fell through to the API (422, 404) and Next
+    # reloaded the whole page on every navigation.
+    response = client.get(f"{path}?_rsc=abc12", headers=RSC)
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/x-component")
+    assert response.headers["cache-control"] == "private, no-cache"
+    assert response.text == f"0:rsc {payload}"
+
+
+def test_top_level_rsc_payloads_are_still_static_files(client: TestClient, web_dir: Path) -> None:
+    for path, payload in (("/index.txt", "index.html"), ("/scenarios.txt", "scenarios.html")):
+        response = client.get(f"{path}?_rsc=abc12", headers=RSC)
+        assert response.status_code == 200
+        assert response.text == f"0:rsc {payload}"
+
+
+def test_a_txt_path_without_the_rsc_header_is_unchanged(client: TestClient, web_dir: Path) -> None:
+    # `.` is a legal id character, so this is still the scenario API route.
+    response = client.get(f"/scenarios/{ZEROS}.txt", headers=JSON)
+    assert response.headers["content-type"].startswith("application/json")
+    assert "0:rsc" not in response.text
+    assert "0:rsc" not in client.get("/models/wff_engine.txt", headers={"RSC": "0"}).text
+
+
+def test_rsc_on_an_unlisted_path_is_not_a_payload(client: TestClient, web_dir: Path) -> None:
+    for path in ("/nowhere.txt", "/models/a/b.txt", "/scenarios/new/x.txt"):
+        response = client.get(path, headers=RSC)
+        assert response.status_code == 404
+        assert "0:rsc" not in response.text
+
+
 def test_json_clients_still_reach_the_api(client: TestClient, web_dir: Path) -> None:
     for headers in (JSON, {"Accept": "*/*"}, {}):
         response = client.get(f"/scenarios/{ZEROS}", headers=headers)
@@ -211,6 +260,7 @@ def test_pages_need_the_password_but_healthz_does_not(
     assert client.get("/", headers=HTML).status_code == 401
     assert client.get("/models/wff_engine", headers=HTML).status_code == 401
     assert client.get("/_next/static/x.js").status_code == 401
+    assert client.get("/models/wff_engine.txt", headers=RSC).status_code == 401
     assert client.get("/healthz").status_code == 200
     token = base64.b64encode(b"pilot:s3cret").decode()
     ok = client.get("/", headers={**HTML, "Authorization": f"Basic {token}"})
