@@ -141,13 +141,19 @@ _WFF_BASES = frozenset(
 _AS_BASES = frozenset({hh.IncomeBasis.AS_CHARGEABLE_WEEKLY})
 
 
+def _income_order(spell: hh.IncomeSpell) -> tuple[date, date, str, str, str, Decimal]:
+    # A canonical order, so the spell a refusal names never depends on the
+    # order spells were listed (as `_spell_order` does for benefit spells).
+    return (spell.start, spell.end, spell.person_id, spell.income_type.value, spell.basis.value, spell.amount)
+
+
 def _q10_refusal(
     household: Household, person_ids: tuple[str, ...], period: DatePeriod, bases: frozenset[hh.IncomeBasis]
 ) -> MappingRefusal | None:
     """A spell that extends past the policy period would need an
     annualisation or apportionment, which no sourced rule allows (v0.2 D8/D9;
     PETE_QUEUE Q10). Refused, never scaled."""
-    for spell in household.income_spells:
+    for spell in sorted(household.income_spells, key=_income_order):
         if spell.person_id in person_ids and spell.basis in bases and hh.straddling_spells((spell,), period):
             return MappingRefusal(
                 "needs_review",
