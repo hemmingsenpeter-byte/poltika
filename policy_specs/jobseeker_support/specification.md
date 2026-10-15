@@ -29,8 +29,12 @@ The current official Act index checked on 13 October identifies the
 4 September source observation for this assessment. The full extracted-text
 comparison found one substantive change: Schedule 2's `CYPFA order or
 agreement` definition adds the Oranga Tamariki Act s 283(na) reference. The
-scoped Jobseeker provisions are unchanged. The Regulations remain the
-4 September 2026 consolidation. Legislation was retrieved directly from
+scoped Jobseeker provisions are unchanged. A **15 October 2026 recheck** corrects
+the Regulations authority to **1 October 2026**, recorded as
+`jobseeker-support-social-security-regulations-20261001`; the earlier
+4 September observation is retained as history. The amendment changes
+Schedule 1 cl 33(2)'s transitional review deadline; comparison finds rr 8–11,
+205, Schedule 6 and the JS income transition unchanged. Legislation was retrieved directly from
 official HTML with a browser user agent after the web tool failed; MSD MAP
 pages were retrieved separately. New checks are author observations, not an
 extension of [PR #151's independent source review](../../reviews/2026-10-06-pr151.md).
@@ -43,7 +47,7 @@ by this draft, and no cross-November or full-year assurance is claimed. The
 completed week precedes the 13 October source check; whole-week amendment
 coverage still requires independent review before approving a monetary rule.
 ([Act](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/),
-[Regulations](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-09-04/),
+[Regulations](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-10-01/),
 [Amendment Act s 2](https://www.legislation.govt.nz/act/public/2026/54/en/2026-09-03/))
 
 Gross entitlement is distinct from the Schedule 4 rate, net M payment,
@@ -58,6 +62,15 @@ In particular, `426.12 − 0.70 × excess_income` is not a supported gross formu
 ([Act ss 349–351; Schedule 4 Part 1](https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/),
 [MSD rates](https://map.workandincome.govt.nz/map/deskfile/main-benefits-rates/jobseeker-support-current.html),
 [MSD assessment examples](https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/examples-of-income-assessment-01.html))
+
+The 15 October recheck located **IRD DET 24/03**, issued 10 July 2024,
+under RD 11(3). For payments from 2 August 2024 its operative determination
+selects the M rate in the weekly PAYE tables applying from 31 July 2024.
+This supplies previously unlocated authority, not a reviewed inverse gross-up
+or precision procedure. Exact table edition/application, payment-date linkage,
+levy treatment and rounding still need review; DEC-001 remains open.
+([determination, printed p 1](https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311),
+[15 October evidence and options](../../review_packets/task8_benefit_specifications.md#15-october-2026-source-recheck-and-decision-options))
 
 ## Input and outcome contract
 
@@ -108,9 +121,9 @@ a gap. Documentary candidates below are not adopted parameters.
 | JS-04 | Grant, appropriate rate and amount paid are different; temporary income reducing payment to zero need not end an otherwise qualifying grant | `jobseeker-support-social-security-act-20260926`: s 17(1),(3); s 24(1),(2); ss 20–28 | Draft; temporary-period eligibility remains asserted |
 | JS-05 | Statutory cl 1(d) maximum is $372.55 weekly, subject to Test 3; Order adjustments apply to benefits payable from 1 April 2026 | `jobseeker-support-social-security-act-20260926`: Schedule 4 Part 1 cl 1(d); `jobseeker-support-rates-order-2026`: cls 2–5, Schedule 1 Part 1 cl 1(d) row | Documentary candidate; net/gross relationship JS-09 |
 | JS-06 | Income is policy-specific and before income tax; exclusions/overrides matter, including statutory benefits and WFF credits | `jobseeker-support-social-security-act-20260926`: Schedule 3 cls 2–10, especially 3, 8(1)(a),(l); cls 13–14 | Draft; caller resolves ordinary chargeable earnings |
-| JS-07 | Weekly income uses the prescribed number of weeks; ordinary JS is Schedule 6 item 2, one week. Grant transition is checked separately | `jobseeker-support-social-security-act-20260926`: Schedule 3 cls 11, 13(1)–(3); `jobseeker-support-social-security-regulations`: r 205(1), Schedule 6 items 1–2, Schedule 1 cl 25(1)–(4) | Draft; no independent allocation or transition algorithm |
+| JS-07 | Weekly income uses the prescribed number of weeks; ordinary JS is Schedule 6 item 2, one week. Grant transition is checked separately | `jobseeker-support-social-security-act-20260926`: Schedule 3 cls 11, 13(1)–(3), s 338(1)–(5); `jobseeker-support-social-security-regulations-20261001`: r 205(1), Schedule 6 items 1–2, Schedule 1 cl 25(1)–(4) | Draft; seven-day payable week is separate from MSD instalment timing and income attribution; no allocation or transition algorithm |
 | JS-08 | Test 3 reduces the applicable rate by $0.70 per $1 above $160 weekly; the Act's text alone does not settle fractional-income treatment | `jobseeker-support-social-security-act-20260926`: Schedule 2 Income Test 3(b); Schedule 4 Part 1 cl 1(d) | `needs_review` for precision; DEC-002 |
-| JS-09 | Gross benefit and net statutory payment differ; s 350(3) defines a tax-dependent gross-up relationship, not a universal percentage conversion | `jobseeker-support-social-security-act-20260926`: ss 349–351, including RD 11(3) cross-reference in s 349 | `needs_review` / `MISSING_SOURCE`; DEC-001; no RD 11 tax procedure reviewed |
+| JS-09 | Gross benefit and net statutory payment differ; s 350(3) defines a tax-dependent gross-up relationship. DET 24/03 selects a weekly M tax basis; its full computational application remains unreviewed | `jobseeker-support-social-security-act-20260926`: ss 349–351; `jobseeker-support-ird-det-24-03`: operative determination, printed p 1 | `needs_review` / `MISSING_SOURCE` for complete method; DEC-001 |
 | JS-10 | Section 18 limits concurrent own-right receipt per person. Two partners' own-right main benefits are recognised rate categories; one-benefit-per-household is this slice's coverage limit | `jobseeker-support-social-security-act-20260926`: s 18, Schedule 4 Part 1 cl 1(g); D11/D36; PR #151 | Draft; mixed-benefit couples `unsupported` / `not_modelled` |
 | JS-11 | Income-related entitlement is not a new PAYE, net-payment, tax-year or AS/WFF result; graph edges require separate reviewed mappings | `jobseeker-support-social-security-act-20260926`: ss 17, 24, 349–351, Schedule 3 cl 8; existing interaction locators in `jobseeker-support-income-tax-act-interactions` | Interaction inventory only; Task 9 / 3.1.4 pending |
 
@@ -168,7 +181,7 @@ the latter transition is per grant at the end of its specified 52 weeks.
 MSD's live summary says the transition ended by 30 June 2026. The legal
 source supplies the per-grant boundary; the summary is not substituted for
 grant-history evidence. The ordinary cl 1(d) weekly slice excludes unresolved
-legacy/transitional charging. ([Regulations r 205; Schedules 1 and 6](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-09-04/),
+legacy/transitional charging. ([Regulations r 205; Schedules 1 and 6](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-10-01/),
 [MSD income test](https://map.workandincome.govt.nz/map/income-support/main-benefits/jobseeker-support/changes-and-reviews-jobseeker-support/income-test-01.html))
 
 Known outside-slice cases are `unsupported` / `not_modelled`: under-25 or

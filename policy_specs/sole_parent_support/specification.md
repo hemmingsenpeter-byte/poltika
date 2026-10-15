@@ -34,14 +34,26 @@ Author comparison found the scoped SPS ss 29–33, Schedule 4 Part 2,
 Schedule 3 cl 13, Income Test 1 and ss 18, 349–351 unchanged. The later
 Schedule 2 CYPFA order-definition amendment remains outside this ordinary slice.
 
-[Regulations, 4 September version](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-09-04/)
-(`sole-parent-support-social-security-regulations`, **SSR**) supply r 205 and
-Schedule 6. The [2026 Rates Order](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2026/36/en/2026-03-02B/)
+[Regulations, 1 October version](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-10-01/)
+(`sole-parent-support-social-security-regulations-20261001`, **SSR**) supply r 205 and
+Schedule 6. The **15 October recheck** corrects the earlier 4 September
+current-version claim; that source entry remains history. The sole substantive
+body change is Schedule 1 cl 33(2)'s transitional review deadline, with scoped
+income-basis provisions unchanged. This comparison does not clear whole-period
+or approval gates. The [2026 Rates Order](https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2026/36/en/2026-03-02B/)
 (`sole-parent-support-rates-order-2026`, **Order**) is the as-made 2 March
 instrument; commencement/payment applicability starts on 1 April under cls 2–4.
 [Income Tax Act, 4 September version](https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/)
 (`sole-parent-support-income-tax-act-interactions`, **ITA**) supplies RD 11(3).
 Consolidation, legal commencement, table reference date and check date differ.
+
+The recheck also located `sole-parent-support-ird-det-24-03`, issued
+10 July 2024. Its operative determination selects the weekly M tax-table
+basis for main-benefit payments from 2 August 2024. DEC-001's gap is now the
+complete application of that authority: applicable table edition, payment
+date, gross-up, levy treatment and precision. Locating it approves no amount.
+([DET 24/03, printed p 1](https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311),
+[recheck and decision options](../../review_packets/task8_benefit_specifications.md#15-october-2026-source-recheck-and-decision-options))
 
 The [enacted 2026 amendment](https://www.legislation.govt.nz/act/public/2026/54/en/2026-09-03/)
 commences Part 1 on 2 November 2026 and Part 2 on 1 April 2027 (s 2).
@@ -83,14 +95,14 @@ the law; scope and outcome choices are separately identified as model design.
 | SPS-08 | A couple with both partners on own-right main benefits is outside this first slice, before missing-fact gates. No household-wide statutory prohibition is asserted. | `sole-parent-support-social-security-act-2026-09-26` s 18; Schedule 4 Part 1 cl 1(g), Part 3 cl 1(d); Pete's 5 October coverage decision |
 | SPS-09 | Select the ordinary SPS Schedule 4 rate and Income Test 1; respect separately asserted reductions/suspension/cancellation. An agency gross column cannot replace the statutory rate. | `sole-parent-support-social-security-act-2026-09-26` s 17(1), (3); Schedule 4 Part 2 cl 1; `sole-parent-support-rates-order-2026` cl 5 / Schedule 1 Part 1 |
 | SPS-10 | Benefit-test income is its own before-tax statutory concept. The source order, inclusions and exclusions must already be resolved for this person/week. | `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cls 2–9, 15 and Part 4; Part 3A for separately excluded child-support charging |
-| SPS-11 | SPS normally uses 52 weeks. Require an MSD/person agreement for one-week determination that neither party has ended during the week. | `sole-parent-support-social-security-regulations` r 205(1)–(3); Schedule 6 item 1; `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cls 11, 13(1) |
+| SPS-11 | SPS normally uses 52 weeks. Require an MSD/person agreement for one-week determination that neither party has ended during the week. The seven-day payable week and MSD instalment timing do not select that assessment basis. | `sole-parent-support-social-security-regulations-20261001` r 205(1)–(3); Schedule 6 item 1; `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cls 11, 13(1), s 338(1)–(5) |
 | SPS-12 | Receive income already attributed to the exact week under the earning/entitlement-period rule, with any MSD fallback identified. Do not use receipt date or annual division automatically. | `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cl 13(1), (1A)–(2), (3A)–(4); Q10/D32 |
 | SPS-13 | A childcare earnings disregard is discretionary and limited by statute. Require its non-applicability or an already resolved amount/decision; never infer it from child age or subtract it twice. | `sole-parent-support-social-security-act-2026-09-26` Schedule 4 Part 2 cl 2 |
 | SPS-14 | Income Test 1 reduces the applicable rate using its two bands. The official deduction page places this reduction against the after-tax benefit payment; it does not establish gross reduction at the same rate. | `sole-parent-support-social-security-act-2026-09-26` Schedule 2 `Income Test 1`; Schedule 4 Part 2 cl 1; ss 349–351 |
-| SPS-15 | Gross SPS entitlement requires the separately authorised benefit-tax/gross-up method and its applicability. Missing method gives no amount. | `sole-parent-support-social-security-act-2026-09-26` ss 349–351; `sole-parent-support-income-tax-act-interactions` RD 11(3)(a); DEC-001 |
-| SPS-16 | Input, intermediate, final and tie precision must be source-backed and reviewed before a numeric amount. No tax, payroll, JS or AS convention is inherited. | `sole-parent-support-social-security-act-2026-09-26` Schedule 2 Income Test 1 / Schedule 4 Part 2; `sole-parent-support-social-security-regulations` r 205; `sole-parent-support-income-tax-act-interactions` RD 11(3); DEC-002 |
+| SPS-15 | Gross SPS entitlement requires the authorised benefit-tax/gross-up method and its applicability. DET 24/03 is located; complete computational application remains gated with no amount. | `sole-parent-support-social-security-act-2026-09-26` ss 349–351; `sole-parent-support-income-tax-act-interactions` RD 11(3)(a); `sole-parent-support-ird-det-24-03`, printed p 1; DEC-001 |
+| SPS-16 | Input, intermediate, final and tie precision must be source-backed and reviewed before a numeric amount. No tax, payroll, JS or AS convention is inherited. | `sole-parent-support-social-security-act-2026-09-26` Schedule 2 Income Test 1 / Schedule 4 Part 2; `sole-parent-support-social-security-regulations-20261001` r 205; `sole-parent-support-income-tax-act-interactions` RD 11(3); DEC-002 |
 | SPS-17 | Known excluded coverage outranks missing facts; missing/contradictory required facts or unreviewed source gates give `needs_review`, never zero. | Repository outcome contract; source-linked exclusions SPS-01–16; new-policy skill ; statutory input/exclusion context: `sole-parent-support-social-security-act-2026-09-26` s 17 |
-| SPS-18 | Keep SPS, WFF and AS inputs/statuses distinct; graph edges and common-period totals require their own reviewed specifications. | `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cl 8(1)(a), (l); `sole-parent-support-income-tax-act-interactions` CF 1(1)(c), MB 1–2; `sole-parent-support-social-security-regulations` rr 17–18; source-scope interaction inventory |
+| SPS-18 | Keep SPS, WFF and AS inputs/statuses distinct; graph edges and common-period totals require their own reviewed specifications. | `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cl 8(1)(a), (l); `sole-parent-support-income-tax-act-interactions` CF 1(1)(c), MB 1–2; `sole-parent-support-social-security-regulations-20261001` rr 17–18; source-scope interaction inventory |
 
 ## Proposed input and outcome contract
 

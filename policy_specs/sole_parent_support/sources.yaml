@@ -37,6 +37,17 @@ coverage_limits:
       on partners receiving different main benefits. It must remain unsupported
       until a reviewed specification models the applicable Schedule 4 categories.
       This catalogue statement adds no runtime gate, rate or entitlement calculation.
+source_recheck_20261015:
+  checked_on: '2026-10-15'
+  status: draft_pending_review
+  current_regulations: sole-parent-support-social-security-regulations-20261001
+  benefit_tax_determination: sole-parent-support-ird-det-24-03
+  corrections: >-
+    The previous current-version claim for 4 September Regulations is incorrect:
+    the current consolidation is 1 October 2026. DET 24/03 is now located;
+    complete computational application and precision remain unreviewed.
+  evidence_packet: ../../review_packets/task8_benefit_specifications.md
+  classification: Author observations / AI hypotheses; no Rule, amount or protected expectation promoted.
 sources:
 - id: sole-parent-support-social-security-act
   kind: legislation
@@ -320,3 +331,76 @@ sources:
   limitation: >-
     No Poltika discretion, subsidy assessment or automatic maximum disregard
     is authorised. A resolved caller amount must carry decision/period evidence.
+
+- id: sole-parent-support-social-security-regulations-20261001
+  kind: regulations
+  title: Social Security Regulations 2018 — 1 October 2026 consolidation
+  url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-10-01/
+  version_as_at: '2026-10-01'
+  version_label: Official latest index checked 15 October 2026; PDF version 219_0.
+  checked_on: '2026-10-15'
+  locator: rr 8-11, 17-18, 205(1)-(3); Schedule 6 items 1-2; Schedule 1 cls 25, 32-33; Schedule 8 cl 44.
+  finding: >-
+    Current consolidation supersedes the retained 4 September source entry for the
+    selected 5-12 October week. Regulation 205, Schedule 6, JS transition cl 25,
+    medical regulations 8-11 and severe-disablement exemption cl 44 are unchanged.
+    SPS/SLP use 52 weeks by default; a one-week determination needs an active
+    MSD/person agreement, which either party may end by notice.
+  comparison_method: >-
+    Retrieved dated 4 September and current official full HTML directly with a
+    browser user agent after browser-tool failure; extracted visible text and
+    compared the complete regulations body. The sole substantive body change is
+    Schedule 1 cl 33(2), first review deadlines for independent review benefits.
+  amending_instrument:
+    title: Social Security (Modernisation) Amendment Regulations 2026 (SL 2026/255)
+    url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2026/255/en/latest/
+    made_on: '2026-08-31'
+    legal_commencement: '2026-10-01'
+    locator: rr 2, 4; replacement Schedule 1 cl 33(2).
+  limitation: >-
+    Corrects the stale current-version claim; does not by itself establish complete
+    interval currency, continuing grant state, historical receipt timing, or approval.
+    Ordinary domestic first-slice coverage remains unchanged. No post-November
+    extension, implementation or numerical parameter is approved.
+  review_state: Author recheck; AI hypothesis pending independent Claude review and applicable Pete gates.
+- id: sole-parent-support-ird-det-24-03
+  kind: agency_interpretation
+  legal_character: Commissioner determination exercising ITA RD 11(3); current catalogue kind retained conservatively without a schema change.
+  title: IRD DET 24/03 — amount of tax for a payment of a main benefit
+  url: https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311
+  issued_on: '2024-07-10'
+  effective_period_label: 2024-25 income year onwards; operative payment-date split at 2 August 2024.
+  checked_on: '2026-10-15'
+  locator: >-
+    Operative Determination, printed p 1 (PDF page 2); background paras 1-3, 5.2, 6,
+    printed pp 2-3 (PDF pages 3-4); background is expressly outside the determination.
+  finding: >-
+    Under ITA RD 11(3), after consultation with the MSD chief executive, the
+    Commissioner selects the M tax-code rate in weekly PAYE tables applying from
+    31 July 2024 for main-benefit payments made from 2 August 2024. Background
+    distinguishes that payment tax from final annual tax on total taxable income.
+  limitation: >-
+    Locates the previously missing determination. Complete computational application,
+    continuing currency, precise IR340 edition, payment-date relation to entitlement,
+    levy treatment, inverse gross-up, fractional-income handling and rounding still
+    require source review. No complete gross benchmark or approved value is supplied.
+  review_state: Documentary authority candidate; no promotion or protected expected-value approval.
+- id: sole-parent-support-ird-ir340-table-candidates
+  kind: agency_guidance
+  title: IRD IR340 — weekly PAYE tables, table-edition and levy check candidates
+  url: https://www.ird.govt.nz/deductions
+  page_updated_on: '2026-04-01'
+  checked_on: '2026-10-15'
+  locator: Current Apr 2026 IR340 and Previous years Aug 2024 IR340 links; current PDF printed p 3.
+  current_table_url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-apr-2026.pdf?modified=20260323203256
+  determination_referenced_edition_url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-aug-2024.pdf?modified=20250314001644
+  finding: >-
+    The current edition states 1 April 2026 to 31 March 2027; the August 2024
+    cover states 31 July 2024 to 31 March 2025. Current salary/wage tables include
+    ACC earners levy. DET 24/03 is benefit-tax authority, not automatic authority
+    to copy the whole employee deduction or substitute annual salary tax.
+  limitation: >-
+    Table edition, applicable components and benefit-specific inverse/rounding use
+    are candidates for review, not resolved conflicts or an adopted tax method.
+    No ordinary-wage calculator or tax table result is used as a benefit benchmark.
+  review_state: Located for bounded follow-up; gross method and precision remain needs_review.

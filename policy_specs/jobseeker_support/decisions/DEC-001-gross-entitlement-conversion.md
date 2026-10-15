@@ -51,3 +51,23 @@ gross conversion under the relevant payment tax basis, precision and
 matching benchmark, followed by independent re-derivation and Pete's
 decision. Pete may commission that bounded work or explicitly revise D11's
 output scope. Silence does not authorise a net-only substitute.
+
+## Source recheck — 15 October 2026
+
+The earlier missing-determination observation is superseded by
+`jobseeker-support-ird-det-24-03` in [sources.yaml](../sources.yaml).
+[IRD DET 24/03](https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311),
+issued 10 July 2024, operative printed p 1, selects the M rate in the weekly
+PAYE tables applying from 31 July 2024 for payments from 2 August 2024.
+Background paras 3 and 6 distinguish payment tax from final annual tax;
+that explanatory material is expressly outside the operative determination.
+
+Authority has been located; complete application has not been approved.
+Precisely identify the operative table edition/components, payment-date
+relation to this entitlement week, inverse gross-up and rounding, then
+independently reconcile published maxima and an abated example. Current
+IR340 contains ACC earners levy for wages, so its full employee deduction
+cannot simply be copied as benefit tax. No levy method is selected here.
+The [recheck packet](../../../review_packets/task8_benefit_specifications.md#15-october-2026-source-recheck-and-decision-options)
+gives Pete explicit full-slice, zero-income-only and output-scope options.
+This decision remains open; no amount or protected expected value is approved.

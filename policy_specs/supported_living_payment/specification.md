@@ -30,7 +30,7 @@ Each source key below resolves to the full ID, URL, date and locator in
 | Key | Source ID and checked locator |
 | --- | --- |
 | Act | `supported-living-payment-social-security-act-20260926`: ss 16–18, 34–42, 349–351; Schedule 2 Income Test 1; Schedule 3 cls 2–14; Schedule 4 Part 3 cl 1 |
-| Regulations | `supported-living-payment-social-security-regulations`: rr 10–11, 205; Schedule 6 item 1; Schedule 8 cl 44 |
+| Regulations | `supported-living-payment-social-security-regulations-20261001`: rr 10–11, 205; Schedule 6 item 1; Schedule 8 cl 44 |
 | Order | `supported-living-payment-rates-order-2026`: cls 2, 4–5; Schedule 1 Part 1, Schedule 4 Part 3 cl 1(a)–(b) entries |
 | Overview | `supported-living-payment-msd-overview`: health-condition route, evidence and review sections |
 | Charging | `supported-living-payment-msd-income`: annual/weekly charging and exemptions |
@@ -41,13 +41,29 @@ Each source key below resolves to the full ID, URL, date and locator in
 | Cut-outs | `supported-living-payment-msd-cutouts-2026`: single 18+ row and weekly-rounding warning |
 | Tax | `supported-living-payment-msd-taxation`: taxable benefit, net payment and tax on benefits |
 | Benefit tax authority | `supported-living-payment-income-tax-act-rd11`: RD 11(3)(a), overriding ordinary RD 10(1) tax determination |
+| Benefit tax determination | `supported-living-payment-ird-det-24-03`: operative determination, printed p 1; background paras 3 and 6 distinguish final annual tax |
 
-Act version: **26 September 2026**. Regulations version: **4 September 2026**.
+Act version: **26 September 2026**. Regulations version: **1 October 2026**.
 Order: as made **2 March 2026**, commencing **1 April 2026**. All current
-checks are dated **13 October 2026**. The earlier 4 September Act inventory
+checks were originally dated **13 October 2026**; the **15 October recheck**
+corrects the Regulations version and locates DET 24/03. The earlier 4 September Act inventory
 and its October checks remain historical evidence in the catalogue.
 The 26 September amendment changes the Schedule 2 CYPFA-order definition;
 comparison with 4 September found the scoped SLP provisions unchanged.
+
+The Regulations amendment replaces Schedule 1 cl 33(2)'s transitional first
+review deadline. Extracted-body comparison with 4 September finds rr 10–11,
+205, Schedule 6 and Schedule 8 cl 44 unchanged. The deadline amendment concerns
+independent-review-benefit transitions, including SLP overseas; it does not
+change this draft's domestic ordinary income-test calculation. Review state
+and continuing grant/capacity assertions remain required.
+
+IRD DET 24/03, issued 10 July 2024, selects the weekly M PAYE-table basis for
+main-benefit payments from 2 August 2024. Complete table application, payment
+date, inverse gross-up, levy treatment and precision remain unreviewed in
+DEC-001. Its discovery does not authorise a numeric SLP output.
+([determination, printed p 1](https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311),
+[recheck and options](../../review_packets/task8_benefit_specifications.md#15-october-2026-source-recheck-and-decision-options))
 
 The enacted 2026/54 Amendment Act, s 2, commences Part 1 on 2 November 2026
 and Part 2 on 1 April 2027. Its shared-definition/income amendments require
@@ -75,13 +91,13 @@ and all monetary gates are closed; this draft supplies no such authority.
 
 | Rule | Required behaviour | Evidence |
 | --- | --- | --- |
-| SLP-01 | Refuse a different week, lookup date outside the week, partial week or a within-week category/basis/grant change. Unknown dates require review. | Project boundary under D11; `supported-living-payment-social-security-regulations` r 205; Act Schedule 3 cl 13 |
+| SLP-01 | Refuse a different week, lookup date outside the week, partial week or a within-week category/basis/grant change. Unknown dates require review. | Project boundary under D11; `supported-living-payment-social-security-regulations-20261001` r 205; Act Schedule 3 cl 13 |
 | SLP-02 | Require an existing MSD grant on the restricted-work-capacity limb of s 34 throughout the week. Carer s 40, total blindness, commencement/regrant calculations or competing-grant cases are unsupported. Unknown route/grant state requires review. | `supported-living-payment-social-security-act-20260926` ss 34–42; D11 clarification |
-| SLP-03 | Take MSD's work-capacity determination and its continuing applicability as asserted facts. Do not infer entitlement from diagnosis, hours, a clinician's opinion alone, or a benefit label. | `supported-living-payment-social-security-act-20260926` ss 35–37; `supported-living-payment-social-security-regulations` rr 10–11; Overview |
+| SLP-03 | Take MSD's work-capacity determination and its continuing applicability as asserted facts. Do not infer entitlement from diagnosis, hours, a clinician's opinion alone, or a benefit label. | `supported-living-payment-social-security-act-20260926` ss 35–37; `supported-living-payment-social-security-regulations-20261001` rr 10–11; Overview |
 | SLP-04 | Require verified ordinary residence/eligibility and ordinary payable state. A grant assertion without week-specific payment evidence is insufficient. Known exceptional states below are unsupported. | `supported-living-payment-social-security-act-20260926` ss 16, 34(b), 36–39; Overview review sections; bounded existing-grant contract |
 | SLP-05 | Require single status, no dependent children and the ordinary adult cl 1(b) category. Under-18 cl 1(a), child and partner categories are separate unsupported categories, never the nearest rate. Unknown category requires review. | `supported-living-payment-social-security-act-20260926` s 34(c), Schedule 4 Part 3 cl 1(a)–(h); Rates |
 | SLP-06 | Apply the s 18 restriction per person in their own right. The household first-slice limit is separate: partnered and mixed-benefit-couple cases are unsupported coverage. | `supported-living-payment-social-security-act-20260926` s 18, Schedule 4 Part 3 cl 1(d); approved local 3.4 correction |
-| SLP-07 | Require a current MSD/person weekly agreement under r 205(2), with no termination notice affecting this week. Annual-basis cases are unsupported here; unknown agreement/basis requires review. | `supported-living-payment-social-security-regulations` r 205(1)–(3), Schedule 6 item 1; Charging |
+| SLP-07 | Require a current MSD/person weekly agreement under r 205(2), with no termination notice affecting this week. Annual-basis cases are unsupported here; unknown agreement/basis requires review. A seven-day payable week and MSD instalment timing do not establish weekly assessment. | `supported-living-payment-social-security-regulations-20261001` r 205(1)–(3), Schedule 6 item 1; Act s 338(1)–(5); Charging |
 | SLP-08 | Use caller-resolved SLP chargeable income for this exact week. Require evidence of income classification, earning/entitlement attribution and applicable exclusions. No calendar-day or spell apportionment. | `supported-living-payment-social-security-act-20260926` Schedule 2 income, Schedule 3 cls 2–14; interim Task 6 period contract D32/D36 |
 | SLP-09 | Require the s 34 own-effort disregard to be resolved exactly once before the chargeable-income assertion enters the test. It is mandatory up to the statutory limit; it is not the general income-test allowance. | `supported-living-payment-social-security-act-20260926` Schedule 4 Part 3 cl 1 trailing paragraph (a); `supported-living-payment-msd-personal-earnings` |
 | SLP-10 | The adult scheduled rate is the cl 1(b) amount subject to Income Test 1. Keep the scheduled/net-M amount distinct from MSD's published gross amount. | `supported-living-payment-social-security-act-20260926` s 17, Schedule 4 Part 3 cl 1(b); `supported-living-payment-rates-order-2026`; `supported-living-payment-msd-rates-2026` |

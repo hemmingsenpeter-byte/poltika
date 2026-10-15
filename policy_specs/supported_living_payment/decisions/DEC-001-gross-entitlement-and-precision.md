@@ -82,3 +82,24 @@ Assumption, requires Pete's explicit recorded decision and clear output
 labelling. This document neither makes that choice nor requests agency
 contact or a broadened model. The blocker is confined to the affected
 monetary claim; documentary drafting and review can continue.
+
+## Source recheck — 15 October 2026
+
+`supported-living-payment-ird-det-24-03` in [sources.yaml](../sources.yaml)
+now locates the relevant RD 11(3) determination:
+[IRD DET 24/03](https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311),
+issued 10 July 2024, operative printed p 1. It selects the weekly M table
+basis for payments from 2 August 2024; its cover states 2024–25 onwards.
+Complete applicability, table edition/components, payment-date linkage,
+inverse gross-up and every precision stage remain unreviewed. Current
+IR340 includes ACC earners levy for wages; copying the full wage deduction
+would be an additional unreviewed assumption. Background paras 3 and 6
+separate this payment tax from final annual tax and are expressly outside
+the operative determination.
+
+The [decision options](../../../review_packets/task8_benefit_specifications.md#15-october-2026-source-recheck-and-decision-options)
+preserve the full-slice gate and describe any zero-income-only or output-scope
+change as Pete's explicit choice. The 1 October Regulations comparison leaves
+r 205 and medical rr 10–11 unchanged. No agreement, continuing capacity
+determination, rate, rounded result or protected value is approved by this
+source update. The decision remains open and gross output remains absent.

@@ -66,3 +66,21 @@ The sources distinguish statutory-side rate, gross benefit income and cash
 payment. An incorrect conversion would distort later taxable-income/WFF
 inputs and withdrawal measures. Confidence is high in the documented source
 distinction; no confidence is assigned to an unverified numeric gross method.
+
+## Source recheck — 15 October 2026
+
+The earlier statement that the operative determination was unverified is
+superseded by `sole-parent-support-ird-det-24-03` in
+[sources.yaml](../sources.yaml). [IRD DET 24/03](https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311),
+issued 10 July 2024, operative printed p 1, selects the weekly M tax-table
+basis for main-benefit payments from 2 August 2024. The remaining missing
+method is its complete computational application, including applicable
+table edition/components, payment-date linkage, inverse gross-up, levy
+treatment and precision. Its discovery does not close DEC-002 or establish
+a gross benchmark. The separate 1 October Regulations recheck preserves
+the 52-week default and required active r 205(2) weekly agreement.
+
+Pete's [decision options](../../../review_packets/task8_benefit_specifications.md#15-october-2026-source-recheck-and-decision-options)
+now distinguish retaining the full abated gross slice, expressly narrowing
+to independently reviewed zero-income maxima, and changing output scope.
+No choice is made; gross amounts remain `needs_review` with no amount.
