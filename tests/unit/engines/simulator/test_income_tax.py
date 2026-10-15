@@ -12,6 +12,7 @@ from decimal import Decimal
 
 import pytest
 
+from poltika.common.errors import PolicyVersionMismatchError
 from poltika.engines.simulator import income_tax
 from poltika.engines.simulator.income_tax import (
     REQUIRED_PARAMETER_IDS,
@@ -170,3 +171,64 @@ def test_the_draft_policy_is_never_loaded_as_executable() -> None:
 def test_non_finite_or_binary_float_income_is_rejected(bad: object) -> None:
     with pytest.raises(ValueError, match="finite Decimal"):
         replace(ORDINARY, annual_taxable_income=bad)  # type: ignore[arg-type]
+
+
+def test_a_false_attestation_is_gated_before_any_parameter() -> None:
+    result = calculate_income_tax(replace(ORDINARY, taxable_income_basis_attestation=False), synthetic())
+    assert (result.outcome, result.value, result.code) == ("needs_review", None, "IT_TAXABLE_INCOME_NOT_ATTESTED")
+    assert result.missing_facts == ()
+
+
+def test_every_module_result_is_traced_with_its_period_and_parameter_provenance() -> None:
+    for scenario in (
+        ORDINARY,
+        replace(ORDINARY, residence_scope=ResidenceScope.NON_RESIDENT),
+        replace(ORDINARY, annual_taxable_income=None),
+    ):
+        trace = run_income_tax_module(scenario).trace
+        assert trace is not None
+        assert (trace.policy_id, trace.policy_version) == ("income_tax", "none (draft_pending_review)")
+        assert trace.assessment_period == (date(2026, 4, 1), date(2027, 4, 1))
+        assert dict(trace.artifact_sha256).keys() == {"policy.yaml"}
+        assert [p.parameter_id for p in trace.parameters] == list(REQUIRED_PARAMETER_IDS)
+        for use in trace.parameters:
+            # Interval, source and review status are traced; the candidate value is not.
+            assert use.outcome == "needs_review" and use.value is None
+            assert use.review_status == "needs_review" and use.source_id and use.locator
+            assert (use.effective_from, use.effective_to) == (date(2026, 4, 1), date(2027, 4, 1))
+        assert len(trace.inputs) == 9
+
+
+@pytest.mark.parametrize("modelled", [date(2026, 3, 31), date(2027, 4, 1), date(2030, 1, 1)])
+def test_a_date_outside_the_reference_period_is_unsupported(modelled: date) -> None:
+    result = run_income_tax_module(ORDINARY, modelled_date=modelled)
+    assert (result.outcome, result.code) == ("unsupported", "IT_DATE_OUTSIDE_REFERENCE_PERIOD")
+    # It outranks a missing fact; a known exclusion is reported as itself.
+    missing = run_income_tax_module(replace(ORDINARY, annual_taxable_income=None), modelled_date=modelled)
+    assert missing.code == "IT_DATE_OUTSIDE_REFERENCE_PERIOD"
+    excluded = run_income_tax_module(replace(ORDINARY, residence_scope=ResidenceScope.NON_RESIDENT), modelled_date=modelled)
+    assert excluded.code == "IT_RESIDENCE_NOT_MODELLED"
+
+
+def test_both_reference_period_edges() -> None:
+    assert run_income_tax_module(ORDINARY, modelled_date=date(2026, 4, 1)).code == "IT_POLICY_NOT_APPROVED"
+    assert run_income_tax_module(ORDINARY, modelled_date=date(2027, 3, 31)).code == "IT_POLICY_NOT_APPROVED"
+
+
+def test_a_requested_policy_version_must_match() -> None:
+    with pytest.raises(PolicyVersionMismatchError):
+        run_income_tax_module(ORDINARY, requested_policy_version="0.1.0")
+
+
+def test_another_policys_parameters_are_refused() -> None:
+    wrong = replace(synthetic(), policy_id="working_for_families")
+    with pytest.raises(ValueError, match="income_tax"):
+        calculate_income_tax(ORDINARY, wrong)
+
+
+@pytest.mark.parametrize(
+    "field_name", ["individual_status", "residence_scope", "income_composition", "taxable_income_basis_attestation"]
+)
+def test_a_plain_string_is_not_accepted_as_a_fact(field_name: str) -> None:
+    with pytest.raises(TypeError, match=field_name):
+        replace(ORDINARY, **{field_name: "verified"})

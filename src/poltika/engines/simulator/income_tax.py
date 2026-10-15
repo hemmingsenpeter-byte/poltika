@@ -29,23 +29,27 @@ missing fact is `needs_review`; a missing fact is never zero.
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass, fields, replace
 from datetime import date
 from decimal import Decimal
 from enum import Enum
 from pathlib import Path
 
+from poltika.common.errors import PolicyVersionMismatchError
 from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
     CalculationStep,
     ComponentTrace,
+    ParameterUse,
     input_uses,
     parameter_uses,
     record_step,
+    scenario_sha256,
     trace_header,
 )
 from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
-from poltika.semantics.schemas.policy_spec import PolicyStatus
+from poltika.semantics.schemas.policy_spec import PolicySpec, PolicyStatus, covers
 
 POLICY_DIR = Path(__file__).resolve().parents[4] / "policy_specs" / "income_tax"
 COMPONENT_ID = "basic_annual_income_tax"
@@ -106,6 +110,19 @@ class IncomeTaxScenario:
     annual_taxable_income: Decimal | None
 
     def __post_init__(self) -> None:
+        for name, kind, optional in (
+            ("individual_status", FactStatus, False),
+            ("residence_scope", ResidenceScope, True),
+            ("tax_year_basis", TaxYearBasis, True),
+            ("income_composition", IncomeComposition, True),
+            ("no_deductions_status", FactStatus, False),
+            ("no_available_losses_status", FactStatus, False),
+            ("general_basic_rate_status", FactStatus, False),
+            ("taxable_income_basis_attestation", bool, True),
+        ):
+            value = getattr(self, name)
+            if not (isinstance(value, kind) or (optional and value is None)):
+                raise TypeError(f"{name} must be a {kind.__name__}{' or None' if optional else ''}")
         income = self.annual_taxable_income
         if income is not None and (not isinstance(income, Decimal) or not income.is_finite()):
             raise ValueError("annual_taxable_income must be a finite Decimal or None")
@@ -208,7 +225,7 @@ def basic_tax_band_sum(
         rate = _resolved(parameters, rate_id)
         upper = _resolved(parameters, upper_id) if upper_id else None
         top = taxable_income if upper is None else min(taxable_income, upper)
-        dollars = max(top - lower, Decimal(0))
+        dollars = top - lower  # positive: the loop stops at the band holding the income
         total += record_step(
             steps,
             f"IT_BAND_{number}",
@@ -234,6 +251,8 @@ def _resolved(parameters: PolicyParameterSet, parameter_id: str) -> Decimal:
 def calculate_income_tax(scenario: IncomeTaxScenario, parameters: PolicyParameterSet) -> ComponentResult:
     """The basic annual income tax component for an approved parameter set,
     traced with the policy identity, every fact and every band parameter."""
+    if parameters.policy_id != "income_tax":
+        raise ValueError(f"expected income_tax parameters, got '{parameters.policy_id}'")
     result = _calculate(scenario, parameters)
     declared = [p for p in REQUIRED_PARAMETER_IDS if p in parameters.resolutions]
     return replace(
@@ -275,19 +294,83 @@ def _calculate(scenario: IncomeTaxScenario, parameters: PolicyParameterSet) -> C
 
 
 def run_income_tax_module(
-    scenario: IncomeTaxScenario, *, policy_dir: Path = POLICY_DIR, modelled_date: date = date(2026, 4, 1)
+    scenario: IncomeTaxScenario,
+    *,
+    policy_dir: Path = POLICY_DIR,
+    modelled_date: date = date(2026, 4, 1),
+    requested_policy_version: str | None = None,
 ) -> ComponentResult:
-    """Module entry point: the scenario's own outcome first (so `unsupported`
-    outranks every gate), then the policy-approval gate. A draft policy is
-    never loaded as executable, so its candidate values cannot reach a result."""
-    refused = _scenario_outcome(scenario)
-    if refused is not None:
-        return refused
+    """Module entry point. Every result carries a trace with the reference
+    period. Order: known exclusions and a date outside the reference period
+    (`unsupported`), then missing facts, then the policy-approval gate. A
+    draft policy is never loaded as executable, so its candidate values
+    cannot reach a result; its trace names each parameter's interval,
+    source and review status, but not the candidate value."""
+    policy_yaml = (policy_dir / "policy.yaml").read_bytes()
     spec = load_policy_spec(policy_dir / "policy.yaml")
-    if spec.status is not PolicyStatus.APPROVED:
-        return _needs_review(
+    if requested_policy_version is not None and requested_policy_version != spec.policy_version:
+        raise PolicyVersionMismatchError(
+            f"requested policy_version '{requested_policy_version}' but policy.yaml holds '{spec.policy_version}'"
+        )
+    period = (spec.reference_period.from_, spec.reference_period.to)
+    refused = _scenario_outcome(scenario)
+    if (refused is None or refused.outcome != "unsupported") and not covers(*period, modelled_date):
+        refused = _unsupported(
+            f"{modelled_date.isoformat()} is outside the policy's reference period "
+            f"[{period[0].isoformat()}, {period[1].isoformat()}).",
+            "IT_DATE_OUTSIDE_REFERENCE_PERIOD",
+        )
+    if refused is None and spec.status is not PolicyStatus.APPROVED:
+        refused = _needs_review(
             f"The income-tax policy is '{spec.status.value}', not approved: its 2026-27 rates await Royal assent "
             "of the annual-rates bill and a dated source check (Q16, DEC-001), and its values await review.",
             "IT_POLICY_NOT_APPROVED",
         )
-    return calculate_income_tax(scenario, load_policy_parameters(policy_dir, modelled_date))
+    if refused is not None:
+        trace = _unloaded_trace(spec, policy_yaml, scenario, modelled_date)
+        return replace(refused, trace=replace(trace, assessment_period=period))
+    result = calculate_income_tax(
+        scenario, load_policy_parameters(policy_dir, modelled_date, requested_policy_version=requested_policy_version)
+    )
+    assert result.trace is not None
+    return replace(result, trace=replace(result.trace, assessment_period=period))
+
+
+def _unloaded_trace(spec: PolicySpec, policy_yaml: bytes, scenario: IncomeTaxScenario, modelled_date: date) -> ComponentTrace:
+    """The trace of a result decided before any parameter set was loaded:
+    every band parameter's dated interval, source and review status, with no
+    value, since an unloaded or candidate value is never used."""
+    uses = []
+    by_id = {p.id: p for p in spec.parameters}
+    for parameter_id in REQUIRED_PARAMETER_IDS:
+        parameter = by_id.get(parameter_id)
+        if parameter is None:
+            uses.append(ParameterUse(parameter_id=parameter_id, outcome="undeclared"))
+            continue
+        match = next((v for v in parameter.values if covers(v.effective_from, v.effective_to, modelled_date)), None)
+        if match is None:
+            uses.append(ParameterUse(parameter_id=parameter_id, outcome="unsupported"))
+            continue
+        uses.append(
+            ParameterUse(
+                parameter_id=parameter_id,
+                outcome="needs_review" if spec.status is not PolicyStatus.APPROVED else "resolved",
+                unit=parameter.unit.value,
+                effective_from=match.effective_from,
+                effective_to=match.effective_to,
+                source_id=match.source_id,
+                locator=match.locator,
+                review_status=match.review_status.value,
+            )
+        )
+    return ComponentTrace(
+        component_id=COMPONENT_ID,
+        policy_id=spec.policy_id,
+        policy_version=spec.policy_version or f"none ({spec.status.value})",
+        schema_version=spec.schema_version,
+        modelled_date=modelled_date,
+        artifact_sha256=(("policy.yaml", hashlib.sha256(policy_yaml).hexdigest()),),
+        scenario_sha256=scenario_sha256(scenario),
+        parameters=tuple(uses),
+        inputs=input_uses(scenario, [f.name for f in fields(scenario)]),
+    )

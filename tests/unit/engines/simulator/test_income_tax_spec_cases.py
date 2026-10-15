@@ -72,8 +72,12 @@ def test_spec_case(case: dict[str, Any]) -> None:
     if "missing_facts" in expected:
         assert result.missing_facts == tuple(expected["missing_facts"])
     if expected["outcome"] == "needs_review" and "missing_facts" not in expected:
-        # A fully asserted, in-slice case stops at a server gate a caller cannot clear.
-        assert result.code in {"IT_POLICY_NOT_APPROVED", "IT_TAXABLE_INCOME_NOT_ATTESTED"}
+        # A fully asserted case stops at a server gate a caller cannot clear,
+        # except a false attestation, which is the caller's own gap.
+        attested = case["scenario"]["taxable_income_basis_attestation"]
+        assert result.code == ("IT_TAXABLE_INCOME_NOT_ATTESTED" if attested is False else "IT_POLICY_NOT_APPROVED")
+    assert result.trace is not None
+    assert result.trace.assessment_period == (date(2026, 4, 1), date(2027, 4, 1))
 
 
 def _candidate_parameters() -> PolicyParameterSet:

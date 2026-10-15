@@ -28,7 +28,7 @@ Scenario: the caller's asserted facts. No Rule is consumed while every parameter
 
 ## Validation
 
-Runs all 47 draft spec cases, none with a numeric expectation, against the draft policy, and reproduces the 17 hand-calculated conditional arithmetic values with the pure band-sum function. There is no approved value, no official benchmark and no calculated output.
+Runs all 47 draft spec cases, none with a numeric expectation, against the draft policy (each with its exact reason code and a trace), and reproduces the 17 hand-calculated conditional arithmetic values with the pure band-sum function. There is no approved value, no official benchmark and no calculated output.
 
 Validation cases:
 
