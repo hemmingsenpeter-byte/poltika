@@ -394,7 +394,7 @@ class Household(BaseModel):
         seen: dict[tuple[str, IncomeType, IncomeBasis], list[IncomeSpell]] = {}
         for spell in self.income_spells:
             seen.setdefault((spell.person_id, spell.income_type, spell.basis), []).append(spell)
-        for key, group in seen.items():
+        for key, group in sorted(seen.items(), key=lambda item: (item[0][0], item[0][1].value, item[0][2].value)):
             ordered = sorted(group, key=lambda s: s.start)
             for earlier, later in pairwise(ordered):
                 if later.start < earlier.end:
@@ -402,7 +402,7 @@ class Household(BaseModel):
         benefits: dict[str, list[BenefitSpell]] = {}
         for benefit_spell in self.benefit_spells:
             benefits.setdefault(benefit_spell.person_id, []).append(benefit_spell)
-        for person_id, benefit_group in benefits.items():
+        for person_id, benefit_group in sorted(benefits.items()):
             ordered_benefits = sorted(benefit_group, key=lambda s: s.start)
             for earlier_benefit, later_benefit in pairwise(ordered_benefits):
                 if later_benefit.start < earlier_benefit.end:
