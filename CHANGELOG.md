@@ -1,8 +1,5 @@
 # Changelog
 
-Unreleased changes since 16 October 2026 are fragments in `changelog.d/` until
-the integration owner folds them in here (decision log D43).
-
 ## Unreleased (Task 6 step 1.4: household runs; Q19 (7))
 
 - `run_household()` runs WFF and AS for a `Household` input (ADR-0017

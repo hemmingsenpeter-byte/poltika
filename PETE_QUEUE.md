@@ -111,7 +111,7 @@ updated list here; it cannot apply it.
 
 | Item | Date | Record |
 | --- | --- | --- |
-| Q24: accept #219 as a draft packet | 16 October 2026 | Accepted (D44). No value approved as authoritative; values stay `needs_review`. Claude Code integrates #219, then #224 stacks on it. |
+| Q24: accept #219 as a draft packet | 16 October 2026 | Accepted (D44); integration of #219 is pending, then #224 stacks on it. No value approved as authoritative; values stay `needs_review`. |
 | Q20: audit A1/A2 follow-ups | 16 October 2026 | (1) synthetic or public non-personal data only, with a web banner, and (2) fork workflows need approval for all outside contributors (decided 12 October, D36; public-repository setting, D41); (3) `fork-pr-gate` retired with the self-hosted runner, a fork pull request runs every check, and `web` is a required check (D43). The runner registration `pete-mac-1` was deleted. |
 | Q26: licence for the public repository | 16 October 2026 | Proprietary, all rights reserved, view only ([LICENSE](LICENSE)); D42. |
 | Q13: self-hosted runner account | 16 October 2026 | Moot: the runner `pete-mac-1` is retired and CI runs on GitHub-hosted runners (D41), so the `poltika-ci` cutover is not needed. |

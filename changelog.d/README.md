@@ -11,6 +11,8 @@ over the changelog (decision log D43).
   a reader, the decision-log or queue reference, and whether any calculated
   amount changed. Name paths in backticks rather than linking them, because
   the text moves to the repository root when folded.
+- Unreleased changes since 16 October 2026 live here until folded; the
+  folding commit is the only edit to `CHANGELOG.md`.
 - Only the integration owner (`doctrine/development-doctrine.md`,
   "Integration and lanes") folds fragments into `CHANGELOG.md`, in a commit
   of its own that deletes the folded files.

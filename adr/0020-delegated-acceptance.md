@@ -122,9 +122,13 @@ is also mechanical only when both conditions hold:
    contents. `git patch-id --stable` ignores whitespace:
    a matching ID is supporting evidence, never proof of equality.
 
-For the replay check, export `git diff --no-ext-diff --no-textconv
---no-renames --binary --full-index <old base> <reviewed head>` for the paths
-being compared. In a disposable checkout at the new `main`, replay that
+For the replay check, the old base is `git merge-base <old main>
+<reviewed head>`, and the compared paths are the union of the paths in
+`git diff --name-only <old base> <reviewed head>` and in `git diff
+--name-only <new main>...<new head>`, so a file the integration changed
+outside the reviewed patch is still compared. Export `git diff --no-ext-diff
+--no-textconv --no-renames --binary --full-index <old base> <reviewed head>`
+for the compared paths. In a disposable checkout at the new `main`, replay that
 patch with `git apply --3way --index`, without manual edits. Require a clean
 application and then `git diff --cached --no-ext-diff --no-textconv
 --no-renames --exit-code <new head> -- <compared paths>` to report no
