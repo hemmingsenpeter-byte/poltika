@@ -1,5 +1,8 @@
 # Changelog
 
+Unreleased changes since 16 October 2026 are fragments in `changelog.d/` until
+the integration owner folds them in here (decision log D43).
+
 ## Unreleased (proprietary licence)
 
 - `LICENSE`: the repository is proprietary, all rights reserved, and public

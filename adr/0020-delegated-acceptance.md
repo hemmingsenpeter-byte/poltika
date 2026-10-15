@@ -96,6 +96,18 @@ independent review, and the merge commit is not a semantic change by whoever
 made it. A conflict resolution, or any change to the PR's own diff, is a fix
 and renews every gate.
 
+**Append-only record conflicts (Pete, 16 October 2026; decision log D43).**
+A main update whose only conflicts are in append-only records
+(`CHANGELOG.md`, `changelog.d/`, `docs/decision_log.md`,
+`review_packets/review_queue.md`, `PROGRAMME_STATUS.md`, `PETE_QUEUE.md`)
+is also mechanical when the resolution keeps every line of both sides and
+changes nothing else. Two checks show it: `git diff <reviewed head> <new head>
+-- <record>` and `git diff <new main> <new head> -- <record>` remove no line,
+and the PR's diff over every other path has the same `git patch-id --stable`
+as the reviewed diff. The delta check records both, with the reviewed head,
+the new head and the `main` SHA. A resolution that drops, merges or rewrites
+a line, such as two edits to one queue row, is a fix and renews review.
+
 For GPT/Codex-authored policy/calculation work, a Claude `poltika-reviewer`
 pass may meet both reviewer gates only as a full `pr-review` with independent
 primary-source re-derivation. Mixed authorship retains commit-specific
