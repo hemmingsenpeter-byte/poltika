@@ -193,6 +193,10 @@ def test_client_navigation_gets_the_nested_rsc_payload(
     assert response.headers["content-type"].startswith("text/x-component")
     assert response.headers["cache-control"] == "private, no-cache"
     assert response.text == f"0:rsc {payload}"
+    assert response.headers["vary"] == "RSC"
+    head = client.head(path, headers=RSC)
+    assert head.status_code == 200
+    assert head.content == b""
 
 
 def test_top_level_rsc_payloads_are_still_static_files(client: TestClient, web_dir: Path) -> None:
@@ -206,6 +210,7 @@ def test_a_txt_path_without_the_rsc_header_is_unchanged(client: TestClient, web_
     # `.` is a legal id character, so this is still the scenario API route.
     response = client.get(f"/scenarios/{ZEROS}.txt", headers=JSON)
     assert response.headers["content-type"].startswith("application/json")
+    assert response.headers["vary"] == "Accept, RSC"
     assert "0:rsc" not in response.text
     assert "0:rsc" not in client.get("/models/wff_engine.txt", headers={"RSC": "0"}).text
 

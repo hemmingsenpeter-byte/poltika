@@ -191,9 +191,12 @@ class WebAppMiddleware:
             return
 
         # The same URL answers JSON to API clients: tell caches it varies.
+        # A `.txt` path can also be an RSC payload (above), so it varies on that too.
+        vary = b"Accept, RSC" if path.endswith(".txt") else b"Accept"
+
         async def send_varying(message: Message) -> None:
             if message["type"] == "http.response.start":
-                message["headers"] = [*message.get("headers", []), (b"vary", b"Accept")]
+                message["headers"] = [*message.get("headers", []), (b"vary", vary)]
             await send(message)
 
         await self.app(scope, receive, send_varying)
