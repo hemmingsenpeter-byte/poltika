@@ -140,7 +140,7 @@ export function ConfirmationPanel({
         </div>
       ) : null}
       <details className="text-sm">
-        <summary className="cursor-pointer">Advanced settings</summary>
+        <summary className="min-h-[24px] cursor-pointer">Advanced settings</summary>
         <pre className="mt-2 overflow-x-auto rounded-md border border-border bg-surface-muted p-3 font-mono text-xs">
           {JSON.stringify(reformJson, null, 2)}
         </pre>

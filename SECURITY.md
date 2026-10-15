@@ -14,19 +14,12 @@ result" issue for it.
 
 ## Report a vulnerability
 
-The repository is currently private. Collaborators can use the
-[Security report issue form](https://github.com/hemmingsenpeter-byte/poltika/issues/new?template=security_report.yml).
-Reports are visible to everyone with repository access, not only the owner.
-Address the report to `@hemmingsenpeter-byte`; include a minimal description
-and ask for an existing confidential channel if access-sensitive details
-need narrower disclosure. Never paste credentials, personal data or unit records.
-
-Someone without repository access should use an existing private channel
-to the owner. No external confidential inbox is configured by this PR.
-Before making the repository or product public, Pete must configure and
-verify the external confidential reporting route under ADR-0020's Tier C
-publication gate. GitHub's private vulnerability reporting is an option
-for public repositories when enabled; it is not the current private-repo route.
+Use GitHub's private vulnerability reporting:
+[report a vulnerability](https://github.com/hemmingsenpeter-byte/poltika/security/advisories/new)
+from the repository's Security tab. Only the owner, and anyone the owner
+adds to the advisory, can read it. Do not open a public issue, pull request
+or discussion for a security problem. Never paste credentials, personal
+data or unit records.
 
 Say what you found, how to reproduce it and what it could expose. You will
 get an acknowledgement. Please give us time to fix it before you tell
@@ -53,18 +46,19 @@ anyone else.
 The professional baseline (`PROGRAMME_STATUS.md`). Each runs in CI; the job names below are what
 GitHub reports:
 
-- Dependabot: weekly dependency update PRs (`uv` and GitHub Actions).
+- Dependabot: version-update PRs are paused (decision log D27); the
+  configuration is kept.
 - `pip-audit`: known vulnerabilities in the locked Python dependencies, on
   pull requests, `main` and weekly.
-- `Bandit (python)`: static analysis of `src/`. High-severity findings fail
-  the check; every finding is retained in the `bandit-report` artifact.
+- `Bandit (python)`: static analysis of `src/`. Medium- and high-severity
+  findings fail the check; every finding is retained in the `bandit-report` artifact.
 - `zizmor (actions)`: static analysis of the workflows under
   `.github/workflows/`. Any finding fails the check.
 - `links`: offline check of relative Markdown links and anchors.
 - `source-currency`: reports sources due for re-check. It runs weekly and on pull requests,
   and never fails a PR for something being due.
 
-CodeQL is not used on this private repository. No secrets scanner has been
-added. Do not infer that secret detection is covered by the checks above.
+CodeQL is not used. Secret detection is GitHub's secret scanning with push
+protection, a repository setting rather than one of the CI checks above.
 
 These help. They do not replace a private report.

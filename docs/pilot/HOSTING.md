@@ -123,6 +123,8 @@ principals and per-user authorisation first (finding A2,
 ## Sharing it
 
 - Give testers the address, the username and the password separately.
+- Giving someone access is a written permission under [LICENSE](../../LICENSE)
+  section 2(b): say in writing who it is for and what they may do with it.
 - Change the password by updating the environment variable; the platform
   restarts the service.
 - Tell testers what the pilot is: a conditional simulation of Working for

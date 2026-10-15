@@ -3,10 +3,10 @@
 # ecosystem; major updates arrive one at a time so they get a real review.
 #
 # PAUSED on 10 October 2026 at Pete's instruction (docs/decision_log.md D27).
-# Each Dependabot PR queues about nine jobs on the single self-hosted
-# runner, and npm and uv PRs also start the hosted pilot-image job that spends the
-# Actions budget. `open-pull-requests-limit: 0` disables version updates and
-# keeps this configuration. To re-enable, restore a limit per ecosystem.
+# The reason then, the single self-hosted runner and the Actions budget
+# (D21), went with D41: CI is GitHub-hosted and the repository public.
+# `open-pull-requests-limit: 0` disables version updates and keeps this
+# configuration. To re-enable, restore a limit per ecosystem.
 # Revisit at B0.1.7 deployment; suggested settings then are a monthly
 # schedule, a limit of 1-2 per ecosystem, and `ignore` for semver-major.
 version: 2

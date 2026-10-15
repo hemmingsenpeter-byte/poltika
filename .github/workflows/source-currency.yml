@@ -18,9 +18,8 @@ on:
 permissions:
   contents: read
 
-# Most jobs run on the self-hosted runner (decision log D21), which works
-# one job at a time, so a newer push to a pull request cancels the older
-# run. Pushes to main and scheduled runs are never cancelled.
+# A newer push to a pull request cancels the older run. Pushes to main and
+# scheduled runs are never cancelled.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -28,9 +27,7 @@ concurrency:
 jobs:
   report:
     name: source-currency
-    # Fork pull requests never reach the self-hosted runner (audit A1).
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, poltika]
+    runs-on: ubuntu-latest
     outputs:
       due: ${{ steps.currency.outputs.due }}
     steps:
@@ -51,10 +48,7 @@ jobs:
           set -euo pipefail
           # Every policy with a policy.yaml, so a new policy is covered on
           # arrival (ROADMAP_REALIGNMENT.md W5.2).
-          # A loop, not mapfile: the self-hosted Mac has bash 3.2 (D21). The
-          # glob expands in sorted order.
-          POLICIES=()
-          for f in policy_specs/*/policy.yaml; do POLICIES+=("${f%/policy.yaml}"); done
+          mapfile -t POLICIES < <(dirname policy_specs/*/policy.yaml | sort)
           uv run python -m poltika.engines.assurance.currency "${POLICIES[@]}" > currency.md
           cat currency.md >> "$GITHUB_STEP_SUMMARY"
           if grep -q '^### Due ([1-9]' currency.md; then
@@ -74,7 +68,7 @@ jobs:
     # The write token never reaches installation or repository-code execution.
     needs: report
     if: github.event_name != 'pull_request' && needs.report.outputs.due == 'true'
-    runs-on: [self-hosted, poltika]
+    runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:

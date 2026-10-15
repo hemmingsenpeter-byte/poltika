@@ -126,7 +126,7 @@ export default function MetricChart({ block }: { block: MetricBlock }) {
       </div>
       <p className="mt-1 text-sm">{summary}</p>
       <details className="mt-2 text-sm">
-        <summary className="cursor-pointer text-accent">Show as a table</summary>
+        <summary className="min-h-[24px] cursor-pointer text-accent">Show as a table</summary>
         <div className="mt-2">
           <DataTable
             caption={`${block.label}, by option`}
