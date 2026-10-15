@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased (B0.1: nested RSC payloads; live-access finding; Phase B review handoffs)
+
+- Web: client-side navigation to a nested page (`/scenarios/new`, a model, a dataset, a scenario or a run) is a
+  soft navigation again. `api/web.py` serves the page's exported RSC payload (`<route>.txt`, `RSC: 1`) instead of
+  passing it to the API, which answered 404 or 503 and made Next reload the whole page. Requests without the
+  `RSC` header are unchanged. This fixes the P3 recorded in the B0.1.6 browser check. No calculated amount changes.
+- `PETE_QUEUE.md`: Q15 records that the live service is open without a password and gives the exact Render
+  steps. Q24 asks Pete to accept #219's draft income-tax packet, and Q25 asks for the SPS and SLP
+  income-basis coverage choice (#220 R1).
+- Q15: the live service's password was set on 16 October, at Pete's
+  instruction; the database and health-check steps remain.
+
 ## Unreleased (CI back on GitHub-hosted runners; public repository)
 
 - CI runs on GitHub-hosted `ubuntu-latest` again, and the repository is
