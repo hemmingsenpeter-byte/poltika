@@ -94,3 +94,11 @@ uv run --extra dev uvicorn poltika.api.main:app    # API; see /docs, and /analys
   ```
 - **Store tests:** tests marked `postgres` start a throwaway server when `initdb` and `pg_ctl` are on PATH, and skip otherwise.
 - **Slower tests:** `-m installed_artifact` builds and runs the wheel; `-m code_replay` replays a stored run on its original commit. CI runs both.
+
+## Licence
+
+Proprietary. Copyright (c) 2026 Peter Hemmingsen, all rights reserved. The
+repository is public to view only: no right to use, copy, modify,
+distribute, deploy or train on any part of it is granted without written
+permission. Third-party material, such as the Stats NZ data snapshots,
+keeps its own licence. See [LICENSE](LICENSE).

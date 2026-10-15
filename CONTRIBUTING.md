@@ -122,6 +122,13 @@ independent cross-model row is cleared. Never use `--admin`, bypass a check or r
 
 Releases follow [docs/releases/RELEASE_CHECKLIST.md](docs/releases/RELEASE_CHECKLIST.md).
 
+## Licence and contributions
+
+The repository is proprietary ([LICENSE](LICENSE)). Anything you submit (a
+pull request, patch, issue, comment or review) is licensed to the owner on
+the terms in section 4 of the licence; contributing grants you no right in
+the repository.
+
 ## Security
 
 Report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
