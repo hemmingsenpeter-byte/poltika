@@ -163,6 +163,7 @@ or an API route doing a full population run per request.
 
 - `docs/ORIENTATION.md` and CLAUDE.md's "v0.1 at a glance" are still
   true. CI runs the orientation examples but nothing checks the prose.
-- User-visible changes are in `CHANGELOG.md`, and the README coverage
+- User-visible changes are in a `changelog.d/` fragment (never a direct
+  `CHANGELOG.md` edit, D43), and the README coverage
   table and `docs/releases/` limitations are updated where they apply.
 - The BUILD_PLAN task records its progress where the plan expects it.

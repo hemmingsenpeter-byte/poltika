@@ -14,7 +14,11 @@ git status -sb && git log --oneline -5 origin/main && git worktree list
 git worktree add -b <branch> /private/tmp/poltika-<name> origin/main
 ```
 
-One bounded task per pull request.
+One bounded task per pull request. Add a changelog fragment in
+[changelog.d/](changelog.d/README.md); never edit `CHANGELOG.md`. Work that
+builds on an unmerged pull request is a stack (`gh stack`). Only the
+integration owner updates branches from `main` and merges
+([development doctrine](doctrine/development-doctrine.md), D43).
 
 ## Make targets
 

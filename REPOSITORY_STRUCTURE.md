@@ -18,6 +18,7 @@ modules or empty scaffolding.
 ```text
 poltika/
 ├── README.md
+├── changelog.d/        — one changelog fragment per pull request, folded into CHANGELOG.md by the integration owner (D43)
 ├── LICENSE             — proprietary, all rights reserved; view only (D42)
 ├── CLAUDE.md
 ├── BUILD_PLAN_PROGRAMME.md — sole active master build order: capability Phases A–P (ADR-0021)
