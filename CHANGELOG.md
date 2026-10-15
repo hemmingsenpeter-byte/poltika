@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased (CI back on GitHub-hosted runners; public repository)
+
+- CI runs on GitHub-hosted `ubuntu-latest` again, and the repository is
+  public (decision log D41, superseding D21). The self-hosted Mac runner is
+  retired. Fork pull requests now run every check rather than skipping
+  them, so `fork-pr-gate.yml` (D33) is removed, and `pilot-image` runs on
+  every pull request and push to `main`. Required check names are
+  unchanged. No calculated amount changes.
+- Security reports go to GitHub's private vulnerability reporting
+  (`SECURITY.md`). The collaborator-visible security issue form is removed,
+  because on a public repository an issue is public. Q26 (licence) is new
+  in `PETE_QUEUE.md`; Q13 is moot.
+
 ## Unreleased (B0.1.6 third real-browser pass; status refresh)
 
 - Web: four disclosure toggles under 24px tall ("Advanced settings" on the
