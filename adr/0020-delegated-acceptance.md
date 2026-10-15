@@ -88,25 +88,60 @@ changes need the other model's review where cross-model review is required.
 
 **Mechanical main update (Pete, 6 October 2026).** Updating a PR from `main`
 is mechanical when the merge has no conflict and the PR's own diff
-(`git diff <new main>...HEAD`) is identical to the reviewed diff (the same
-`git patch-id --stable`). It needs green required CI on the new head and a
-delta check recorded in the PR naming the reviewed head, the new head and the
-`main` SHA (`pr-review` step 8). It does not renew the author preflight or the
-independent review, and the merge commit is not a semantic change by whoever
-made it. A conflict resolution, or any change to the PR's own diff, is a fix
-and renews every gate.
+(`git diff <new main>...HEAD`) preserves the reviewed changes under the
+whitespace-sensitive replay check below. It needs green required CI on the
+new head and a delta check recorded in the PR naming the reviewed head,
+the new head and the `main` SHA (`pr-review` step 8). It does not renew the
+author preflight or independent review, and the merge commit is not a
+semantic change by whoever made it. Except for the bounded record case below, a conflict resolution or
+any change to the PR's own diff is a fix and renews every gate.
 
 **Append-only record conflicts (Pete, 16 October 2026; decision log D43).**
+Pete explicitly approved this bounded exception with "ok update this now"
+after the two verification requirements below were proposed; the earlier
+workflow plan alone did not approve a broader exemption.
 A main update whose only conflicts are in append-only records
 (`CHANGELOG.md`, `changelog.d/`, `docs/decision_log.md`,
 `review_packets/review_queue.md`, `PROGRAMME_STATUS.md`, `PETE_QUEUE.md`)
-is also mechanical when the resolution keeps every line of both sides and
-changes nothing else. Two checks show it: `git diff <reviewed head> <new head>
--- <record>` and `git diff <new main> <new head> -- <record>` remove no line,
-and the PR's diff over every other path has the same `git patch-id --stable`
-as the reviewed diff. The delta check records both, with the reviewed head,
-the new head and the `main` SHA. A resolution that drops, merges or rewrites
-a line, such as two edits to one queue row, is a fix and renews review.
+is also mechanical only when both conditions hold:
+
+1. **Exact combination of existing entries.** Compare each conflicted record
+   in both parents with their common base. Both sides must only append
+   independent entries, leaving the base entries unchanged. The resolution
+   must contain the common base once and exactly those additions, preserving
+   their bytes and each parent's entry order. It introduces no new text,
+   duplicate authoritative record IDs or contradictory statuses or decisions.
+   Two versions of one queue row or decision are a semantic conflict even if
+   concatenating them would preserve every line. No-deletion diffs are useful
+   checks, but do not prove this exact combination.
+2. **Whitespace-sensitive equality of the reviewed changes.** Reproduce the
+   reviewed changes on the exact new `main`, without manual resolution
+   outside the conflicted record paths verified under condition 1. The
+   resulting blobs and file modes for all compared paths must equal the new
+   head exactly, including indentation, whitespace inside strings and binary
+   contents. `git patch-id --stable` ignores whitespace:
+   a matching ID is supporting evidence, never proof of equality.
+
+For the replay check, export `git diff --no-ext-diff --no-textconv
+--no-renames --binary --full-index <old base> <reviewed head>` for the paths
+being compared. In a disposable checkout at the new `main`, replay that
+patch with `git apply --3way --index`, without manual edits. Require a clean
+application and then `git diff --cached --no-ext-diff --no-textconv
+--no-renames --exit-code <new head> -- <compared paths>` to report no
+difference. For a conflict-free update, compare all paths. For an append-only
+conflict, exclude only the actual conflicted record files named in the delta
+check from both the patch and comparison; verify every excluded file under
+condition 1. Do not exclude the whole allowlist or a whole directory.
+Missing base blobs, a replay conflict, any blob or mode difference, or an
+unproven exact combination renews review; do not normalise away whitespace
+or infer equivalence.
+
+The delta check records the old base, reviewed head, new head, new `main`,
+affected record paths and evidence for both conditions. Green required CI
+on the new head remains mandatory. A dropped, rewritten or newly invented
+entry, a conflicting record identity, or any other changed content is a fix
+and renews review. Source, interpretation, protected-value and Tier C approvals
+are never created or waived by a record merge.
 
 For GPT/Codex-authored policy/calculation work, a Claude `poltika-reviewer`
 pass may meet both reviewer gates only as a full `pr-review` with independent

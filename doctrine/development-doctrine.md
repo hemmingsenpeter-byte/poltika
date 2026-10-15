@@ -116,7 +116,8 @@ externally relied upon, release-critical or evidentially consequential.
   integration of main requires renewed author preflight and review, except a
   mechanical main update as ADR-0020 defines it (green CI and a recorded
   delta check), which since 16 October 2026 includes a conflict confined to
-  append-only records whose resolution keeps every line of both sides.
+  append-only records only when their exact combination and the unchanged
+  reviewed changes pass ADR-0020's record and whitespace-sensitive checks.
 
 ## Integration and lanes (Pete, 16 October 2026; decision log D43)
 
@@ -144,8 +145,10 @@ policy verification.
 - **One review cycle per stable semantic change.** Cross-model review stays
   required for `policy_specs/`, `engines/simulator/` and calculated amounts
   (ADR-0020 rule 4); other pull requests get the author preflight and a
-  fresh-context `poltika-reviewer` pass. An unchanged diff (the same
-  `git patch-id --stable`) is not reviewed again. CodeRabbit is advisory:
+  fresh-context `poltika-reviewer` pass. An unchanged diff, established by
+  ADR-0020's whitespace-sensitive comparison and record checks, is not
+  reviewed again; matching `git patch-id --stable` alone is insufficient.
+  CodeRabbit is advisory:
   its findings are triaged like any reviewer's, but it is not a gate and
   nothing waits for it. A review record rides in the pull request it
   reviews; no pull request exists only to carry one (D28).
