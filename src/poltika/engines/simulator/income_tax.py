@@ -29,14 +29,13 @@ missing fact is `needs_review`; a missing fact is never zero.
 
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass, fields, replace
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, Inexact, localcontext
 from enum import Enum
 from pathlib import Path
 
-from poltika.common.errors import PolicyVersionMismatchError
+from poltika.common.errors import ArtifactHashMismatchError, PolicyVersionMismatchError
 from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.trace import (
     CalculationStep,
@@ -48,8 +47,13 @@ from poltika.engines.simulator.trace import (
     scenario_sha256,
     trace_header,
 )
-from poltika.policy.loader import PolicyParameterSet, load_policy_parameters, load_policy_spec
-from poltika.semantics.schemas.policy_spec import PolicySpec, PolicyStatus, covers
+from poltika.policy.loader import (
+    PolicyParameterSet,
+    PolicySnapshot,
+    load_policy_parameters,
+    load_policy_snapshot,
+)
+from poltika.semantics.schemas.policy_spec import PolicyStatus, covers
 
 POLICY_DIR = Path(__file__).resolve().parents[4] / "policy_specs" / "income_tax"
 COMPONENT_ID = "basic_annual_income_tax"
@@ -216,9 +220,20 @@ def basic_tax_band_sum(
 ) -> Decimal:
     """Exact Schedule 1 Part A Table 1 per-dollar sum for a non-negative
     whole-dollar income: each band's dollars times its rate, with no
-    intermediate or final rounding. Every parameter must be resolved."""
+    intermediate or final rounding. Every parameter must be resolved.
+    It runs in its own Decimal context that traps inexact results, so the
+    caller's precision can never round it: it is exact or it raises."""
     if taxable_income < 0 or taxable_income != taxable_income.to_integral_value():
         raise ValueError("basic_tax_band_sum takes a non-negative whole-dollar income")
+    with localcontext() as context:
+        context.prec = 100
+        context.traps[Inexact] = True
+        return _band_sum(taxable_income, parameters, steps)
+
+
+def _band_sum(
+    taxable_income: Decimal, parameters: PolicyParameterSet, steps: list[CalculationStep] | None
+) -> Decimal:
     total = Decimal(0)
     lower = Decimal(0)
     for number, (upper_id, rate_id) in enumerate(_BANDS, start=1):
@@ -232,6 +247,7 @@ def basic_tax_band_sum(
             "IT-05",
             f"Table 1 row {number}",
             dollars * rate,
+            band=number,
             dollars_in_band=dollars,
             band_rate=rate,
         )
@@ -270,16 +286,20 @@ def _calculate(scenario: IncomeTaxScenario, parameters: PolicyParameterSet) -> C
     refused = _scenario_outcome(scenario)
     if refused is not None:
         return refused
+    # Every parameter is checked for a known exclusion before any is reported
+    # as unapproved, so an `unsupported` parameter outranks a `needs_review`
+    # one wherever it sits in the list.
     for parameter_id in REQUIRED_PARAMETER_IDS:
         if parameter_id not in parameters.resolutions:
             return _unsupported(
                 f"Policy declares no parameter '{parameter_id}'.", "IT_PARAMETER_UNDECLARED"
             )
-        resolution = parameters.get(parameter_id)
-        if resolution.outcome == "unsupported":
+        if parameters.get(parameter_id).outcome == "unsupported":
             return _unsupported(
                 f"No '{parameter_id}' value covers {parameters.modelled_date.isoformat()}.", "IT_PARAMETER_NO_INTERVAL"
             )
+    for parameter_id in REQUIRED_PARAMETER_IDS:
+        resolution = parameters.get(parameter_id)
         if resolution.outcome != "resolved":
             return _needs_review(
                 f"Parameter '{parameter_id}' is not approved: {resolution.reason}", "IT_PARAMETER_NOT_APPROVED"
@@ -305,9 +325,14 @@ def run_income_tax_module(
     (`unsupported`), then missing facts, then the policy-approval gate. A
     draft policy is never loaded as executable, so its candidate values
     cannot reach a result; its trace names each parameter's interval,
-    source and review status, but not the candidate value."""
-    policy_yaml = (policy_dir / "policy.yaml").read_bytes()
-    spec = load_policy_spec(policy_dir / "policy.yaml")
+    source and review status, but not the candidate value.
+
+    The policy is read once and validated first (its schema version, that
+    it is the income-tax policy, and its source ids), so even a refusal
+    comes from the income-tax policy. Every trace binds the policy, its
+    source catalogue, specification and decisions from those same reads."""
+    snapshot = load_policy_snapshot(policy_dir, expected_policy_id="income_tax")
+    spec = snapshot.spec
     if requested_policy_version is not None and requested_policy_version != spec.policy_version:
         raise PolicyVersionMismatchError(
             f"requested policy_version '{requested_policy_version}' but policy.yaml holds '{spec.policy_version}'"
@@ -327,19 +352,23 @@ def run_income_tax_module(
             "IT_POLICY_NOT_APPROVED",
         )
     if refused is not None:
-        trace = _unloaded_trace(spec, policy_yaml, scenario, modelled_date)
+        trace = _unloaded_trace(snapshot, scenario, modelled_date)
         return replace(refused, trace=replace(trace, assessment_period=period))
-    result = calculate_income_tax(
-        scenario, load_policy_parameters(policy_dir, modelled_date, requested_policy_version=requested_policy_version)
-    )
+    parameters = load_policy_parameters(policy_dir, modelled_date, requested_policy_version=requested_policy_version)
+    if parameters.artifact_sha256 != snapshot.artifact_sha256:
+        raise ArtifactHashMismatchError(
+            "the income-tax policy files changed between validating the policy and loading its parameters"
+        )
+    result = calculate_income_tax(scenario, parameters)
     assert result.trace is not None
     return replace(result, trace=replace(result.trace, assessment_period=period))
 
 
-def _unloaded_trace(spec: PolicySpec, policy_yaml: bytes, scenario: IncomeTaxScenario, modelled_date: date) -> ComponentTrace:
+def _unloaded_trace(snapshot: PolicySnapshot, scenario: IncomeTaxScenario, modelled_date: date) -> ComponentTrace:
     """The trace of a result decided before any parameter set was loaded:
     every band parameter's dated interval, source and review status, with no
     value, since an unloaded or candidate value is never used."""
+    spec = snapshot.spec
     uses = []
     by_id = {p.id: p for p in spec.parameters}
     for parameter_id in REQUIRED_PARAMETER_IDS:
@@ -369,7 +398,7 @@ def _unloaded_trace(spec: PolicySpec, policy_yaml: bytes, scenario: IncomeTaxSce
         policy_version=spec.policy_version or f"none ({spec.status.value})",
         schema_version=spec.schema_version,
         modelled_date=modelled_date,
-        artifact_sha256=(("policy.yaml", hashlib.sha256(policy_yaml).hexdigest()),),
+        artifact_sha256=tuple(sorted(snapshot.artifact_sha256.items())),
         scenario_sha256=scenario_sha256(scenario),
         parameters=tuple(uses),
         inputs=input_uses(scenario, [f.name for f in fields(scenario)]),

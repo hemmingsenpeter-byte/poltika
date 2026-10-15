@@ -6,15 +6,23 @@ assert no tax-law value."""
 
 from __future__ import annotations
 
+import shutil
 from dataclasses import replace
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, localcontext
+from pathlib import Path
 
 import pytest
 
-from poltika.common.errors import PolicyVersionMismatchError
+from poltika.common.errors import (
+    ArtifactHashMismatchError,
+    PolicyVersionMismatchError,
+    UnsupportedSchemaVersionError,
+)
 from poltika.engines.simulator import income_tax
 from poltika.engines.simulator.income_tax import (
+    COMPONENT_ID,
+    POLICY_DIR,
     REQUIRED_PARAMETER_IDS,
     IncomeComposition,
     IncomeTaxScenario,
@@ -26,7 +34,7 @@ from poltika.engines.simulator.income_tax import (
 )
 from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.trace import CalculationStep
-from poltika.policy.loader import ParameterResolution, PolicyParameterSet
+from poltika.policy.loader import ParameterResolution, PolicyParameterSet, load_policy_snapshot
 
 V = FactStatus.VERIFIED
 ORDINARY = IncomeTaxScenario(
@@ -81,7 +89,7 @@ def test_band_sum_records_each_band_and_the_total() -> None:
     total = basic_tax_band_sum(Decimal(25), synthetic(), steps)
     assert [s.step_id for s in steps] == ["IT_BAND_1", "IT_BAND_2", "IT_BAND_3", "IT_BASIC_TAX_SUM"]
     assert [s.result for s in steps] == [Decimal("1.0"), Decimal("2.0"), Decimal("1.5"), total]
-    assert dict(steps[2].inputs) == {"dollars_in_band": Decimal(5), "band_rate": Decimal("0.3")}
+    assert dict(steps[2].inputs) == {"band": 3, "dollars_in_band": Decimal(5), "band_rate": Decimal("0.3")}
     assert {s.rule_id for s in steps} == {"IT-05"}
 
 
@@ -189,7 +197,9 @@ def test_every_module_result_is_traced_with_its_period_and_parameter_provenance(
         assert trace is not None
         assert (trace.policy_id, trace.policy_version) == ("income_tax", "none (draft_pending_review)")
         assert trace.assessment_period == (date(2026, 4, 1), date(2027, 4, 1))
-        assert dict(trace.artifact_sha256).keys() == {"policy.yaml"}
+        # #224 R2: the whole snapshot is bound, not policy.yaml alone.
+        assert dict(trace.artifact_sha256) == load_policy_snapshot(POLICY_DIR, expected_policy_id="income_tax").artifact_sha256
+        assert {"policy.yaml", "sources.yaml", "specification.md"} <= dict(trace.artifact_sha256).keys()
         assert [p.parameter_id for p in trace.parameters] == list(REQUIRED_PARAMETER_IDS)
         for use in trace.parameters:
             # Interval, source and review status are traced; the candidate value is not.
@@ -232,3 +242,88 @@ def test_another_policys_parameters_are_refused() -> None:
 def test_a_plain_string_is_not_accepted_as_a_fact(field_name: str) -> None:
     with pytest.raises(TypeError, match=field_name):
         replace(ORDINARY, **{field_name: "verified"})
+
+
+# #224 GPT/Codex review, 16 October 2026.
+
+UNKNOWN_INCOME = replace(ORDINARY, annual_taxable_income=None)
+WFF_DIR = POLICY_DIR.parent / "working_for_families"
+
+
+@pytest.mark.parametrize("policy_dir", [WFF_DIR, POLICY_DIR.parent / "accommodation_supplement"])
+def test_r1_another_policy_is_refused_even_on_a_refusal_path(policy_dir: Path) -> None:
+    with pytest.raises(ValueError, match="expected policy 'income_tax'"):
+        run_income_tax_module(UNKNOWN_INCOME, policy_dir=policy_dir)
+
+
+def _copy_policy(tmp_path: Path) -> Path:
+    target = tmp_path / "income_tax"
+    shutil.copytree(POLICY_DIR, target)
+    return target
+
+
+@pytest.mark.parametrize("scenario", [ORDINARY, UNKNOWN_INCOME])
+def test_r1_an_unsupported_schema_is_refused_before_any_result(tmp_path: Path, scenario: IncomeTaxScenario) -> None:
+    policy_dir = _copy_policy(tmp_path)
+    policy_yaml = policy_dir / "policy.yaml"
+    text = policy_yaml.read_text()
+    assert 'schema_version: "0.1"' in text
+    policy_yaml.write_text(text.replace('schema_version: "0.1"', 'schema_version: "999"', 1))
+    with pytest.raises(UnsupportedSchemaVersionError):
+        run_income_tax_module(scenario, policy_dir=policy_dir)
+
+
+def test_r2_a_draft_result_exports_a_provenance_report() -> None:
+    from poltika.engines.assurance.provenance import build_provenance_report
+
+    result = run_income_tax_module(ORDINARY)
+    assert result.code == "IT_POLICY_NOT_APPROVED"
+    report = build_provenance_report(POLICY_DIR, {COMPONENT_ID: result})
+    assert report
+
+
+def test_r2_a_changed_bound_artifact_is_detected(tmp_path: Path) -> None:
+    from poltika.engines.assurance.provenance import build_provenance_report
+
+    policy_dir = _copy_policy(tmp_path)
+    result = run_income_tax_module(ORDINARY, policy_dir=policy_dir)
+    specification = policy_dir / "specification.md"
+    specification.write_text(specification.read_text() + "\nchanged after the run\n")
+    with pytest.raises(ArtifactHashMismatchError):
+        build_provenance_report(policy_dir, {COMPONENT_ID: result})
+
+
+def test_r2_policy_yaml_is_read_once_per_run(monkeypatch: pytest.MonkeyPatch) -> None:
+    reads: list[Path] = []
+    original = Path.read_bytes
+
+    def counting(self: Path) -> bytes:
+        if self.name == "policy.yaml":
+            reads.append(self)
+        return original(self)
+
+    monkeypatch.setattr(Path, "read_bytes", counting)
+    run_income_tax_module(ORDINARY)
+    assert len(reads) == 1
+
+
+def test_r3_an_unsupported_parameter_outranks_an_earlier_unapproved_one() -> None:
+    gated = ParameterResolution(parameter_id="band_1_upper", outcome="needs_review", reason="candidate")
+    absent = ParameterResolution(parameter_id="band_5_rate", outcome="unsupported", reason="no interval")
+    result = calculate_income_tax(ORDINARY, synthetic(band_1_upper=gated, band_5_rate=absent))
+    assert (result.outcome, result.code) == ("unsupported", "IT_PARAMETER_NO_INTERVAL")
+
+
+def test_p3_the_band_sum_is_exact_whatever_the_callers_precision() -> None:
+    flat = synthetic(**{
+        f"band_{n}_rate": ParameterResolution(
+            parameter_id=f"band_{n}_rate", outcome="resolved", value=Decimal(".175"), review_status="approved"
+        )
+        for n in range(1, 6)
+    })
+    expected = Decimal(15603) * Decimal(".175")
+    with localcontext() as context:
+        context.prec = 4
+        assert basic_tax_band_sum(Decimal(15603), flat) == expected
+    assert expected == Decimal("2730.525")
+

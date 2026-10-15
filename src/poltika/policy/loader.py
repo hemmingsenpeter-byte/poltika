@@ -260,6 +260,46 @@ def load_policy_parameters(
     )
 
 
+@dataclass(frozen=True)
+class PolicySnapshot:
+    """A policy's validated spec and the hashes of the files it was read
+    from, without resolving or executing any parameter value."""
+
+    spec: PolicySpec
+    artifact_sha256: dict[str, str]
+
+
+def load_policy_snapshot(policy_dir: Path, *, expected_policy_id: str) -> PolicySnapshot:
+    """Read one policy, whatever its status, for a module that must refuse
+    before executing it (Task 7: a draft is never loaded as parameters).
+
+    The same checks `load_policy_parameters()` makes before resolving
+    anything, except approval: the declared schema version, the module's
+    own policy identity, and every parameter's source id against the
+    catalogue. Each file is read once and parsed from the bytes that are
+    hashed, so the snapshot's spec and hashes describe one set of files."""
+    policy_yaml_bytes = (policy_dir / "policy.yaml").read_bytes()
+    spec = _parse_policy_spec(policy_yaml_bytes)
+    if spec.schema_version not in SUPPORTED_SCHEMA_VERSIONS:
+        raise UnsupportedSchemaVersionError(
+            f"policy.yaml declares schema_version '{spec.schema_version}'; "
+            f"this loader supports {sorted(SUPPORTED_SCHEMA_VERSIONS)}"
+        )
+    if spec.policy_id != expected_policy_id:
+        raise ValueError(f"expected policy '{expected_policy_id}', got '{spec.policy_id}'")
+    sources_yaml_path = _resolve_source_catalog_path(policy_dir, spec.source_catalog)
+    sources_yaml_bytes = sources_yaml_path.read_bytes()
+    _resolve_source_ids(spec, sources_yaml_bytes, sources_yaml_path)
+    return PolicySnapshot(
+        spec=spec,
+        artifact_sha256={
+            "policy.yaml": _sha256(policy_yaml_bytes),
+            spec.source_catalog: _sha256(sources_yaml_bytes),
+            **_specification_and_decision_hashes(policy_dir),
+        },
+    )
+
+
 def check_preloaded_parameters(
     parameters: PolicyParameterSet, modelled_date: date, requested_policy_version: str
 ) -> None:

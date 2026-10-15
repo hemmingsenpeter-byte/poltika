@@ -81,8 +81,24 @@ def test_every_income_tax_step_renders() -> None:
     steps: list[CalculationStep] = []
     basic_tax_band_sum(Decimal(45), parameters, steps)
     assert [s.step_id for s in steps] == [f"IT_BAND_{n}" for n in range(1, 6)] + ["IT_BASIC_TAX_SUM"]
-    assert render_step(steps[0]) == "Table 1 row 1: $10 of taxable income at 0.1 is $1.0."
+    assert render_step(steps[0]) == "Basic-rate band 1: $10 of taxable income at 0.1 is $1.0."
     assert render_step(steps[-1]) == "The bands for $45 of taxable income sum to $4.5, unrounded."
+
+    # #224 review P3: every number in the sentences is a recorded value, so a
+    # calculated component built from these steps verifies cleanly.
+    from poltika.engines.simulator.outcome import ComponentResult
+    from poltika.engines.simulator.trace import ComponentTrace
+
+    result = ComponentResult(
+        outcome="calculated",
+        value=steps[-1].result,
+        trace=ComponentTrace(
+            component_id="basic_annual_income_tax", policy_id="income_tax", policy_version="synthetic",
+            schema_version="0.1", modelled_date=date(2026, 4, 1), artifact_sha256=(), scenario_sha256="0" * 64,
+            steps=tuple(steps),
+        ),
+    )
+    assert verify(explain("basic_annual_income_tax", result), result) == []
 
 
 def test_g2_family_tax_credit_explanation_reads_from_the_trace() -> None:
