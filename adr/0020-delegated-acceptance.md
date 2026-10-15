@@ -96,7 +96,7 @@ independent review, and the merge commit is not a semantic change by whoever
 made it. A conflict resolution, or any change to the PR's own diff, is a fix
 and renews every gate.
 
-**Append-only record conflicts (Pete, 16 October 2026; decision log D43).**
+**Append-only record conflicts (Pete, approved 16 October 2026; decision log D43).**
 A main update whose only conflicts are in append-only records
 (`CHANGELOG.md`, `changelog.d/`, `docs/decision_log.md`,
 `review_packets/review_queue.md`, `PROGRAMME_STATUS.md`, `PETE_QUEUE.md`)
