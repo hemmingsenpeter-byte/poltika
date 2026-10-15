@@ -45,16 +45,15 @@ poltika/
 ├── uv.lock
 ├── .github/dependabot.yml — weekly grouped minor/patch updates for the uv lock and pinned actions (ADR-0020)
 ├── .github/workflows/security.yml — pip-audit of the locked dependencies (PR, main, weekly)
-├── .github/workflows/static-analysis.yml — Bandit (Python; high-severity gate, all findings retained) and zizmor (all workflow findings gate); private-CI compatible
+├── .github/workflows/static-analysis.yml — Bandit (Python; medium- and high-severity gate, all findings retained) and zizmor (all workflow findings gate)
 ├── .github/workflows/links.yml    — lychee: offline relative-link and anchor check on `**/*.md` (required), weekly external report
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
 ├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
 │                         smallest action that clears it (ADR-0020)
 ├── CONTRIBUTING.md     — the route into the repository: worktree flow, tests, review, tiers (ADR-0020), Make targets, where files go
 ├── SECURITY.md         — what is in scope, how to report privately, supported versions, the automated checks
-├── .github/workflows/fork-pr-gate.yml — fails fork pull requests (self-hosted jobs skip them); hosted, not required
 ├── .github/CODEOWNERS  — the owner, and the high-risk paths (policy_specs/, engines/simulator/, tests/fixtures/, workflows)
-├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task and collaborator-visible security report; no secrets/personal data
+├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task; security reports go to private vulnerability reporting (SECURITY.md); no secrets/personal data
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)

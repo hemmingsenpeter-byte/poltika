@@ -9,6 +9,11 @@ one image, one origin and one login cover both the UI and the API:
 - A `GET`/`HEAD` whose `Accept` header prefers `text/html` on a declared UI
   route gets the exported page, `no-cache`. Dynamic routes were exported once
   with the placeholder id `_`; the page reads the real id from the URL.
+- Client-side navigation fetches a page's RSC payload as `<route>.txt` with
+  an `RSC: 1` header (Next's `output: "export"` mode). Such a request on a
+  declared UI route gets that page's exported `.txt`, `no-cache`, so a nested
+  route (`/scenarios/new.txt`, `/models/<id>.txt`) no longer falls through to
+  the API and forces a full reload. Without the header nothing changes.
 - Everything else passes through untouched. API clients sending
   `application/json` or `*/*` (so `GET /scenarios/{id}` still returns JSON),
   `/analyst`, `/docs`, `/openapi.json`, `/healthz` and every API route behave
@@ -159,11 +164,23 @@ class WebAppMiddleware:
                 )(scope, receive, send)
                 return
 
+        headers = dict(scope["headers"])
+        if path.endswith(".txt") and headers.get(b"rsc") == b"1":
+            page = ui_page(path.removesuffix(".txt"))
+            file = _safe_file(root, page.removesuffix(".html") + ".txt") if page else None
+            if file is not None:
+                await FileResponse(
+                    file,
+                    media_type="text/x-component",
+                    headers={"cache-control": _REVALIDATE, "vary": "RSC"},
+                )(scope, receive, send)
+                return
+
         page = ui_page(path)
         if page is None:
             await self.app(scope, receive, send)
             return
-        accept = dict(scope["headers"]).get(b"accept", b"").decode("latin-1")
+        accept = headers.get(b"accept", b"").decode("latin-1")
         file = _safe_file(root, page) if prefers_html(accept) else None
         if file is not None:
             await FileResponse(
@@ -174,9 +191,12 @@ class WebAppMiddleware:
             return
 
         # The same URL answers JSON to API clients: tell caches it varies.
+        # A `.txt` path can also be an RSC payload (above), so it varies on that too.
+        vary = b"Accept, RSC" if path.endswith(".txt") else b"Accept"
+
         async def send_varying(message: Message) -> None:
             if message["type"] == "http.response.start":
-                message["headers"] = [*message.get("headers", []), (b"vary", b"Accept")]
+                message["headers"] = [*message.get("headers", []), (b"vary", vary)]
             await send(message)
 
         await self.app(scope, receive, send_varying)
