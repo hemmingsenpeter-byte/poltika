@@ -182,7 +182,11 @@ poltika/
 │   │                        Task 24.7 run_as_module(), the AS module
 │   │                        integration entry point mirroring
 │   │                        run_wff_module() for AS's single-component
-│   │                        shape); trace.py (Task 31: per-component
+│   │                        shape); income_tax.py (Phase B Task 7
+│   │                        calculate_income_tax() and
+│   │                        run_income_tax_module(): the draft income-tax
+│   │                        outcome contract, gated so nothing is calculated
+│   │                        before Q16 and DEC-004 clear); trace.py (Task 31: per-component
 │   │                        provenance trace types, and the recording
 │   │                        helpers that capture which parameters and
 │   │                        scenario facts each component consulted)

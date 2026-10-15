@@ -92,6 +92,12 @@ STEP_TEMPLATES: dict[str, str] = {
         "is ${result}."
     ),
     "AS_ROUNDING": "${amount_before_rounding} rounded up to the complete dollar is ${result}.",
+    # Task 7: the exact Schedule 1 Part A Table 1 band sum, before any final-output method (DEC-004).
+    **{
+        f"IT_BAND_{row}": f"Table 1 row {row}: ${{dollars_in_band}} of taxable income at {{band_rate}} is ${{result}}."
+        for row in range(1, 6)
+    },
+    "IT_BASIC_TAX_SUM": "The bands for ${taxable_income} of taxable income sum to ${result}, unrounded.",
 }
 
 
