@@ -100,5 +100,5 @@ uv run --extra dev uvicorn poltika.api.main:app    # API; see /docs, and /analys
 Proprietary. Copyright (c) 2026 Peter Hemmingsen, all rights reserved. The
 repository is public to view only: no right to use, copy, modify,
 distribute, deploy or train on any part of it is granted without written
-permission. Third-party material, such as the Stats NZ data snapshots,
-keeps its own licence. See [LICENSE](LICENSE).
+permission. Third-party material, such as the published data snapshots,
+keeps its publisher's terms. See [LICENSE](LICENSE).
