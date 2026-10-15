@@ -1,7 +1,8 @@
 # Runner isolation runbook (PETE_QUEUE Q13)
 
-Status: prepared for Pete, not executed. Nothing here changes the Mac, the
-runner service or GitHub settings until Pete does it. Evidence base:
+Status: superseded on 16 October 2026, never executed. The runner was
+retired and CI moved to GitHub-hosted runners (decision log D41), so there
+is no runner to isolate. Kept as the record. Evidence base:
 `reviews/2026-10-11-audit-191-verification.md` (finding A1).
 
 ## Why
