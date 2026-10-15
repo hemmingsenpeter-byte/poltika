@@ -84,6 +84,12 @@ def test_band_sum_records_each_band_and_the_total() -> None:
     assert {s.rule_id for s in steps} == {"IT-05"}
 
 
+def test_income_on_a_band_boundary_records_no_empty_band() -> None:
+    steps: list[CalculationStep] = []
+    basic_tax_band_sum(Decimal(10), synthetic(), steps)
+    assert [s.step_id for s in steps] == ["IT_BAND_1", "IT_BASIC_TAX_SUM"]
+
+
 @pytest.mark.parametrize("income", ["-1", "0.5", "10.01"])
 def test_band_sum_refuses_non_whole_or_negative_income(income: str) -> None:
     with pytest.raises(ValueError, match="whole-dollar"):
