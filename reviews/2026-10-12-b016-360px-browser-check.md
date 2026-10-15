@@ -108,3 +108,23 @@ two-option WFF compare run whose Overview draws the chart.
   failed request and a reload per navigation, plus console errors. Serving the matching export `.txt` would likely
   restore soft navigation (pages read ids from the pathname), but that changes serving and needs its own tests.
 - Still open for Pete, unchanged: a human check on a real phone (iOS Safari, Android Chrome).
+
+## RSC prefetch P3 fixed, 15 October 2026
+
+Reviewer: Claude Code (author of the fix, so this is an author check, not an independent review). Basis: `main` at
+`63359fe` plus the `api/web.py` change on `fix/b01-rsc-prefetch-20261015`. Static export built from that tree, served
+by the real FastAPI app with no database; Playwright 1.49 driving headless **Chromium 131** (build 1148) at 360x740.
+Each check sets a marker on `window`, clicks a client-side link, and reads the marker on the new page: it survives
+only a soft navigation.
+
+| Navigation | `main`'s middleware | With the fix |
+| --- | --- | --- |
+| Models > a model | full reload; `/models/<id>.txt` 404 | soft; 200 |
+| Data > a dataset | full reload; `/data/<id>.txt` 404 | soft; 200 |
+| Scenarios > New scenario | full reload; `/scenarios/new.txt` 503 (the scenario API route) | soft; 200 |
+
+Console errors fell from 7 to 1. The remaining one is the Scenarios list's 503, expected with no database. After the
+soft navigation to `/models/wff_engine`, the page's heading is "Working for Families engine", read from the URL, not the
+`_` placeholder. WebKit was not rerun for this change. The middleware serves an export `.txt` only for a `GET` or
+`HEAD` with `RSC: 1` whose path, without `.txt`, is a declared UI route. Without that header, every path behaves as before
+(`tests/unit/api/test_web_static.py`).

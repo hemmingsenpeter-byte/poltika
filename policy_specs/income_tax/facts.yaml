@@ -1,0 +1,76 @@
+# Draft intake contract only; no income-tax engine or resolver is registered.
+# Unknown is implicit for fact_status/enum; missing money/attestation is not zero/true.
+schema_version: "0.1"
+policy_id: income_tax
+wording_status: drafted
+facts:
+  - id: individual_status
+    scope: income_tax
+    rule: IT-01
+    question: Is the taxpayer one identified natural person, rather than a household, company or trust?
+    kind: fact_status
+    answers: {verified: 'Yes, one identified natural person', excluded: 'No, another assessment entity'}
+  - id: residence_scope
+    scope: income_tax
+    rule: IT-01
+    question: What is the independently established residence scope for the whole 2026-27 tax year?
+    kind: enum
+    values:
+      whole_year_ordinary_nz_resident: Ordinary New Zealand resident throughout the year
+      non_resident: Non-resident (not modelled)
+      changing_residence: Residence changes during the year (not modelled)
+      special_residence_regime: Special residence or income regime (not modelled)
+  - id: tax_year_basis
+    scope: income_tax
+    rule: IT-02
+    question: Which tax year has the taxable amount already been allocated to?
+    kind: enum
+    values:
+      standard_2026_27: Standard 1 April 2026 to 31 March 2027 tax year
+      non_standard_year: Non-standard year (not modelled)
+      other_standard_year: Another standard tax year (not modelled)
+  - id: income_composition
+    scope: income_tax
+    rule: IT-03
+    question: Which income classes make up this person's independently classified taxable income?
+    kind: enum
+    values:
+      ordinary_salary_wages_only: Ordinary salary and wages only
+      main_benefit: Includes a main benefit (deferred to interactions)
+      business_self_employment: Includes business or self-employment income (not modelled)
+      investment_or_rent: Includes rent or investment income (not modelled)
+      foreign_income: Includes foreign income (not modelled)
+      unusual_employment_items: Includes employment items outside ordinary salary and wages (not modelled)
+      schedular_or_pie: Includes schedular or PIE income (not modelled)
+      other_or_mixed_income: Another or mixed income class (not modelled)
+  - id: no_deductions_status
+    scope: income_tax
+    rule: IT-04
+    question: Has it been verified that no deductible amounts apply to this bounded annual slice?
+    kind: fact_status
+    answers: {verified: 'Yes, no deductible amounts', excluded: 'No, deductible amounts apply (not modelled)'}
+  - id: no_available_losses_status
+    scope: income_tax
+    rule: IT-04
+    question: Has it been verified that no available losses apply to this bounded annual slice?
+    kind: fact_status
+    answers: {verified: 'Yes, no available losses', excluded: 'No, losses apply (not modelled)'}
+  - id: general_basic_rate_status
+    scope: income_tax
+    rule: IT-05
+    question: Has it been verified that no special basic rate in Schedule 1 Part A clauses 2-14 applies?
+    kind: fact_status
+    answers: {verified: 'Yes, the general rate table applies', excluded: 'No, a special rate applies (not modelled)'}
+  - id: taxable_income_basis_attestation
+    scope: income_tax
+    rule: IT-04
+    question: Do you attest that this amount is independently established taxable income under BC 2-5 and allocated under BD 1 and BD 3, rather than gross household or take-home income?
+    kind: attestation
+  - id: annual_taxable_income
+    scope: income_tax
+    rule: IT-05
+    question: What is this person's non-negative whole-dollar taxable income for the standard 2026-27 tax year?
+    kind: money
+    unit: NZD per tax year
+    monotone:
+      basic_annual_income_tax: {direction: increasing, rule: IT-05}

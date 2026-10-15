@@ -1,0 +1,35 @@
+# No source-derived numeric expected result has been approved or fabricated.
+status: draft_pending_review
+benchmark_status: missing_source
+reference_period: {from: 2026-04-01, to: 2027-04-01}
+policy_version: null
+benchmarks: []
+research_check:
+  checked_on: 2026-10-13
+  author: GPT/Codex
+  result: No period-matched independent official basic annual salary/wage result retained.
+  decision_record: decisions/DEC-004-output-precision-and-benchmark.md
+  candidates:
+    - source_id: it-ird-basic-annual-calculator-scope
+      disposition: pending_retained_numeric_evidence
+      reason: Public page has correct output scope; linked tool returned HTTP 403/request verification, so no result or PDF was obtained.
+    - source_id: it-ird-ir3g-2026-worksheet-candidate
+      disposition: excluded_source_conflict_Q18_D36
+      reason: Pete excludes the guide entirely as a benchmark; it also concerns 2025-26.
+    - url: https://www.ird.govt.nz/employing-staff/deductions-from-other-payments/fringe-benefit-tax/calculating/how-fbt-is-calculated/full-alternate-rate-calculations
+      disposition: outside_output_scope
+      reason: FBT remuneration/whole-dollar and tax-rounding conventions cannot establish ordinary annual basic-tax precision.
+    - url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir320/ir320.pdf?modified=20251014030747
+      disposition: outside_period_and_income_scope
+      reason: Worked example concerns business profit and the transitional year ended 31 March 2025.
+acceptance_requires:
+  - Dated official input/output artifact, exact year and component scope, source locator and retained artifact hash.
+  - All scenario assumptions stated separately from official source facts.
+  - Independent primary-source comparison and protected-value approval.
+  - Any displayed rounding reconciled with an official method for this output.
+followup_research_check:
+  checked_on: 2026-10-15
+  author: GPT/Codex
+  result: The official scope page is accessible; its linked calculator remains inaccessible to the web reader. No period-matched numeric artifact retained.
+  limitation: No new local-browser execution claimed; the earlier failed browser attempt remains the 13 October observation.
+  disposition: missing_source_gate_retained_no_numeric_benchmark_added

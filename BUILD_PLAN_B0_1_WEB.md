@@ -162,8 +162,9 @@ early natural-language calculation or change to B0.1's acceptance gate.
   policy" marked unavailable, a link to the classic `/analyst` page).
   FastAPI serves `web/out` from `POLTIKA_WEB_DIR` with immutable caching for
   `/_next/static/*` and `no-cache` HTML. Multi-stage Dockerfile; a `web` CI
-  job on the self-hosted runner (install, lint, typecheck, schema drift,
-  tests, build); `npm audit` in `security.yml`; npm in Dependabot.
+  job (install, lint, typecheck, schema drift,
+  tests, build; self-hosted under D21, GitHub-hosted since D41); `npm audit`
+  in `security.yml`; npm in Dependabot.
   *Done when:* the shell, deep links, cache headers and auth are tested in
   Python and Vitest, a copy scan rejects gated terms in `web/src` and the
   built pages, and every existing page, route and test is unchanged.

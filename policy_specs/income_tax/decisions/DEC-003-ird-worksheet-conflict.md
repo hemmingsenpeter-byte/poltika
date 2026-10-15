@@ -3,8 +3,9 @@
 **Policy:** Personal income tax, D11 salary/wage slice.
 **Date:** 2026-10-08 (record raised).
 **Decision owner:** Pete
-**Decision date:** none.
-**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
+**Decision date:** 2026-10-12 (Q18, D36).
+**Status:** decided; guide excluded as a benchmark (`SOURCE_CONFLICT`).
+**Raised by:** GPT/Codex.
 **Class:** AI hypothesis; proposed `SOURCE_CONFLICT`.
 
 ## Ambiguity
@@ -54,18 +55,14 @@ adjacent rows read "$53,501 to $78,100 | $53,500 | .30 | $8,270.50",
 $180,000 | .39 | $49,277.50". The rows either side of the $78,101 row both
 use the threshold itself as A.
 
-This adds evidence only: the decision, its
-`needs_review` status and the Q18 escalation are unchanged, and no value is
-adopted.
+This 10 October observation added evidence without adopting a guide value.
 
 ## Decision
 
-No worksheet cell has been silently repaired or adopted into fixtures. No
-2026–27 benchmark is inferred from this earlier-year guide. All numeric
-work remains blocked by DEC-001/002 regardless of this candidate guide.
-
-**Smallest Pete action:** review the visually confirmed row independently
-and obtain an official correction/clarification or a separately retained,
-period-matched benchmark;
-review that evidence independently before any expected-result adoption.
-See PETE_QUEUE Q18.
+Pete decided Q18 on 12 October: **the statute prevails**, exclude IR3G as a
+benchmark, record `SOURCE_CONFLICT`, and do not contact IRD for now. See
+[D36](../../../docs/programme/2026-10-12-pete-approvals.md).
+No worksheet cell is repaired or adopted. The original observation remains
+for audit. Hand-derived statutory cases belong to `spec_cases.yaml`, not
+independent benchmarks; a separate period-matched official result is still
+needed before the benchmark gate can close.

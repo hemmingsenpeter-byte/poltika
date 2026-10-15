@@ -18,6 +18,8 @@ modules or empty scaffolding.
 ```text
 poltika/
 ├── README.md
+├── changelog.d/        — one changelog fragment per pull request, folded into CHANGELOG.md by the integration owner (D43)
+├── LICENSE             — proprietary, all rights reserved; view only (D42)
 ├── CLAUDE.md
 ├── BUILD_PLAN_PROGRAMME.md — sole active master build order: capability Phases A–P (ADR-0021)
 ├── PROGRAMME_STATUS.md   — live capability/task status, evidence, owner, PR and blocker (ADR-0020)
@@ -45,16 +47,15 @@ poltika/
 ├── uv.lock
 ├── .github/dependabot.yml — weekly grouped minor/patch updates for the uv lock and pinned actions (ADR-0020)
 ├── .github/workflows/security.yml — pip-audit of the locked dependencies (PR, main, weekly)
-├── .github/workflows/static-analysis.yml — Bandit (Python; high-severity gate, all findings retained) and zizmor (all workflow findings gate); private-CI compatible
+├── .github/workflows/static-analysis.yml — Bandit (Python; medium- and high-severity gate, all findings retained) and zizmor (all workflow findings gate)
 ├── .github/workflows/links.yml    — lychee: offline relative-link and anchor check on `**/*.md` (required), weekly external report
 ├── AGENTS.md           — the CLAUDE.md rules for non-Claude agents (GPT/Codex)
 ├── PETE_QUEUE.md       — the open Tier C items only Pete can decide, each with the
 │                         smallest action that clears it (ADR-0020)
 ├── CONTRIBUTING.md     — the route into the repository: worktree flow, tests, review, tiers (ADR-0020), Make targets, where files go
 ├── SECURITY.md         — what is in scope, how to report privately, supported versions, the automated checks
-├── .github/workflows/fork-pr-gate.yml — fails fork pull requests (self-hosted jobs skip them); hosted, not required
 ├── .github/CODEOWNERS  — the owner, and the high-risk paths (policy_specs/, engines/simulator/, tests/fixtures/, workflows)
-├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task and collaborator-visible security report; no secrets/personal data
+├── .github/ISSUE_TEMPLATE/ — config.yml (blank issues off) and issue forms: bug or wrong result, source question, programme task; security reports go to private vulnerability reporting (SECURITY.md); no secrets/personal data
 ├── .claude/            — Claude Code skills (`skills/`) and Sonnet subagent definitions
 │                         (`agents/`: `poltika-worker` implements one briefed subtask,
 │                         `poltika-reviewer` reviews a diff with a fresh context)
@@ -73,7 +74,8 @@ poltika/
 │                         (plus wff_as_interaction/: Task 28.5 cross-policy spec cases and
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
 │   ├── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
-│                       specification, parameters and implementation remain separately gated
+│                       draft numeric spec, candidate parameters, facts and hand cases;
+│                       official benchmark, approval and implementation remain gated
 │   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue only
 │   ├── sole_parent_support/ — source catalogue only; separate specification/value gates
 │   └── supported_living_payment/ — source catalogue only; separate specification/value gates
@@ -199,10 +201,12 @@ poltika/
 │   │                        and run identities; store.py keeps them in the
 │   │                        reform_scenario and reform_run tables, migration 0002);
 │   │                        household_mappings.py (Pass 1, ADR-0017, v0.3
-│   │                        Tasks 1.2-1.3: to_wff/to_as/to_combined from a
+│   │                        Tasks 1.2-1.4: to_wff/to_as/to_combined from a
 │   │                        Household, with MappingRefusal where it cannot
-│   │                        supply a field; adapters from the existing
-│   │                        request formats onto a Household);
+│   │                        supply a field; run_household, the household
+│   │                        run with the restated checks (Task 1.4);
+│   │                        adapters from the existing request formats
+│   │                        onto a Household);
 │   │                        conditional.py (v0.3 Task 1b.2, ADR-0016:
 │   │                        conditional answers, i.e. branches, bounds and
 │   │                        next question for missing facts, all by engine

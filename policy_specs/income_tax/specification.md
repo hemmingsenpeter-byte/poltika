@@ -1,18 +1,18 @@
 # Personal income tax — basic annual salary/wage slice
 
 **Programme:** Phase B Task 7; `BUILD_PLAN_v0_3.md` 2.1.
-**Author/source check:** GPT/Codex, 8 October 2026, Pacific/Auckland.
-**Status:** `draft_pending_review`; no policy version or executable policy.
+**Author/source check:** GPT/Codex, 13 October 2026, Pacific/Auckland.
+**Status:** `draft_pending_review`; candidate numeric packet, no approved policy version.
 **Scope commission:** Pete's D11, 5 October 2026. This is the specification
-follow-up to source-scope PR #148, called onboarding PR 2 in programme
-status. Its content is the `new-policy` skill's sources/specification step;
-the skill's separate values/expected-results step is not included.
+follow-up to source-scope PR #148 and specification #193. It is the
+`new-policy` values/expected-results step, including Q16–Q18's application
+to the retained source/specification records. No engine is implemented.
 
 All proposed statutory interpretations are **AI hypotheses pending promotion
 to Rule**, under the Epistemic Constitution. Source observations below carry
 their actual authority and check date. D11 approves the slice, not rates,
 precision, test expectations or implementation. A source-linked draft is
-not a source-approved executable specification. The open decisions in
+not a source-approved executable specification. The decisions and gates in
 [decisions/](decisions/DEC-001-annual-authority.md) and
 [Pete's queue](../../PETE_QUEUE.md) block promotion of the affected rules.
 
@@ -38,29 +38,31 @@ calculator confirms this output scope. No missing credit or other component
 is set to zero. ([ITA, BC 8](https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/),
 [IRD yearly-tax calculator scope](https://www.ird.govt.nz/income-tax/income-tax-for-individuals/how-income-is-taxed/work-out-tax-on-your-yearly-income))
 
-The 2026–27 annual-authority gate remains `needs_review` under D11 and the
-user's instruction. Bill 344-1 is proposed law only, recorded as rank-4
+The 2026–27 annual-authority gate remains `needs_review` under D11 and
+Q16/D36 (12 October). Bill 344-1 is proposed law only, recorded as rank-4
 change context. TAA s 92A permits **Commissioner assessments** at basic
 rates before an annual taxing Act, with adjustment if annual rates differ.
 That provision means lack of enactment does not make every official
 assessment invalid; whether it supports a different Poltika component
-requires Pete's decision. This draft retains D11 and does not infer that
+would require a separate decision. Q16 retains D11 and does not infer that
 Poltika performs a Commissioner assessment. ([ITA, BB 1](https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/),
 [TAA, s 92A](https://www.legislation.govt.nz/act/public/1994/166/en/2026-09-04/),
 [DEC-001](decisions/DEC-001-annual-authority.md))
 
 ## Input and outcome contract
 
-These are proposed semantic inputs, not new runtime fields or approved
-`facts.yaml` entries. Questions and admissible statuses belong in the later
-values/facts PR. A caller's `verified` status remains a **Scenario** assertion.
+These are proposed semantic inputs, not runtime fields. Draft questions and
+admissible statuses are in [facts.yaml](facts.yaml); wording is not approved.
+A caller's `verified` status remains a **Scenario** assertion. Authority,
+parameter approval and precision are server review gates, never facts a
+caller can answer to unlock a result.
 
 | Input | Required meaning | Rule grounding |
 | --- | --- | --- |
 | Individual identity and natural-person status | One identified person; never a household total | IT-01; YD 1; Schedule 1 Part A cls 1–14 |
 | Residence/scope assertions | Whole-year ordinary NZ resident; no special/non-resident regime | IT-01; YD 1; explicit D11 slice restriction |
 | Income composition | Ordinary salary/wages only, with special employment items excluded | IT-03; CE 1(1)(a) and other CE 1 categories |
-| Annual taxable income | Known non-negative exact NZD amount allocated to the specified year, independently established under BC 2–5 and BD 1/3 | IT-02/03/04 |
+| Annual taxable income | Known non-negative whole-dollar NZD amount allocated to the specified year, independently established under BC 2–5 and BD 1/3; Q17 whole-dollar restriction is an Assumption | IT-02/03/04/08 |
 | Deductions and available losses | Explicit evidence of none for this bounded slice; never inferred from an absent field | IT-04; BC 3–5; DA 2/3 |
 | Reference period/requested policy identity | Exact reviewed year and future approved version; neither chosen from today's date | IT-02; YE 1; repository version contract |
 | Authority and precision review states | Both approved before any numeric authoritative result | IT-05/06/08; D11; DEC-001/002 |
@@ -95,16 +97,18 @@ cross-check, never substitute annual-rate authority.
 | IT-05 | General basic-rate table applies only to the extent no special basic rate under cls 2–14 applies | `it-income-tax-act-basic-rates`: Schedule 1 Part A cl 1/Table 1; `it-budget-measures-act-2024`: ss 2(5), 37(1),(4) | Table transcribed below; 2026–27 authority remains `needs_review` |
 | IT-06 | BB 1 uses annual taxing legislation. TAA s 92A separately permits Commissioner basic-rate assessments and later rate adjustment | `it-income-tax-act-core`: BB 1; `it-tax-administration-act-assessment`: s 92A(1),(2) | `needs_review`; DEC-001, D11 gate retained |
 | IT-07 | BC 6 gives basic liability for a filing taxpayer; BC 8 separately uses credits/withholding and determines terminal tax. Statutory non-filing status is not absence of a manual IR3 | `it-income-tax-act-core`: BC 1, BC 6(1),(2), BC 8, YA 1 filing/non-filing definitions; `it-tax-administration-act-assessment`: ss 22I(1),(2), 92 | Draft; component is not a completed assessment |
-| IT-08 | No fractional-dollar, intermediate/final rounding or tie convention has been established for this component | `it-income-tax-act-basic-rates`: cl 1/Table 1; `it-tax-administration-act-assessment`: checked provisions do not settle precision | `MISSING_SOURCE` / `needs_review`; DEC-002 |
+| IT-08 | Q17 restricts inputs to whole dollars (Assumption); no floor or rounding of income. Exact band arithmetic is retained as a candidate, separately from final output precision | `it-income-tax-act-basic-rates`: cl 1/Table 1; `it-tax-administration-act-assessment`: checked provisions do not settle final precision | Input boundary decided (DEC-002); final output `MISSING_SOURCE` (DEC-004) |
 
 ### Documentary rate table
 
 This is a transcription of **Schedule 1 Part A Table 1**, in the ITA version
-dated 4 September 2026, retrieved 3 October 2026 and re-checked 8 October 2026
-(`sources.yaml`). It is not a `policy.yaml`, approved
-2026–27 parameter set or statutory expected-value fixture. Literal ranges
-describe each dollar as the source prints them; this draft does not resolve
-fractional dollars between those labels.
+dated 4 September 2026, retrieved 3 October and rechecked 13 October 2026.
+The official latest-version index still names that version. Candidate values
+now appear in [policy.yaml](policy.yaml), each `needs_review`, restricted to
+the proposed `[2026-04-01, 2027-04-01)` period. These intervals express the
+candidate slice, not verified full-year amendment coverage or annual
+enactment. No approved expected values are created. Literal ranges describe
+each dollar as printed; Q17 excludes fractional-income cases.
 
 | Statutory row | Range of dollar in taxable income (NZD) | Tax rate (fraction) |
 | --- | --- | --- |
@@ -119,7 +123,7 @@ defines the basic rate using total table tax divided by taxable income;
 BC 6(1) multiplies taxable income by that rate. It is not a single highest
 bracket rate applied to all income. BC 6(2) separately treats zero/negative
 calculated liability as zero; implementation must avoid division by zero.
-No executable fractional-income formula or rounding rule is adopted here.
+No fractional-income formula or legal rounding rule is adopted here.
 ([ITA, BC 6 and Schedule 1 Part A cl 1/Table 1](https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/))
 
 Part 4 of the 2024 Budget Measures Act commenced on **1 April 2025** under
@@ -129,6 +133,39 @@ and future amendment coverage. IRD's table labelled “From 1 April 2025”
 cross-checks these five rates. No mid-year or full-future-year assurance
 follows from a current web page. ([2024 Act, ss 2(5), 37](https://www.legislation.govt.nz/act/public/2024/19/en/2024-06-04/),
 [IRD rates](https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals))
+
+## Candidate numeric contract
+
+Let `x` be known, non-negative and integral annual taxable NZD. For the
+ordinary general-rate slice, Table 1's per-dollar instructions and BC 6
+give the following **exact conditional arithmetic**, before any final
+quantisation:
+
+```text
+q1 = min(x, 15600)
+q2 = min(max(x - 15600, 0), 37900)
+q3 = min(max(x - 53500, 0), 24600)
+q4 = min(max(x - 78100, 0), 101900)
+q5 = max(x - 180000, 0)
+t  = .105*q1 + .175*q2 + .300*q3 + .330*q4 + .390*q5
+```
+
+Widths are derived endpoint differences, not new statutory parameters.
+The cumulative amounts at $15,600, $53,500, $78,100 and $180,000 are
+$1,638, $8,270.50, $15,650.50 and $49,277.50 respectively. These are
+**Model outputs from hand arithmetic**, not IRD benchmark statements.
+The sum avoids division by zero. Arithmetic uses exact decimals, with no
+binary float, intermediate rounding or assumed final cent conversion.
+For example $15,603 gives $1,638.525; adopting that as the final tax value
+is still gated by DEC-004. Monotonicity is non-decreasing within this same
+period and slice; it does not authorise annual/weekly conversion or values
+outside the slice. ([ITA, BC 6 and Schedule 1 Part A cl 1/Table 1](https://www.legislation.govt.nz/act/public/2007/97/en/2026-09-04/))
+
+`spec_cases.yaml` separates `conditional_arithmetic` from `expected`.
+The latter remains `needs_review`, without a numeric value, for all
+otherwise supported cases under the current draft. Non-integer input is
+`unsupported` before the review gates, even if positive and even if it
+could be rounded to an integer. No candidate value unlocks calculation.
 
 ## Proposed calculation and trace sequence
 
@@ -141,7 +178,8 @@ follows from a current web page. ([2024 Act, ss 2(5), 37](https://www.legislatio
    supplies an approved statutory rate.
 4. **After approval only**, apply the reviewed general-table calculation
    and sourced precision procedure, including the known-zero path (IT-05/07).
-   This draft cannot specify that numeric step completely.
+   The exact candidate sum above is complete for integral inputs; its final
+   output method and independent official benchmark remain unverified.
 5. Emit only this basic-tax component with annual NZD unit, individual,
    reference period and Model-output class. Trace actual input assertions,
    policy/version, parameter intervals/review states, source/locator,
@@ -166,16 +204,24 @@ calculation does not imply a zero deduction, credit or payment.
 
 ## Approval and validation handoff
 
-DEC-001 (s 92A and D11 authority), DEC-002 (precision) and DEC-003 (the IR3G
-table discrepancy) are open, linked to Pete's queue. No interpretation is
-silently chosen. Independent Claude source/spec review and Pete's decisions
-must precede an approved specification. The IRD calculator page is scope
-evidence only; no numerical benchmark was executed or retained.
+Q16–Q18 are decided under D36 and applied in DEC-001–003. #193's merged
+gated draft was checked by Claude at `2cc00c8` and its follow-ups cleared by
+Codex on 13 October; the clearance/handoff record is in documentation PR
+#217. That review does not approve this new numeric packet.
 
-The later values/facts/cases PR must supply source-linked dated parameters,
-fact questions, independent spec cases at each bracket and both sides,
-known zero versus missing income, fractional amounts and every excluded
-case, plus independently retained official benchmarks. Regression coverage
-must pin outcome/period/version/authority/precision gates and provenance.
-No expected statutory value, engine, schema, API or protected existing
-policy artifact is changed by this PR. Tasks 7 and Gate B remain incomplete.
+[policy.yaml](policy.yaml), [facts.yaml](facts.yaml) and
+[spec_cases.yaml](spec_cases.yaml) now supply dated candidate values,
+questions, every boundary and $1 either side, known zero, missing facts,
+fractional-income exclusions and supported-domain exclusions.
+[benchmarks.yaml](benchmarks.yaml) explicitly has **no adopted official
+numeric benchmarks**. IR3G is excluded by Q18; the right-scope IRD tool
+could not be retrieved beyond its request-verification screen. DEC-004
+tracks final output precision and the missing benchmark.
+
+Before an engine PR: independent Claude primary-source/numeric review on
+the final head; protected-value approval; verified annual assent and
+application; reviewed period-amendment coverage; resolved output method;
+retained official benchmark; and currency report with nothing due.
+Step 2.2, Task 7 and Gate B remain incomplete. Future engine tests must
+cover outcome/period/version gates, candidate refusal and trace provenance;
+this packet does not implement that engine or promote any existing values.

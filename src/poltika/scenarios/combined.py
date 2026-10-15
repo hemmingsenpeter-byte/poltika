@@ -23,6 +23,7 @@ conflicting evidence"). A structural error a module raises propagates.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, fields, replace
 from datetime import date
 from pathlib import Path
@@ -168,6 +169,11 @@ def shared_fact_contradictions(
     return tuple(found)
 
 
+# The shape of `shared_fact_contradictions`. A household input passes its own
+# restated checks (`household_mappings.run_household`, ADR-0017 section 4).
+SharedFactChecks = Callable[[CombinedHouseholdScenario, tuple[date, date], AssessmentWeek], tuple[str, ...]]
+
+
 def run_combined_household(
     wff_policy_dir: Path,
     as_policy_dir: Path,
@@ -180,11 +186,14 @@ def run_combined_household(
     requested_as_policy_version: str,
     wff_parameters: PolicyParameterSet | None = None,
     as_parameters: PolicyParameterSet | None = None,
+    checks: SharedFactChecks = shared_fact_contradictions,
 ) -> CombinedResult:
     """Run WFF for its tax year and AS for `assessment_week`, then apply the
     Task 28.3 shared-fact checks. Every date and version is explicit; there
     is no default household period. v0.2: either module's parameters may be
-    passed already loaded (see `run_wff_module()`)."""
+    passed already loaded (see `run_wff_module()`). `checks` replaces the
+    pair checks only for a household input (ADR-0017 Task 1.4); the pair
+    format always keeps the default."""
     wff_result = run_wff_module(
         wff_policy_dir,
         wff_lookup_date,
@@ -220,7 +229,7 @@ def run_combined_household(
         as_result = _replace(as_result, "unsupported", reason, "COMBINED_DIFFERENT_CLAIMANT")
         contradictions = (reason,)
     else:
-        contradictions = shared_fact_contradictions(scenario, wff_period, assessment_week)
+        contradictions = checks(scenario, wff_period, assessment_week)
         if contradictions:
             reason = "combined household run: shared facts disagree -- " + "; ".join(contradictions)
             wff_result = WffResult(
