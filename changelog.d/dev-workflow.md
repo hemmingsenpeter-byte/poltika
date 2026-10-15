@@ -8,3 +8,7 @@
   `pilot-image` skip a pull request that changes none of their inputs and
   always run on `main`. Required check names are unchanged. No calculated
   amount changes.
+- Pete's decisions of 16 October (decision log D44): #219 accepted as a
+  draft packet (Q24, done); SPS and SLP take the agreement-only slice
+  first, with decision records for each narrowing (Q25). The #218 queue
+  row is marked reviewed, with GPT/Codex's clearance of its final head.
