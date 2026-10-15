@@ -3,8 +3,9 @@
 **Policy:** Personal income tax, D11 salary/wage slice.
 **Date:** 2026-10-08 (record raised).
 **Decision owner:** Pete
-**Decision date:** none; no new decision has been made.
-**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
+**Decision date:** 2026-10-12 (Q16, D36).
+**Status:** decided; annual enactment/source-check gate remains `needs_review`.
+**Raised by:** GPT/Codex.
 **Class:** AI hypothesis pending review; proposed discrepancy
 `INTERPRETATION_AMBIGUITY`.
 
@@ -27,13 +28,14 @@ does not promote a Poltika annual-law output or a proposed Bill to authority.
 
 ## Decision
 
-The review question is whether Poltika continues the D11 enactment gate
-(current instruction), or a later separately approved component may model
-the basic-rate assessment basis under s 92A with explicit scope and later
-adjustment. The latter would need independent interpretation review and
-Pete's express revision; this draft adopts neither an alternative assessment
-route nor an assumption of future enactment. The gate stays in place.
+Pete decided Q16 on 12 October: retain D11; this component stays
+`needs_review` until Royal assent, then becomes eligible for `calculated`
+only after a dated source check and the other review gates. The decision
+does not adopt a Commissioner-assessment lane or approve candidate rates.
+See [D36's dated record](../../../docs/programme/2026-10-12-pete-approvals.md).
 
-**Smallest Pete action:** review the s 92A evidence with Claude's independent
-source/spec pass and confirm the component's authority basis. No rate or
-expected-value approval follows. See PETE_QUEUE Q16.
+On 13 October the [official IRD Bill status page](https://www.taxpolicy.ird.govt.nz/bills/2026-fbt-simplification-tax-bill)
+still states select committee, as at 12 October. No enacted 2026–27 annual
+rates Act was verified. The decision is closed; the factual authority gate
+is open. Recheck enacted text, commencement/application and relevant
+period amendments immediately before proposing approved parameters.

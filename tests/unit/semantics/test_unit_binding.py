@@ -26,7 +26,6 @@ SPECS = [d / "policy.yaml" for d in POLICY_DIRS if (d / "policy.yaml").exists()]
 # Spec directories with no executable policy.yaml yet. A new one must be bound
 # here deliberately, or gain a policy.yaml, so none is skipped silently.
 NOT_YET_EXECUTABLE = {
-    "income_tax",
     "jobseeker_support",
     "sole_parent_support",
     "supported_living_payment",

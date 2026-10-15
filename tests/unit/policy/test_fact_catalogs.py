@@ -78,6 +78,14 @@ def test_every_entry_is_emitted_by_an_engine() -> None:
     assert unused == []
 
 
+def test_income_tax_draft_catalog_loads_without_registering_an_engine() -> None:
+    catalog = load_fact_catalog(POLICIES / "income_tax")
+    assert catalog.policy_id == "income_tax"
+    assert catalog.wording_status == "drafted"
+    assert {entry.scope for entry in catalog.facts} == {"income_tax"}
+    assert ("income_tax", "annual_taxable_income") not in INDEX
+
+
 @pytest.mark.parametrize("key", sorted(INDEX), ids=lambda k: f"{k[0]}:{k[1]}")
 def test_entry_domain_matches_the_engine_field(key: tuple[str, str]) -> None:
     entry = INDEX[key]
