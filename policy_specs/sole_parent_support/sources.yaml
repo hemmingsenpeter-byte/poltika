@@ -1,12 +1,25 @@
 # Author source draft; approval and independent review remain pending.
-as_of: '2026-10-03'
-status: task_0_2_source_scope_draft_pending_review
+as_of: '2026-10-13'
+status: draft_pending_review
 programme_task: 8
-detailed_plan_task: v0.3 local 0.2; 0.3 interaction locators only
-scope_note: Source-only inventory. No approved policy specification, parameters, protected cases or runtime
-  support. Pete D1 and separate source review remain pending.
-assessment_period_note: Claims scoped to law operative on 3 October 2026; no full-year or historical eligibility
-  coverage asserted.
+detailed_plan_task: v0.3 local 0.2 and 3.2.1 draft preparation; 0.3 interaction locators only
+policy_version: null
+scope_note: >-
+  Sources and specification draft for Pete's D11 single established-grant,
+  ordinary principal-caregiver slice. D1 scope was accepted on 5 October 2026;
+  this is not an approved specification, parameter set, protected case or runtime
+  capability. Detailed-lane 3.2.1 follows the Jobseeker 3.1.1 decision gate.
+assessment_period_note: >-
+  Draft reference week [2026-10-05, 2026-10-12), lookup date 2026-10-05,
+  using law checked on 13 October 2026. Before 2 November 2026 only;
+  no historical, annual, later-week or general eligibility coverage asserted.
+source_scope_history:
+  - as_of: '2026-10-03'
+    status: task_0_2_source_scope_draft_pending_review
+    note: >-
+      Original scoped inventory used the 4 September 2026 Act and Regulations.
+      D1 and source review were then pending. Existing dated source observations
+      below are retained; 13 October checks are additional observations.
 retrieval_note: Dated legislation read directly via official HTML with a browser user agent after web
   retrieval failed; MSD/IRD current pages retrieved independently. Live pages do not prove historical
   applicability.
@@ -24,6 +37,29 @@ coverage_limits:
       on partners receiving different main benefits. It must remain unsupported
       until a reviewed specification models the applicable Schedule 4 categories.
       This catalogue statement adds no runtime gate, rate or entitlement calculation.
+  - id: multiple_own_right_main_benefit_recipients
+    when: More than one person in the household receives a main benefit in their own right.
+    outcome: unsupported
+    category: not_modelled
+    precedence: before_needs_review
+    source_id: sole-parent-support-social-security-act
+    locator: s 18 distinguishes per-person law from the D36 household coverage limit.
+    approval_record: ../../docs/programme/2026-10-12-pete-approvals.md
+    limitation: >-
+      D36 deliberately limits the first slice to one own-right main-benefit recipient
+      per household. The couples row above is a subset, not the entire restriction.
+      This is model coverage, not a statutory household-wide prohibition.
+source_recheck_20261015:
+  checked_on: '2026-10-15'
+  status: draft_pending_review
+  current_regulations: sole-parent-support-social-security-regulations-20261001
+  benefit_tax_determination: sole-parent-support-ird-det-24-03
+  corrections: >-
+    The previous current-version claim for 4 September Regulations is incorrect:
+    the current consolidation is 1 October 2026. DET 24/03 is now located;
+    complete computational application and precision remain unreviewed.
+  evidence_packet: ../../review_packets/task8_benefit_specifications.md
+  classification: Author observations / AI hypotheses; no Rule, amount or protected expectation promoted.
 sources:
 - id: sole-parent-support-social-security-act
   kind: legislation
@@ -49,6 +85,18 @@ sources:
   limitation: Income exemptions in Schedule 8 and exceptional administration routes are not exhaustively
     scoped; guidance does not approve selection of an assessment basis.
   checked_on: '2026-10-03'
+  specification_check:
+    checked_on: 2026-10-13
+    version_as_at: '2026-09-04'
+    locator: r 205(1)-(3); Schedule 6 item 1; Schedule 8 exemption routes remain outside the income-classification implementation.
+    finding: >-
+      SPS income is normally determined over 52 weeks. MSD may determine income
+      over one week with the person's agreement; either party may end that
+      agreement by notice at any time. The draft requires an agreement active
+      throughout its exact week and receives already classified weekly income.
+    limitation: >-
+      No conversion from annual amounts or raw income periods is approved.
+      Exemptions are not exhaustively specified and cannot be chosen by Poltika.
 - id: sole-parent-support-rates-order-2026
   kind: regulations
   title: Social Security (Rates of Benefits and Allowances) Order 2026
@@ -62,6 +110,16 @@ sources:
   limitation: Rates were located, not transcribed. No approved values, end date, gross/net conversion
     or rounding method is established by this source-only inventory.
   checked_on: '2026-10-03'
+  specification_check:
+    checked_on: 2026-10-13
+    locator: cls 2-5; Schedule 1 Part 1, Schedule 4 Part 2 cl 1 row.
+    finding: >-
+      The Order replaces 505.80 with 521.52 in the SPS statutory table from
+      1 April 2026. It does not replace the table with the agency gross amount
+      606.69 or supply a gross-up method for abated amounts.
+    limitation: >-
+      Documentary candidates only. Gross entitlement and precision remain
+      gated by DEC-001 and DEC-002; no parameter end date is invented.
 - id: sole-parent-support-income-tax-act-interactions
   kind: legislation
   title: Income Tax Act 2007 — main-benefit interactions
@@ -74,6 +132,22 @@ sources:
   limitation: Interaction locators only. No PAYE calculation, full-year policy coverage, MFTC result,
     protected-credit calculation or new disposable-income definition is approved.
   checked_on: '2026-10-03'
+  specification_check:
+    checked_on: 2026-10-13
+    version_as_at: '2026-09-04'
+    locator: RD 11(3)(a); CF 1(1)(c). Earlier WFF locators remain source-scope history only.
+    retrieval_note: >-
+      Read the official full HTML cache whose header states Version as at
+      4 September 2026; independent scoped reading, not an external engine.
+    finding: >-
+      RD 11(3) overrides RD 10(1) for main-benefit PAYE payments: the amount
+      of tax must be determined by the Commissioner in consultation with the
+      administering department's chief executive. CF 1(1)(c) identifies the
+      taxable main-benefit class.
+    limitation: >-
+      The operative Commissioner/MSD determination and its precision have
+      not been verified. No ordinary wage table or annual income-tax assumption
+      substitutes for it; no new WFF interaction is accepted.
 - id: sole-parent-support-ird-government-payments
   kind: agency_guidance
   title: IRD — Government payments that affect your Working for Families
@@ -112,6 +186,18 @@ sources:
     AS categories require a fresh cross-policy review; SPS/SLP implications
     are not assumed absent. Detailed post-commencement mapping remains pending.
   checked_on: '2026-10-05'
+  specification_check:
+    checked_on: 2026-10-13
+    url: https://www.legislation.govt.nz/act/public/2026/54/en/2026-09-03/
+    version_as_at: '2026-09-03'
+    locator: s 2(1)-(2), commencement.
+    finding: >-
+      Dated as-enacted text confirms 2 November 2026 for Part 1 and
+      1 April 2027 for Part 2, both outside the completed draft reference week.
+    limitation: >-
+      Earlier detailed change inventory is retained. This check does not
+      approve any post-commencement SPS rule or establish that shared
+      definitions and income changes have no SPS consequence.
 - id: sole-parent-support-msd-overview
   kind: agency_guidance
   title: MSD — Sole Parent Support
@@ -133,6 +219,15 @@ sources:
     deductions and childcare exemptions from ordinary income abatement.
   limitation: Live guidance has no published version date on the retrieved page. Use the dated Act and
     regulations for legal timing; amounts are not adopted.
+  specification_check:
+    checked_on: 2026-10-13
+    locator: Weekly income; Annual income; Income from Overseas Pensions; Childcare costs income exemption.
+    finding: >-
+      Live guidance corroborates the 160/250 weekly Income Test 1 thresholds,
+      30/70-cent tiers, separate overseas-pension deduction and childcare
+      earnings disregard. The statutory annual default and weekly agreement
+      remain the authority for choosing an assessment basis.
+    limitation: No published historical version or complete SPS rounding method was located.
 - id: sole-parent-support-msd-rates-2026
   kind: agency_rates
   title: MSD — Sole Parent Support rates at 1 April 2026
@@ -144,6 +239,17 @@ sources:
     columns are distinct.
   limitation: Category and date check only. No numerical values, boundary cut-outs, tax-code conversion,
     rounding or future end date is approved.
+  specification_check:
+    checked_on: 2026-10-13
+    page_updated_on: '2026-07-13'
+    locator: Sole Parent Support section, after-tax M and before-tax columns.
+    finding: >-
+      Published ordinary weekly amounts are 521.52 after tax at M and 606.69
+      before tax. The statutory table and Order use 521.52. The two columns
+      have distinct meanings and are documentary candidates only.
+    limitation: >-
+      No abated gross-entitlement formula or complete precision method follows
+      from these maximum-rate observations. Hospital and special rates excluded.
 - id: sole-parent-support-msd-qualifications
   kind: agency_guidance
   title: MSD MAP — Sole Parent Support qualifications
@@ -154,3 +260,159 @@ sources:
     the broader s 30 inventory rather than a universal no-relationship gate.
   limitation: No historical version date published; special care and partner attribution need specification
     and review.
+  specification_check:
+    checked_on: 2026-10-13
+    locator: Qualifications and relationship routes.
+    finding: >-
+      Current operational guidance corroborates broader statutory relationship
+      routes. The draft covers only the verified s 30(a) single route; excluding
+      other routes is a coverage choice, not a universal eligibility rule.
+    limitation: No applicant's eligibility or MSD determination is established by this page.
+- id: sole-parent-support-social-security-act-2026-09-26
+  kind: legislation
+  title: Social Security Act 2018 — 26 September 2026 consolidation
+  url: https://www.legislation.govt.nz/act/public/2018/32/en/2026-09-26/
+  version_as_at: '2026-09-26'
+  checked_on: 2026-10-13
+  locator: >-
+    ss 8, 16-19, 29-33, 349-351; Schedule 2 child, dependent child,
+    principal caregiver and Income Test 1; Schedule 3 cls 2-9, 11-15,
+    Parts 3A and 4; Schedule 4 Part 2 cls 1-4.
+  finding: >-
+    SPS s 29 requires the sole-parent, care, residence and age conditions;
+    s 30(a) is the ordinary single route, while ss 31-32 require distinct
+    child/care handling. Section 33 expires SPS when the youngest dependent
+    child turns 14. Schedule 4 Part 2 uses 521.52 subject to Income Test 1,
+    permits discretionary childcare disregard and spouse-income attribution,
+    and excludes OB/UCB children for that rate part. Section 18 is per person.
+    Sections 349-351 identify a separate tax-payment/gross-up mechanism.
+  comparison_with_previous_version:
+    source_id: sole-parent-support-social-security-act
+    previous_version_as_at: '2026-09-04'
+    checked_on: 2026-10-13
+    finding: >-
+      The scoped SPS ss 29-33, Schedule 4 Part 2, Schedule 3 cl 13,
+      Income Test 1, s 18 and tax provisions are unchanged. The later
+      consolidation adds Oranga Tamariki Act s 283(na) to Schedule 2's
+      CYPFA order or agreement definition via 2026 No 65 s 60;
+      exceptional child-order routes remain outside this first slice.
+  limitation: >-
+    Scoped reading only, not a whole-Act eligibility or payment audit.
+    Numeric gross output and precision remain blocked; no historical or
+    post-2-November coverage is established.
+- id: sole-parent-support-msd-weekly-example
+  kind: agency_worked_example
+  title: MSD MAP — Sole Parent Support weekly income example
+  url: https://map.workandincome.govt.nz/map/income-support/main-benefits/sole-parent-support/weekly-income-example-01.html
+  checked_on: 2026-10-13
+  locator: Example 1, weekly gross income 350 and total reduction 97.
+  finding: >-
+    Published arithmetic combines 27 in the lower band and 70 in the upper
+    band for a 97 reduction at 350 gross weekly income; threshold note says
+    as at 1 April 2022.
+  limitation: >-
+    Candidate benchmark for the deduction substep only. No published page
+    version date, gross entitlement, tax method, fractional-dollar case or
+    rounding/tie case is supplied. Not a protected expected value.
+- id: sole-parent-support-msd-deductions
+  kind: agency_guidance_and_examples
+  title: MSD — Sole Parent Support deduction tables
+  url: https://www.workandincome.govt.nz/on-a-benefit/tell-us/income/deduction-tables/sole-parent-support
+  checked_on: 2026-10-13
+  page_updated_on: '2026-06-23'
+  locator: Your deductions; Estimate your deduction, before-tax income and after-tax payment deduction columns.
+  finding: >-
+    The page places the 30/70-cent deductions against the after-tax benefit
+    payment, with gross weekly income as the input. It corroborates the
+    350-to-97 worked example and distinguishes an earnings exemption for
+    childcare costs.
+  limitation: >-
+    The page expressly describes estimates depending on individual
+    circumstances. No printed cut-out is an adopted parameter or evidence
+    that a zero payment removes grant status; no gross-up or precision rule.
+- id: sole-parent-support-msd-childcare-disregard
+  kind: agency_guidance
+  title: MSD MAP — Sole Parent Support childcare cost income exemption
+  url: https://map.workandincome.govt.nz/map/income-support/main-benefits/sole-parent-support/childcare-cost-income-exemption-01.html
+  checked_on: 2026-10-13
+  locator: Additional weekly exemption and childcare subsidy/OSCAR assessment.
+  finding: >-
+    Operational guidance links the possible additional earnings exemption
+    to childcare while working and prior assessment of subsidy or OSCAR;
+    Schedule 4 Part 2 cl 2 remains the discretionary legal authority.
+  limitation: >-
+    No Poltika discretion, subsidy assessment or automatic maximum disregard
+    is authorised. A resolved caller amount must carry decision/period evidence.
+
+- id: sole-parent-support-social-security-regulations-20261001
+  kind: regulations
+  title: Social Security Regulations 2018 — 1 October 2026 consolidation
+  url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2018/202/en/2026-10-01/
+  version_as_at: '2026-10-01'
+  version_label: Official latest index checked 15 October 2026; PDF version 219_0.
+  checked_on: '2026-10-15'
+  locator: rr 8-11, 17-18, 205(1)-(3); Schedule 6 items 1-2; Schedule 1 cls 25, 32-33; Schedule 8 cl 44.
+  finding: >-
+    Current consolidation supersedes the retained 4 September source entry for the
+    selected 5-12 October week. Regulation 205, Schedule 6, JS transition cl 25,
+    medical regulations 8-11 and severe-disablement exemption cl 44 are unchanged.
+    SPS/SLP use 52 weeks by default; a one-week determination needs an active
+    MSD/person agreement, which either party may end by notice.
+  comparison_method: >-
+    Retrieved dated 4 September and current official full HTML directly with a
+    browser user agent after browser-tool failure; extracted visible text and
+    compared the complete regulations body. The sole substantive body change is
+    Schedule 1 cl 33(2), first review deadlines for independent review benefits.
+  amending_instrument:
+    title: Social Security (Modernisation) Amendment Regulations 2026 (SL 2026/255)
+    url: https://www.legislation.govt.nz/secondary-legislation/pco-drafted/2026/255/en/latest/
+    made_on: '2026-08-31'
+    legal_commencement: '2026-10-01'
+    locator: rr 2, 4; replacement Schedule 1 cl 33(2).
+  limitation: >-
+    Corrects the stale current-version claim; does not by itself establish complete
+    interval currency, continuing grant state, historical receipt timing, or approval.
+    Ordinary domestic first-slice coverage remains unchanged. No post-November
+    extension, implementation or numerical parameter is approved.
+  review_state: Author recheck; AI hypothesis pending independent Claude review and applicable Pete gates.
+- id: sole-parent-support-ird-det-24-03
+  kind: agency_interpretation
+  legal_character: Commissioner determination exercising ITA RD 11(3); current catalogue kind retained conservatively without a schema change.
+  title: IRD DET 24/03 — amount of tax for a payment of a main benefit
+  url: https://www.taxtechnical.ird.govt.nz/-/media/project/ir/tt/pdfs/determinations/miscellaneous/2024/det-24-03.pdf?modified=20240715225311
+  issued_on: '2024-07-10'
+  effective_period_label: 2024-25 income year onwards; operative payment-date split at 2 August 2024.
+  checked_on: '2026-10-15'
+  locator: >-
+    Operative Determination, printed p 1 (PDF page 2); background paras 1-3, 5.2, 6,
+    printed pp 2-3 (PDF pages 3-4); background is expressly outside the determination.
+  finding: >-
+    Under ITA RD 11(3), after consultation with the MSD chief executive, the
+    Commissioner selects the M tax-code rate in weekly PAYE tables applying from
+    31 July 2024 for main-benefit payments made from 2 August 2024. Background
+    distinguishes that payment tax from final annual tax on total taxable income.
+  limitation: >-
+    Locates the previously missing determination. Complete computational application,
+    continuing currency, precise IR340 edition, payment-date relation to entitlement,
+    levy treatment, inverse gross-up, fractional-income handling and rounding still
+    require source review. No complete gross benchmark or approved value is supplied.
+  review_state: Documentary authority candidate; no promotion or protected expected-value approval.
+- id: sole-parent-support-ird-ir340-table-candidates
+  kind: agency_guidance
+  title: IRD IR340 — weekly PAYE tables, table-edition and levy check candidates
+  url: https://www.ird.govt.nz/deductions
+  page_updated_on: '2026-04-01'
+  checked_on: '2026-10-15'
+  locator: Current Apr 2026 IR340 and Previous years Aug 2024 IR340 links; current PDF printed p 3.
+  current_table_url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-apr-2026.pdf?modified=20260323203256
+  determination_referenced_edition_url: https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-aug-2024.pdf?modified=20250314001644
+  finding: >-
+    The current edition states 1 April 2026 to 31 March 2027; the August 2024
+    cover states 31 July 2024 to 31 March 2025. Current salary/wage tables include
+    ACC earners levy. DET 24/03 is benefit-tax authority, not automatic authority
+    to copy the whole employee deduction or substitute annual salary tax.
+  limitation: >-
+    Table edition, applicable components and benefit-specific inverse/rounding use
+    are candidates for review, not resolved conflicts or an adopted tax method.
+    No ordinary-wage calculator or tax table result is used as a benefit benchmark.
+  review_state: Located for bounded follow-up; gross method and precision remain needs_review.
