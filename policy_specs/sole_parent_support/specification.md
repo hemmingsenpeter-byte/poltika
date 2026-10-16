@@ -3,7 +3,7 @@
 | Metadata | Draft contract |
 | --- | --- |
 | `policy_id` | `sole_parent_support` |
-| `status` | `draft_pending_review` |
+| `status` | `specification_approved` (Pete, 16 October 2026, D47: rules, coverage, outcome precedence and gates for this first slice; no values, policy version, cases or engine, and no gross amount until DEC-001/002 have a sourced method) |
 | `policy_version` | `null` |
 | Author / source check | GPT/Codex, 13 October 2026, Pacific/Auckland |
 | Reference candidate | One completed week `[2026-10-05, 2026-10-12)`; lookup date `2026-10-05` |

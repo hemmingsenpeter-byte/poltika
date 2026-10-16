@@ -1,6 +1,6 @@
 # Supported Living Payment — restricted-work-capacity existing-grant draft
 
-**Status:** `draft_pending_review`. **Policy:** `supported_living_payment`.
+**Status:** `specification_approved` (Pete, 16 October 2026, D47: rules, coverage, outcome precedence and gates for this first slice; no values, policy version, cases or engine, and no gross amount until DEC-001/002 have a sourced method). **Policy:** `supported_living_payment`.
 **Policy version:** `null`. **Draft date / source check:** 13 October 2026.
 **Programme:** Task 8; v0.3 local 0.2 / 3.3.1, sources and specification only.
 **Proposed reference week:** `[2026-10-05, 2026-10-12)`; lookup date `2026-10-05`.

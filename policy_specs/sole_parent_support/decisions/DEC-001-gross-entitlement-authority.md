@@ -3,7 +3,7 @@
 **Policy:** Sole Parent Support, D11 single established-grant slice.
 **Date:** 2026-10-13 (raised / source check).
 **Decision owner:** Pete. **Decision date:** none.
-**Status:** open; `needs_review`. **Raised by:** GPT/Codex.
+**Status:** open for the method; holding position accepted 16 October 2026 (D47); `needs_review`. **Raised by:** GPT/Codex.
 **Class:** AI hypothesis.
 **Classification:** `MISSING_SOURCE`; scope/meaning choice also requires Pete.
 
@@ -84,3 +84,12 @@ Pete's [decision options](../../../review_packets/task8_benefit_specifications.m
 now distinguish retaining the full abated gross slice, expressly narrowing
 to independently reviewed zero-income maxima, and changing output scope.
 No choice is made; gross amounts remain `needs_review` with no amount.
+
+## Holding position accepted (Pete, 16 October 2026; decision log D47)
+
+Pete accepted the holding position recorded above: no gross amount is
+produced, and the component stays `needs_review`, until a sourced and
+independently reviewed method exists. This decides no conversion, gross-up,
+precision or rounding method; the method itself remains open with Pete as
+owner, and needs a located primary source (the RD 11(3) determination or
+equivalent official procedure), not an approval.

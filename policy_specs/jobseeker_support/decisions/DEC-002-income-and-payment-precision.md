@@ -4,7 +4,7 @@
 **Date:** 2026-10-13
 **Raised by:** GPT/Codex
 **Decision owner:** Pete
-**Decision date:** none. **Status:** open; `needs_review`.
+**Decision date:** none for the method. **Status:** open for the method; holding position accepted 16 October 2026 (D47); `needs_review`.
 **Class:** AI hypothesis. Discrepancy: `MISSING_SOURCE` for final/intermediate
 precision and nil boundaries; interpretation review for income preparation.
 
@@ -54,3 +54,12 @@ preparation stage and complete benefit/gross precision, including a
 fractional-income example and nil-payment boundary. Pete decides the
 interpretation after review; any deliberate model restriction or convention
 requires its own written scope/class and cannot become statutory evidence.
+
+## Holding position accepted (Pete, 16 October 2026; decision log D47)
+
+Pete accepted the holding position recorded above: no gross amount is
+produced, and the component stays `needs_review`, until a sourced and
+independently reviewed method exists. This decides no conversion, gross-up,
+precision or rounding method; the method itself remains open with Pete as
+owner, and needs a located primary source (the RD 11(3) determination or
+equivalent official procedure), not an approval.
