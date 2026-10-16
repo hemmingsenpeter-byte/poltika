@@ -8,9 +8,10 @@ do not change.
 
 What it holds:
 
-- people (`Person`): a stable id, a role, the per-child facts WFF asks for, and a generic map of asserted
-  facts (fact id -> verified/excluded/unknown) for facts a policy needs that
-  have no typed field here;
+- people (`Person`): a stable id, a role, the per-child facts WFF asks for,
+  the per-person facts income tax asks for (`IncomeTaxFacts`), and a generic
+  map of asserted facts (fact id -> verified/excluded/unknown) for facts a
+  policy needs that have no typed field here;
 - one family (`Family`): the claimant, the partner (or none, or unknown),
   the dependent children. A household with more than one family is refused
   with a reason, not guessed (ADR-0017 D6 answer 2);
@@ -145,6 +146,11 @@ class IncomeBasis(str, Enum):
     WFF_FAMILY_SCHEME = "wff_family_scheme"  # WFF-02: per person, subpart MB adjustments applied
     WFF_NET_FAMILY_SCHEME_ME3_ATTESTED = "wff_net_family_scheme_me3_attested"  # WFF-05: family figure, ME 3
     AS_CHARGEABLE_WEEKLY = "as_chargeable_weekly"  # AS-07: family figure, weekly
+    # Income tax IT-02/03/04/08: per person, the annual taxable income the
+    # caller established under BC 2-5 and BD 1/3 and allocated to the tax
+    # year. Poltika does not derive it from earnings (IT-03: "supplied, not
+    # inferred").
+    IT_ANNUAL_TAXABLE = "it_annual_taxable"
 
 
 class BenefitKind(str, Enum):
@@ -201,12 +207,68 @@ class ChildFacts(BaseModel):
     as_dependent_child: Assertion = Assertion.UNKNOWN
 
 
+class TaxResidenceScope(str, Enum):
+    """Income tax's `ResidenceScope` members and values, plus `UNKNOWN`."""
+
+    WHOLE_YEAR_ORDINARY_NZ_RESIDENT = "whole_year_ordinary_nz_resident"
+    NON_RESIDENT = "non_resident"
+    CHANGING_RESIDENCE = "changing_residence"
+    SPECIAL_RESIDENCE_REGIME = "special_residence_regime"
+    UNKNOWN = "unknown"
+
+
+class TaxYearBasis(str, Enum):
+    """Income tax's `TaxYearBasis` members and values, plus `UNKNOWN`."""
+
+    STANDARD_2026_27 = "standard_2026_27"
+    NON_STANDARD_YEAR = "non_standard_year"
+    OTHER_STANDARD_YEAR = "other_standard_year"
+    UNKNOWN = "unknown"
+
+
+class TaxIncomeComposition(str, Enum):
+    """Income tax's `IncomeComposition` members and values, plus `UNKNOWN`."""
+
+    ORDINARY_SALARY_WAGES_ONLY = "ordinary_salary_wages_only"
+    MAIN_BENEFIT = "main_benefit"
+    BUSINESS_SELF_EMPLOYMENT = "business_self_employment"
+    INVESTMENT_OR_RENT = "investment_or_rent"
+    FOREIGN_INCOME = "foreign_income"
+    UNUSUAL_EMPLOYMENT_ITEMS = "unusual_employment_items"
+    SCHEDULAR_OR_PIE = "schedular_or_pie"
+    OTHER_OR_MIXED_INCOME = "other_or_mixed_income"
+    UNKNOWN = "unknown"
+
+
+class IncomeTaxFacts(BaseModel):
+    """The per-person facts income tax asks for
+    (`policy_specs/income_tax/facts.yaml`, IT-01 to IT-05), except the
+    amount: annual taxable income is an income spell with basis
+    `IT_ANNUAL_TAXABLE`, so it is dated like every other income. Each is the
+    caller's assertion about this one person; none is inferred from role,
+    spells or another person's facts. Unknown is the default, never verified.
+    `taxable_income_basis_attestation` is the engine's own attestation:
+    `True` attested, `False` not attested, `None` not answered."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    individual_status: Assertion = Assertion.UNKNOWN
+    residence_scope: TaxResidenceScope = TaxResidenceScope.UNKNOWN
+    tax_year_basis: TaxYearBasis = TaxYearBasis.UNKNOWN
+    income_composition: TaxIncomeComposition = TaxIncomeComposition.UNKNOWN
+    no_deductions_status: Assertion = Assertion.UNKNOWN
+    no_available_losses_status: Assertion = Assertion.UNKNOWN
+    general_basic_rate_status: Assertion = Assertion.UNKNOWN
+    taxable_income_basis_attestation: bool | None = None
+
+
 class Person(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     person_id: str
     role: PersonRole
     child_facts: ChildFacts | None = None
+    income_tax_facts: IncomeTaxFacts | None = None
     asserted_facts: dict[str, Assertion] = Field(default_factory=dict)
 
     @field_validator("person_id")
@@ -449,6 +511,11 @@ class Household(BaseModel):
             return json.dumps(item, sort_keys=True, separators=(",", ":"))
 
         content = self.model_dump(mode="json")
+        for person in content["persons"]:
+            # A person without income-tax facts hashes exactly as before the
+            # field existed, so existing household identities are unchanged.
+            if person["income_tax_facts"] is None:
+                del person["income_tax_facts"]
         content["persons"].sort(key=lambda p: p["person_id"])
         content["income_spells"].sort(key=key)
         content["benefit_spells"].sort(key=key)
