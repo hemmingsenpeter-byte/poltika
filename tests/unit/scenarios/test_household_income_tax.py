@@ -4,20 +4,25 @@ model through a named mapping, `to_income_tax()`.
 The engine is unchanged, so the proof is a round trip: every draft spec
 case, held as a one-person household, maps back to the identical scenario
 and gives the identical result, trace included. The other tests pin the
-mapping's own rules: one person at a time, spells that tile the year,
-no apportionment, no derivation from earnings, and the engine's order of
+mapping's own rules: one person at a time, one whole-year spell (several
+refused), no apportionment, no derivation from earnings, and the engine's order of
 `unsupported` before `needs_review`."""
 
 from __future__ import annotations
 
+import shutil
+from dataclasses import replace
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 import pytest
 
+from poltika.common.errors import PolicyVersionMismatchError
 from poltika.engines.simulator import income_tax as it
 from poltika.engines.simulator.income_tax import run_income_tax_module
+from poltika.policy.loader import load_policy_snapshot
 from poltika.scenarios.household_mappings import (
     INCOME_TAX_YEAR_2026_27,
     AdapterRefused,
@@ -80,8 +85,29 @@ def _whole_year(person_id: str, amount: str) -> hh.IncomeSpell:
 # ------------------------------------------------------------ round trip
 
 
-@pytest.mark.parametrize("case", _CASES, ids=[c["id"] for c in _CASES])
-def test_every_spec_case_round_trips_through_a_household(case: dict[str, Any]) -> None:
+def _holds_at_year(scenario: it.IncomeTaxScenario) -> bool:
+    """The adapter dates a known amount to `YEAR` unless the scenario asserts another year."""
+    return scenario.annual_taxable_income is None or scenario.tax_year_basis not in (
+        it.TaxYearBasis.OTHER_STANDARD_YEAR,
+        it.TaxYearBasis.NON_STANDARD_YEAR,
+    )
+
+
+_AT_YEAR = [c for c in _CASES if _holds_at_year(scenario_from_yaml(c["scenario"]))]
+_ANOTHER_YEAR = [c for c in _CASES if not _holds_at_year(scenario_from_yaml(c["scenario"]))]
+_OWN_PERIOD = {
+    it.TaxYearBasis.OTHER_STANDARD_YEAR: hh.DatePeriod(start=date(2025, 4, 1), end=date(2026, 4, 1)),
+    it.TaxYearBasis.NON_STANDARD_YEAR: hh.DatePeriod(start=date(2026, 7, 1), end=date(2027, 7, 1)),
+}
+
+
+def test_the_round_trip_groups_cover_every_case() -> None:
+    assert len(_AT_YEAR) + len(_ANOTHER_YEAR) == len(_CASES) == 47
+    assert _AT_YEAR and _ANOTHER_YEAR
+
+
+@pytest.mark.parametrize("case", _AT_YEAR, ids=[c["id"] for c in _AT_YEAR])
+def test_every_spec_case_the_year_can_hold_round_trips_through_a_household(case: dict[str, Any]) -> None:
     scenario = scenario_from_yaml(case["scenario"])
     household = household_from_income_tax(scenario, household_id="it-case", tax_year=YEAR)
     assert to_income_tax(household, "taxpayer", YEAR) == scenario
@@ -90,6 +116,17 @@ def test_every_spec_case_round_trips_through_a_household(case: dict[str, Any]) -
     assert via_household == direct
     assert via_household.trace is not None and direct.trace is not None
     assert via_household.trace.scenario_sha256 == direct.trace.scenario_sha256
+
+
+@pytest.mark.parametrize("case", _ANOTHER_YEAR, ids=[c["id"] for c in _ANOTHER_YEAR])
+def test_every_spec_case_asserting_another_year_is_held_at_its_own_period(case: dict[str, Any]) -> None:
+    scenario = scenario_from_yaml(case["scenario"])
+    assert scenario.tax_year_basis is not None
+    with pytest.raises(AdapterRefused, match="another tax year"):
+        household_from_income_tax(scenario, household_id="it-case", tax_year=YEAR)
+    own = _OWN_PERIOD[scenario.tax_year_basis]
+    household = household_from_income_tax(scenario, household_id="it-case", tax_year=own)
+    assert to_income_tax(household, "taxpayer", own) == scenario
 
 
 def test_the_household_enums_carry_the_engine_values_plus_unknown() -> None:
@@ -254,3 +291,167 @@ def test_the_adapter_refuses_a_period_the_scenario_does_not_assert() -> None:
             household_id="it-case",
             tax_year=hh.DatePeriod(start=date(2025, 4, 1), end=date(2026, 4, 1)),
         )
+
+
+# ------------------------------------------------------------ PR #232 review (R3, R4, R7)
+
+
+def _straddler(person_id: str, amount: str = "1", **kw: Any) -> hh.IncomeSpell:
+    return _spell(person_id, date(2026, 3, 1), date(2027, 4, 1), amount, **kw)
+
+
+def _mapped(household: hh.Household, person_id: str = "a") -> it.IncomeTaxScenario:
+    mapped = to_income_tax(household, person_id, YEAR)
+    assert isinstance(mapped, it.IncomeTaxScenario)
+    return mapped
+
+
+def test_q10_ignores_a_straddler_of_another_basis() -> None:
+    for basis in (hh.IncomeBasis.GROSS, hh.IncomeBasis.WFF_FAMILY_SCHEME):
+        household = _couple(_whole_year("a", "60000"), _straddler("a", basis=basis))
+        assert _mapped(household).annual_taxable_income == Decimal(60000)
+
+
+def test_q10_reads_only_the_selected_person() -> None:
+    household = _couple(_whole_year("a", "60000"), _straddler("b"))
+    assert _mapped(household).annual_taxable_income == Decimal(60000)
+    refused = to_income_tax(household, "b", YEAR)
+    assert isinstance(refused, MappingRefusal) and refused.code == "HOUSEHOLD_SPELL_PERIOD_MISMATCH"
+
+
+def test_q10_refuses_a_spell_ending_past_the_year() -> None:
+    household = _couple(_spell("a", YEAR.start, date(2027, 5, 1), "60000"))
+    refusal = to_income_tax(household, "a", YEAR)
+    assert isinstance(refusal, MappingRefusal) and refusal.code == "HOUSEHOLD_SPELL_PERIOD_MISMATCH"
+
+
+def test_a_disjoint_previous_year_spell_does_not_refuse_the_year() -> None:
+    previous = _spell("a", date(2025, 4, 1), date(2026, 4, 1), "40000")
+    assert _mapped(_couple(previous, _whole_year("a", "60000"))).annual_taxable_income == Decimal(60000)
+
+
+def test_only_an_unsplit_total_is_taxable_income() -> None:
+    typed = _spell("a", YEAR.start, YEAR.end, "60000", income_type=hh.IncomeType.EMPLOYMENT_EARNINGS)
+    assert _mapped(_couple(typed)).annual_taxable_income is None
+
+
+@pytest.mark.parametrize(
+    ("amount", "code"),
+    [("-1", "IT_NEGATIVE_INCOME_NOT_MODELLED"), ("15600.25", "IT_FRACTIONAL_INCOME_NOT_MODELLED")],
+)
+def test_a_typed_straddler_does_not_hide_a_known_numeric_exclusion(amount: str, code: str) -> None:
+    typed = _straddler("a", income_type=hh.IncomeType.EMPLOYMENT_EARNINGS)
+    for spells in ((_whole_year("a", amount),), (_whole_year("a", amount), typed)):
+        result = run_household_income_tax(_couple(*spells), "a", tax_year=YEAR)
+        assert (result.outcome, result.code) == ("unsupported", code)
+
+
+def test_a_refusal_falls_back_on_the_selected_persons_facts() -> None:
+    non_resident = _IN_SLICE.model_copy(update={"residence_scope": hh.TaxResidenceScope.NON_RESIDENT})
+    household = _couple(_straddler("b"), claimant=non_resident, partner=_IN_SLICE)
+    result = run_household_income_tax(household, "b", tax_year=YEAR)
+    assert (result.outcome, result.code) == ("needs_review", "HOUSEHOLD_SPELL_PERIOD_MISMATCH")
+
+
+def test_deductions_and_losses_map_each_to_its_own_field() -> None:
+    facts = _IN_SLICE.model_copy(
+        update={"no_deductions_status": hh.Assertion.VERIFIED, "no_available_losses_status": hh.Assertion.EXCLUDED}
+    )
+    mapped = _mapped(_couple(claimant=facts))
+    assert mapped.no_deductions_status is it.FactStatus.VERIFIED
+    assert mapped.no_available_losses_status is it.FactStatus.EXCLUDED
+    swapped = _mapped(
+        _couple(
+            claimant=facts.model_copy(
+                update={"no_deductions_status": hh.Assertion.EXCLUDED, "no_available_losses_status": hh.Assertion.VERIFIED}
+            )
+        )
+    )
+    assert swapped.no_deductions_status is it.FactStatus.EXCLUDED
+    assert swapped.no_available_losses_status is it.FactStatus.VERIFIED
+
+
+def _adapter_scenario(**kw: Any) -> it.IncomeTaxScenario:
+    return it.IncomeTaxScenario(
+        individual_status=it.FactStatus.VERIFIED,
+        residence_scope=it.ResidenceScope.WHOLE_YEAR_ORDINARY_NZ_RESIDENT,
+        tax_year_basis=kw.pop("tax_year_basis", it.TaxYearBasis.STANDARD_2026_27),
+        income_composition=it.IncomeComposition.ORDINARY_SALARY_WAGES_ONLY,
+        no_deductions_status=kw.pop("no_deductions_status", it.FactStatus.VERIFIED),
+        no_available_losses_status=kw.pop("no_available_losses_status", it.FactStatus.EXCLUDED),
+        general_basic_rate_status=it.FactStatus.VERIFIED,
+        taxable_income_basis_attestation=True,
+        annual_taxable_income=kw.pop("annual_taxable_income", Decimal(60000)),
+    )
+
+
+def test_the_adapter_sets_deductions_and_losses_each_to_its_own_field() -> None:
+    person = household_from_income_tax(_adapter_scenario(), household_id="h", tax_year=YEAR).persons[0]
+    facts = person.income_tax_facts
+    assert facts is not None
+    assert facts.no_deductions_status is hh.Assertion.VERIFIED
+    assert facts.no_available_losses_status is hh.Assertion.EXCLUDED
+    reverse = _adapter_scenario(
+        no_deductions_status=it.FactStatus.EXCLUDED, no_available_losses_status=it.FactStatus.VERIFIED
+    )
+    facts = household_from_income_tax(reverse, household_id="h", tax_year=YEAR).persons[0].income_tax_facts
+    assert facts is not None
+    assert facts.no_deductions_status is hh.Assertion.EXCLUDED
+    assert facts.no_available_losses_status is hh.Assertion.VERIFIED
+
+
+def test_the_adapter_keeps_the_given_identities() -> None:
+    household = household_from_income_tax(_adapter_scenario(), household_id="custom-h", tax_year=YEAR, person_id="p1")
+    assert household.household_id == "custom-h"
+    assert household.persons[0].person_id == "p1"
+    assert household.families[0].claimant_id == "p1"
+    assert [s.person_id for s in household.income_spells] == ["p1"]
+
+
+def test_the_adapter_dates_the_spell_to_the_period_it_is_given() -> None:
+    earlier = hh.DatePeriod(start=date(2025, 4, 1), end=date(2026, 4, 1))
+    scenario = _adapter_scenario(tax_year_basis=it.TaxYearBasis.OTHER_STANDARD_YEAR)
+    (spell,) = household_from_income_tax(scenario, household_id="h", tax_year=earlier).income_spells
+    assert (spell.start, spell.end) == (earlier.start, earlier.end)
+
+
+@pytest.mark.parametrize("basis", [it.TaxYearBasis.OTHER_STANDARD_YEAR, it.TaxYearBasis.NON_STANDARD_YEAR])
+def test_the_adapter_refuses_another_years_amount_dated_2026_27(basis: it.TaxYearBasis) -> None:
+    with pytest.raises(AdapterRefused, match="another tax year"):
+        household_from_income_tax(_adapter_scenario(tax_year_basis=basis), household_id="h", tax_year=YEAR)
+    # No amount, no spell, nothing to date.
+    household = household_from_income_tax(
+        _adapter_scenario(tax_year_basis=basis, annual_taxable_income=None), household_id="h", tax_year=YEAR
+    )
+    assert household.income_spells == ()
+
+
+def test_the_adapter_infers_no_year_for_an_unknown_basis() -> None:
+    unknown = replace(_adapter_scenario(), tax_year_basis=None)
+    (spell,) = household_from_income_tax(unknown, household_id="h", tax_year=YEAR).income_spells
+    assert (spell.start, spell.end) == (YEAR.start, YEAR.end)
+
+
+def test_the_run_passes_the_policy_dir_the_modelled_date_and_the_requested_version(tmp_path: Path) -> None:
+    household = _couple(_whole_year("a", "60000"))
+    scenario = _mapped(household)
+    # A copy whose specification differs binds a different snapshot into the trace.
+    copy = tmp_path / "income_tax"
+    shutil.copytree(it.POLICY_DIR, copy)
+    with (copy / "specification.md").open("a") as handle:
+        handle.write("\nprobe\n")
+    result = run_household_income_tax(household, "a", tax_year=YEAR, policy_dir=copy)
+    assert result.trace is not None
+    assert dict(result.trace.artifact_sha256) == load_policy_snapshot(copy, expected_policy_id="income_tax").artifact_sha256
+    assert result == run_income_tax_module(scenario, policy_dir=copy)
+    default = run_household_income_tax(household, "a", tax_year=YEAR)
+    assert default.trace is not None and default.trace.artifact_sha256 != result.trace.artifact_sha256
+
+    late = date(2027, 4, 1)
+    outside = run_household_income_tax(household, "a", tax_year=YEAR, modelled_date=late)
+    assert outside.code == "IT_DATE_OUTSIDE_REFERENCE_PERIOD"
+    assert outside == run_income_tax_module(scenario, modelled_date=late)
+    assert outside.trace is not None and outside.trace.modelled_date == late
+
+    with pytest.raises(PolicyVersionMismatchError):
+        run_household_income_tax(household, "a", tax_year=YEAR, requested_policy_version="0.1.0")
