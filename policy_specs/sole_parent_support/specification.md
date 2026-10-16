@@ -70,6 +70,12 @@ or split care and no in-week status/rate/basis change. It accepts an independent
 classified ordinary weekly income amount under an active r 205(2) agreement.
 The legally prescribed 52-week basis remains real but outside this proposed
 weekly-agreement sub-slice; a weekly payment does not establish weekly assessment.
+Pete retained these coverage boundaries on 16 October 2026 under Q25/D44:
+[DEC-003](decisions/DEC-003-weekly-agreement-first-slice.md) records the shared
+SPS/SLP agreement-only choice and deferred 52-week path;
+[DEC-004](decisions/DEC-004-s30a-care-first-slice.md) records the s 30(a) and
+ordinary-care choice. These decisions approve scope only; this specification
+and its monetary methods remain draft and subject to independent review.
 Initial applications, s 31 child-attribution decisions, other s 30 routes,
 child-order exceptions, transfer/reapplication decisions, sanctions,
 hospitalisation, imprisonment, absence, overseas pensions/direct deductions,
@@ -92,7 +98,7 @@ the law; scope and outcome choices are separately identified as model design.
 | SPS-05 | Receive separate child, primary care, family maintenance, financial dependence and relevant excluded-payment facts. OB/UCB payment excludes that child for the rate part. | `sole-parent-support-social-security-act-2026-09-26` Schedule 2 `child`, `dependent child`, `principal caregiver`; Schedule 4 Part 2 cl 4 |
 | SPS-06 | Refuse this slice for shared/split care or a required court-order/caregiver selection. A principal-caregiver assertion alone cannot resolve split care. | `sole-parent-support-social-security-act-2026-09-26` ss 29(b), 32(1)–(4); bounded care-coverage design |
 | SPS-07 | Preserve the per-person restriction on simultaneous own-right main benefits/NZ Super/veteran's pension. Check identity and period explicitly. | `sole-parent-support-social-security-act-2026-09-26` s 18 |
-| SPS-08 | A couple with both partners on own-right main benefits is outside this first slice, before missing-fact gates. No household-wide statutory prohibition is asserted. | `sole-parent-support-social-security-act-2026-09-26` s 18; Schedule 4 Part 1 cl 1(g), Part 3 cl 1(d); Pete's 5 October coverage decision |
+| SPS-08 | D36 limits this slice to one own-right main-benefit recipient per household. Multiple recipients, including both partners, are unsupported coverage before missing-fact gates. This is separate from s 18's per-person legal restriction. | `sole-parent-support-social-security-act-2026-09-26` s 18; Schedule 4 Part 1 cl 1(g), Part 3 cl 1(d); Pete's D36 coverage decision |
 | SPS-09 | Select the ordinary SPS Schedule 4 rate and Income Test 1; respect separately asserted reductions/suspension/cancellation. An agency gross column cannot replace the statutory rate. | `sole-parent-support-social-security-act-2026-09-26` s 17(1), (3); Schedule 4 Part 2 cl 1; `sole-parent-support-rates-order-2026` cl 5 / Schedule 1 Part 1 |
 | SPS-10 | Benefit-test income is its own before-tax statutory concept. The source order, inclusions and exclusions must already be resolved for this person/week. | `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cls 2–9, 15 and Part 4; Part 3A for separately excluded child-support charging |
 | SPS-11 | SPS normally uses 52 weeks. Require an MSD/person agreement for one-week determination that neither party has ended during the week. The seven-day payable week and MSD instalment timing do not select that assessment basis. | `sole-parent-support-social-security-regulations-20261001` r 205(1)–(3); Schedule 6 item 1; `sole-parent-support-social-security-act-2026-09-26` Schedule 3 cls 11, 13(1), s 338(1)–(5) |
@@ -127,13 +133,13 @@ child count substitutes for the required SPS fact.
 | `youngest_dependent_child_under_14_whole_week` / claimant/child | Separate s 30/s 33 classification for the whole week. Unknown `needs_review`; birthday or transfer in the week `unsupported` (SPS-04). |
 | `ordinary_care_arrangement_whole_week` / claimant/children | No shared/split care, court-order exception or care change needing selection. Unknown `needs_review`; any such path `unsupported` (SPS-06). |
 | `own_right_other_main_benefit_or_pension` / claimant | No conflicting simultaneous own-right receipt under s 18. Unknown `needs_review`; verified conflict `unsupported / evidenced_exclusion` (SPS-07). |
-| `both_partners_own_right_main_benefits` / household | Verified occurrence `unsupported / not_modelled` under approved coverage precedence; do not invent a legal household ban (SPS-08). |
+| `household_main_benefit_coverage` / household | One own-right main-benefit recipient in the household. Known multiple recipients, including both partners, `unsupported / not_modelled`; unknown coverage `needs_review`. This is D36 coverage, not a legal household ban (SPS-08). |
 | `ordinary_unmodified_rate_status` / claimant | No sanction, special rate, suspension/cancellation, hospital/prison/absence or direct-deduction path. Unknown `needs_review`; known path `unsupported` (SPS-09). |
 | `income_assessment_basis`, `weekly_agreement_active_whole_week` / claimant | Exact-week agreement under r 205(2), with its start/end evidence. Annual basis or termination/change `unsupported`; missing agreement `needs_review` (SPS-11). |
 | `sps_weekly_chargeable_income` / claimant | Nonnegative NZD for this exact week, before income tax, independently classified/attributed and after any authorised resolved disregard. Unknown or wrong/unverified meaning `needs_review`; unsupported composition/period `unsupported` (SPS-10–13). |
 | `income_classification_complete`, `income_exception_status` / claimant | Evidence for relevant inclusions/exclusions and no unresolved holiday, business/trade, child-support, insurance/compensation, overseas-pension or deprivation path. Unknown `needs_review`; a path requiring this module to derive them `unsupported` (SPS-10/12). |
 | `childcare_disregard_status`, `resolved_disregard_provenance` / claimant | Not applicable, or separately resolved under Part 2 cl 2 and reflected exactly once in charged income. Unknown/disputed MSD discretion `needs_review`; request to determine it `unsupported` (SPS-13). |
-| `period_currency`, `gross_method_status`, `precision_status` / governed sources | Complete-period confirmation and approved sourced methods; a missing/unreviewed gate `needs_review` regardless of all caller facts (SPS-01/15/16). |
+| `period_currency`, `gross_method_status`, `precision_status` / governed sources | Complete-period confirmation and approved sourced methods; after known coverage exclusions, a missing/unreviewed gate gives `needs_review` (SPS-01/15/16). |
 
 The module never constructs chargeable income from raw wages, tax returns or
 generic household income. If an earning-cost exemption or legitimate expense
@@ -175,11 +181,12 @@ They are not executable parameters, protected test values or gross benchmarks.
    This transcription of Income Test 1 describes the deduction substep only.
    It does not authorise a gross-entitlement formula, fractional-income
    procedure or repayment. Preserve all intermediate quantities (SPS-14/16).
-5. **Stop while DEC-001/DEC-002 or period currency is unresolved.** To produce
-   the requested gross component, the reviewed method must connect the
-   statutory-side reduced amount to the applicable ss 350–351/RD 11 method,
-   including a sourced zero floor and precision. Subtracting `D` directly from
-   `606.69` or equating `521.52` with gross entitlement would be `SPEC_ERROR`.
+5. **Stop while DEC-001/DEC-002 or period currency is unresolved.** The leading
+   hypothesis is to reduce the statutory-side amount before applying the
+   ss 350–351/RD 11 gross-up method. DEC-001 must resolve that computational
+   application, including a sourced zero floor and precision. Neither this
+   sequence nor subtracting `D` directly from `606.69` is an approved gross
+   procedure; `521.52` remains a distinct statutory/net-M observation.
 6. After those gates and independent expected-case review, emit only the
    gross SPS component, NZD per exact week, person ID, outcome and Model-output
    class. This draft produces no accepted numeric result (SPS-15–17).
@@ -199,11 +206,16 @@ operative gross-up determination and scope/meaning question for Pete.
 SPS precision procedure. Neither selects a modelling convention. Tax Q17's
 whole-dollar Assumption and AS r 19's round-up do not decide SPS precision.
 
+[DEC-003](decisions/DEC-003-weekly-agreement-first-slice.md) and
+[DEC-004](decisions/DEC-004-s30a-care-first-slice.md) record Pete's Q25/D44
+scope choices, decided 16 October 2026. They close the missing coverage-record
+part of review R1, not DEC-001/002, specification approval or implementation.
+
 The next values pack needs sourced dated intervals with no invented expiry,
 complete fact questions and independently calculated boundary cases at both
 thresholds, including $1 either side, fractional dollars/ties, resolved/no
 disregard, basis termination, care changes and the sourced zero boundary.
-Cases for missing/contradictory facts, unsupported routes and both-partner
+Cases for missing/contradictory facts, unsupported routes and multiple-recipient household
 coverage precedence are required separately. Protected expected values follow
 [test doctrine](../../doctrine/test-doctrine.md); none is added here.
 

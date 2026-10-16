@@ -152,9 +152,11 @@ The proposed sequence, conditional on approval, is:
    prioritises earning/entitlement periods; allocation is not implemented here.
 4. Select the dated cl 1(d) statutory maximum and Test 3. Subject to the
    precision decision, let `I*` be the approved income-test amount and
-   `D = 0.70 × max(I* − 160, 0)`; deduct `D` from the statutory rate, not the
-   published gross maximum (JS-05/08). This algebra expresses the proposed
-   statutory reduction only; it is not a complete executable monetary rule.
+   `D = 0.70 × max(I* − 160, 0)`. The leading hypothesis is to reduce the
+   statutory-side amount before gross-up, not subtract from the published
+   gross maximum (JS-05/08). DEC-001 must resolve that computational
+   application. This algebra expresses a proposed reduction substep, not
+   an approved sequence or complete executable monetary rule.
 5. Resolve lawful nil-payment treatment, precision and the tax-dependent
    conversion of the reduced statutory rate to the requested gross amount
    (JS-04/09; DEC-001/002). No negative benefit, unsourced clamp, rounding

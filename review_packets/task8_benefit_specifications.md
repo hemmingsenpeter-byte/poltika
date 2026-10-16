@@ -50,8 +50,10 @@ $426.12, $606.69 and $489.21. Income-test deductions apply on the statutory
 side. SSA ss 349–351 and ITA RD 11(3) establish the tax-dependent gross-up
 authority. The original pass had not located the operative determination;
 the 15 October pass below locates DET 24/03, while its complete computational
-application and precision remain unreviewed. Subtracting statutory deductions directly from the gross
-maxima would be unsupported. The drafts explicitly stop there.
+application and precision remain unreviewed. Reducing the statutory-side
+amount before gross-up is the leading hypothesis subject to DEC-001, not a
+settled computational sequence. Direct subtraction from the gross maxima
+is not an approved alternative. The drafts explicitly stop there.
 
 SPS/SLP normally use a **52-week income basis**, despite weekly payments;
 r 205(2) permits an MSD/person weekly agreement, terminable under (3).
@@ -204,7 +206,7 @@ its scope/aggregation stage and SPS/SLP applicability remain review questions.
 | --- | --- | --- |
 | Gross scope, each benefit in JS → SPS → SLP order | **A:** retain D11's full abated gross slice and complete the DET 24/03/table/rounding pack before values. **B:** explicitly narrow to ordinary zero-chargeable-income maxima; the published gross rows can support candidate cases after independent currency, category and protected-value review, but no abatement curve. **C:** expressly revise D11 to a scheduled/net-M component, separately labelled; this changes output meaning and does not satisfy the existing gross commission. | No option chosen. A preserves the existing scope; B/C require a recorded scope change. No numeric output is approved now, including at zero income. |
 | Precision | **A:** require complete benefit-specific source authority for income preparation, aggregation, deduction, gross-up, final rounding and ties. **B:** if evidence remains incomplete, approve an expressly bounded whole-dollar input restriction plus any separately identified necessary assumptions; this restriction alone does not settle gross-up/final rounding. | No convention chosen. Q17 tax and AS rounding are not benefit authority. |
-| SPS/SLP assessment sub-slice | **A:** retain the proposed active r 205(2) weekly-agreement contract with dated start/end evidence. **B:** commission a separate 52-week basis specification with its own caller periods and sourced rules. Neither option permits assuming an agreement from weekly payment frequency. | Weekly proposal awaits independent source/slice acceptance; no annual conversion approved. |
+| SPS/SLP assessment sub-slice | **A:** retain the proposed active r 205(2) weekly-agreement contract with dated start/end evidence. **B:** commission a separate 52-week basis specification with its own caller periods and sourced rules. Neither option permits assuming an agreement from weekly payment frequency. | Pete chose A on 16 October 2026 (Q25/D44), with the separate 52-week slice later. Scope only; independent source/specification review and monetary gates remain open. The shared SPS DEC-003 below records this choice. |
 
 DET 24/03's 31 July 2024 table reference needs a precise application review:
 the linked [August 2024 IR340](https://www.ird.govt.nz/-/media/project/ir/home/documents/forms-and-guides/ir300---ir399/ir340/ir340-aug-2024.pdf?modified=20250314001644)
@@ -305,3 +307,78 @@ all **3 relative packet links** resolve. `git diff --check` passes.
 tests/unit/policy/test_core_benefit_source_scope.py` passes **3 tests**.
 Only the JS catalogue and this packet were edited; final-head preflight and
 independent Claude review remain required after the next source commit.
+
+## 16 October 2026 — Q25 scope decisions and review follow-up
+
+**Authorship:** GPT/Codex author follow-up, not independent specification
+approval. Exact starting head: `712402da10682d481f14381533049008a8092fc9`;
+original review base: `7342e528ad67b58984de5711ba2d195bdef97c67`. The final
+published head and exact-head preflight are recorded in the PR handoff.
+Main was observed at `ed39fe700532b1d22b5a7ae2a3daa44963ce9cf6`; no main
+integration or conflict resolution is included in this author change.
+
+Pete chose Q25 option (a) in D44 on 16 October, conditional on separate
+records for each narrowing. This follow-up adds exactly those three:
+
+- [SPS DEC-003](../policy_specs/sole_parent_support/decisions/DEC-003-weekly-agreement-first-slice.md)
+  is the canonical shared SPS/SLP assessment-basis record: active weekly
+  agreement now, a separately reviewed 52-week slice later.
+- [SPS DEC-004](../policy_specs/sole_parent_support/decisions/DEC-004-s30a-care-first-slice.md)
+  records s 30(a) and ordinary care without shared/split-care selection.
+- [SLP DEC-002](../policy_specs/supported_living_payment/decisions/DEC-002-adult-only-first-slice.md)
+  records the adult category and deliberate exclusion of under-18s.
+
+They name Pete, his decision date, options, consequences, sources, reversal
+and retained gates. Each is classed as an Assumption about model coverage;
+none says an excluded recipient is legally ineligible. Existing monetary
+DECs remain open. Q25 decides no rate, gross method, precision or benchmark,
+including for zero income, and does not approve these draft specifications.
+
+### Response to the existing Claude review
+
+The [review at `0994a0c`](https://github.com/hemmingsenpeter-byte/poltika/pull/220#pullrequestreview-5529214514)
+and [delta review at `712402d`](https://github.com/hemmingsenpeter-byte/poltika/pull/220#issuecomment-6186793830)
+remain the independent record; the following are author changes awaiting
+Claude verification, not a reviewer gate clearance:
+
+| Finding | Author response |
+| --- | --- |
+| R1, scope escalation | Three separate Q25/D44 records and specification crosslinks now record Pete's choices. No new interpretation is selected by Codex. |
+| R2, P2 SPEC_ERROR | SPS's governed-source input row now applies `needs_review` after known coverage exclusions, consistent with SPS-17 and calculation step 1. |
+| R3, P3 | All three calculation sequences identify reduction-before-gross-up as the leading hypothesis subject to DEC-001. The premature SPS `SPEC_ERROR` label is removed; no alternative method is approved. |
+| R4, P3 | JS DEC-002 explicitly labels exact-input retention as provisional evidence-preservation handling, not a decided monetary procedure. |
+| R5, P3 | SPS/SLP now state D36's one-own-right-recipient-per-household limit. All three catalogues retain the couples subset and add the general household coverage row; s 18 remains a per-person legal rule. |
+| R6, metadata | JS separates the latest recorded source pass from `initial_as_of` and original entry dates; SLP uses `draft_pending_review` while retaining its old specification-status string as history. |
+
+### Bounded primary-source and author checks
+
+A separate source reader rechecked the official dated SSA **26 September
+2026**, s 30(a)–(e), ss 31–32, s 34(c), Schedule 4 Part 3 cl 1(a)–(b),
+and SSR **1 October 2026**, r 205(1)–(3), Schedule 6 items 1–2, on
+**16 October 2026**. Direct official HTML retrieval was needed after web-reader
+failure. The review confirms the legal categories and both assessment bases;
+it does not verify a monetary value or extend whole-policy currency. D44,
+not those statutes, supplies authority for the narrower model coverage.
+
+Working-tree checks passed: `git diff --check`; 17/17/20 unique source IDs
+validate against `SourceCatalog`; draft status and null versions remain;
+the couples and broader household rows preserve `unsupported/not_modelled`
+before `needs_review`; all 36 then-existing local document links resolve.
+The new links in this section are rechecked in final-head preflight.
+
+```sh
+PYTHONPATH=src /Users/peterhemmingsen/Poltika/.venv/bin/python -m pytest -q \
+  tests/unit/policy/test_decision_records.py \
+  tests/unit/policy/test_core_benefit_source_scope.py \
+  tests/unit/semantics/test_unit_binding.py \
+  tests/acceptance/test_programme_authority.py \
+  tests/acceptance/test_review_queue.py
+```
+
+Result: **46 passed in 1.06 seconds**, exit 0. No new test, executable policy,
+protected expected value, engine, adapter or graph edge is introduced.
+
+The integration owner still resolves #220's conflicts and updates from main.
+After integration, obtain full independent Claude primary-source review,
+exact-base/final-head author preflight and the required fresh-context pass.
+No cross-model approval or merge is performed by this author follow-up.

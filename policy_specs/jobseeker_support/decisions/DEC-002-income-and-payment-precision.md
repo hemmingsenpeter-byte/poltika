@@ -40,9 +40,11 @@ two-decimal published rate does not establish a universal rounding method.
 
 ## Pending decision and effect
 
-**No decision has been made.** Retain the caller's exact policy-week amount;
-do not floor it on intake. JS-08 must not promote an unrounded or floor-first
-procedure until independently reviewed and decided. JS-09 additionally
+**No monetary procedure has been decided.** As provisional evidence-preservation
+handling, retain the caller's exact policy-week amount and do not floor it
+on intake. This preserves the asserted input for later review; it selects
+neither an unrounded calculation nor a floor-first method. JS-08 must not
+promote either procedure until independently reviewed and decided. JS-09 additionally
 requires DEC-001's gross procedure. All numeric output stays `needs_review`
 with no amount while either gate is unresolved. AS/WFF and annual tax
 rounding conventions are not transferred.

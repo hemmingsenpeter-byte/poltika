@@ -10,10 +10,13 @@ Pete's [D11](../../docs/decision_log.md) approves a single existing-grant,
 no-children SLP slice before 2 November 2026, with gross weekly entitlement.
 Its 6 October clarification restricts that slice to s 34 restricted work
 capacity; the carer and total-blindness routes remain unsupported.
-This draft proposes the ordinary adult category in Schedule 4 Part 3 cl 1(b)
-and an evidenced weekly income agreement. The adult-category and assessment
-contract require review; D11 did not approve a rate, precision convention,
-income-test implementation, or gross-up method.
+Pete retained the ordinary adult category in Schedule 4 Part 3 cl 1(b) and
+the active weekly-agreement first slice on 16 October 2026 under Q25/D44.
+[DEC-002](decisions/DEC-002-adult-only-first-slice.md) records the adult-only
+choice; the shared [SPS DEC-003](../sole_parent_support/decisions/DEC-003-weekly-agreement-first-slice.md)
+records the assessment-basis choice and deferred 52-week path. These are scope
+decisions only. The specification still requires independent review; no rate,
+precision convention, income-test implementation or gross-up method is approved.
 
 Local 3.3.1 starts when SPS 3.2.1 is decided. Parallel documentary preparation
 does not claim that sequencing gate has passed. No `policy.yaml`, facts
@@ -96,7 +99,7 @@ and all monetary gates are closed; this draft supplies no such authority.
 | SLP-03 | Take MSD's work-capacity determination and its continuing applicability as asserted facts. Do not infer entitlement from diagnosis, hours, a clinician's opinion alone, or a benefit label. | `supported-living-payment-social-security-act-20260926` ss 35–37; `supported-living-payment-social-security-regulations-20261001` rr 10–11; Overview |
 | SLP-04 | Require verified ordinary residence/eligibility and ordinary payable state. A grant assertion without week-specific payment evidence is insufficient. Known exceptional states below are unsupported. | `supported-living-payment-social-security-act-20260926` ss 16, 34(b), 36–39; Overview review sections; bounded existing-grant contract |
 | SLP-05 | Require single status, no dependent children and the ordinary adult cl 1(b) category. Under-18 cl 1(a), child and partner categories are separate unsupported categories, never the nearest rate. Unknown category requires review. | `supported-living-payment-social-security-act-20260926` s 34(c), Schedule 4 Part 3 cl 1(a)–(h); Rates |
-| SLP-06 | Apply the s 18 restriction per person in their own right. The household first-slice limit is separate: partnered and mixed-benefit-couple cases are unsupported coverage. | `supported-living-payment-social-security-act-20260926` s 18, Schedule 4 Part 3 cl 1(d); approved local 3.4 correction |
+| SLP-06 | Apply the s 18 restriction per person in their own right. D36's separate first-slice limit is one own-right main-benefit recipient per household: multiple recipients, including both partners, are unsupported coverage. Partnered categories are also outside this single-person slice. | `supported-living-payment-social-security-act-20260926` s 18, Schedule 4 Part 3 cl 1(d); D36; approved local 3.4 correction |
 | SLP-07 | Require a current MSD/person weekly agreement under r 205(2), with no termination notice affecting this week. Annual-basis cases are unsupported here; unknown agreement/basis requires review. A seven-day payable week and MSD instalment timing do not establish weekly assessment. | `supported-living-payment-social-security-regulations-20261001` r 205(1)–(3), Schedule 6 item 1; Act s 338(1)–(5); Charging |
 | SLP-08 | Use caller-resolved SLP chargeable income for this exact week. Require evidence of income classification, earning/entitlement attribution and applicable exclusions. No calendar-day or spell apportionment. | `supported-living-payment-social-security-act-20260926` Schedule 2 income, Schedule 3 cls 2–14; interim Task 6 period contract D32/D36 |
 | SLP-09 | Require the s 34 own-effort disregard to be resolved exactly once before the chargeable-income assertion enters the test. It is mandatory up to the statutory limit; it is not the general income-test allowance. | `supported-living-payment-social-security-act-20260926` Schedule 4 Part 3 cl 1 trailing paragraph (a); `supported-living-payment-msd-personal-earnings` |
@@ -117,7 +120,9 @@ without children. The proposed adult category is therefore **18+**, not
 25+ and not every legally eligible single claimant. Require an attested
 category for the whole week; do not collect date of birth or infer it from
 another policy's age fact. The under-18 category needs its own later rate
-and reviewed scope before support is extended.
+and reviewed scope before support is extended. The narrower adult-only choice
+is recorded in [DEC-002](decisions/DEC-002-adult-only-first-slice.md); it is not
+a new statutory age requirement.
 
 ## Proposed input contract
 
@@ -134,6 +139,7 @@ All period-bearing facts identify the same beneficiary and exact week.
 | `ordinary_eligibility_status`, `ordinary_payment_state` | Caller: applicable residence/grant eligibility and continuous ordinary payable state; unknown requires review, exceptional known state unsupported. | SLP-04 |
 | `relationship_category`, `slp_child_status`, `slp_age_rate_category` | Caller: single, no SLP-dependent children, adult cl 1(b), all week; unknown requires review, other known category unsupported. | SLP-05 |
 | `no_simultaneous_own_right_payment` | Caller: no other main benefit/NZ Super/veteran's pension concurrently in this person's own right; contradiction or unknown requires review, evidenced competing case unsupported. | SLP-06 |
+| `household_main_benefit_coverage` | Caller: one own-right main-benefit recipient in the household under D36; known multiple recipients unsupported/not_modelled, unknown coverage requires review. This is not a legal household-wide ban. | SLP-06 |
 | `income_assessment_basis`, `weekly_agreement_current` | Caller: r 205(2) weekly agreement covers the week and has not ended; annual or terminated basis unsupported, unknown requires review. | SLP-07 |
 | `income_scope_status`, `income_attribution_resolved` | Caller: ordinary personal-effort earnings only, all chargeable income identified and attributed under Schedule 3; missing evidence requires review, known excluded class unsupported. | SLP-08 |
 | `personal_earnings_disregard_resolved` | Caller: records original personal earnings, applicable disregard and its one-time application in the supplied amount; missing/contradictory reconciliation requires review. | SLP-09 |
@@ -189,15 +195,16 @@ or an approved gross-entitlement benchmark for this weekly contract.
    `D = 0.30 × min(max(I − 160, 0), 90) + 0.70 × max(I − 250, 0)`.
    This algebra records the sourced band structure. It does not adopt
    fractional-income processing, a complete-dollar floor or cent rounding.
-6. For a positive remaining scheduled amount, record `B − D`, where `B`
-   is the approved cl 1(b) scheduled amount. This intermediate is not gross
-   entitlement. Do not produce a negative benefit or infer a zero/payment
-   status at cut-out from the rounded MSD weekly cut-out observation.
-7. Resolve DEC-001: gross up the correct remaining scheduled amount under
-   the applicable benefit tax authority and approved precision contract.
-   RD 11(3) requires a Commissioner determination in consultation with MSD.
-   Do not compute gross entitlement as `489.21 − D`, apply a fixed net/gross
-   ratio, borrow salary PAYE, or use annual basic income tax as withholding.
+6. The leading hypothesis is to form the remaining scheduled amount `B − D`
+   before gross-up, where `B` is the approved cl 1(b) amount. This ordering
+   remains subject to DEC-001; the intermediate is not gross entitlement.
+   Do not produce a negative benefit or infer a zero/payment status at
+   cut-out from the rounded MSD weekly cut-out observation.
+7. Resolve DEC-001's complete benefit-tax application and precision before
+   adopting that sequence. RD 11(3) requires a Commissioner determination
+   in consultation with MSD. Subtracting `D` from the gross maximum,
+   applying a fixed net/gross ratio, borrowing salary PAYE or substituting
+   annual basic income tax is not an approved alternative procedure.
 8. Only after that gate closes return the approved gross-weekly component
    with its provenance. Keep net payment, deductions and downstream policy
    facts separate; do not multiply this week by 52 or apportion a spell.

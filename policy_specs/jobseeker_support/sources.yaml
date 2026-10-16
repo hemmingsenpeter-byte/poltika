@@ -1,5 +1,6 @@
 # Author source draft; approval and independent review remain pending.
-as_of: '2026-10-03'
+as_of: '2026-10-15'
+initial_as_of: '2026-10-03'
 status: draft_pending_review
 policy_version: null
 initial_status: task_0_2_source_scope_draft_pending_review
@@ -8,8 +9,8 @@ detailed_plan_task: v0.3 local 0.2 / 3.1.1; 0.3 interaction locators only
 scope_note: Source inventory and draft specification for Pete D11's single existing-grant 25+ no-dependent-child
   gross weekly slice. No approved specification, parameters, protected cases or runtime support. Independent
   review, gross conversion, precision and whole-period currency gates remain pending.
-assessment_period_note: Claims scoped to law operative on 3 October 2026; no full-year or historical eligibility
-  coverage asserted.
+assessment_period_note: Proposed exact week [2026-10-05, 2026-10-12), with source observations
+  dated 13 and 15 October 2026. No full-year or historical eligibility coverage asserted.
 specification_observation:
   checked_on: 2026-10-13
   assessment_week: {from: '2026-10-05', to: '2026-10-12'}
@@ -20,7 +21,8 @@ specification_observation:
   approval_record: ../../docs/programme/2026-10-06-pete-approvals.md
   prior_independent_review: ../../reviews/2026-10-06-pr151.md
   review_state: New author observations and interpretations pending independent source/specification review.
-  historical_fields: Top-level as_of and original checked_on fields preserve the 3/5 October inventory history.
+  historical_fields: initial_as_of and original checked_on fields preserve the 3/5 October inventory history;
+    top-level as_of identifies the latest recorded source pass, not a new legal effective date.
   retrieval_method: Official legislation HTML fetched directly with browser user agent after web tool failure; MSD MAP independently retrieved.
   gates: [gross_entitlement_conversion, income_and_payment_precision, matching_gross_benchmark, whole_week_currency]
 retrieval_note: Dated legislation read directly via official HTML with a browser user agent after web
@@ -40,6 +42,18 @@ coverage_limits:
       on partners receiving different main benefits. It must remain unsupported
       until a reviewed specification models the applicable Schedule 4 categories.
       This catalogue statement adds no runtime gate, rate or entitlement calculation.
+  - id: multiple_own_right_main_benefit_recipients
+    when: More than one person in the household receives a main benefit in their own right.
+    outcome: unsupported
+    category: not_modelled
+    precedence: before_needs_review
+    source_id: jobseeker-support-social-security-act
+    locator: s 18 distinguishes per-person law from the D36 household coverage limit.
+    approval_record: ../../docs/programme/2026-10-12-pete-approvals.md
+    limitation: >-
+      D36 deliberately limits the first slice to one own-right main-benefit recipient
+      per household. The couples row above is a subset, not the entire restriction.
+      This is model coverage, not a statutory household-wide prohibition.
 source_recheck_20261015:
   checked_on: '2026-10-15'
   status: draft_pending_review

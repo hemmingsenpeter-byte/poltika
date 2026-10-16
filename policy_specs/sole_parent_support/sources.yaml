@@ -37,6 +37,18 @@ coverage_limits:
       on partners receiving different main benefits. It must remain unsupported
       until a reviewed specification models the applicable Schedule 4 categories.
       This catalogue statement adds no runtime gate, rate or entitlement calculation.
+  - id: multiple_own_right_main_benefit_recipients
+    when: More than one person in the household receives a main benefit in their own right.
+    outcome: unsupported
+    category: not_modelled
+    precedence: before_needs_review
+    source_id: sole-parent-support-social-security-act
+    locator: s 18 distinguishes per-person law from the D36 household coverage limit.
+    approval_record: ../../docs/programme/2026-10-12-pete-approvals.md
+    limitation: >-
+      D36 deliberately limits the first slice to one own-right main-benefit recipient
+      per household. The couples row above is a subset, not the entire restriction.
+      This is model coverage, not a statutory household-wide prohibition.
 source_recheck_20261015:
   checked_on: '2026-10-15'
   status: draft_pending_review
