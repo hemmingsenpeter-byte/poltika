@@ -123,7 +123,7 @@ describe("narrow-width structure", () => {
   // WCAG 2.2 SC 2.5.8: targets at least 24 CSS px (class-pinned; jsdom has no layout).
   it("standalone targets are at least 24px: header link, provenance chips, model links", () => {
     render(<AppShell>content</AppShell>);
-    expect(classes(screen.getByRole("link", { name: "POLTIKA" }))).toEqual(expect.arrayContaining(["inline-flex", "min-h-[28px]"]));
+    expect(classes(screen.getByRole("link", { name: "Poltika" }))).toEqual(expect.arrayContaining(["inline-flex", "min-h-[28px]"]));
     const block: MetricBlock = {
       type: "metric", id: "m", title: null, label: "Change",
       unit: { label: "NZD per tax year", currency: "NZD", period: "tax_year", basis: "nominal", per: "population" },

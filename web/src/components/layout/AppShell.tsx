@@ -14,10 +14,10 @@ function PolicyVersions() {
   const { meta } = useMeta();
   if (meta.status !== "ready") return null;
   return (
-    <ul aria-label="Policy versions" className="hidden items-center gap-3 text-xs text-muted lg:flex">
+    <ul aria-label="Policy versions" className="hidden items-center gap-5 text-sm text-chrome-muted lg:flex">
       {meta.data.policies.map((p) => (
         <li key={p.policy_id}>
-          {humanise(p.policy_id)} <span className="num font-mono">{p.policy_version ?? "unversioned"}</span>
+          {humanise(p.policy_id)} <span className="num font-semibold text-chrome-text">{p.policy_version ?? "unversioned"}</span>
         </li>
       ))}
     </ul>
@@ -26,15 +26,24 @@ function PolicyVersions() {
 
 function Header({ onMenu }: { onMenu: () => void }) {
   return (
-    <header className="flex min-h-12 shrink-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-surface px-3 py-1">
-      <Button variant="ghost" size="sm" className="size-11 md:hidden" onClick={onMenu} aria-label="Open navigation">
-        <Menu aria-hidden="true" className="size-4" />
+    <header className="on-chrome flex min-h-14 shrink-0 flex-wrap items-center gap-x-4 gap-y-1 bg-chrome px-3 py-2 text-chrome-text md:px-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="size-11 text-chrome-text hover:bg-white/10 md:hidden"
+        onClick={onMenu}
+        aria-label="Open navigation"
+      >
+        <Menu aria-hidden="true" className="size-5" />
       </Button>
-      <Link href="/" className="inline-flex min-h-[28px] items-center font-semibold tracking-[0.18em] text-ink no-underline">
-        POLTIKA
+      <Link
+        href="/"
+        className="inline-flex min-h-[28px] items-center font-display text-[1.375rem] leading-none font-semibold tracking-tight text-chrome-text no-underline"
+      >
+        Poltika
       </Link>
-      <span className="rounded-sm border border-border-strong bg-surface-muted px-2 py-0.5 text-xs text-ink">
-        Pilot · synthetic population
+      <span className="rounded-sm border border-highlight px-2 py-0.5 text-xs font-semibold text-chrome-text">
+        Pilot on a synthetic population
       </span>
       <div className="ml-auto">
         <PolicyVersions />
@@ -50,7 +59,7 @@ export const DATA_NOTICE =
 
 function DataNotice() {
   return (
-    <p className="shrink-0 border-b border-border bg-surface-muted px-3 py-1 text-xs text-ink">{DATA_NOTICE}</p>
+    <p className="shrink-0 border-b border-highlight/50 bg-highlight-soft px-3 py-1.5 text-sm text-ink md:px-6">{DATA_NOTICE}</p>
   );
 }
 
@@ -106,7 +115,7 @@ function NavDrawer({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
       <button type="button" aria-label="Close navigation" tabIndex={-1} className="absolute inset-0 bg-ink/40" onClick={onClose} />
-      <div ref={panel} className="absolute inset-y-0 left-0 w-64 max-w-[85vw] overflow-y-auto border-r border-border bg-surface p-3 shadow-card">
+      <div ref={panel} className="absolute inset-y-0 left-0 w-64 max-w-[85vw] overflow-y-auto border-r border-border bg-surface p-3 shadow-overlay">
         <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close navigation" className="mb-2 size-11">
           <X aria-hidden="true" className="size-4" />
         </Button>
@@ -131,7 +140,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex min-h-0 flex-1">
           <aside
             aria-label="Sidebar"
-            className={`hidden shrink-0 flex-col border-r border-border bg-surface p-2 md:flex ${collapsed ? "w-14" : "w-52"}`}
+            className={`hidden shrink-0 flex-col border-r border-border bg-surface px-2 py-4 md:flex ${collapsed ? "w-16" : "w-56"}`}
           >
             <NavList collapsed={collapsed} />
             <Button
@@ -155,7 +164,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {drawerOpen ? <NavDrawer onClose={() => setDrawerOpen(false)} /> : null}
 
-          <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 px-4 py-6 md:px-8 outline-none">
+          <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 px-4 py-8 md:px-10 md:py-10 outline-none">
             <div className="mx-auto max-w-6xl">{children}</div>
           </main>
         </div>

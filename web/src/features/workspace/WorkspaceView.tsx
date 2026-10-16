@@ -43,7 +43,7 @@ function Context({ context }: { context: NonNullable<Workspace["context"]> }) {
             <ul>
               {versions.map(([id, version]) => (
                 <li key={id}>
-                  <span className="font-mono text-xs">{id}</span> {version}
+                  {id} <span className="num font-semibold">{version}</span>
                 </li>
               ))}
             </ul>
