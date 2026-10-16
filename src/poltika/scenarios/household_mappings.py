@@ -46,7 +46,7 @@ Where the mapping and the adapters meet, the convention is fixed here:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -748,7 +748,9 @@ def run_household_income_tax(
     a mapped person gives exactly the result `run_income_tax_module()` gives
     for the same scenario. A mapping refusal is `needs_review`, so a known
     exclusion among the person's facts (`unsupported`) is reported first,
-    as the engine's own order has it; the income is then unknown."""
+    as the engine's own order has it; the income is then unknown. A refusal
+    carries the trace of that run (the person's facts, income unknown), so
+    every result names its policy, reference period and scenario."""
     reference = load_policy_spec(policy_dir / "policy.yaml").reference_period
     if (tax_year.start, tax_year.end) != (reference.from_, reference.to):
         raise ValueError(
@@ -771,7 +773,7 @@ def run_household_income_tax(
     excluded = run(_income_tax_scenario(facts, None))
     if excluded.outcome == "unsupported":
         return excluded
-    return refusal_result(mapped)
+    return replace(refusal_result(mapped), trace=excluded.trace)
 
 
 # ---------------------------------------------------------------- adapters
@@ -823,22 +825,28 @@ def household_from_income_tax(
     The household's single family needs a claimant, so the person holds that
     role; income tax reads no fact from it. The amount becomes one
     `IT_ANNUAL_TAXABLE` spell over `tax_year` (passed explicitly: no default
-    period); an unknown amount, no spell."""
-
+    period); an unknown amount, no spell. Raises `AdapterRefused` when the
+    scenario asserts the standard 2026-27 year and `tax_year` is another
+    period: that household would relabel the amount (IT-02)."""
     s = scenario
+    if s.tax_year_basis is ItTaxYearBasis.STANDARD_2026_27 and tax_year != INCOME_TAX_YEAR_2026_27:
+        raise AdapterRefused(
+            f"the scenario's taxable income is allocated to the standard 2026-27 tax year, not "
+            f"[{tax_year.start}, {tax_year.end})"
+        )
     facts = hh.IncomeTaxFacts(
         individual_status=hh.Assertion(s.individual_status.value),
         residence_scope=hh.TaxResidenceScope(s.residence_scope.value if s.residence_scope else "unknown"),
         tax_year_basis=hh.TaxYearBasis(s.tax_year_basis.value if s.tax_year_basis else "unknown"),
         income_composition=hh.TaxIncomeComposition(s.income_composition.value if s.income_composition else "unknown"),
-        no_deductions_status=hh.Assertion(scenario.no_deductions_status.value),
-        no_available_losses_status=hh.Assertion(scenario.no_available_losses_status.value),
-        general_basic_rate_status=hh.Assertion(scenario.general_basic_rate_status.value),
-        taxable_income_basis_attestation=scenario.taxable_income_basis_attestation,
+        no_deductions_status=hh.Assertion(s.no_deductions_status.value),
+        no_available_losses_status=hh.Assertion(s.no_available_losses_status.value),
+        general_basic_rate_status=hh.Assertion(s.general_basic_rate_status.value),
+        taxable_income_basis_attestation=s.taxable_income_basis_attestation,
     )
     spells: tuple[hh.IncomeSpell, ...] = ()
-    if scenario.annual_taxable_income is not None:
-        spells = (_spell(person_id, tax_year, scenario.annual_taxable_income, hh.IncomeBasis.IT_ANNUAL_TAXABLE),)
+    if s.annual_taxable_income is not None:
+        spells = (_spell(person_id, tax_year, s.annual_taxable_income, hh.IncomeBasis.IT_ANNUAL_TAXABLE),)
     return Household(
         household_id=household_id,
         persons=(hh.Person(person_id=person_id, role=PersonRole.CLAIMANT, income_tax_facts=facts),),

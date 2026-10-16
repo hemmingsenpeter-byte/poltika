@@ -62,12 +62,20 @@ review is separate (Task 6/7 mappings; ADR-0020).
 | A2. `household_from_income_tax()` defaulted `tax_year` to 2026-27 | CODE_ERROR | P3: the module's convention is no default period. Now required |
 | A3. The changelog fragment said "nine questions apart from the amount"; there are eight | TEST_ERROR (record) | P3: wording fixed |
 | A5. CI `test` failed at `5e83b25`: `run_household_income_tax` is a public `run_` function with no model-registry classification (3 failures in `tests/unit/engines/assurance/test_model_registry.py`; 2,233 passed) | CODE_ERROR | P2: the registry gate is a required check. Listed under `not_engines` as a wrapper of `income_tax_engine`, as `run_household` wraps `combined_runner`; the 22 registry and card tests pass |
+| C1 (CodeRabbit, advisory, `ebcf8b4`). A mapping refusal from `run_household_income_tax` carried no trace | CODE_ERROR | Minor. The refusal now carries the trace of the engine run on the person's facts with income unknown; a test checks policy, period and the unknown income |
+| C2 (CodeRabbit, advisory, `ebcf8b4`). `household_from_income_tax` built a household for a period other than an asserted standard 2026-27 year, which `to_income_tax` then refuses | CODE_ERROR | Minor. The adapter raises `AdapterRefused`, as the other adapters do for facts one household cannot hold; test added |
 | A4. An `it_annual_taxable` spell of a type other than `unsplit_total` is ignored, so income stays unknown, while the period-mismatch check sees it | Not a defect | Same convention as WFF's own bases; the result is conservative (`needs_review`), never a wrong amount. Recorded, not changed |
 
 ## Not verified
 
 - The full suite was not run locally to completion: a parallel run hung
-  with idle workers and was stopped; CI runs the full suite on the head.
+  with idle workers and was stopped. A serial run of `tests/unit/semantics`,
+  `tests/unit/scenarios`, `tests/unit/policy`, `tests/unit/engines/simulator`
+  and `tests/acceptance` on `5e83b25` gave 1,292 passed and 30 skipped
+  (exit 0). It left out `tests/unit/engines/assurance`, which is why CI,
+  not this run, found A5. CI runs the full suite on every head.
+- The round trip is not vacuous: across the 47 cases every enum member and
+  every status value appears, with unknown, negative and fractional amounts.
 - Whether a recorded benefit or other-income spell should contradict an
   asserted salary-only composition is interaction I08, a candidate in the
   Phase B matrix; it is out of scope here.
@@ -81,5 +89,5 @@ engine's enums repeated in `semantics/`, which cannot import `engines/`.
 
 ## Resolution
 
-A1 to A3 and A5 are fixed in the fix commit, with a regression test for A1.
+A1 to A3 and A5 are fixed in `ebcf8b4`, with a regression test for A1; CI was green on that head. C1, C2 and a naming nit in the adapter are fixed in the next commit, with tests.
 The fresh-context `poltika-reviewer` pass is recorded on the PR.

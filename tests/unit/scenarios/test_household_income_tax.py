@@ -20,6 +20,7 @@ from poltika.engines.simulator import income_tax as it
 from poltika.engines.simulator.income_tax import run_income_tax_module
 from poltika.scenarios.household_mappings import (
     INCOME_TAX_YEAR_2026_27,
+    AdapterRefused,
     MappingRefusal,
     household_from_income_tax,
     run_household_income_tax,
@@ -180,6 +181,13 @@ def test_a_spell_past_the_year_is_refused_never_apportioned() -> None:
     assert (refusal.outcome, refusal.code) == ("needs_review", "HOUSEHOLD_SPELL_PERIOD_MISMATCH")
     result = run_household_income_tax(household, "a", tax_year=YEAR)
     assert (result.outcome, result.code, result.value) == ("needs_review", "HOUSEHOLD_SPELL_PERIOD_MISMATCH", None)
+    # The refusal is traced: the policy, its reference period and the facts
+    # run, with the income unknown rather than any part of the spell.
+    assert result.trace is not None
+    assert result.trace.policy_id == "income_tax"
+    assert result.trace.assessment_period == (YEAR.start, YEAR.end)
+    income_use = next(u for u in result.trace.inputs if u.name == "annual_taxable_income")
+    assert income_use.value is None
 
 
 def test_a_known_exclusion_outranks_a_mapping_refusal() -> None:
@@ -224,3 +232,14 @@ def test_an_in_slice_person_stops_at_the_draft_policy_gate_with_no_amount() -> N
 def test_an_attestation_is_a_strict_boolean(value: object) -> None:
     with pytest.raises(ValueError, match="valid boolean"):
         hh.IncomeTaxFacts(taxable_income_basis_attestation=value)
+
+
+def test_the_adapter_refuses_a_period_the_scenario_does_not_assert() -> None:
+    scenario = scenario_from_yaml(_CASES[0]["scenario"])
+    assert scenario.tax_year_basis is it.TaxYearBasis.STANDARD_2026_27
+    with pytest.raises(AdapterRefused, match="standard 2026-27"):
+        household_from_income_tax(
+            scenario,
+            household_id="it-case",
+            tax_year=hh.DatePeriod(start=date(2025, 4, 1), end=date(2026, 4, 1)),
+        )
