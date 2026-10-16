@@ -49,7 +49,7 @@ review is separate (Task 6/7 mappings; ADR-0020).
 | --- | --- |
 | All 47 draft spec cases as one-person households: mapped scenario and module result (trace included) equal the direct engine run | Pass |
 | Partner with spells and no facts: claimant unaffected; partner all unknown, needs_review with eight missing facts | Pass |
-| Two spells tiling the year sum; one half-year spell gives unknown income | Pass |
+| Two tiling spells are refused (`HOUSEHOLD_MAPPING_INVALID_FACTS`), never summed (since `b8d9868`); one half-year spell gives unknown income | Pass |
 | Employment earnings and a WFF-basis spell over the whole year give unknown taxable income | Pass |
 | Spell from 1 March 2026 to the year end: refused as a period mismatch; with a non-resident assertion the run is `unsupported` `IT_RESIDENCE_NOT_MODELLED` | Pass |
 | Amount for 2025-26 while the person asserts the standard 2026-27 year: `HOUSEHOLD_MAPPING_INVALID_FACTS` | Pass |
@@ -66,7 +66,7 @@ review is separate (Task 6/7 mappings; ADR-0020).
 | A5. CI `test` failed at `5e83b25`: `run_household_income_tax` is a public `run_` function with no model-registry classification (3 failures in `tests/unit/engines/assurance/test_model_registry.py`; 2,233 passed) | CODE_ERROR | P2: the registry gate is a required check. Listed under `not_engines` as a wrapper of `income_tax_engine`, as `run_household` wraps `combined_runner`; the 22 registry and card tests pass |
 | C1 (CodeRabbit, advisory, `ebcf8b4`). A mapping refusal from `run_household_income_tax` carried no trace | CODE_ERROR | Minor. The refusal now carries the trace of the engine run on the person's facts with income unknown; a test checks policy, period and the unknown income |
 | C2 (CodeRabbit, advisory, `ebcf8b4`). `household_from_income_tax` built a household for a period other than an asserted standard 2026-27 year, which `to_income_tax` then refuses | CODE_ERROR | Minor. The adapter raises `AdapterRefused`, as the other adapters do for facts one household cannot hold; test added |
-| A4. An `it_annual_taxable` spell of a type other than `unsplit_total` is ignored, so income stays unknown, while the period-mismatch check sees it | Not a defect | Same convention as WFF's own bases; the result is conservative (`needs_review`), never a wrong amount. Recorded, not changed |
+| A4. An `it_annual_taxable` spell of a type other than `unsplit_total` is ignored, so income stays unknown, while the period-mismatch check sees it | Not a defect | Same convention as WFF's own bases; the result is conservative (`needs_review`), never a wrong amount. Recorded, not changed. Superseded by GPT/Codex R7: the mismatch check now reads the same `unsplit_total` spell set as the amount, so a typed spell is ignored by both |
 
 ## Not verified
 
@@ -101,3 +101,25 @@ does not provide) are fixed in the next commit by the single-spell rule.
 Open before merge: R3 (surviving mutations), R4 (adapter dates an
 other-year amount on 2026-27), R5 (stale registry, structure and decision
 log records). R6 (a) and (c) are recorded on the PR for Pete.
+
+## GPT/Codex review at f31a8d3
+
+Independent review: [`reviews/2026-10-17-pr232.md`](../reviews/2026-10-17-pr232.md).
+Changes requested. Fixes are in `9c3cad2`.
+
+- R3, P2, TEST_ERROR: core mapping regressions survived the tests. Fixed by
+  tests for 13 surviving mutations.
+- R4, P2, CODE_ERROR: the adapter stamped an excluded year onto 2026-27.
+  Fixed: `household_from_income_tax()` raises `AdapterRefused` when the
+  scenario asserts `other_standard_year` or `non_standard_year` with a known
+  amount and is asked for the 2026-27 year.
+- R5, P2, ARCHITECTURE_ISSUE: no model-change record, structure-map entry or
+  decision record. Fixed: `income_tax_engine` change log and validation
+  links in `model_registry/registry.yaml`, the regenerated income-tax card,
+  `REPOSITORY_STRUCTURE.md`, and decision D50 in `docs/decision_log.md`.
+- R7, P2, CODE_ERROR: Q10 could suppress a known numeric exclusion. Fixed:
+  the period check reads only the person's `unsplit_total` and
+  `it_annual_taxable` spells, the same set the amount is taken from.
+
+Final-head preflight and reviewer evidence are recorded below once the head
+is final.
