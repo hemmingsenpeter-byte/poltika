@@ -2,7 +2,7 @@
 
 **Programme:** Phase B Task 8; `BUILD_PLAN_v0_3.md` 0.2 / 3.1.1.
 **Author/source check:** GPT/Codex, 13 October 2026, Pacific/Auckland.
-**Status:** `draft_pending_review`. **Policy version:** `null`.
+**Status:** `specification_approved` (Pete, 16 October 2026, D47: rules, coverage, outcome precedence and gates for this first slice; no values, policy version, cases or engine, and no gross amount until DEC-001/002 have a sourced method). **Policy version:** `null`.
 **Scope authority:** Pete D11, 5 October 2026; D36 preserves the first-slice
 household coverage limit. This document adds no executable policy or values.
 

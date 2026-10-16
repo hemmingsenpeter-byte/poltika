@@ -1,7 +1,8 @@
-# Author source draft; approval and independent review remain pending.
+# Independently reviewed (#220); specification approved by Pete on 16 October 2026 (D47). No value is approved.
 as_of: '2026-10-15'
 initial_as_of: '2026-10-03'
-status: draft_pending_review
+status: specification_approved
+previous_status: draft_pending_review
 policy_version: null
 initial_status: task_0_2_source_scope_draft_pending_review
 programme_task: 8

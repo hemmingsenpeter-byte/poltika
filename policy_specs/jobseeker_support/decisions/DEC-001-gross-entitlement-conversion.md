@@ -4,7 +4,7 @@
 **Date:** 2026-10-13
 **Raised by:** GPT/Codex
 **Decision owner:** Pete
-**Decision date:** none. **Status:** open; `needs_review`.
+**Decision date:** none for the method. **Status:** open for the method; holding position accepted 16 October 2026 (D47); `needs_review`.
 **Class:** AI hypothesis; discrepancy `MISSING_SOURCE` for the complete
 gross-conversion method. A later sourced interpretation is a Rule; an
 explicit convention where law is silent must be labelled Assumption.
@@ -71,3 +71,12 @@ cannot simply be copied as benefit tax. No levy method is selected here.
 The [recheck packet](../../../review_packets/task8_benefit_specifications.md#15-october-2026-source-recheck-and-decision-options)
 gives Pete explicit full-slice, zero-income-only and output-scope options.
 This decision remains open; no amount or protected expected value is approved.
+
+## Holding position accepted (Pete, 16 October 2026; decision log D47)
+
+Pete accepted the holding position recorded above: no gross amount is
+produced, and the component stays `needs_review`, until a sourced and
+independently reviewed method exists. This decides no conversion, gross-up,
+precision or rounding method; the method itself remains open with Pete as
+owner, and needs a located primary source (the RD 11(3) determination or
+equivalent official procedure), not an approval.
