@@ -11,7 +11,13 @@ from typing import Any
 import pytest
 import yaml
 
-from poltika.engines.assurance.explanation import STEP_TEMPLATES, explain, render_text, verify
+from poltika.engines.assurance.explanation import (
+    STEP_TEMPLATES,
+    explain,
+    render_step,
+    render_text,
+    verify,
+)
 from poltika.engines.simulator.outcome import ComponentResult
 from poltika.engines.simulator.wff import VerifiedIncome
 from poltika.scenarios.record import CodeIdentity, ScenarioRecord, run_scenario
@@ -57,6 +63,42 @@ def test_every_step_id_has_a_template() -> None:
     )
     step_ids = set(re.findall(r'"((?:WFF|AS)_[A-Z0-9_]+)", "(?:WFF|AS)-\d+"', source))
     assert step_ids and step_ids <= set(STEP_TEMPLATES)
+
+
+def test_every_income_tax_step_renders() -> None:
+    from datetime import date
+    from decimal import Decimal
+
+    from poltika.engines.simulator.income_tax import basic_tax_band_sum
+    from poltika.engines.simulator.trace import CalculationStep
+    from poltika.policy.loader import ParameterResolution, PolicyParameterSet
+
+    synthetic = {f"band_{n}_upper": str(10 * n) for n in range(1, 5)} | {f"band_{n}_rate": "0.1" for n in range(1, 6)}
+    parameters = PolicyParameterSet(
+        "income_tax", "synthetic", "0.1", date(2026, 4, 1),
+        {k: ParameterResolution(parameter_id=k, outcome="resolved", value=Decimal(v)) for k, v in synthetic.items()},
+    )
+    steps: list[CalculationStep] = []
+    basic_tax_band_sum(Decimal(45), parameters, steps)
+    assert [s.step_id for s in steps] == [f"IT_BAND_{n}" for n in range(1, 6)] + ["IT_BASIC_TAX_SUM"]
+    assert render_step(steps[0]) == "Basic-rate band 1: $10 of taxable income at 0.1 is $1.0."
+    assert render_step(steps[-1]) == "The bands for $45 of taxable income sum to $4.5, unrounded."
+
+    # #224 review P3: every number in the sentences is a recorded value, so a
+    # calculated component built from these steps verifies cleanly.
+    from poltika.engines.simulator.outcome import ComponentResult
+    from poltika.engines.simulator.trace import ComponentTrace
+
+    result = ComponentResult(
+        outcome="calculated",
+        value=steps[-1].result,
+        trace=ComponentTrace(
+            component_id="basic_annual_income_tax", policy_id="income_tax", policy_version="synthetic",
+            schema_version="0.1", modelled_date=date(2026, 4, 1), artifact_sha256=(), scenario_sha256="0" * 64,
+            steps=tuple(steps),
+        ),
+    )
+    assert verify(explain("basic_annual_income_tax", result), result) == []
 
 
 def test_g2_family_tax_credit_explanation_reads_from_the_trace() -> None:
