@@ -5,3 +5,9 @@
   text pair stays at WCAG AA. The header now reads "Poltika" and "Pilot on a
   synthetic population"; no other copy, contract, endpoint or calculated
   amount changed.
+- The home page is now the Poltika logo above the search field, at Pete's
+  instruction (decision log D48). The heading and the "What Poltika does"
+  copy are removed. The search note, start actions and classic-calculator
+  link sit under an "Advanced" disclosure. The placeholder now reads "Search
+  a policy setting, such as the Family Tax Credit" so it does not suggest
+  that the search reads questions.

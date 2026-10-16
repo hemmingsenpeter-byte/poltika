@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Columns2, House, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, ChevronDown, Columns2, House, Search, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -39,17 +39,17 @@ function SupportedSearch() {
           autoComplete="off"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="What happens if the Family Tax Credit rate changes?"
+          // The note saying what this search does sits under Advanced, so the
+          // placeholder itself must not suggest it reads questions.
+          placeholder={
+            capabilities.natural_language_scenarios
+              ? "What happens if the Family Tax Credit rate changes?"
+              : "Search a policy setting, such as the Family Tax Credit"
+          }
           aria-describedby="analysis-search-note"
           className="h-14 w-full rounded-md border-2 border-accent bg-surface pr-4 pl-14 text-lg placeholder:text-muted md:h-16 md:text-xl"
         />
       </div>
-      <p id="analysis-search-note" className="mt-3 text-sm text-muted">
-        {capabilities.natural_language_scenarios
-          ? "Type a policy setting to find it."
-          : "This searches the policy settings Poltika supports by name. It does not interpret questions in plain language yet."}
-      </p>
-
       {searching ? (
         <div className="mt-4" aria-live="polite">
           {registry.status === "loading" ? <Loading label="Loading supported analyses" /> : null}
@@ -98,55 +98,59 @@ function Results({ matches }: { matches: ReturnType<typeof searchAnalyses> }) {
   );
 }
 
+/** Everything beyond the search, folded away until asked for. */
+function Advanced() {
+  const { capabilities } = useMeta();
+  return (
+    <details className="group mt-6">
+      <summary className="mx-auto flex min-h-[24px] w-fit cursor-pointer list-none items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-accent hover:bg-accent-soft [&::-webkit-details-marker]:hidden">
+        Advanced
+        <ChevronDown aria-hidden="true" className="size-4 transition-transform group-open:rotate-180" />
+      </summary>
+      <Card className="mt-3 md:p-6">
+        <p id="analysis-search-note" className="text-sm text-muted">
+          {capabilities.natural_language_scenarios
+            ? "Type a policy setting to find it."
+            : "This searches the policy settings Poltika supports by name. It does not interpret questions in plain language yet."}
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-3" aria-label="Start an analysis" role="group">
+          {ACTIONS.map((a, i) => (
+            <Link
+              key={a.href}
+              href={a.href}
+              className={buttonClasses({ variant: i === 0 ? "primary" : "secondary" }, "no-underline")}
+            >
+              <a.icon aria-hidden="true" className="size-4" />
+              {a.label}
+            </Link>
+          ))}
+          <Button disabled aria-describedby="recreate-note">
+            Recreate an existing policy
+          </Button>
+          <span id="recreate-note" className="text-sm text-muted">
+            Not yet available
+          </span>
+        </div>
+        <p className="mt-5 text-sm text-muted">
+          Prefer the original single-household form?{" "}
+          <a href="/analyst" className="font-semibold text-accent underline underline-offset-2">
+            Open the classic household calculator
+          </a>
+          .
+        </p>
+      </Card>
+    </details>
+  );
+}
+
 export function HomePage() {
   return (
-    <div className="mx-auto max-w-3xl pt-2 md:pt-12">
-      <h1 className="mb-8 text-3xl font-semibold tracking-tight md:text-[3.75rem] md:leading-[1.05]">
-        What do you want to understand?
+    <div className="mx-auto max-w-2xl pt-[8vh] md:pt-[14vh]">
+      <h1 className="mb-8 text-center text-4xl leading-none font-semibold tracking-[-0.02em] text-accent md:mb-10 md:text-[4.5rem]">
+        Poltika
       </h1>
       <SupportedSearch />
-
-      <div className="mt-8 flex flex-wrap items-center gap-3" aria-label="Start an analysis" role="group">
-        {ACTIONS.map((a, i) => (
-          <Link
-            key={a.href}
-            href={a.href}
-            className={buttonClasses({ variant: i === 0 ? "primary" : "secondary", size: "lg" }, "no-underline")}
-          >
-            <a.icon aria-hidden="true" className="size-5" />
-            {a.label}
-          </Link>
-        ))}
-        <Button size="lg" disabled aria-describedby="recreate-note">
-          Recreate an existing policy
-        </Button>
-        <span id="recreate-note" className="self-center text-sm text-muted">
-          Not yet available
-        </span>
-      </div>
-
-      <section
-        aria-labelledby="about"
-        className="mt-16 grid gap-x-10 gap-y-3 border-t border-border pt-8 md:grid-cols-[11rem_minmax(0,1fr)]"
-      >
-        <h2 id="about" className="text-xl font-semibold">
-          What Poltika does
-        </h2>
-        <div>
-          <ul className="space-y-2 text-base">
-            <li>Poltika makes deterministic New Zealand policy calculations from cited sources.</li>
-            <li>It covers Working for Families (2026-27 tax year) and the Accommodation Supplement.</li>
-            <li>Population results use a synthetic population: they are not estimates for New Zealand.</li>
-          </ul>
-          <p className="mt-5 text-sm text-muted">
-            Prefer the original single-household form?{" "}
-            <a href="/analyst" className="font-semibold text-accent underline underline-offset-2">
-              Open the classic household calculator
-            </a>
-            .
-          </p>
-        </div>
-      </section>
+      <Advanced />
     </div>
   );
 }
