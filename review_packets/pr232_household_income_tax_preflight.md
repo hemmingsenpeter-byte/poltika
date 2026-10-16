@@ -27,8 +27,10 @@ review is separate (Task 6/7 mappings; ADR-0020).
    or the person's role reaches their scenario.
 2. Every fact the person did not assert is unknown (`None` or `UNKNOWN`),
    never a default member and never verified.
-3. Taxable income comes only from the person's `it_annual_taxable` spells
-   that tile the year exactly. A gap is unknown. A spell past either edge
+3. Taxable income comes only from the person's single `it_annual_taxable`
+   spell covering exactly the year, used as given (revised at the final
+   head after reviewer R2/R6b: several spells are refused, never summed).
+   No spell is unknown. A spell past either edge
    is refused (`HOUSEHOLD_SPELL_PERIOD_MISMATCH`), never apportioned.
    Earnings, benefit or another policy's basis never become taxable income.
 4. A known exclusion (`unsupported`) outranks a mapping refusal
@@ -91,3 +93,11 @@ engine's enums repeated in `semantics/`, which cannot import `engines/`.
 
 A1 to A3 and A5 are fixed in `ebcf8b4`, with a regression test for A1; CI was green on that head. C1, C2 and a naming nit in the adapter are fixed in the next commit, with tests.
 The fresh-context `poltika-reviewer` pass is recorded on the PR.
+
+Fresh-context `poltika-reviewer` pass at `545c733`: approve, no unresolved
+P1/P2 (same-model, supporting only). R1 (registry) fixed. R2 (sums rounded
+in the Decimal context) and R6 (b) (summing parts is a derivation IT-02
+does not provide) are fixed in the next commit by the single-spell rule.
+Open before merge: R3 (surviving mutations), R4 (adapter dates an
+other-year amount on 2026-27), R5 (stale registry, structure and decision
+log records). R6 (a) and (c) are recorded on the PR for Pete.

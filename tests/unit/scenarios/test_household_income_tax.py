@@ -152,16 +152,27 @@ def test_each_person_maps_on_their_own_facts_and_spells() -> None:
     }
 
 
-def test_spells_that_tile_the_year_add_and_a_gap_is_unknown_never_zero() -> None:
+def test_one_whole_year_spell_is_used_as_given_and_parts_are_never_summed() -> None:
     mid = date(2026, 10, 1)
-    tiled = _couple(_spell("a", YEAR.start, mid, "30000"), _spell("a", mid, YEAR.end, "20000"))
-    mapped = to_income_tax(tiled, "a", YEAR)
-    assert isinstance(mapped, it.IncomeTaxScenario) and mapped.annual_taxable_income == Decimal(50000)
+    # Several spells are refused, not added: IT-02 gives no derivation.
+    tiled = to_income_tax(_couple(_spell("a", YEAR.start, mid, "30000"), _spell("a", mid, YEAR.end, "20000")), "a", YEAR)
+    assert isinstance(tiled, MappingRefusal)
+    assert (tiled.outcome, tiled.code) == ("needs_review", "HOUSEHOLD_MAPPING_INVALID_FACTS")
 
+    # A part-year spell alone is a gap: unknown, never zero.
     gap = to_income_tax(_couple(_spell("a", YEAR.start, mid, "30000")), "a", YEAR)
     assert isinstance(gap, it.IncomeTaxScenario) and gap.annual_taxable_income is None
     result = run_household_income_tax(_couple(_spell("a", YEAR.start, mid, "30000")), "a", tax_year=YEAR)
     assert (result.outcome, result.missing_facts) == ("needs_review", ("annual_taxable_income",))
+
+    # The one whole-year amount passes through untouched: no rounding to the
+    # Decimal context, and exponent and sign kept (Q17: never rounds).
+    for amount in ("15600.0000000000000000000000000001", "1E+3", "-0"):
+        mapped = to_income_tax(_couple(_whole_year("a", amount)), "a", YEAR)
+        assert isinstance(mapped, it.IncomeTaxScenario)
+        assert str(mapped.annual_taxable_income) == amount
+    fractional = run_household_income_tax(_couple(_whole_year("a", "15600.0000000000000000000000000001")), "a", tax_year=YEAR)
+    assert (fractional.outcome, fractional.code) == ("unsupported", "IT_FRACTIONAL_INCOME_NOT_MODELLED")
 
 
 def test_taxable_income_is_never_derived_from_earnings_or_another_basis() -> None:

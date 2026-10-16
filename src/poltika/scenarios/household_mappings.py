@@ -704,9 +704,13 @@ def to_income_tax(household: Household, person_id: str, tax_year: DatePeriod) ->
     another person's spells, and the person's role adds no fact.
 
     Every fact is the person's own `IncomeTaxFacts` (unknown if absent).
-    Annual taxable income is the person's `IT_ANNUAL_TAXABLE` spells that
-    tile `tax_year` exactly; a gap leaves it unknown (`None`), never zero, and
-    a spell extending past the year is refused (Q10), never apportioned.
+    Annual taxable income is one figure for the year (IT-02: allocated to
+    the year, with no derivation or timing algorithm), so it is the
+    person's single `IT_ANNUAL_TAXABLE` spell covering exactly `tax_year`,
+    used as given with no arithmetic. No such spell leaves it unknown
+    (`None`), never zero; several spells inside the year are refused rather
+    than summed; a spell extending past the year is refused (Q10), never
+    apportioned.
     Taxable income is never derived from earnings, benefit or other spells:
     the specification has it supplied, not inferred (IT-03), and whether a
     recorded benefit or other income contradicts an asserted composition is
@@ -728,10 +732,20 @@ def to_income_tax(household: Household, person_id: str, tax_year: DatePeriod) ->
     mismatch = _q10_refusal(household, (person_id,), tax_year, _IT_BASES)
     if mismatch is not None:
         return mismatch
-    income = household.annual_amount(
-        person_id, hh.IncomeType.UNSPLIT_TOTAL, tax_year, basis=hh.IncomeBasis.IT_ANNUAL_TAXABLE
-    )
-    return _income_tax_scenario(facts, income)
+    inside = [
+        spell
+        for spell in household.income_spells_for(
+            person_id, hh.IncomeType.UNSPLIT_TOTAL, hh.IncomeBasis.IT_ANNUAL_TAXABLE
+        )
+        if spell.start >= tax_year.start and spell.end <= tax_year.end
+    ]
+    if len(inside) > 1:
+        return _invalid(
+            f"'{person_id}' has {len(inside)} annual taxable income spells inside the tax year; taxable income "
+            "is one figure allocated to the year (IT-02), and summing parts is a derivation it does not provide"
+        )
+    whole_year = len(inside) == 1 and (inside[0].start, inside[0].end) == (tax_year.start, tax_year.end)
+    return _income_tax_scenario(facts, inside[0].amount if whole_year else None)
 
 
 def run_household_income_tax(
