@@ -1,7 +1,7 @@
 - Income tax reads the shared household model (Task 7, BUILD_PLAN_v0_3.md
   2.3): `to_income_tax()` maps one person's own facts (`IncomeTaxFacts`,
-  the nine `policy_specs/income_tax/facts.yaml` questions apart from the
-  amount) and their `it_annual_taxable` income spells for the tax year to
+  the eight `policy_specs/income_tax/facts.yaml` questions other than the
+  amount, with the attestation a strict boolean) and their `it_annual_taxable` income spells for the tax year to
   the engine's scenario. Spells must tile the year: a gap is unknown and a
   spell past the year is refused (Q10), never apportioned. Taxable income
   is never derived from earnings or another policy's basis (IT-03).

@@ -816,13 +816,14 @@ def household_from_income_tax(
     scenario: IncomeTaxScenario,
     *,
     household_id: str,
+    tax_year: DatePeriod,
     person_id: str = "taxpayer",
-    tax_year: DatePeriod = INCOME_TAX_YEAR_2026_27,
 ) -> Household:
     """One person's income-tax scenario as a household of that one person.
     The household's single family needs a claimant, so the person holds that
     role; income tax reads no fact from it. The amount becomes one
-    `IT_ANNUAL_TAXABLE` spell over `tax_year`; an unknown amount, no spell."""
+    `IT_ANNUAL_TAXABLE` spell over `tax_year` (passed explicitly: no default
+    period); an unknown amount, no spell."""
 
     s = scenario
     facts = hh.IncomeTaxFacts(

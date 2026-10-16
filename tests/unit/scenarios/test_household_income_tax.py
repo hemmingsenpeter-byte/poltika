@@ -82,7 +82,7 @@ def _whole_year(person_id: str, amount: str) -> hh.IncomeSpell:
 @pytest.mark.parametrize("case", _CASES, ids=[c["id"] for c in _CASES])
 def test_every_spec_case_round_trips_through_a_household(case: dict[str, Any]) -> None:
     scenario = scenario_from_yaml(case["scenario"])
-    household = household_from_income_tax(scenario, household_id="it-case")
+    household = household_from_income_tax(scenario, household_id="it-case", tax_year=YEAR)
     assert to_income_tax(household, "taxpayer", YEAR) == scenario
     direct = run_income_tax_module(scenario)
     via_household = run_household_income_tax(household, "taxpayer", tax_year=YEAR)
@@ -218,3 +218,9 @@ def test_the_run_takes_only_the_policy_reference_period_and_a_held_person() -> N
 def test_an_in_slice_person_stops_at_the_draft_policy_gate_with_no_amount() -> None:
     result = run_household_income_tax(_couple(_whole_year("a", "60000")), "a", tax_year=YEAR)
     assert (result.outcome, result.code, result.value) == ("needs_review", "IT_POLICY_NOT_APPROVED", None)
+
+
+@pytest.mark.parametrize("value", ["true", 1, "no", 0])
+def test_an_attestation_is_a_strict_boolean(value: object) -> None:
+    with pytest.raises(ValueError, match="valid boolean"):
+        hh.IncomeTaxFacts(taxable_income_basis_attestation=value)

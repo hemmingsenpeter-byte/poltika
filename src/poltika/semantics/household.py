@@ -62,7 +62,7 @@ from enum import Enum
 from itertools import pairwise
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator, model_validator
 
 from poltika.common.errors import PoltikaError
 from poltika.semantics.population import PersonRole
@@ -248,7 +248,8 @@ class IncomeTaxFacts(BaseModel):
     caller's assertion about this one person; none is inferred from role,
     spells or another person's facts. Unknown is the default, never verified.
     `taxable_income_basis_attestation` is the engine's own attestation:
-    `True` attested, `False` not attested, `None` not answered."""
+    `True` attested, `False` not attested, `None` not answered. It is a
+    strict boolean: an attestation is never read from a string or a number."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -259,7 +260,7 @@ class IncomeTaxFacts(BaseModel):
     no_deductions_status: Assertion = Assertion.UNKNOWN
     no_available_losses_status: Assertion = Assertion.UNKNOWN
     general_basic_rate_status: Assertion = Assertion.UNKNOWN
-    taxable_income_basis_attestation: bool | None = None
+    taxable_income_basis_attestation: StrictBool | None = None
 
 
 class Person(BaseModel):

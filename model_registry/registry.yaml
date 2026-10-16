@@ -576,6 +576,14 @@ not_engines:
       (ADR-0017 Task 1.4, D39). No second calculation path; mapping refusals are
       returned before any run.
     wraps: combined_runner
+  - module: poltika.scenarios.household_mappings
+    function: run_household_income_tax
+    reason: >-
+      Maps one person of a Household to the income-tax input (to_income_tax) and
+      runs it through run_income_tax_module unchanged (BUILD_PLAN_v0_3.md 2.3).
+      No second calculation path; a known exclusion is reported before a mapping
+      refusal, as the engine orders them.
+    wraps: income_tax_engine
   - module: poltika.scenarios.microsim.worked_examples
     function: run_examples
     reason: Runs named households under a reform through run_combined_household, using the population runner's delta rules. No second calculation path.
