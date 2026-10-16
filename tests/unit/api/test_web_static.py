@@ -43,6 +43,7 @@ def web_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         "models/_.html",
         "data/_.html",
         "scenarios/_/runs/_.html",
+        "settings.html",
     ):
         page = root / name
         page.parent.mkdir(parents=True, exist_ok=True)
@@ -78,6 +79,7 @@ def client() -> TestClient:
         ("/scenarios/new", "scenarios/new.html"),
         (f"/scenarios/{ZEROS}", "scenarios/_.html"),
         (f"/scenarios/{ZEROS}/runs/{'f' * 64}", "scenarios/_/runs/_.html"),
+        ("/settings", "settings.html"),
     ],
 )
 def test_ui_routes_serve_their_exported_page(

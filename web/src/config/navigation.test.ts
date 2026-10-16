@@ -4,12 +4,13 @@ import { DEFAULT_CAPABILITIES, resolveCapabilities } from "./capabilities";
 import { isActive, NAVIGATION, visibleNavigation } from "./navigation";
 
 describe("navigation", () => {
-  it("shows Home, Scenarios, Models and Data by default", () => {
+  it("shows Home, Scenarios, Models, Data and Settings by default", () => {
     expect(visibleNavigation(DEFAULT_CAPABILITIES).map((i) => i.label)).toEqual([
       "Home",
       "Scenarios",
       "Models",
       "Data",
+      "Settings",
     ]);
   });
 

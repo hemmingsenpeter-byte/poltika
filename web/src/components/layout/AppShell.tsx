@@ -6,23 +6,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { NavList } from "@/components/navigation/NavList";
 import { Button } from "@/components/ui/Button";
-import { humanise } from "@/lib/labels";
 
-import { MetaProvider, useMeta } from "./MetaProvider";
-
-function PolicyVersions() {
-  const { meta } = useMeta();
-  if (meta.status !== "ready") return null;
-  return (
-    <ul aria-label="Policy versions" className="hidden items-center gap-5 text-sm text-chrome-muted lg:flex">
-      {meta.data.policies.map((p) => (
-        <li key={p.policy_id}>
-          {humanise(p.policy_id)} <span className="num font-semibold text-chrome-text">{p.policy_version ?? "unversioned"}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
+import { MetaProvider } from "./MetaProvider";
 
 function Header({ onMenu }: { onMenu: () => void }) {
   return (
@@ -45,9 +30,6 @@ function Header({ onMenu }: { onMenu: () => void }) {
       <span className="rounded-sm border border-highlight px-2 py-0.5 text-xs font-semibold text-chrome-text">
         Pilot on a synthetic population
       </span>
-      <div className="ml-auto">
-        <PolicyVersions />
-      </div>
     </header>
   );
 }

@@ -55,6 +55,7 @@ _UI_ROUTES: tuple[tuple[re.Pattern[str], str], ...] = tuple(
         (rf"/models/{_ID}", "models/_.html"),
         (r"/data", "data.html"),
         (rf"/data/{_ID}", "data/_.html"),
+        (r"/settings", "settings.html"),
     )
 )
 

@@ -11,3 +11,8 @@
   link sit under an "Advanced" disclosure. The placeholder now reads "Search
   a policy setting, such as the Family Tax Credit" so it does not suggest
   that the search reads questions.
+- A Settings page (`/settings`, under Data in the sidebar) now holds the
+  policy versions, their status, the population and this deployment's
+  Poltika, API and build versions, at Pete's instruction (decision log D49).
+  The policy versions are gone from the header. FastAPI declares the new UI
+  route.
