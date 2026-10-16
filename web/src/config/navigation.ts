@@ -1,4 +1,4 @@
-import { BarChart3, BookCheck, Database, Home, Layers, Search, Settings, ShieldCheck, type LucideIcon } from "lucide-react";
+import { BarChart3, BookCheck, Database, Home, Layers, Search, Settings, ShieldCheck, UserCog, type LucideIcon } from "lucide-react";
 
 import type { Capabilities, CapabilityId } from "./capabilities";
 
@@ -18,10 +18,11 @@ export const NAVIGATION: readonly NavigationItem[] = [
   { id: "scenarios", label: "Scenarios", href: "/scenarios", icon: Layers },
   { id: "models", label: "Models", href: "/models", icon: BookCheck },
   { id: "data", label: "Data", href: "/data", icon: Database },
+  { id: "settings", label: "Settings", href: "/settings", icon: Settings },
   { id: "explore", label: "Explore", href: "/explore", icon: BarChart3, capability: "outcome_explorer" },
   { id: "evidence", label: "Evidence", href: "/evidence", icon: Search, capability: "evidence_search" },
   { id: "assurance", label: "Assurance", href: "/assurance", icon: ShieldCheck, capability: "assurance_dashboard" },
-  { id: "admin", label: "Admin", href: "/admin", icon: Settings, capability: "collaboration" },
+  { id: "admin", label: "Admin", href: "/admin", icon: UserCog, capability: "collaboration" },
 ];
 
 export function visibleNavigation(

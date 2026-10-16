@@ -1,31 +1,40 @@
 @import "tailwindcss";
 
-/* Design tokens (ADR-0023): off-white ground, white surfaces, charcoal type,
-   one restrained accent, 1px borders, small radii. Every text/background pair
-   below meets WCAG AA (4.5:1). No gradients, no glass, no illustration. */
+/* Design tokens (ADR-0023; refreshed 17 October 2026). Bush green carries
+   Poltika's frame and its actions. Kōwhai yellow marks "you are here" and
+   "take note" and is never text on a light ground. A cool paper ground sits
+   behind white surfaces. Every text/background pair below meets WCAG AA
+   (4.5:1) and control borders meet 3:1 against both grounds. No gradients,
+   no glass, no illustration, and no shadow under a resting surface. */
 :root {
-  --bg: #fafaf9;
+  --bg: #f3f5f1;
   --surface: #ffffff;
-  --surface-muted: #f4f4f2;
-  --border: #deddd9;
-  --border-strong: #c4c3be;
-  --text: #1c1c1a;
-  --text-muted: #5a5954;
-  --accent: #0f5c5c;
-  --accent-hover: #0b4747;
+  --surface-muted: #edf1ec;
+  --border: #d8ded6;
+  --border-strong: #7f8b82;
+  --text: #15241d;
+  --text-muted: #55625a;
+  --accent: #1c4636;
+  --accent-hover: #12332a;
   --accent-contrast: #ffffff;
-  --accent-soft: #e5f0ef;
-  --ok-fg: #14532d;
-  --ok-bg: #dcf2e3;
-  --warn-fg: #7c3a0a;
-  --warn-bg: #fdecc8;
-  --bad-fg: #8a1c1c;
-  --bad-bg: #fbe0de;
-  --neutral-fg: #3f3e3a;
-  --neutral-bg: #ebebe8;
-  --radius: 5px;
-  --shadow: 0 1px 2px rgb(28 28 26 / 0.06);
-  --focus: #0f5c5c;
+  --accent-soft: #e2ede6;
+  --highlight: #f0b92c;
+  --highlight-soft: #fcf1cc;
+  --chrome: #173b2e;
+  --chrome-text: #ffffff;
+  --chrome-muted: #b8cfc2;
+  --ok-fg: #1b5a32;
+  --ok-bg: #ddefe2;
+  --warn-fg: #774005;
+  --warn-bg: #fbeac3;
+  --bad-fg: #8e1c1c;
+  --bad-bg: #f8dfdb;
+  --neutral-fg: #3b4740;
+  --neutral-bg: #e6ebe5;
+  --radius: 8px;
+  --shadow: none;
+  --shadow-overlay: 0 12px 32px rgb(21 36 29 / 0.18);
+  --focus: #1c4636;
 }
 
 @theme inline {
@@ -40,6 +49,11 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-contrast: var(--accent-contrast);
   --color-accent-soft: var(--accent-soft);
+  --color-highlight: var(--highlight);
+  --color-highlight-soft: var(--highlight-soft);
+  --color-chrome: var(--chrome);
+  --color-chrome-text: var(--chrome-text);
+  --color-chrome-muted: var(--chrome-muted);
   --color-ok-fg: var(--ok-fg);
   --color-ok-bg: var(--ok-bg);
   --color-warn-fg: var(--warn-fg);
@@ -48,20 +62,43 @@
   --color-bad-bg: var(--bad-bg);
   --color-neutral-fg: var(--neutral-fg);
   --color-neutral-bg: var(--neutral-bg);
+  /* Radius follows hierarchy: chips, then controls, then panels. */
   --radius-sm: 4px;
   --radius-md: var(--radius);
-  --radius-lg: 6px;
+  --radius-lg: 12px;
   --shadow-card: var(--shadow);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --shadow-overlay: var(--shadow-overlay);
+  --font-sans: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-source-serif), ui-serif, Georgia, serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* The classical type scale (12, 14, 16, 18, 21, 24, 36, 48). */
+@theme {
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.45;
+  --text-base: 1rem;
+  --text-base--line-height: 1.55;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.5;
+  --text-xl: 1.3125rem;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.3;
+  --text-3xl: 2.25rem;
+  --text-3xl--line-height: 1.15;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 1.08;
 }
 
 html {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.55;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -71,6 +108,18 @@ body {
   color: var(--text);
 }
 
+/* Titles speak in the serif of the official record; everything else is the
+   working sans. */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+}
+
 /* Every figure aligns in columns. */
 body,
 table,
@@ -78,10 +127,20 @@ table,
   font-variant-numeric: tabular-nums;
 }
 
+::selection {
+  background: #f6d97e;
+  color: var(--text);
+}
+
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* On the green frame the focus ring turns kōwhai so it stays visible. */
+.on-chrome :focus-visible {
+  outline-color: var(--highlight);
 }
 
 .skip-link {

@@ -37,15 +37,15 @@ function Defs({ idp }: { idp: string }) {
     <defs>
       <pattern id={`${idp}-diagonal`} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
         <rect width="6" height="6" fill="var(--color-surface)" />
-        <rect width="3" height="6" fill="var(--color-ink)" />
+        <rect width="3" height="6" fill="var(--color-accent)" />
       </pattern>
       <pattern id={`${idp}-dots`} width="6" height="6" patternUnits="userSpaceOnUse">
         <rect width="6" height="6" fill="var(--color-surface)" />
-        <circle cx="3" cy="3" r="1.6" fill="var(--color-ink)" />
+        <circle cx="3" cy="3" r="1.6" fill="var(--color-accent)" />
       </pattern>
       <pattern id={`${idp}-cross`} width="6" height="6" patternUnits="userSpaceOnUse">
         <rect width="6" height="6" fill="var(--color-surface)" />
-        <path d="M0 0L6 6M6 0L0 6" stroke="var(--color-ink)" strokeWidth="1" />
+        <path d="M0 0L6 6M6 0L0 6" stroke="var(--color-accent)" strokeWidth="1" />
       </pattern>
     </defs>
   );
@@ -53,7 +53,7 @@ function Defs({ idp }: { idp: string }) {
 
 function fill(idp: string, i: number): string {
   const p = PATTERNS[i % PATTERNS.length]!;
-  return p === "solid" ? "var(--color-ink)" : `url(#${idp}-${p})`;
+  return p === "solid" ? "var(--color-accent)" : `url(#${idp}-${p})`;
 }
 
 /** A horizontal bar chart of one metric's options (B0.1.6). Each bar has its
@@ -113,7 +113,7 @@ export default function MetricChart({ block }: { block: MetricBlock }) {
                   width={w}
                   height={ROW_H - 12}
                   fill={fill(idp, bar)}
-                  stroke="var(--color-ink)"
+                  stroke="var(--color-accent)"
                 />
               ) : null}
               <text x={LABEL_W + BAR_W + 8} y={y + 18} fontSize="12" fill="var(--color-ink)">
