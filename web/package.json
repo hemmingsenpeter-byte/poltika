@@ -2,6 +2,7 @@
   "name": "poltika-web",
   "version": "0.0.0",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "description": "Poltika web frontend (ADR-0023): a static export served by FastAPI.",
   "engines": {

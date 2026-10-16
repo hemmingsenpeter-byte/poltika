@@ -242,6 +242,11 @@ class Family(BaseModel):
     # incomplete, so no count is verified. A missing fact is never zero.
     wff_children_complete: Assertion = Assertion.UNKNOWN
     as_children_complete: Assertion = Assertion.UNKNOWN
+    # True when each child's `as_dependent_child` was assigned by an adapter
+    # only to reproduce an aggregate AS count (Q19 (2), D38): the count is the
+    # caller's fact, which children it covers is not, so the statuses are
+    # not membership.
+    as_child_statuses_from_count: bool = False
 
     @model_validator(mode="after")
     def _consistent(self) -> Family:
@@ -389,7 +394,7 @@ class Household(BaseModel):
         seen: dict[tuple[str, IncomeType, IncomeBasis], list[IncomeSpell]] = {}
         for spell in self.income_spells:
             seen.setdefault((spell.person_id, spell.income_type, spell.basis), []).append(spell)
-        for key, group in seen.items():
+        for key, group in sorted(seen.items(), key=lambda item: (item[0][0], item[0][1].value, item[0][2].value)):
             ordered = sorted(group, key=lambda s: s.start)
             for earlier, later in pairwise(ordered):
                 if later.start < earlier.end:
@@ -397,7 +402,7 @@ class Household(BaseModel):
         benefits: dict[str, list[BenefitSpell]] = {}
         for benefit_spell in self.benefit_spells:
             benefits.setdefault(benefit_spell.person_id, []).append(benefit_spell)
-        for person_id, benefit_group in benefits.items():
+        for person_id, benefit_group in sorted(benefits.items()):
             ordered_benefits = sorted(benefit_group, key=lambda s: s.start)
             for earlier_benefit, later_benefit in pairwise(ordered_benefits):
                 if later_benefit.start < earlier_benefit.end:

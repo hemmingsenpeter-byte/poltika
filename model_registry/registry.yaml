@@ -253,6 +253,69 @@ models:
         validation_rerun: pytest -q, including tests/unit/engines/assurance/test_model_registry.py
         approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
 
+  - id: income_tax_engine
+    name: Basic annual income tax engine (draft, gated)
+    kind: engine
+    version: "0.1.0"
+    version_basis: >-
+      Package version in pyproject.toml. The engine has no version of its own.
+      Its policy, policy_specs/income_tax/policy.yaml, is draft_pending_review
+      with policy_version null, so no policy version is declared here.
+    owner: >-
+      Pete (accountable model owner and decisions); Claude Code (implementation);
+      GPT/Codex (sources, interpretation, independent review). Assigned under
+      Pete's 5 October 2026 closeout authority; doctrine/model-governance.md.
+    purpose: >-
+      Checks one individual's caller-asserted 2026-27 facts against the D11
+      ordinary salary and wages slice and returns basic annual income tax as
+      unsupported or needs_review. No result is calculated: the policy is a
+      draft, its 2026-27 rates wait on Royal assent (Q16), and the final-output
+      precision method is unresolved (DEC-004). The exact Table 1 band sum is
+      implemented and tested with synthetic parameters only.
+    entry_points:
+      - {module: poltika.engines.simulator.income_tax, function: calculate_income_tax}
+      - {module: poltika.engines.simulator.income_tax, function: run_income_tax_module}
+    depends_on: []
+    validation:
+      level: not_validated
+      basis: >-
+        Runs all 47 draft spec cases, none with a numeric expectation, against
+        the draft policy (each with its exact reason code and a trace), and reproduces the 17 hand-calculated conditional
+        arithmetic values with the pure band-sum function. There is no
+        approved value, no official benchmark and no calculated output.
+      cases:
+        - {kind: spec_cases, path: policy_specs/income_tax/spec_cases.yaml, count: 47}
+      tests:
+        - tests/unit/engines/simulator/test_income_tax.py
+        - tests/unit/engines/simulator/test_income_tax_spec_cases.py
+      reviews:
+        - review_packets/task7_numeric_packet.md
+      open_items:
+        - Q16 / DEC-001, annual-rate authority until Royal assent and a dated source check.
+        - DEC-004, final-output precision method and an official period-matched benchmark.
+        - No shared-household mapping is approved for annual taxable income (specification, Input and outcome contract).
+    evidence_classes_consumed: [Scenario]
+    evidence_note: >-
+      Scenario: the caller's asserted facts. No Rule is consumed while every
+      parameter is a needs_review candidate; any future result is Model output.
+    limitations:
+      - text: Ordinary salary and wages only, whole-year ordinary NZ residents, no deductions or losses, general basic rates, whole-dollar taxable income (Q17).
+        source: policy_specs/income_tax/specification.md
+      - text: Taxable income is attested by the caller, never derived; PAYE, ACC, credits and terminal tax are separate components and not modelled.
+        source: policy_specs/income_tax/specification.md
+    model_risks:
+      - text: >-
+          Turning the exact band sum into a final amount needs a sourced
+          method; the sum can carry sub-cent values.
+        source: policy_specs/income_tax/decisions/DEC-004-output-precision-and-benchmark.md
+    change_log:
+      - date: "2026-10-15"
+        change: Task 7 engine (new-policy PR 3), non-numeric contract only; stacked on the draft values packet #219.
+        why: Implement the specification's outcome contract while the value, authority and precision gates stay closed.
+        evidence: policy_specs/income_tax/spec_cases.yaml
+        validation_rerun: tests/unit/engines/simulator/test_income_tax.py and test_income_tax_spec_cases.py
+        approval: Pending. GPT/Codex engine review and Pete's #219 acceptance (Q24) come first.
+
   - id: combined_runner
     name: Combined WFF and AS household runner
     kind: runner
@@ -270,7 +333,9 @@ models:
       period, and compares the shared facts under the Task 28.3 interaction
       contract. There is no combined total and no income coupling. A shared-fact
       contradiction makes each non-unsupported component needs_review; existing
-      unsupported outcomes are preserved.
+      unsupported outcomes are preserved. A Household input (ADR-0017 Task 1.4,
+      D36 (4), D39) passes its own restated checks through the runner's `checks`
+      argument; the pair format always keeps the Task 28.3 checks.
     entry_points:
       - {module: poltika.scenarios.combined, function: run_combined_household}
     depends_on: [wff_engine, as_engine]
@@ -294,6 +359,7 @@ models:
         - {kind: golden_snapshot, path: tests/fixtures/golden_results_v0_1.json, count: 9}
       tests:
         - tests/unit/scenarios/test_combined.py
+        - tests/unit/scenarios/test_household_run.py
         - tests/unit/scenarios/test_interaction_spec_cases.py
         - tests/unit/scenarios/test_golden_households.py
         - tests/regression/test_wff_as_interaction_leaks.py
@@ -345,6 +411,33 @@ models:
         evidence: model_registry/registry.yaml
         validation_rerun: pytest -q, including tests/unit/engines/assurance/test_model_registry.py
         approval: Pete, 5 October 2026 closeout instruction to accept the best options; reviews/2026-10-05-pr164.md
+      - date: "2026-10-13"
+        change: >-
+          ADR-0017 Task 1.4 (#218). run_combined_household gains a `checks` argument, defaulting
+          to the unchanged Task 28.3 pair checks; the pair format and every existing caller keep
+          them. household_mappings.run_household (a combined_runner wrapper) passes a Household's
+          restated checks instead: the AS week inside the WFF year; partner status narrowed to a
+          single family with a mixed-benefit couple claimant; the child count kept where the AS
+          statuses came from a count (Family.as_child_statuses_from_count), else reported as a
+          definitional difference; in-work eligibility and MC 6(b) refused by to_wff (Q19 (5));
+          the MD 14/15 and MG 4 protected-month flags over any claimant or partner main-benefit
+          spell in the WFF year. The claimant-link check is retired for households. Q19 (7) adds
+          wff.relationship_unchanged_in_year (excluded -> unsupported). No engine, parameter,
+          calculated amount or existing result id changes.
+        why: >-
+          BUILD_PLAN_v0_3.md Task 1.4 and ADR-0017 section 4; Pete's Q19 decisions D36 (4), (7)
+          and D38 (5); Tier B choices D39, accepted by Pete as D40.
+        evidence: >-
+          adr/0017-shared-household-model.md section 4; review_packets/task6_step14_preflight.md;
+          independent GPT/Codex review of #218 at e9fa1ec (R1-R4, fixed) and recheck at 09c7d4b
+        validation_rerun: >-
+          tests/unit/scenarios/test_household_run.py, test_household_roundtrip.py and
+          test_combined.py, tests/unit/semantics, tests/unit/engines/assurance (445 passed at
+          09c7d4b's tree); broad suite (semantics, scenarios, regression, acceptance) 756 passed
+          at 9137244; CI green at 09c7d4b
+        approval: >-
+          Pete's decisions D36, D38 and D40 (13 October 2026); merge follows ADR-0020 after the
+          GPT/Codex final-head recheck clears
 
   - id: population_runner
     name: Population runner (static microsimulation)
@@ -474,6 +567,14 @@ not_engines:
   - module: poltika.scenarios.record
     function: run_scenario
     reason: Runs one ScenarioRecord through run_combined_household and adds run identity. No second calculation path.
+    wraps: combined_runner
+  - module: poltika.scenarios.household_mappings
+    function: run_household
+    reason: >-
+      Maps one Household to the WFF and AS inputs (to_wff, to_as) and runs them
+      through run_combined_household with the household's restated checks
+      (ADR-0017 Task 1.4, D39). No second calculation path; mapping refusals are
+      returned before any run.
     wraps: combined_runner
   - module: poltika.scenarios.microsim.worked_examples
     function: run_examples
