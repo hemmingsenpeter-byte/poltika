@@ -212,6 +212,9 @@ poltika/
 │   │                        Household, with MappingRefusal where it cannot
 │   │                        supply a field; run_household, the household
 │   │                        run with the restated checks (Task 1.4);
+│   │                        to_income_tax(), run_household_income_tax() and
+│   │                        household_from_income_tax(), the income-tax
+│   │                        input for one person (v0.3 2.3, Task 7);
 │   │                        adapters from the existing request formats
 │   │                        onto a Household);
 │   │                        conditional.py (v0.3 Task 1b.2, ADR-0016:
@@ -355,7 +358,9 @@ poltika/
     │   ├── scenarios/         — household round-trip proof (Pass 1, v0.3
     │   │                        Task 1.3), combined WFF+AS runner tests (Task 28.4) and
     │   │                        interaction spec-case runner (Task 28.5),
-    │   │                        golden household runner (Task 29), store
+    │   │                        golden household runner (Task 29), household
+    │   │                        income-tax mapping tests (v0.3 2.3, Task 7,
+    │   │                        test_household_income_tax.py), store
     │   │                        tests (Task 32; marked postgres, start a
     │   │                        throwaway server from initdb/pg_ctl on PATH,
     │   │                        skipped when absent), population schema and
