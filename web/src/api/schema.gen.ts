@@ -446,6 +446,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/income-tax/calculate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Calculate
+         * @description Calculate basic annual income tax for one individual.
+         *
+         *     **This is a conditional simulation, not a verified determination.**
+         *     Every `"verified"` fact and the attested taxable income are the caller's
+         *     own assertion; Poltika derives no taxable income. The income-tax policy
+         *     is draft, so this route returns `needs_review` or `unsupported` and never
+         *     an amount (see this module's docstring).
+         *
+         *     A `PoltikaError` raised by the loader (e.g. a `requested_policy_version`
+         *     mismatch) is not caught here -- it propagates to the app-level handlers
+         *     in `poltika.api.main`, which map it to an explicit HTTP status.
+         */
+        post: operations["calculate_income_tax_calculate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/microsim/parameters": {
         parameters: {
             query?: never;
@@ -1410,6 +1440,73 @@ export interface components {
             ];
         };
         /**
+         * IncomeComposition
+         * @enum {string}
+         */
+        IncomeComposition: "ordinary_salary_wages_only" | "main_benefit" | "business_self_employment" | "investment_or_rent" | "foreign_income" | "unusual_employment_items" | "schedular_or_pie" | "other_or_mixed_income";
+        /**
+         * IncomeTaxCalculationRequest
+         * @description Mirrors `IncomeTaxScenario`'s own fields; see this module's docstring.
+         */
+        IncomeTaxCalculationRequest: {
+            /** Annual Taxable Income */
+            annual_taxable_income?: (number | string) | null;
+            /** @default unknown */
+            general_basic_rate_status: components["schemas"]["FactStatus"];
+            income_composition?: components["schemas"]["IncomeComposition"] | null;
+            /** @default unknown */
+            individual_status: components["schemas"]["FactStatus"];
+            /**
+             * Modelled Date
+             * Format: date
+             */
+            modelled_date: string;
+            /** @default unknown */
+            no_available_losses_status: components["schemas"]["FactStatus"];
+            /** @default unknown */
+            no_deductions_status: components["schemas"]["FactStatus"];
+            /** Requested Policy Version */
+            requested_policy_version?: string | null;
+            residence_scope?: components["schemas"]["ResidenceScope"] | null;
+            tax_year_basis?: components["schemas"]["TaxYearBasis"] | null;
+            /** Taxable Income Basis Attestation */
+            taxable_income_basis_attestation?: boolean | null;
+        };
+        /** IncomeTaxCalculationResponse */
+        IncomeTaxCalculationResponse: {
+            basic_annual_income_tax: components["schemas"]["IncomeTaxComponentResponse"];
+            /** Explanation */
+            explanation: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * IncomeTaxComponentResponse
+         * @description Pinned response shape for the single `basic_annual_income_tax`
+         *     component. `value` is non-null iff `outcome == "calculated"`; while the
+         *     policy is draft it is always null.
+         */
+        IncomeTaxComponentResponse: {
+            /** Category */
+            category?: ("evidenced_exclusion" | "not_modelled") | null;
+            /** Code */
+            code?: string | null;
+            /**
+             * Missing Facts
+             * @default []
+             */
+            missing_facts: string[];
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "calculated" | "needs_review" | "unsupported";
+            /** Reason */
+            reason?: string | null;
+            /** Value */
+            value?: string | null;
+        };
+        /**
          * IntakeRequest
          * @description Stateless: the caller sends the household as first entered, every
          *     answer so far in order, and every fact declined ("don't know").
@@ -1761,7 +1858,7 @@ export interface components {
             /** Policy Id */
             policy_id: string;
             /** Policy Version */
-            policy_version: string;
+            policy_version: string | null;
             /** Problems */
             problems: string[];
             /** Rules */
@@ -1879,6 +1976,11 @@ export interface components {
             /** Result Changed */
             result_changed: boolean;
         };
+        /**
+         * ResidenceScope
+         * @enum {string}
+         */
+        ResidenceScope: "whole_year_ordinary_nz_resident" | "non_resident" | "changing_residence" | "special_residence_regime";
         /**
          * ResolutionResponse
          * @description ADR-0016 conditional answer. Nothing here is `calculated`: the
@@ -2137,6 +2239,11 @@ export interface components {
              */
             type: "table";
         };
+        /**
+         * TaxYearBasis
+         * @enum {string}
+         */
+        TaxYearBasis: "standard_2026_27" | "non_standard_year" | "other_standard_year";
         /**
          * TenureType
          * @description Schedule 4 Part 7 cl 1-3 (rent/board; the published rent/board entry
@@ -3402,6 +3509,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IntakeResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    calculate_income_tax_calculate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IncomeTaxCalculationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncomeTaxCalculationResponse"];
                 };
             };
             /** @description Validation Error */

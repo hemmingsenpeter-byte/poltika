@@ -208,7 +208,8 @@ class RuleEvidence(_Out):
 
 class PolicyEvidence(_Out):
     policy_id: str
-    policy_version: str
+    # Null for a draft policy that has no approved version (income tax).
+    policy_version: str | None
     catalogue_as_of: str | None
     sources: list[EvidenceSource]
     parameters: list[ParameterEvidence]

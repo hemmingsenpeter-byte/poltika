@@ -42,7 +42,9 @@ that their releases or the new programme gates are complete:
   unknown, the household is rerun once per possible answer. The base result
   stays `needs_review`; branches are labelled as conditional.
 
-Not modelled: income tax, instalments or square-up, other benefits, any
+Not modelled: income tax (a draft `POST /income-tax/calculate` route exists
+but returns only `needs_review` or `unsupported`, never an amount),
+instalments or square-up, other benefits, any
 policy not listed above. Results are conditional simulations built from
 facts the caller asserts. They are not entitlement determinations.
 

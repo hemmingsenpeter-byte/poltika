@@ -29,6 +29,7 @@ from fastapi import APIRouter, HTTPException
 
 from poltika.api.access import configured_credentials
 from poltika.api.accommodation_supplement import AS_POLICY_DIR
+from poltika.api.income_tax import INCOME_TAX_POLICY_DIR
 from poltika.api.v1_schemas import (
     AccessInfo,
     BuildInfo,
@@ -122,6 +123,14 @@ def _catalogue_read(what: str) -> Iterator[None]:
 
 def _deployed_policy_dirs() -> tuple[Path, ...]:
     return (WFF_POLICY_DIR, AS_POLICY_DIR)
+
+
+def _evidence_policy_dirs() -> tuple[Path, ...]:
+    """The policies whose evidence is catalogued: the deployed ones plus the
+    draft income-tax policy. Income tax is kept out of `_deployed_policy_dirs`
+    (the meta, workbench and scenario-source views) because it has no version
+    and no workbench surface; its evidence is shown with `policy_version: null`."""
+    return (*_deployed_policy_dirs(), INCOME_TAX_POLICY_DIR)
 
 
 @router.get("/meta", response_model=Meta, responses=_UNAVAILABLE)
@@ -340,7 +349,7 @@ def dataset_detail(dataset_id: str) -> DatasetDetail:
 @router.get("/evidence", response_model=list[PolicyEvidence], responses=_LOOKUP)
 def evidence(policy: str | None = None) -> list[PolicyEvidence]:
     with _catalogue_read("evidence catalogue"):
-        reports = [_policy_evidence(d) for d in _deployed_policy_dirs()]
+        reports = [_policy_evidence(d) for d in _evidence_policy_dirs()]
     if policy is None:
         return reports
     chosen = [r for r in reports if r.policy_id == policy]
