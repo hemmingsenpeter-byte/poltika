@@ -6,6 +6,8 @@ initial_specification_status: task_8_source_linked_specification_draft_pending_r
 policy_version: null
 programme_task: 8
 detailed_plan_task: v0.3 local 0.2 and 3.3.1; 0.3 interaction locators only
+# scope_note keeps #220's draft wording; `status` above supersedes its statement that no
+# specification is approved (D47). Parameters, cases and runtime support remain unapproved.
 scope_note: >-
   Source-linked specification draft for the s 34 restricted-work-capacity ordinary adult single,
   no-dependent-children, existing-grant slice. Proposed week and weekly-agreement contract require

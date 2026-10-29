@@ -4,7 +4,7 @@
 **Date:** 2026-10-16
 **Decision owner:** Pete
 **Decision date:** 2026-10-16
-**Status:** decided for coverage only; specifications remain `draft_pending_review`.
+**Status:** decided for coverage only; the first-slice specification is now `specification_approved` (Pete, 16 October 2026, D47); no value is approved.
 **Class:** Assumption — an explicit model coverage restriction, not a statutory eligibility rule.
 **Affected rules:** SPS-11 and SLP-07.
 **Authority:** [Q25 / D44, recorded on main](https://github.com/hemmingsenpeter-byte/poltika/blob/ed39fe700532b1d22b5a7ae2a3daa44963ce9cf6/docs/decision_log.md).
