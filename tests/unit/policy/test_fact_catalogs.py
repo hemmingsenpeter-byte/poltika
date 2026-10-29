@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 import types
 import typing
+from dataclasses import fields
 from enum import Enum
 from pathlib import Path
 
@@ -12,6 +13,8 @@ import pytest
 from pydantic import ValidationError
 
 from poltika.engines.simulator.accommodation_supplement import AsScenario
+from poltika.engines.simulator.income_tax import IncomeTaxScenario, run_income_tax_module
+from poltika.engines.simulator.outcome import FactStatus
 from poltika.engines.simulator.wff import ChildFacts, WffScenario
 from poltika.policy.facts import fact_index, load_fact_catalog
 from poltika.scenarios.combined import CombinedHouseholdScenario
@@ -90,7 +93,46 @@ def test_income_tax_draft_catalog_loads_without_registering_an_engine() -> None:
 def test_entry_domain_matches_the_engine_field(key: tuple[str, str]) -> None:
     entry = INDEX[key]
     cls, name = _owner(entry)
-    hint = _hint(cls, name)
+    _assert_domain(entry, _hint(cls, name))
+
+
+def _income_tax_emitted() -> tuple[str, ...]:
+    """The facts income tax reports missing. The engine names them from its
+    scenario fields rather than literals, so they are read from a run with
+    every fact unknown, the one place it emits `missing_facts`."""
+    unknown = IncomeTaxScenario(
+        individual_status=FactStatus.UNKNOWN,
+        residence_scope=None,
+        tax_year_basis=None,
+        income_composition=None,
+        no_deductions_status=FactStatus.UNKNOWN,
+        no_available_losses_status=FactStatus.UNKNOWN,
+        general_basic_rate_status=FactStatus.UNKNOWN,
+        taxable_income_basis_attestation=None,
+        annual_taxable_income=None,
+    )
+    return run_income_tax_module(unknown).missing_facts
+
+
+def test_the_income_tax_catalogue_covers_every_fact_the_engine_emits() -> None:
+    # v0.3 2.3: the completeness test extended to income tax. Its catalogue
+    # stays out of the WFF/AS `INDEX` above (no intake registration).
+    catalog = load_fact_catalog(POLICIES / "income_tax")
+    entries = {entry.id: entry for entry in catalog.facts}
+    emitted = _income_tax_emitted()
+    assert len(emitted) == len(set(emitted)) == 9
+    assert set(emitted) == set(entries) == {f.name for f in fields(IncomeTaxScenario)}
+    rows = set(
+        re.findall(
+            r"^\|\s*(IT-\d+)\s*\|", (POLICIES / "income_tax" / "specification.md").read_text(), re.MULTILINE
+        )
+    )
+    for entry in entries.values():
+        _assert_domain(entry, _hint(IncomeTaxScenario, entry.id))
+        assert entry.rule in rows, f"{entry.id}: {entry.rule} is not an income-tax specification rule row"
+
+
+def _assert_domain(entry: FactEntry, hint: type) -> None:
     if entry.kind in ("fact_status", "enum"):
         assert isinstance(hint, type) and issubclass(hint, Enum), f"{entry.id} is not an enum field"
         engine_values = {m.value for m in hint} - {"unknown"}

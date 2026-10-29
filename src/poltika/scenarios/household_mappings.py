@@ -16,6 +16,12 @@ mappings between the canonical `Household` and each policy's input type.
   existing request formats enter the household path through them. They
   raise `AdapterRefused` where the scenario pair cannot be held as one set
   of facts (see each rule below).
+- `to_income_tax(household, person_id, tax_year)` derives one person's
+  `IncomeTaxScenario` (programme Task 7, BUILD_PLAN_v0_3.md 2.3: income tax
+  reads the household model through a named mapping). Rule ids are those in
+  `policy_specs/income_tax/specification.md` IT-01..08.
+  `run_household_income_tax()` runs it, and `household_from_income_tax()`
+  is the adapter in the other direction.
 - `run_household()` (Task 1.4) runs both policies for a `Household` input.
   It keeps only the pair checks a household can still fail, restated on its
   facts (`HOUSEHOLD_CHECKS`); the ones it makes impossible are retired for
@@ -40,7 +46,7 @@ Where the mapping and the adapters meet, the convention is fixed here:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -54,6 +60,18 @@ from poltika.engines.simulator.accommodation_supplement import (
     ClaimantCategory,
     PartnerType,
     TenureType,
+)
+from poltika.engines.simulator.income_tax import (
+    POLICY_DIR as INCOME_TAX_POLICY_DIR,
+)
+from poltika.engines.simulator.income_tax import (
+    IncomeComposition,
+    IncomeTaxScenario,
+    ResidenceScope,
+    run_income_tax_module,
+)
+from poltika.engines.simulator.income_tax import (
+    TaxYearBasis as ItTaxYearBasis,
 )
 from poltika.engines.simulator.outcome import ComponentResult, FactStatus
 from poltika.engines.simulator.wff import (
@@ -148,13 +166,24 @@ def _income_order(spell: hh.IncomeSpell) -> tuple[date, date, str, str, str, Dec
 
 
 def _q10_refusal(
-    household: Household, person_ids: tuple[str, ...], period: DatePeriod, bases: frozenset[hh.IncomeBasis]
+    household: Household,
+    person_ids: tuple[str, ...],
+    period: DatePeriod,
+    bases: frozenset[hh.IncomeBasis],
+    *,
+    income_types: frozenset[hh.IncomeType] | None = None,
 ) -> MappingRefusal | None:
     """A spell that extends past the policy period would need an
     annualisation or apportionment, which no sourced rule allows (v0.2 D8/D9;
-    PETE_QUEUE Q10). Refused, never scaled."""
+    PETE_QUEUE Q10). Refused, never scaled. `income_types` narrows the spells
+    read to the types the mapping takes an amount from (None: every type)."""
     for spell in sorted(household.income_spells, key=_income_order):
-        if spell.person_id in person_ids and spell.basis in bases and hh.straddling_spells((spell,), period):
+        if (
+            spell.person_id in person_ids
+            and spell.basis in bases
+            and (income_types is None or spell.income_type in income_types)
+            and hh.straddling_spells((spell,), period)
+        ):
             return MappingRefusal(
                 "needs_review",
                 "HOUSEHOLD_SPELL_PERIOD_MISMATCH",
@@ -650,6 +679,132 @@ def run_household(
     return HouseholdResult(combined=combined, definitional_differences=differences)
 
 
+# ---------------------------------------------------------------- income tax
+
+# IT-02 and facts.yaml `tax_year_basis: standard_2026_27`: the standard
+# 1 April 2026 to 31 March 2027 tax year, `[start, end)`.
+INCOME_TAX_YEAR_2026_27 = DatePeriod(start=date(2026, 4, 1), end=date(2027, 4, 1))
+# The one spell kind taxable income is read from: Q10 and the amount share it.
+_IT_BASES = frozenset({hh.IncomeBasis.IT_ANNUAL_TAXABLE})
+_IT_TYPES = frozenset({hh.IncomeType.UNSPLIT_TOTAL})
+
+
+def _income_tax_scenario(facts: hh.IncomeTaxFacts, income: Decimal | None) -> IncomeTaxScenario:
+    """The person's asserted facts as the engine's input, converted by value.
+    `UNKNOWN` becomes `None` (not asserted), never a default member."""
+    residence = facts.residence_scope
+    basis = facts.tax_year_basis
+    composition = facts.income_composition
+    return IncomeTaxScenario(
+        individual_status=FactStatus(facts.individual_status.value),  # IT-01
+        residence_scope=None if residence is hh.TaxResidenceScope.UNKNOWN else ResidenceScope(residence.value),  # IT-01
+        tax_year_basis=None if basis is hh.TaxYearBasis.UNKNOWN else ItTaxYearBasis(basis.value),  # IT-02
+        income_composition=(  # IT-03
+            None if composition is hh.TaxIncomeComposition.UNKNOWN else IncomeComposition(composition.value)
+        ),
+        no_deductions_status=FactStatus(facts.no_deductions_status.value),  # IT-04
+        no_available_losses_status=FactStatus(facts.no_available_losses_status.value),  # IT-04
+        general_basic_rate_status=FactStatus(facts.general_basic_rate_status.value),  # IT-05
+        taxable_income_basis_attestation=facts.taxable_income_basis_attestation,  # IT-02/03/04/08
+        annual_taxable_income=income,  # IT-02/03/04/08, Q17
+    )
+
+
+def to_income_tax(household: Household, person_id: str, tax_year: DatePeriod) -> IncomeTaxScenario | MappingRefusal:
+    """One person's income-tax input for `tax_year` (passed explicitly: no
+    default period). Income tax assesses one natural person (IT-01), so each
+    person maps on their own: nothing is read from the family, a partner or
+    another person's spells, and the person's role adds no fact.
+
+    Every fact is the person's own `IncomeTaxFacts` (unknown if absent).
+    Annual taxable income is one figure for the year (IT-02: allocated to
+    the year, with no derivation or timing algorithm), so it is the
+    person's single `UNSPLIT_TOTAL` spell with the `IT_ANNUAL_TAXABLE` basis
+    covering exactly `tax_year`, used as given with no arithmetic. A spell of
+    another type with this basis is not taxable income: Q10 and the amount
+    both ignore it. No such spell leaves it unknown
+    (`None`), never zero; several spells inside the year are refused rather
+    than summed; a spell extending past the year is refused (Q10), never
+    apportioned.
+    Taxable income is never derived from earnings, benefit or other spells:
+    the specification has it supplied, not inferred (IT-03), and whether a
+    recorded benefit or other income contradicts an asserted composition is
+    an interaction (Phase B Task 9), not this mapping's.
+
+    A refusal here is `needs_review`; `run_household_income_tax()` reports a
+    known exclusion among the person's facts first, as the engine does."""
+    if person_id not in {p.person_id for p in household.persons}:
+        raise ValueError(f"household '{household.household_id}' holds no person '{person_id}'")
+    facts = household.person(person_id).income_tax_facts or hh.IncomeTaxFacts()
+    # IT-02: the amount is the one allocated to the asserted year. Mapping it
+    # for another period while that year is asserted would relabel it.
+    if facts.tax_year_basis is hh.TaxYearBasis.STANDARD_2026_27 and tax_year != INCOME_TAX_YEAR_2026_27:
+        return _invalid(
+            f"'{person_id}' asserts taxable income allocated to the standard 2026-27 tax year "
+            f"[{INCOME_TAX_YEAR_2026_27.start}, {INCOME_TAX_YEAR_2026_27.end}), but the mapping was asked for "
+            f"[{tax_year.start}, {tax_year.end})"
+        )
+    mismatch = _q10_refusal(household, (person_id,), tax_year, _IT_BASES, income_types=_IT_TYPES)
+    if mismatch is not None:
+        return mismatch
+    inside = [
+        spell
+        for income_type in _IT_TYPES
+        for basis in _IT_BASES
+        for spell in household.income_spells_for(person_id, income_type, basis)
+        if spell.start >= tax_year.start and spell.end <= tax_year.end
+    ]
+    if len(inside) > 1:
+        return _invalid(
+            f"'{person_id}' has {len(inside)} annual taxable income spells inside the tax year; taxable income "
+            "is one figure allocated to the year (IT-02), and summing parts is a derivation it does not provide"
+        )
+    whole_year = len(inside) == 1 and (inside[0].start, inside[0].end) == (tax_year.start, tax_year.end)
+    return _income_tax_scenario(facts, inside[0].amount if whole_year else None)
+
+
+def run_household_income_tax(
+    household: Household,
+    person_id: str,
+    *,
+    tax_year: DatePeriod,
+    policy_dir: Path = INCOME_TAX_POLICY_DIR,
+    modelled_date: date = date(2026, 4, 1),
+    requested_policy_version: str | None = None,
+) -> ComponentResult:
+    """One person's income-tax result for a household input. `tax_year` must
+    be the income-tax policy's reference period. The engine is unchanged:
+    a mapped person gives exactly the result `run_income_tax_module()` gives
+    for the same scenario. A mapping refusal is `needs_review`, so a known
+    exclusion among the person's facts (`unsupported`) is reported first,
+    as the engine's own order has it; the income is then unknown. A refusal
+    carries the trace of that run (the person's facts, income unknown), so
+    every result names its policy, reference period and scenario."""
+    reference = load_policy_spec(policy_dir / "policy.yaml").reference_period
+    if (tax_year.start, tax_year.end) != (reference.from_, reference.to):
+        raise ValueError(
+            f"tax_year [{tax_year.start}, {tax_year.end}) is not the income-tax policy's reference period "
+            f"[{reference.from_}, {reference.to})"
+        )
+
+    def run(scenario: IncomeTaxScenario) -> ComponentResult:
+        return run_income_tax_module(
+            scenario,
+            policy_dir=policy_dir,
+            modelled_date=modelled_date,
+            requested_policy_version=requested_policy_version,
+        )
+
+    mapped = to_income_tax(household, person_id, tax_year)
+    if isinstance(mapped, IncomeTaxScenario):
+        return run(mapped)
+    facts = household.person(person_id).income_tax_facts or hh.IncomeTaxFacts()
+    excluded = run(_income_tax_scenario(facts, None))
+    if excluded.outcome == "unsupported":
+        return excluded
+    return replace(refusal_result(mapped), trace=excluded.trace)
+
+
 # ---------------------------------------------------------------- adapters
 
 
@@ -686,6 +841,58 @@ def household_from_wff(wff: WffScenario, *, household_id: str, tax_year: DatePer
 def household_from_as(as_: AsScenario, *, household_id: str, assessment_week: AssessmentWeek) -> Household:
     """An AS-only scenario as a household. WFF facts stay unknown."""
     return _household_from(None, as_, FactStatus.UNKNOWN, household_id, None, assessment_week)
+
+
+def household_from_income_tax(
+    scenario: IncomeTaxScenario,
+    *,
+    household_id: str,
+    tax_year: DatePeriod,
+    person_id: str = "taxpayer",
+) -> Household:
+    """One person's income-tax scenario as a household of that one person.
+    The household's single family needs a claimant, so the person holds that
+    role; income tax reads no fact from it. The amount becomes one
+    `IT_ANNUAL_TAXABLE` spell over `tax_year` (passed explicitly: no default
+    period); an unknown amount, no spell. Raises `AdapterRefused` when the
+    scenario asserts the standard 2026-27 year and `tax_year` is another
+    period, or asserts another year with an amount and `tax_year` is
+    2026-27: that household would relabel the amount (IT-02). An unknown
+    year infers none."""
+    s = scenario
+    if s.tax_year_basis is ItTaxYearBasis.STANDARD_2026_27 and tax_year != INCOME_TAX_YEAR_2026_27:
+        raise AdapterRefused(
+            f"the scenario's taxable income is allocated to the standard 2026-27 tax year, not "
+            f"[{tax_year.start}, {tax_year.end})"
+        )
+    if (
+        s.tax_year_basis in (ItTaxYearBasis.OTHER_STANDARD_YEAR, ItTaxYearBasis.NON_STANDARD_YEAR)
+        and s.annual_taxable_income is not None
+        and tax_year == INCOME_TAX_YEAR_2026_27
+    ):
+        raise AdapterRefused(
+            "the scenario's taxable income is allocated to another tax year; a spell over the standard 2026-27 "
+            "year would date it against that assertion (IT-02)"
+        )
+    facts = hh.IncomeTaxFacts(
+        individual_status=hh.Assertion(s.individual_status.value),
+        residence_scope=hh.TaxResidenceScope(s.residence_scope.value if s.residence_scope else "unknown"),
+        tax_year_basis=hh.TaxYearBasis(s.tax_year_basis.value if s.tax_year_basis else "unknown"),
+        income_composition=hh.TaxIncomeComposition(s.income_composition.value if s.income_composition else "unknown"),
+        no_deductions_status=hh.Assertion(s.no_deductions_status.value),
+        no_available_losses_status=hh.Assertion(s.no_available_losses_status.value),
+        general_basic_rate_status=hh.Assertion(s.general_basic_rate_status.value),
+        taxable_income_basis_attestation=s.taxable_income_basis_attestation,
+    )
+    spells: tuple[hh.IncomeSpell, ...] = ()
+    if s.annual_taxable_income is not None:
+        spells = (_spell(person_id, tax_year, s.annual_taxable_income, hh.IncomeBasis.IT_ANNUAL_TAXABLE),)
+    return Household(
+        household_id=household_id,
+        persons=(hh.Person(person_id=person_id, role=PersonRole.CLAIMANT, income_tax_facts=facts),),
+        families=(hh.Family(claimant_id=person_id),),
+        income_spells=spells,
+    )
 
 
 def _merge_partner(
@@ -881,6 +1088,7 @@ def _spell(person_id: str, period: DatePeriod | AssessmentWeek, amount: Decimal,
 __all__ = [
     "AS_FACTS",
     "HOUSEHOLD_CHECKS",
+    "INCOME_TAX_YEAR_2026_27",
     "LINK_FACT",
     "RELATIONSHIP_FACT",
     "RETIRED_FOR_HOUSEHOLD",
@@ -890,11 +1098,14 @@ __all__ = [
     "MappingRefusal",
     "household_from_as",
     "household_from_combined",
+    "household_from_income_tax",
     "household_from_record",
     "household_from_wff",
     "refusal_result",
     "run_household",
+    "run_household_income_tax",
     "to_as",
     "to_combined",
+    "to_income_tax",
     "to_wff",
 ]
