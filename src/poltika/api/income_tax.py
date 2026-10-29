@@ -18,9 +18,11 @@ it to accept the draft, and any string is a 409 mismatch until a version is
 approved.
 
 Money is a decimal string. A JSON number (float or integer) is rejected, so
-no binary float can reach the engine. Income is non-negative and finite, as
-in WFF; a fractional amount is accepted by the model and is `unsupported`
-in the engine (Q17), never rounded.
+no binary float can reach the engine. Income must be finite. Unlike WFF,
+the model does not refuse a negative amount: the engine reports it as
+`unsupported` (`IT_NEGATIVE_INCOME_NOT_MODELLED`), so a modelled outcome is
+never turned into a transport error (D54). A fractional amount is likewise
+`unsupported` in the engine (Q17), never rounded.
 """
 
 from __future__ import annotations
@@ -91,7 +93,7 @@ class IncomeTaxCalculationRequest(BaseModel):
     # None is "not asserted"; `false` is "asserted not attested" -- distinct
     # outcomes in the engine. StrictBool: `"true"` or `1` is not an attestation.
     taxable_income_basis_attestation: StrictBool | None = None
-    annual_taxable_income: MoneyString | None = Field(default=None, ge=0, allow_inf_nan=False)
+    annual_taxable_income: MoneyString | None = Field(default=None, allow_inf_nan=False)
 
 
 class IncomeTaxComponentResponse(BaseModel):

@@ -6,3 +6,5 @@
   draft, so every result is `needs_review` or `unsupported`; no calculated
   amount changes. `GET /api/v1/evidence` now lists `income_tax` with
   `policy_version: null` (the field is nullable); `/meta` is unchanged.
+  A negative income is not refused by the request model: the engine reports
+  it as `unsupported` (`IT_NEGATIVE_INCOME_NOT_MODELLED`) (D54).

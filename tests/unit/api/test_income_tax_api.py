@@ -29,6 +29,7 @@ from poltika.engines.assurance.explanation import (
     verify,
 )
 from poltika.engines.simulator.income_tax import REQUIRED_PARAMETER_IDS, run_income_tax_module
+from poltika.policy.loader import load_policy_spec
 
 client = TestClient(app)
 URL = "/income-tax/calculate"
@@ -119,6 +120,7 @@ def test_the_response_carries_a_verified_explanation_and_the_parameter_evidence(
         ({"no_available_losses_status": "excluded"}, "IT_LOSSES_NOT_MODELLED"),
         ({"general_basic_rate_status": "excluded"}, "IT_SPECIAL_BASIC_RATE_NOT_MODELLED"),
         ({"annual_taxable_income": "100.50"}, "IT_FRACTIONAL_INCOME_NOT_MODELLED"),
+        ({"annual_taxable_income": "-1"}, "IT_NEGATIVE_INCOME_NOT_MODELLED"),
     ],
 )
 def test_each_exclusion_is_unsupported_with_its_reason_code(
@@ -204,6 +206,15 @@ def test_omitting_the_requested_version_accepts_the_unversioned_draft() -> None:
     assert post(requested_policy_version=None).status_code == 200
 
 
+def test_the_requested_version_becomes_required_once_the_policy_has_one() -> None:
+    # WFF and AS require it. It is optional only while the draft has no
+    # version; approving one must make this fail until the field is required.
+    spec = load_policy_spec(_income_tax_policy_dir() / "policy.yaml")
+    field = IncomeTaxCalculationRequest.model_fields["requested_policy_version"]
+    assert spec.policy_version is not None or not field.is_required()
+    assert spec.policy_version is None or field.is_required()
+
+
 @pytest.mark.parametrize(
     "overrides",
     [
@@ -211,7 +222,6 @@ def test_omitting_the_requested_version_accepts_the_unversioned_draft() -> None:
         {"annual_taxable_income": 25000.5},
         {"annual_taxable_income": 25000},
         {"annual_taxable_income": True},
-        {"annual_taxable_income": "-1"},
         {"annual_taxable_income": "NaN"},
         {"annual_taxable_income": "Infinity"},
         {"annual_taxable_income": "-Infinity"},

@@ -1450,7 +1450,7 @@ export interface components {
          */
         IncomeTaxCalculationRequest: {
             /** Annual Taxable Income */
-            annual_taxable_income?: (number | string) | null;
+            annual_taxable_income?: number | string | null;
             /** @default unknown */
             general_basic_rate_status: components["schemas"]["FactStatus"];
             income_composition?: components["schemas"]["IncomeComposition"] | null;
