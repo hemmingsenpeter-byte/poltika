@@ -8,16 +8,21 @@
 # natural person, so a partner's income and facts are never read).
 #
 # Expectations are outcome, reason code, category, missing facts and policy
-# identity only. They were derived by Claude Code from the specification's
-# "Input and outcome contract" and calculation sequence (`unsupported`
-# outranks `needs_review`; a missing fact is never zero; IT-01 to IT-05, Q10,
-# Q17), not copied from a run. They are AI hypotheses until the independent
-# review row clears (review_packets/review_queue.md). The statutory-value
-# guard watches this file (ADR-0007).
+# identity only. The outcomes and their precedence were derived by Claude Code
+# from the specification's "Input and outcome contract" and calculation
+# sequence (`unsupported` outranks `needs_review`; a missing fact is never
+# zero; IT-01 to IT-05, Q10, Q17). The HOUSEHOLD_* reason codes (g06 to g09)
+# and the draft policy-identity string are not in the specification: they are
+# the household mapping's own codes, named from the code
+# (`household_mappings.py`, `income_tax.py` `_unloaded_trace`; ADR-0017, D50).
+# They are AI hypotheses until the independent review row clears
+# (review_packets/review_queue.md). The statutory-value guard watches this
+# file (ADR-0007).
 #
-# Spell amounts are synthetic, caller-asserted whole-dollar inputs. They are
-# not statutory values and none equals a candidate parameter (the runner
-# checks no amount equals any number in policy.yaml). A draft policy ignores
+# Spell amounts are synthetic, caller-asserted inputs (whole-dollar except g44, which is fractional on purpose). They are
+# not statutory values and none is within 2 of a candidate parameter (the runner
+# checks each amount is on a fixed allow-list and at least 2 from every number in policy.yaml,
+# except the -1 negative-income sentinel). A draft policy ignores
 # them.
 #
 # Not written here, waiting on the protected-value process
@@ -472,6 +477,6 @@ households:
       families:
         - {claimant_id: a, partner_status: single}
       income_spells:
-        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '15600.5', basis: it_annual_taxable}
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '1000.5', basis: it_annual_taxable}
     runs:
       - {person: a, outcome: unsupported, code: IT_FRACTIONAL_INCOME_NOT_MODELLED, category: not_modelled, missing_facts: []}

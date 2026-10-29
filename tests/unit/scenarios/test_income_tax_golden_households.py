@@ -41,6 +41,12 @@ EXCLUSION_CODES = {
     "IT_NEGATIVE_INCOME_NOT_MODELLED",
     "IT_FRACTIONAL_INCOME_NOT_MODELLED",
 }
+# Fixed allow-list of synthetic spell amounts. -1 is the negative-income sentinel
+# (g43): it exercises the sign check only, so it is exempt from the proximity check.
+NEGATIVE_SENTINEL = Decimal(-1)
+SYNTHETIC_AMOUNTS = {
+    Decimal(v) for v in ("52000", "38000", "30000", "20000", "65000", "41000", "1000.5", "-1")
+}
 _NUMBER = re.compile(r"-?\d[\d,]*(?:\.\d+)?")
 _MONEY = re.compile(r"\$|(?<![-\w])\d{3,}")
 
@@ -101,12 +107,12 @@ def test_golden_file_is_complete_and_assumption_free() -> None:
             assert run["outcome"] in {"needs_review", "unsupported"}, household["id"]
             codes.add(run["code"])
         for spell in household["household"].get("income_spells", []):
-            # Synthetic inputs, never a parameter value from the draft policy.
+            # Synthetic inputs, never near a parameter value from the draft policy.
             amount = Decimal(spell["amount"])
-            assert abs(amount) < 1000 or amount not in candidate_numbers, (
-                household["id"],
-                spell["amount"],
-            )
+            assert amount in SYNTHETIC_AMOUNTS, (household["id"], spell["amount"])
+            if amount != NEGATIVE_SENTINEL:
+                nearest = min(abs(amount - number) for number in candidate_numbers)
+                assert nearest >= 2, (household["id"], spell["amount"])
     assert EXCLUSION_CODES <= codes
 
 

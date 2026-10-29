@@ -10,6 +10,7 @@ import re
 import tempfile
 import unicodedata
 from collections.abc import Iterable, Iterator
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -38,7 +39,9 @@ from tests.conftest import AS_POLICY_DIR, WFF_POLICY_DIR
 ROOT = Path(__file__).resolve().parents[2]
 CATALOGUES = sorted((ROOT / "policy_specs").glob("*/facts.yaml"))
 MODELLED_CATALOGUES = {
-    "working_for_families", "accommodation_supplement", "wff_as_interaction",
+    "working_for_families",
+    "accommodation_supplement",
+    "wff_as_interaction",
 }
 
 
@@ -113,18 +116,79 @@ def _income_tax_row(condition: bool, reason: str) -> None:
     pytest.skip(f"release gate not yet met: {reason}")
 
 
-def test_income_tax_values_are_approved() -> None:
+def _collect(node: Any, key: str) -> list[Any]:
+    found: list[Any] = []
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k == key:
+                found.append(v)
+            found += _collect(v, key)
+    elif isinstance(node, list):
+        for v in node:
+            found += _collect(v, key)
+    return found
+
+
+def _income_tax_values_unapproved() -> bool:
     spec = _income_tax_policy()
+    raw = yaml.safe_load((INCOME_TAX / "policy.yaml").read_text())
+    statuses = _collect(raw, "review_status")
+    return (
+        spec.status is PolicyStatus.DRAFT_PENDING_REVIEW
+        or spec.policy_version is None
+        or not statuses
+        or any(status != "approved" for status in statuses)
+    )
+
+
+def _income_tax_protected_values_written() -> list[str]:
+    """Protected expected values written while the policy values are unapproved.
+
+    A `calculated` outcome in a golden or spec case, or a golden spell amount within 1
+    of a policy bracket threshold, is a bracket-boundary or numeric protected value.
+    """
+    written: list[str] = []
+    golden = yaml.safe_load((INCOME_TAX / "golden_households.yaml").read_text())
+    cases = yaml.safe_load((INCOME_TAX / "spec_cases.yaml").read_text())
+    raw = yaml.safe_load((INCOME_TAX / "policy.yaml").read_text())
+    thresholds = {
+        Decimal(str(v))
+        for v in _collect(raw, "value")
+        if isinstance(v, (str, int)) and re.fullmatch(r"\d{4,}", str(v))
+    }
+    for run in _collect(golden, "runs"):
+        written += [f"golden run {r}" for r in run if r.get("outcome") == "calculated"]
+    written += [
+        f"spec case {c['id']}"
+        for c in cases["spec_cases"]
+        if "calculated" in str(_collect(c.get("expected"), "outcome"))
+    ]
+    for spell in _collect(golden, "income_spells"):
+        for item in spell:
+            amount = Decimal(item["amount"])
+            if any(abs(amount - t) <= 1 for t in thresholds):
+                written.append(f"golden spell amount {amount}")
+    return written
+
+
+def test_income_tax_values_are_approved() -> None:
     _income_tax_row(
-        spec.status is PolicyStatus.DRAFT_PENDING_REVIEW or spec.policy_version is None,
-        "income-tax policy.yaml is draft_pending_review with policy_version null, so every result is "
-        "needs_review or unsupported and none is calculated",
+        _income_tax_values_unapproved(),
+        "income-tax policy.yaml is draft_pending_review with policy_version null or has parameters whose "
+        "review_status is not approved, so every result is needs_review or unsupported and none is calculated",
     )
 
 
 def test_income_tax_protected_values_are_approved() -> None:
+    unapproved = _income_tax_values_unapproved()
+    written = _income_tax_protected_values_written()
+    if unapproved and written:
+        pytest.fail(
+            "protected income-tax expected values are written while the values are not approved "
+            f"(doctrine/test-doctrine.md): {written}"
+        )
     _income_tax_row(
-        _income_tax_policy().status is PolicyStatus.DRAFT_PENDING_REVIEW,
+        unapproved,
         "no protected income-tax expected value (numeric spec cases, bracket-boundary goldens) is approved; "
         "policy_specs/income_tax/golden_households.yaml lists them as waiting on the protected-value process "
         "(doctrine/test-doctrine.md)",
@@ -461,7 +525,9 @@ USER_FACING_DOCS = (
     "docs/ORIENTATION.md",
     *(
         str(p.relative_to(ROOT))
-        for p in sorted([*(ROOT / "docs" / "pilot").glob("*.md"), *(ROOT / "docs" / "demo").rglob("*.md")])
+        for p in sorted(
+            [*(ROOT / "docs" / "pilot").glob("*.md"), *(ROOT / "docs" / "demo").rglob("*.md")]
+        )
     ),
 )
 
@@ -479,11 +545,14 @@ def unreached_milestone_claims(text: str) -> list[str]:
     plain = re.sub(r"[-_\s]+", " ", plain)  # "digital-twin" and a line break read the same
     claims: list[str] = []
     for sentence in re.split(r"(?<=[.!?])\s+|\n\s*\n", plain):
-        clauses = [re.findall(r"[a-z0-9']+", c) for c in re.split(r"[;:()\u2013\u2014]", sentence.lower())]
+        clauses = [
+            re.findall(r"[a-z0-9']+", c) for c in re.split(r"[;:()\u2013\u2014]", sentence.lower())
+        ]
         for term in GATED_TERMS:
             term_words = term.split()
             if any(
-                words[i : i + len(term_words)] == term_words and not _negated(words, i, len(term_words))
+                words[i : i + len(term_words)] == term_words
+                and not _negated(words, i, len(term_words))
                 for words in clauses
                 for i in range(len(words) - len(term_words) + 1)
             ):

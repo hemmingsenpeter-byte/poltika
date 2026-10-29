@@ -94,7 +94,7 @@ poltika/
 │                         facts that always hold, inputs, runnable examples, what to read next
 ├── docs/research/     — Task 3's structural-only OpenFisca Aotearoa glance, and the
 │                         clean-room comparative review of NZ policy-modelling projects
-├── docs/releases/     — per-release limitations, measured baselines, the v0.1.5 gate map, the v0.2 population methodology and RELEASE_CHECKLIST.md (the gate-based release steps, ending in a PETE_QUEUE.md tagging request)
+├── docs/releases/     — per-release limitations (including V0_3_INCOME_TAX_LIMITATIONS.md), measured baselines, the v0.1.5 gate map, the v0.2 population methodology and RELEASE_CHECKLIST.md (the gate-based release steps, ending in a PETE_QUEUE.md tagging request)
 ├── docs/programme/    — repository reconciliation/reference audits, EXECUTION.md (agent roles/bounded cycles) and POLICY_CLAIMS_BUDGET_WORKFLOWS.md (C14a/D16a/F24a/I29a use-case specification; not a second master) and RUNNER_ISOLATION_RUNBOOK.md (Pete's Q13 steps for a dedicated CI user)
 ├── docs/archive/      — superseded planning snapshots, never an implementation authority
 │   ├── programmes/    — ADR-0019 programme and W1–W10 realignment history
@@ -362,7 +362,7 @@ poltika/
     │   │                        golden household runner (Task 29), household
     │   │                        income-tax mapping tests (v0.3 2.3, Task 7,
     │   │                        test_household_income_tax.py), income-tax golden
-│   │                        household runner (test_income_tax_golden_households.py), store
+    │   │                        household runner (test_income_tax_golden_households.py), store
     │   │                        tests (Task 32; marked postgres, start a
     │   │                        throwaway server from initdb/pg_ctl on PATH,
     │   │                        skipped when absent), population schema and
