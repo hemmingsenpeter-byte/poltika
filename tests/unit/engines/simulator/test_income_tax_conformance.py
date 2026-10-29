@@ -209,7 +209,7 @@ def test_all_facts_unknown_names_every_fact_in_scenario_order() -> None:
     )
 
 
-@pytest.mark.parametrize("bad", [15600, "15600", True])
+@pytest.mark.parametrize("bad", [7, "7", True])
 def test_request_validation_rejects_non_decimal_income(bad: object) -> None:
     # Spec handoff: malformed numeric transport is rejected, never coerced.
     with pytest.raises(ValueError, match="finite Decimal"):
