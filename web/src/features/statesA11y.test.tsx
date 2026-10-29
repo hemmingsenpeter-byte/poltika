@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError } from "@/api/errors";
 import type { Registry } from "@/domain";
@@ -58,6 +58,20 @@ beforeEach(() => {
   svc.query = "";
   svc.models = svc.datasets = svc.scenarios = svc.workspace = svc.definition = svc.examples = never;
   svc.registry = () => Promise.resolve(REGISTRY);
+});
+
+describe("Home search note", () => {
+  it("describes the search input whether Advanced is closed or open", () => {
+    svc.registry = never;
+    const { container } = render(<HomePage />);
+    const note = "does not interpret questions in plain language yet";
+    const input = screen.getByRole("searchbox");
+    const details = container.querySelector("details") as HTMLDetailsElement;
+    expect(details.open).toBe(false);
+    expect(input).toHaveAccessibleDescription(expect.stringContaining(note));
+    details.open = true;
+    expect(input).toHaveAccessibleDescription(expect.stringContaining(note));
+  });
 });
 
 describe("Home has no axe violations", () => {

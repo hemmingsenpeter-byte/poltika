@@ -22,7 +22,7 @@ describe("NavList", () => {
   it("renders only the enabled items and no text for hidden ones", () => {
     state.capabilities = {};
     const { container } = render(<NavList />);
-    expect(screen.getAllByRole("link").map((a) => a.textContent)).toEqual(["Home", "Scenarios", "Models", "Data"]);
+    expect(screen.getAllByRole("link").map((a) => a.textContent)).toEqual(["Home", "Scenarios", "Models", "Data", "Settings"]);
     for (const hidden of ["Explore", "Evidence", "Assurance", "Admin"]) {
       expect(container).not.toHaveTextContent(hidden);
     }

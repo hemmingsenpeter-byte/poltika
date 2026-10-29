@@ -32,7 +32,7 @@ export function ModelsPage() {
       {state.status === "ready"
         ? groupByKind(state.data.models).map(([kind, models]) => (
             <section key={kind} aria-labelledby={`kind-${kind}`} className="mb-8">
-              <h2 id={`kind-${kind}`} className="mb-3 text-sm font-semibold tracking-wide text-muted uppercase">
+              <h2 id={`kind-${kind}`} className="mb-3 text-xl font-semibold">
                 {humanise(kind)}s
               </h2>
               <ul className="grid gap-3 md:grid-cols-2">

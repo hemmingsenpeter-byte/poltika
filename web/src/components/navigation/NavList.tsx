@@ -16,7 +16,7 @@ export function NavList({ collapsed = false, onNavigate, label = "Primary" }: { 
 
   return (
     <nav aria-label={label}>
-      <ul className="flex flex-col gap-0.5">
+      <ul className="flex flex-col gap-1">
         {items.map((item) => {
           const active = isActive(item, pathname);
           const Icon = item.icon;
@@ -28,8 +28,11 @@ export function NavList({ collapsed = false, onNavigate, label = "Primary" }: { 
                 aria-current={active ? "page" : undefined}
                 title={collapsed ? item.label : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-md px-2.5 py-2.5 text-sm md:py-2 no-underline",
-                  active ? "bg-accent-soft font-medium text-accent" : "text-ink hover:bg-surface-muted",
+                  "flex items-center gap-3 rounded-md px-3 py-2.5 text-base no-underline md:py-2",
+                  // The kōwhai bar marks where you are; aria-current says it.
+                  active
+                    ? "bg-accent-soft font-semibold text-accent shadow-[inset_3px_0_0_var(--color-highlight)]"
+                    : "text-ink hover:bg-surface-muted",
                   collapsed && "justify-center",
                 )}
               >

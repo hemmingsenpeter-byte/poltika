@@ -20,10 +20,10 @@ function MetricValueText({ block, value }: { block: MetricBlock; value: MetricBl
   }
   const { unit, precision } = block;
   if (unit.currency === "NZD") {
-    return <span className="num text-xl font-semibold">{formatMoney(value.value, { precision, ...(unit.period ? { period: unit.period } : {}) })}</span>;
+    return <span className="num font-display text-2xl font-semibold">{formatMoney(value.value, { precision, ...(unit.period ? { period: unit.period } : {}) })}</span>;
   }
   return (
-    <span className="num text-xl font-semibold">
+    <span className="num font-display text-2xl font-semibold">
       {formatCount(value.value, { precision })} <span className="text-sm font-normal text-muted">{unit.label}</span>
     </span>
   );
@@ -33,13 +33,13 @@ export function MetricCard({ block, onOpen }: { block: MetricBlock; onOpen?: Ope
   return (
     <Card className="min-w-0">
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <h3 className="text-sm font-medium">{block.label}</h3>
+        <h3 className="text-base font-semibold">{block.label}</h3>
         <Pill tone="neutral">{block.evidence_class}</Pill>
       </div>
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-4 space-y-2">
         {block.values.map((v) => (
           <li key={v.option} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <span className="text-sm text-muted">{v.option}</span>
+            <span className="text-base text-muted">{v.option}</span>
             <MetricValueText block={block} value={v} />
           </li>
         ))}
@@ -57,7 +57,7 @@ export function MetricCard({ block, onOpen }: { block: MetricBlock; onOpen?: Ope
               <button
                 type="button"
                 onClick={() => onOpen?.(p.tab, p.block_id)}
-                className="inline-flex min-h-[24px] items-center gap-1 rounded-sm border border-border-strong px-2 py-0.5 text-xs hover:bg-surface-muted"
+                className="inline-flex min-h-[24px] items-center gap-1 rounded-sm border border-border-strong px-2 py-0.5 text-xs font-semibold text-accent hover:border-accent hover:bg-accent-soft"
               >
                 {humanise(p.tab)}: {humanise(p.block_id)}
                 <ArrowUpRight aria-hidden="true" className="size-3" />

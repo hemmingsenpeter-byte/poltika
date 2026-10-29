@@ -43,7 +43,7 @@ export function Tabs({
     <div>
       {/* Focus is on the tab buttons (roving tabindex), not the tablist. */}
       {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
-      <div role="tablist" aria-label={label} onKeyDown={onKeyDown} className="flex overflow-x-auto border-b border-border">
+      <div role="tablist" aria-label={label} onKeyDown={onKeyDown} className="flex gap-1 overflow-x-auto border-b border-border">
         {tabs.map((t) => {
           const active = t.id === selected;
           return (
@@ -60,8 +60,10 @@ export function Tabs({
               tabIndex={active ? 0 : -1}
               onClick={() => onSelect(t.id)}
               className={cn(
-                "min-h-11 shrink-0 border-b-2 px-4 py-2 text-sm whitespace-nowrap md:min-h-0",
-                active ? "border-accent font-medium text-ink" : "border-transparent text-muted hover:text-ink",
+                "-mb-px min-h-11 shrink-0 border-b-[3px] px-4 py-2.5 text-[0.9375rem] whitespace-nowrap md:min-h-0",
+                active
+                  ? "border-accent font-semibold text-accent"
+                  : "border-transparent text-muted hover:border-border-strong hover:text-ink",
               )}
             >
               {t.label}
@@ -69,7 +71,7 @@ export function Tabs({
           );
         })}
       </div>
-      <div role="tabpanel" id={`panel-${selected}`} aria-labelledby={`tab-${selected}`} tabIndex={0} className="pt-4">
+      <div role="tabpanel" id={`panel-${selected}`} aria-labelledby={`tab-${selected}`} tabIndex={0} className="pt-6">
         {children}
       </div>
     </div>
