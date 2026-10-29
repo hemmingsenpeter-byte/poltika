@@ -1,0 +1,477 @@
+# Income tax golden households (v0.3 Phase 2.5; new-policy PR 3 "golden households").
+#
+# NON-NUMERIC by design. Every income-tax value is draft (policy.yaml status
+# draft_pending_review, policy_version null, every parameter needs_review), so
+# no result here is `calculated` and no expectation holds an amount, a tax
+# figure or a bracket value. Each household runs through the shared household
+# model (`run_household_income_tax`, one call per person: IT-01 assesses one
+# natural person, so a partner's income and facts are never read).
+#
+# Expectations are outcome, reason code, category, missing facts and policy
+# identity only. They were derived by Claude Code from the specification's
+# "Input and outcome contract" and calculation sequence (`unsupported`
+# outranks `needs_review`; a missing fact is never zero; IT-01 to IT-05, Q10,
+# Q17), not copied from a run. They are AI hypotheses until the independent
+# review row clears (review_packets/review_queue.md). The statutory-value
+# guard watches this file (ADR-0007).
+#
+# Spell amounts are synthetic, caller-asserted whole-dollar inputs. They are
+# not statutory values and none equals a candidate parameter (the runner
+# checks no amount equals any number in policy.yaml). A draft policy ignores
+# them.
+#
+# Not written here, waiting on the protected-value process
+# (doctrine/test-doctrine.md): see `waiting_on_protected_value_process`.
+status: draft_not_reviewed
+policy:
+  policy_id: income_tax
+  component_id: basic_annual_income_tax
+  policy_version: none (draft_pending_review)
+  tax_year: {start: 2026-04-01, end: 2027-04-01}
+
+in_slice_facts: &in_slice
+  individual_status: verified
+  residence_scope: whole_year_ordinary_nz_resident
+  tax_year_basis: standard_2026_27
+  income_composition: ordinary_salary_wages_only
+  no_deductions_status: verified
+  no_available_losses_status: verified
+  general_basic_rate_status: verified
+  taxable_income_basis_attestation: true
+
+waiting_on_protected_value_process:
+  - id: w1_each_bracket_boundary
+    covers: "each bracket threshold in the basic-rate table (cl 1/Table 1), at the threshold and one dollar either side"
+    waiting_on: "Pete's approval of the candidate parameter values and the Royal-assent source gate (Q16); policy.yaml is draft_pending_review"
+  - id: w2_known_zero_income
+    covers: "known zero taxable income and the first dollar above it"
+    waiting_on: "approved policy values and DEC-004 output precision"
+  - id: w3_calculated_result_per_earner
+    covers: "a calculated result for a single earner and for each of two earners"
+    waiting_on: "approved policy values, DEC-004 output precision and the official benchmark (benchmarks.yaml benchmark_status missing_source)"
+  - id: w4_rounding_of_a_calculated_amount
+    covers: "any displayed rounding of a calculated amount"
+    waiting_on: "DEC-004 (final output precision is MISSING_SOURCE)"
+
+households:
+  - id: g01_single_earner
+    why: "IT-01 to IT-05 all verified and one whole-year taxable-income spell: the only gate left is the draft policy, so needs_review with no amount."
+    household:
+      household_id: g01-single-earner
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: IT_POLICY_NOT_APPROVED, category: null, missing_facts: []}
+  - id: g02_two_earners_each_mapped_alone
+    why: "IT-01: each person maps on their own facts and spell; both are in the slice and both stop at the draft policy. Neither reads the other's income."
+    household:
+      household_id: g02-two-earners-each-mapped-alone
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+        - person_id: b
+          role: partner
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: partnered, partner_id: b}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+        - {person_id: b, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '38000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: IT_POLICY_NOT_APPROVED, category: null, missing_facts: []}
+      - {person: b, outcome: needs_review, code: IT_POLICY_NOT_APPROVED, category: null, missing_facts: []}
+  - id: g03_one_earner_and_a_non_earner_partner
+    why: "The partner asserted no facts and has no spell: every fact is unknown (never the claimant's, never zero), and annual taxable income is missing."
+    household:
+      household_id: g03-one-earner-and-a-non-earner-partner
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+        - person_id: b
+          role: partner
+      families:
+        - {claimant_id: a, partner_status: partnered, partner_id: b}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: IT_POLICY_NOT_APPROVED, category: null, missing_facts: []}
+      - {person: b, outcome: needs_review, code: IT_FACTS_UNVERIFIED, category: null, missing_facts: [individual_status, residence_scope, tax_year_basis, income_composition, no_deductions_status, no_available_losses_status, general_basic_rate_status, taxable_income_basis_attestation, annual_taxable_income]}
+  - id: g04_unknown_income
+    why: "All facts verified but no taxable-income spell: income is unknown, never zero."
+    household:
+      household_id: g04-unknown-income
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+    runs:
+      - {person: a, outcome: needs_review, code: IT_FACTS_UNVERIFIED, category: null, missing_facts: [annual_taxable_income]}
+  - id: g05_part_year_spell_gap
+    why: "One spell covers only part of the year: a gap, so income stays unknown and nothing is summed or scaled."
+    household:
+      household_id: g05-part-year-spell-gap
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2026-10-01, amount: '30000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: IT_FACTS_UNVERIFIED, category: null, missing_facts: [annual_taxable_income]}
+  - id: g06_spell_straddles_the_year_start
+    why: "A spell starting before and ending inside the year is refused under Q10, never apportioned."
+    household:
+      household_id: g06-spell-straddles-the-year-start
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-03-01, end: 2027-04-01, amount: '65000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: HOUSEHOLD_SPELL_PERIOD_MISMATCH, category: null, missing_facts: []}
+  - id: g07_spell_straddles_the_year_end
+    why: "A spell running past 31 March 2027 is refused under Q10, never apportioned."
+    household:
+      household_id: g07-spell-straddles-the-year-end
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-05-01, amount: '65000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: HOUSEHOLD_SPELL_PERIOD_MISMATCH, category: null, missing_facts: []}
+  - id: g08_two_spells_in_the_year
+    why: "Two spells inside the year are refused, not summed: IT-02 gives no derivation."
+    household:
+      household_id: g08-two-spells-in-the-year
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2026-10-01, amount: '30000', basis: it_annual_taxable}
+        - {person_id: a, income_type: unsplit_total, start: 2026-10-01, end: 2027-04-01, amount: '20000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: HOUSEHOLD_MAPPING_INVALID_FACTS, category: null, missing_facts: []}
+  - id: g09_straddle_for_one_partner_only
+    why: "Q10 reads only the selected person: a straddling spell for the partner refuses the partner and leaves the claimant's result as in g01."
+    household:
+      household_id: g09-straddle-for-one-partner-only
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+        - person_id: b
+          role: partner
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: partnered, partner_id: b}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+        - {person_id: b, income_type: unsplit_total, start: 2026-03-01, end: 2027-04-01, amount: '41000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: IT_POLICY_NOT_APPROVED, category: null, missing_facts: []}
+      - {person: b, outcome: needs_review, code: HOUSEHOLD_SPELL_PERIOD_MISMATCH, category: null, missing_facts: []}
+  - id: g10_exclusion_outranks_a_mapping_refusal
+    why: "A known non-resident (unsupported) outranks the Q10 refusal (needs_review): the engine's own order."
+    household:
+      household_id: g10-exclusion-outranks-a-mapping-refusal
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, residence_scope: non_resident}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-03-01, end: 2027-04-01, amount: '65000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_RESIDENCE_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g11_one_excluded_earner_does_not_taint_the_other
+    why: "IT-01: the partner's known exclusion changes only the partner's result."
+    household:
+      household_id: g11-one-excluded-earner-does-not-taint-the-other
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+        - person_id: b
+          role: partner
+          income_tax_facts: {<<: *in_slice, residence_scope: non_resident}
+      families:
+        - {claimant_id: a, partner_status: partnered, partner_id: b}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+        - {person_id: b, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '38000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: needs_review, code: IT_POLICY_NOT_APPROVED, category: null, missing_facts: []}
+      - {person: b, outcome: unsupported, code: IT_RESIDENCE_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g12_excluded_with_every_other_fact_unknown
+    why: "A known exclusion is reported as itself against the weakest context: no other facts, no income."
+    household:
+      household_id: g12-excluded-with-every-other-fact-unknown
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {residence_scope: non_resident}
+      families:
+        - {claimant_id: a, partner_status: single}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_RESIDENCE_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g20_not_a_natural_person
+    why: "IT-01: individual status excluded."
+    household:
+      household_id: g20-not-a-natural-person
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, individual_status: excluded}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_NOT_NATURAL_PERSON, category: not_modelled, missing_facts: []}
+  - id: g21_changing_residence
+    why: "IT-01: changing residence is outside the slice."
+    household:
+      household_id: g21-changing-residence
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, residence_scope: changing_residence}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_RESIDENCE_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g22_special_residence_regime
+    why: "IT-01: special residence regime is outside the slice."
+    household:
+      household_id: g22-special-residence-regime
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, residence_scope: special_residence_regime}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_RESIDENCE_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g23_non_standard_tax_year
+    why: "IT-02: a non-standard year is outside the slice."
+    household:
+      household_id: g23-non-standard-tax-year
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, tax_year_basis: non_standard_year}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_TAX_YEAR_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g24_other_standard_tax_year
+    why: "IT-02: another standard year is outside the slice; the exclusion is reported ahead of the year mismatch."
+    household:
+      household_id: g24-other-standard-tax-year
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, tax_year_basis: other_standard_year}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_TAX_YEAR_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g30_composition_main_benefit
+    why: "IT-03: income composition main_benefit is outside the slice."
+    household:
+      household_id: g30-composition-main-benefit
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, income_composition: main_benefit}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_INCOME_COMPOSITION_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g31_composition_business_self_employment
+    why: "IT-03: income composition business_self_employment is outside the slice."
+    household:
+      household_id: g31-composition-business-self-employment
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, income_composition: business_self_employment}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_INCOME_COMPOSITION_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g32_composition_investment_or_rent
+    why: "IT-03: income composition investment_or_rent is outside the slice."
+    household:
+      household_id: g32-composition-investment-or-rent
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, income_composition: investment_or_rent}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_INCOME_COMPOSITION_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g33_composition_foreign_income
+    why: "IT-03: income composition foreign_income is outside the slice."
+    household:
+      household_id: g33-composition-foreign-income
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, income_composition: foreign_income}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_INCOME_COMPOSITION_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g34_composition_unusual_employment_items
+    why: "IT-03: income composition unusual_employment_items is outside the slice."
+    household:
+      household_id: g34-composition-unusual-employment-items
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, income_composition: unusual_employment_items}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_INCOME_COMPOSITION_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g35_composition_schedular_or_pie
+    why: "IT-03: income composition schedular_or_pie is outside the slice."
+    household:
+      household_id: g35-composition-schedular-or-pie
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, income_composition: schedular_or_pie}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_INCOME_COMPOSITION_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g36_composition_other_or_mixed_income
+    why: "IT-03: income composition other_or_mixed_income is outside the slice."
+    household:
+      household_id: g36-composition-other-or-mixed-income
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, income_composition: other_or_mixed_income}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_INCOME_COMPOSITION_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g40_deductions_present
+    why: "IT-04: deductions present."
+    household:
+      household_id: g40-deductions-present
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, no_deductions_status: excluded}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_DEDUCTIONS_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g41_losses_available
+    why: "IT-04: available losses."
+    household:
+      household_id: g41-losses-available
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, no_available_losses_status: excluded}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_LOSSES_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g42_special_basic_rate
+    why: "IT-05: not the general basic rates."
+    household:
+      household_id: g42-special-basic-rate
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: {<<: *in_slice, general_basic_rate_status: excluded}
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '52000', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_SPECIAL_BASIC_RATE_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g43_negative_income
+    why: "Q17 and the calculation sequence: negative taxable income is not modelled."
+    household:
+      household_id: g43-negative-income
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '-1', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_NEGATIVE_INCOME_NOT_MODELLED, category: not_modelled, missing_facts: []}
+  - id: g44_fractional_income
+    why: "Q17: non-whole-dollar income is unsupported, never rounded."
+    household:
+      household_id: g44-fractional-income
+      persons:
+        - person_id: a
+          role: claimant
+          income_tax_facts: *in_slice
+      families:
+        - {claimant_id: a, partner_status: single}
+      income_spells:
+        - {person_id: a, income_type: unsplit_total, start: 2026-04-01, end: 2027-04-01, amount: '15600.5', basis: it_annual_taxable}
+    runs:
+      - {person: a, outcome: unsupported, code: IT_FRACTIONAL_INCOME_NOT_MODELLED, category: not_modelled, missing_facts: []}

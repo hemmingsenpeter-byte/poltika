@@ -42,8 +42,10 @@ that their releases or the new programme gates are complete:
   unknown, the household is rerun once per possible answer. The base result
   stays `needs_review`; branches are labelled as conditional.
 
-Not modelled: income tax, instalments or square-up, other benefits, any
-policy not listed above. Results are conditional simulations built from
+Not modelled: any income-tax amount (a draft income-tax engine and household
+mapping exist, but every result is `needs_review` or `unsupported`, and nothing
+uses them), instalments or square-up, other benefits, any policy not listed
+above. Results are conditional simulations built from
 facts the caller asserts. They are not entitlement determinations.
 
 Section citations are to the Income Tax Act 2007 (parts M and C, for WFF),
@@ -100,8 +102,10 @@ Every component returns one of three outcomes:
   to 31 March 2025. Children verified as too old give a calculated $0. Other
   birth groups, in-year births or third birthdays, and more than one
   eligible child are `unsupported`.
-- **MFTC needs an attested after-tax (ME 3) income.** There is no income tax
-  module to derive one.
+- **MFTC needs an attested after-tax (ME 3) income.** A draft income-tax
+  engine exists (`needs_review` or `unsupported` only, never an amount), and it
+  feeds nothing: no edge connects it to WFF, so nothing derives an after-tax
+  income.
 - **AS is weekly.** Each assessment week `[start, end)` (end exclusive, 7
   days) takes one area (1-4), one weekly cost and one weekly income, with no
   rule for a change mid-week. It uses MSD's published entry thresholds.

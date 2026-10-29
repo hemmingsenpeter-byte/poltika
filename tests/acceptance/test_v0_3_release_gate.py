@@ -93,6 +93,85 @@ def test_rows_for_later_phases(row: str) -> None:
     pytest.skip(f"not built yet: {row}")
 
 
+# Income-tax gate rows (BUILD_PLAN_v0_3.md 2.5, new-policy PR 5). Each is a named
+# skip with its reason while the condition holds. A row whose condition no
+# longer holds fails, not passes: the gate is never met by a row that stopped
+# checking, so whoever lifts the condition must replace the row with a real
+# check (a gate with skips remains unmet).
+INCOME_TAX = ROOT / "policy_specs" / "income_tax"
+
+
+def _income_tax_policy() -> Any:
+    return load_policy_spec(INCOME_TAX / "policy.yaml")
+
+
+def _income_tax_row(condition: bool, reason: str) -> None:
+    if not condition:
+        pytest.fail(
+            f"the condition behind this income-tax gate row no longer holds; replace the row: {reason}"
+        )
+    pytest.skip(f"release gate not yet met: {reason}")
+
+
+def test_income_tax_values_are_approved() -> None:
+    spec = _income_tax_policy()
+    _income_tax_row(
+        spec.status is PolicyStatus.DRAFT_PENDING_REVIEW or spec.policy_version is None,
+        "income-tax policy.yaml is draft_pending_review with policy_version null, so every result is "
+        "needs_review or unsupported and none is calculated",
+    )
+
+
+def test_income_tax_protected_values_are_approved() -> None:
+    _income_tax_row(
+        _income_tax_policy().status is PolicyStatus.DRAFT_PENDING_REVIEW,
+        "no protected income-tax expected value (numeric spec cases, bracket-boundary goldens) is approved; "
+        "policy_specs/income_tax/golden_households.yaml lists them as waiting on the protected-value process "
+        "(doctrine/test-doctrine.md)",
+    )
+
+
+def test_income_tax_output_precision_is_decided() -> None:
+    text = (INCOME_TAX / "decisions" / "DEC-004-output-precision-and-benchmark.md").read_text()
+    _income_tax_row(
+        "**Status:** open" in text,
+        "DEC-004 (final annual tax precision and the missing independent benchmark) is open and Pete's",
+    )
+
+
+def test_income_tax_annual_authority_is_settled() -> None:
+    text = (INCOME_TAX / "decisions" / "DEC-001-annual-authority.md").read_text()
+    _income_tax_row(
+        "gate remains `needs_review`" in text,
+        "the 2026-27 annual-authority gate (annual taxing Act and Royal assent, Q16/D36, DEC-001) remains "
+        "needs_review",
+    )
+
+
+def test_income_tax_official_benchmark_is_retained() -> None:
+    benchmarks = yaml.safe_load((INCOME_TAX / "benchmarks.yaml").read_text())
+    _income_tax_row(
+        benchmarks["benchmark_status"] == "missing_source" and not benchmarks["benchmarks"],
+        "no dated official period-matched income-tax result is retained (benchmarks.yaml benchmark_status "
+        "missing_source)",
+    )
+
+
+def test_income_tax_independent_review_complete() -> None:
+    queue = (ROOT / "review_packets" / "review_queue.md").read_text()
+    pending = [
+        line.split("|")[1].strip()
+        for line in queue.splitlines()
+        if "income_tax/golden_households.yaml" in line
+        and not line.rstrip().rstrip("|").rsplit("|", 1)[-1].strip().startswith("reviewed")
+    ]
+    _income_tax_row(
+        bool(pending),
+        "awaiting independent GPT/Codex review of the income-tax golden households and conformance tests "
+        f"({', '.join(pending)})",
+    )
+
+
 def test_independent_review_complete() -> None:
     pending = open_reviews("v0.3")
     if pending:

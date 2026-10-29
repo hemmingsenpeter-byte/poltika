@@ -75,6 +75,7 @@ poltika/
 │                         Task 29 golden_households.yaml, both watched by the statutory-value guard)
 │   ├── income_tax/    — Phase B Task 7 / v0.3 local 0.1 source catalogue;
 │                       draft numeric spec, candidate parameters, facts and hand cases;
+│                       golden_households.yaml (non-numeric, watched by the statutory-value guard);
 │                       official benchmark, approval and implementation remain gated
 │   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue,
 │   │                       draft specification and decisions; values/engine gated
@@ -360,7 +361,8 @@ poltika/
     │   │                        interaction spec-case runner (Task 28.5),
     │   │                        golden household runner (Task 29), household
     │   │                        income-tax mapping tests (v0.3 2.3, Task 7,
-    │   │                        test_household_income_tax.py), store
+    │   │                        test_household_income_tax.py), income-tax golden
+│   │                        household runner (test_income_tax_golden_households.py), store
     │   │                        tests (Task 32; marked postgres, start a
     │   │                        throwaway server from initdb/pg_ctl on PATH,
     │   │                        skipped when absent), population schema and

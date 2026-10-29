@@ -64,7 +64,7 @@ models today:
 | --- | --- |
 | Working for Families (2026-27) | Implemented and reviewed (v0.1); in-work tax credit `needs_review` |
 | Accommodation Supplement | Implemented and reviewed (v0.1) |
-| Personal income tax | Not started: household lane, Phase B |
+| Personal income tax | Draft engine and household mapping built; values draft, so every result is `needs_review` or `unsupported` with no amount; not released (`docs/releases/V0_3_INCOME_TAX_LIMITATIONS.md`) |
 | Jobseeker Support, Sole Parent Support, Supported Living Payment | Not started: household lane, Phase B |
 | NZ Super, Childcare and OSCAR Subsidies, KiwiSaver interactions, Paid Parental Leave | Deferred: Phase H, order determined by analytical demand |
 | Student support, ACC levies and earnings compensation, Temporary Additional Support, Disability Allowance, other MSD assistance, Child Support | Deferred: Phase H, order determined by analytical demand |
