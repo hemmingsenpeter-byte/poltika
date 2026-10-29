@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { ApiError } from "@/api/errors";
 import { DEFAULT_CAPABILITIES } from "@/config/capabilities";
 import type { Meta } from "@/domain";
 import { expectNoAxeViolations } from "@/test/axe";
@@ -21,7 +22,7 @@ const META: Meta = {
   capabilities: {},
 } as Meta;
 
-const state: { meta: { status: "loading" } | { status: "ready"; data: Meta } } = { meta: { status: "loading" } };
+const state: { meta: { status: "loading" } | { status: "error"; error: unknown } | { status: "ready"; data: Meta } } = { meta: { status: "loading" } };
 
 vi.mock("@/components/layout/MetaProvider", () => ({
   useMeta: () => ({ meta: state.meta, capabilities: DEFAULT_CAPABILITIES }),
@@ -44,5 +45,45 @@ describe("SettingsPage", () => {
     state.meta = { status: "loading" };
     render(<SettingsPage />);
     expect(screen.getByRole("status")).toHaveTextContent("Loading settings");
+  });
+
+  it("shows the API error when the metadata fails", () => {
+    state.meta = { status: "error", error: new ApiError("server", "The server failed.", { status: 500, code: "boom" }) };
+    render(<SettingsPage />);
+    expect(screen.getByRole("alert")).toHaveTextContent("The server failed.");
+    expect(screen.getByRole("alert")).toHaveTextContent("boom");
+  });
+
+  it("says so when no policy is loaded and no population is configured", () => {
+    state.meta = { status: "ready", data: { ...META, policies: [], population: null } as Meta };
+    render(<SettingsPage />);
+    expect(screen.getByText("No policy is loaded.")).toBeInTheDocument();
+    expect(screen.getByText("No population is configured here.")).toBeInTheDocument();
+  });
+
+  it("shows Unversioned and a plain status for a policy that is not approved", () => {
+    const draft = { policy_id: "draft_policy", policy_version: null, status: "under_review", reference_period: { from: "2026-04-01", to: "2027-04-01" } };
+    state.meta = { status: "ready", data: { ...META, policies: [draft] } as Meta };
+    render(<SettingsPage />);
+    const policies = within(screen.getByRole("region", { name: "Policy versions" }));
+    expect(policies.getByText("Unversioned")).toBeInTheDocument();
+    expect(policies.getByText("Under review")).toBeInTheDocument();
+    expect(policies.queryByText("Approved")).not.toBeInTheDocument();
+  });
+
+  it("shows the build commit the API reports", () => {
+    state.meta = { status: "ready", data: { ...META, build: { ...META.build, commit: "abc1234def" } } as Meta };
+    render(<SettingsPage />);
+    expect(screen.getByText("abc1234def")).toBeInTheDocument();
+    expect(screen.queryByText("Not reported by the host")).not.toBeInTheDocument();
+  });
+
+  it("pins how ids and statuses are shown: humanised, with the API value kept as text", () => {
+    state.meta = { status: "ready", data: META };
+    render(<SettingsPage />);
+    const policies = within(screen.getByRole("region", { name: "Policy versions" }));
+    expect(policies.getByText("Accommodation supplement")).toBeInTheDocument();
+    expect(policies.queryByText("accommodation_supplement")).not.toBeInTheDocument();
+    expect(policies.getAllByText("Approved")).toHaveLength(2);
   });
 });
