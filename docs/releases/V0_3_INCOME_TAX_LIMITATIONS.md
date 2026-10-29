@@ -54,8 +54,10 @@ coverage row is never overstated.
   Accommodation Supplement or disposable income. Minimum family tax credit
   still needs a caller-attested after-tax income. Which benefits are taxable
   income is the interaction step (new-policy PR 4), not built.
-- **No API.** The income-tax API is separate work and is not part of this
-  record.
+- **The API returns no amount.** `POST /income-tax/calculate` exposes the
+  engine with a strict request model; every response is `needs_review` or
+  `unsupported` with a null value. It is not in `/api/v1/meta`, the Workbench
+  or a household run, and `/api/v1/evidence` lists it with `policy_version: null`.
 
 ## Release gate
 

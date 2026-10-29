@@ -273,6 +273,10 @@ poltika/
 │                            calculation route, wrapping run_as_module()
 │                            directly, mirroring wff.py's pattern exactly
 │                            for AS's single-component response shape),
+│                            income_tax.py (Task 7 / v0.3 2.3: draft
+│                            income-tax route, POST /income-tax/calculate,
+│                            wrapping run_income_tax_module(); never an
+│                            amount while the policy is draft),
 │                            household.py (Task 33.1: combined WFF+AS
 │                            route over scenarios/; v0.3 Task 1b.5:
 │                            resolution and POST /household/intake), and scenarios.py
@@ -380,7 +384,8 @@ poltika/
     │   │                        per-component trace tests (Task 31),
     │   │                        AS rate-selector tests (Task 26a repair)
     │   └── api/             — FastAPI TestClient tests (Task 21 WFF,
-    │                          Task 24.8 AS, Task 33 household and
+    │                          Task 24.8 AS, test_income_tax_api.py
+    │                          (Task 7 draft route), Task 33 household and
     │                          stored scenario routes; test_web_static.py,
     │                          Task B0.1.3: serving, deep links, caching, auth)
     ├── installed_artifact/ — builds and installs the real wheel into a

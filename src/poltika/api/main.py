@@ -41,6 +41,8 @@ from poltika.api.accommodation_supplement import router as as_router
 from poltika.api.analyst import router as analyst_router
 from poltika.api.hardening import SECURITY_HEADERS, BodyLimitMiddleware, SecurityHeadersMiddleware
 from poltika.api.household import router as household_router
+from poltika.api.income_tax import INCOME_TAX_POLICY_DIR
+from poltika.api.income_tax import router as income_tax_router
 from poltika.api.microsim import router as microsim_router
 from poltika.api.microsim_page import router as microsim_page_router
 from poltika.api.scenarios import router as scenarios_router
@@ -81,6 +83,8 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
         raise _missing_policy_dir_error(
             "AS_POLICY_DIR", AS_POLICY_DIR, "accommodation_supplement"
         )
+    if not (INCOME_TAX_POLICY_DIR / "policy.yaml").is_file():
+        raise _missing_policy_dir_error("INCOME_TAX_POLICY_DIR", INCOME_TAX_POLICY_DIR, "income_tax")
     configured_credentials()  # a hosted image refuses to start without a password
     yield
 
@@ -106,6 +110,7 @@ app = FastAPI(
 )
 app.include_router(wff_router)
 app.include_router(as_router)
+app.include_router(income_tax_router)
 app.include_router(household_router)
 app.include_router(scenarios_router)
 app.include_router(analyst_router)

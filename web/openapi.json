@@ -1789,6 +1789,213 @@
         "title": "HouseholdCalculationResponse",
         "type": "object"
       },
+      "IncomeComposition": {
+        "enum": [
+          "ordinary_salary_wages_only",
+          "main_benefit",
+          "business_self_employment",
+          "investment_or_rent",
+          "foreign_income",
+          "unusual_employment_items",
+          "schedular_or_pie",
+          "other_or_mixed_income"
+        ],
+        "title": "IncomeComposition",
+        "type": "string"
+      },
+      "IncomeTaxCalculationRequest": {
+        "additionalProperties": false,
+        "description": "Mirrors `IncomeTaxScenario`'s own fields; see this module's docstring.",
+        "properties": {
+          "annual_taxable_income": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Taxable Income"
+          },
+          "general_basic_rate_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "income_composition": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IncomeComposition"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "individual_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "modelled_date": {
+            "format": "date",
+            "title": "Modelled Date",
+            "type": "string"
+          },
+          "no_available_losses_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "no_deductions_status": {
+            "$ref": "#/components/schemas/FactStatus",
+            "default": "unknown"
+          },
+          "requested_policy_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Policy Version"
+          },
+          "residence_scope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResidenceScope"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tax_year_basis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TaxYearBasis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "taxable_income_basis_attestation": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxable Income Basis Attestation"
+          }
+        },
+        "required": [
+          "modelled_date"
+        ],
+        "title": "IncomeTaxCalculationRequest",
+        "type": "object"
+      },
+      "IncomeTaxCalculationResponse": {
+        "properties": {
+          "basic_annual_income_tax": {
+            "$ref": "#/components/schemas/IncomeTaxComponentResponse"
+          },
+          "explanation": {
+            "additionalProperties": true,
+            "title": "Explanation",
+            "type": "object"
+          }
+        },
+        "required": [
+          "basic_annual_income_tax",
+          "explanation"
+        ],
+        "title": "IncomeTaxCalculationResponse",
+        "type": "object"
+      },
+      "IncomeTaxComponentResponse": {
+        "description": "Pinned response shape for the single `basic_annual_income_tax`\ncomponent. `value` is non-null iff `outcome == \"calculated\"`; while the\npolicy is draft it is always null.",
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "enum": [
+                  "evidenced_exclusion",
+                  "not_modelled"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "missing_facts": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Facts",
+            "type": "array"
+          },
+          "outcome": {
+            "enum": [
+              "calculated",
+              "needs_review",
+              "unsupported"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "IncomeTaxComponentResponse",
+        "type": "object"
+      },
       "IntakeRequest": {
         "additionalProperties": false,
         "description": "Stateless: the caller sends the household as first entered, every\nanswer so far in order, and every fact declined (\"don't know\").",
@@ -2680,8 +2887,15 @@
             "type": "string"
           },
           "policy_version": {
-            "title": "Policy Version",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Version"
           },
           "problems": {
             "items": {
@@ -2982,6 +3196,16 @@
         ],
         "title": "RerunResponse",
         "type": "object"
+      },
+      "ResidenceScope": {
+        "enum": [
+          "whole_year_ordinary_nz_resident",
+          "non_resident",
+          "changing_residence",
+          "special_residence_regime"
+        ],
+        "title": "ResidenceScope",
+        "type": "string"
       },
       "ResolutionResponse": {
         "description": "ADR-0016 conditional answer. Nothing here is `calculated`: the\ncomponents' own outcomes above are unchanged.",
@@ -3761,6 +3985,15 @@
         ],
         "title": "TableBlock",
         "type": "object"
+      },
+      "TaxYearBasis": {
+        "enum": [
+          "standard_2026_27",
+          "non_standard_year",
+          "other_standard_year"
+        ],
+        "title": "TaxYearBasis",
+        "type": "string"
       },
       "TenureType": {
         "description": "Schedule 4 Part 7 cl 1-3 (rent/board; the published rent/board entry\nthreshold per DEC-002) is the v0.1 supported branch; cl 4-6 (homeowner,\nmortgage-security \"reasonably required\" MSD judgment) is not.",
@@ -5784,6 +6017,48 @@
         "summary": "Intake",
         "tags": [
           "household"
+        ]
+      }
+    },
+    "/income-tax/calculate": {
+      "post": {
+        "description": "Calculate basic annual income tax for one individual.\n\n**This is a conditional simulation, not a verified determination.**\nEvery `\"verified\"` fact and the attested taxable income are the caller's\nown assertion; Poltika derives no taxable income. The income-tax policy\nis draft, so this route returns `needs_review` or `unsupported` and never\nan amount (see this module's docstring).\n\nA `PoltikaError` raised by the loader (e.g. a `requested_policy_version`\nmismatch) is not caught here -- it propagates to the app-level handlers\nin `poltika.api.main`, which map it to an explicit HTTP status.",
+        "operationId": "calculate_income_tax_calculate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncomeTaxCalculationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncomeTaxCalculationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Calculate",
+        "tags": [
+          "income-tax"
         ]
       }
     },

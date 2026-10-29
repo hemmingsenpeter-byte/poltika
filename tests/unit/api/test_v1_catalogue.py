@@ -222,7 +222,11 @@ def test_an_unreadable_catalogue_ancestor_is_unavailable_not_a_500(
 
 def test_evidence_carries_every_source_with_its_rank_and_checks(client: TestClient) -> None:
     body = client.get("/api/v1/evidence").json()
-    assert [p["policy_id"] for p in body] == ["working_for_families", "accommodation_supplement"]
+    assert [p["policy_id"] for p in body] == [
+        "working_for_families",
+        "accommodation_supplement",
+        "income_tax",
+    ]
     for policy in body:
         catalogue = yaml.safe_load(
             (WFF_POLICY_DIR.parent / policy["policy_id"] / "sources.yaml").read_text()
@@ -237,9 +241,19 @@ def test_evidence_carries_every_source_with_its_rank_and_checks(client: TestClie
 def test_evidence_filters_by_policy_and_rejects_an_undeployed_one(client: TestClient) -> None:
     body = client.get("/api/v1/evidence", params={"policy": "accommodation_supplement"}).json()
     assert [p["policy_id"] for p in body] == ["accommodation_supplement"]
-    response = client.get("/api/v1/evidence", params={"policy": "income_tax"})
+    response = client.get("/api/v1/evidence", params={"policy": "no_such_policy"})
     assert response.status_code == 404
     assert response.json()["detail"]["code"] == "policy_not_found"
+
+
+def test_evidence_lists_the_draft_income_tax_policy_unversioned_and_unapproved(client: TestClient) -> None:
+    (policy,) = client.get("/api/v1/evidence", params={"policy": "income_tax"}).json()
+    assert policy["policy_version"] is None
+    assert policy["summary"]["approved_parameter_values"] == 0
+    assert {p["review_status"] for p in policy["parameters"]} == {"needs_review"}
+    assert policy["problems"] == []
+    meta = client.get("/api/v1/meta").json()
+    assert "income_tax" not in [p["policy_id"] for p in meta["policies"]]
 
 
 def test_the_catalogue_is_in_the_openapi_contract(client: TestClient) -> None:

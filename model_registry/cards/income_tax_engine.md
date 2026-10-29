@@ -38,6 +38,7 @@ Tests:
 
 - `tests/unit/engines/simulator/test_income_tax.py`
 - `tests/unit/engines/simulator/test_income_tax_spec_cases.py`
+- `tests/unit/api/test_income_tax_api.py`
 - `tests/unit/scenarios/test_household_income_tax.py`
 
 Reviews:
