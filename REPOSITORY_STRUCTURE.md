@@ -77,10 +77,10 @@ poltika/
 │                       draft numeric spec, candidate parameters, facts and hand cases;
 │                       official benchmark, approval and implementation remain gated
 │   ├── jobseeker_support/ — Phase B Task 8 / v0.3 local 0.2 source catalogue,
-│   │                       draft specification and decisions; values/engine gated
-│   ├── sole_parent_support/ — source catalogue, draft specification and decisions;
+│   │                       approved specification (D47) and decisions; values/engine gated
+│   ├── sole_parent_support/ — source catalogue, approved specification (D47) and decisions;
 │   │                         separate sequencing, source and values gates
-│   └── supported_living_payment/ — source catalogue, draft specification and decisions;
+│   └── supported_living_payment/ — source catalogue, approved specification (D47) and decisions;
 │                                 separate sequencing, source and values gates
 ├── review_packets/     — assembled review packet template/instances; v0_1_question_set/ also
 │                         holds the scripts that produced its recorded results (review evidence,

@@ -1,11 +1,14 @@
-# Author source draft; approval and independent review remain pending.
+# Independently reviewed (#220); specification approved by Pete on 16 October 2026 (D47). No value is approved.
 as_of: '2026-10-15'
 initial_as_of: '2026-10-03'
-status: draft_pending_review
+status: specification_approved
+previous_status: draft_pending_review
 policy_version: null
 initial_status: task_0_2_source_scope_draft_pending_review
 programme_task: 8
 detailed_plan_task: v0.3 local 0.2 / 3.1.1; 0.3 interaction locators only
+# scope_note keeps #220's draft wording; `status` above supersedes its statement that no
+# specification is approved (D47). Parameters, cases and runtime support remain unapproved.
 scope_note: Source inventory and draft specification for Pete D11's single existing-grant 25+ no-dependent-child
   gross weekly slice. No approved specification, parameters, protected cases or runtime support. Independent
   review, gross conversion, precision and whole-period currency gates remain pending.

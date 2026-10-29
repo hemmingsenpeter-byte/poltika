@@ -3,7 +3,7 @@
 **Policy:** `supported_living_payment`
 **Date:** 13 October 2026
 **Decision owner:** Pete
-**Status:** `open_pending_pete`; no interpretation or value approved.
+**Status:** open for the method; holding position accepted 16 October 2026 (D47); no interpretation or value approved.
 **Classification:** `MISSING_SOURCE` for the computational precision/gross-up
 method; `INTERPRETATION_AMBIGUITY` if choosing among competing conventions.
 **Affected rules:** SLP-10–12; specification calculation steps 5–8.
@@ -103,3 +103,12 @@ change as Pete's explicit choice. The 1 October Regulations comparison leaves
 r 205 and medical rr 10–11 unchanged. No agreement, continuing capacity
 determination, rate, rounded result or protected value is approved by this
 source update. The decision remains open and gross output remains absent.
+
+## Holding position accepted (Pete, 16 October 2026; decision log D47)
+
+Pete accepted the holding position recorded above: no gross amount is
+produced, and the component stays `needs_review`, until a sourced and
+independently reviewed method exists. This decides no conversion, gross-up,
+precision or rounding method; the method itself remains open with Pete as
+owner, and needs a located primary source (the RD 11(3) determination or
+equivalent official procedure), not an approval.
